@@ -1,52 +1,23 @@
-# Operating systems and editors
-.DS_Store
-Thumbs.db
-Desktop.ini
-.idea/
-.vscode/
-*.swp
-*.suo
-*.user
-*.userprefs
+# =========================
+# Unity
+# =========================
 
-# Local secrets and environment files
-.env
-.env.*
-!.env.example
-*.pem
-*.key
-secrets/
-
-# Python
-__pycache__/
-*.py[cod]
-*.pyd
-.Python
-.venv/
-venv/
-env/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-build/
-dist/
-*.egg-info/
-
-# Unity generated directories
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
-[Uu]ser[Ss]ettings/
-[Mm]emoryCaptures/
-[Rr]ecordings/
+UserSettings/
+MemoryCaptures/
+Recordings/
+
 *.csproj
 *.sln
-*.unityproj
+*.suo
+*.tmp
+*.user
+*.userprefs
 *.pidb
 *.booproj
 *.svd
@@ -55,40 +26,74 @@ dist/
 *.opendb
 *.VC.db
 
-# Data, models, checkpoints, and experiment output
-data/raw/
-data/private/
-experiments/**/output/
-experiments/**/outputs/
-experiments/**/results/
-checkpoints/
-models/
-*.edf
-*.bdf
-*.gdf
-*.set
-*.fdt
-*.npy
-*.npz
-*.pth
-*.pt
-*.onnx
+.vs/
+.gradle/
 
-# Logs and temporary files
+# =========================
+# VS Code / IDE
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+# Python
+# =========================
+
+**pycache**/
+*.py[cod]
+*.pyo
+*.pyd
+
+.venv/
+venv/
+env/
+
+.pytest_cache/
+.mypy_cache/
+
+# =========================
+# OS
+# =========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Logs / temporary
+# =========================
+
 *.log
 *.tmp
 *.bak
-*.cache
 
-# Executables and packaged runtime binaries
+# =========================
+# Executables / packaged runtimes
+# =========================
+
 *.exe
 *.dll
-*.msi
-*.whl
 *.rar
 *.7z
+*.msi
 
-# Preserve intentionally tracked reference documents and explicitly reviewed SDK artifact
-!reference/**/*.pdf
-!reference/**/*.doc
-!reference/neurodance/neuro_dance-7.3-py3-none-any.whl
+# =========================
+# Secrets
+# =========================
+
+.env
+.env.*
+*.key
+*.pem
+
+# =========================
+# Experiment generated data
+# =========================
+
+experiments/**/raw/
+experiments/**/cache/
+
+# Keep templates/readmes
+!experiments/**/README.md
+!experiments/**/.gitkeep

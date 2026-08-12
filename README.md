@@ -1,30 +1,71 @@
 # BCI Intelligent Robot
 
-面向 Meta Quest 3、SSVEP 脑电、视觉识别、智能场景理解与机械臂协同的长期科研开发项目。
+基于 Meta Quest 3、SSVEP脑电、视觉识别、场景理解和机械臂的智能脑机接口科研项目。
 
-## 当前状态
+## Project Goal
 
-项目已完成工程骨架初始化，尚未进入功能开发。当前仓库不包含 Unity 工程、SSVEP 刺激实现、视觉算法、脑电算法或机械臂控制代码。
+系统最终希望实现：
 
-## 目录说明
+用户通过VR/MR观察真实环境，系统识别候选物体并生成SSVEP视觉刺激；用户通过EEG选择目标，系统结合场景上下文推断任务，并控制机械臂执行。
 
-- `docs/`：架构、决策、开发日志、文献、会议记录和项目状态。
-- `reference/`：从历史资料中筛选的只读参考文件，不能原地修改或直接作为生产依赖。
-- `vr_stimulus/`：未来的 Meta Quest 3 与刺激呈现模块。
-- `vision/`：未来的视觉识别模块。
-- `eeg/`：未来的脑电采集与算法模块。
-- `robot_arm/`：未来的机械臂模块。
-- `integration/`：未来的跨模块集成。
-- `experiments/`：未来的实验方案、配置和结果索引。
+总体流程：
 
-## 项目管理入口
+`Vision → SSVEP Stimulus → EEG Classification → Task Reasoning → Robot Execution`
 
-- 长期背景：`project_context.md`
-- 当前状态：`docs/status/PROJECT_STATUS.md`
-- 架构决策：`docs/decisions/`
-- 开发记录：`docs/development_log/`
-- 协作规范：`AGENTS.md`
+## Current Stage
 
-## 安全提示
+项目初始化 M0 已完成。当前工程里程碑是：
 
-历史 SDK 和项目仅供只读分析。不要运行其中的可执行程序，不要修改原始脑电资料，不要把大型运行环境、敏感数据或凭据提交到仓库。
+`M1 — Minimal Unity Quest Application`
+
+M1只建立能够在Meta Quest 3实机运行的最小Unity工程，不实现SSVEP刺激。
+
+后续第一个核心功能目标：
+
+> 在Meta Quest 3中，在三个指定三维坐标显示三个指定频率的黑白SSVEP闪烁方块。
+
+视觉识别、机械臂和智能场景理解暂不在当前里程碑实施。
+
+## Main Directories
+
+- `vr_stimulus/` — Quest 3与SSVEP视觉刺激
+- `vision/` — 视觉识别与空间定位
+- `eeg/` — ND8采集、预处理和SSVEP分类
+- `robot_arm/` — 机械臂控制
+- `integration/` — 模块集成
+- `experiments/` — 实验记录与结果
+- `reference/` — 只读参考资料
+- `docs/` — 项目文档、决策、文献和开发记录
+
+## AI Development Workflow
+
+本项目主要使用：
+
+- ChatGPT：理论、架构、决策、方案审核
+- Codex：仓库阅读、编程、测试、Git与工程操作
+
+Codex在开始任务前应阅读：
+
+1. `AGENTS.md`
+2. `project_context.md`
+3. `docs/status/PROJECT_STATUS.md`
+
+## Development Principles
+
+- 小步开发；
+- 每一步必须可以验证；
+- 使用Git保存稳定节点；
+- 不直接修改历史参考项目；
+- 不随意升级Unity和XR依赖；
+- 硬件结果必须实机验证。
+
+## Current Milestones
+
+- [x] M0 — Project initialization
+- [ ] M1 — Empty Unity project runs on Quest 3
+- [ ] M2 — Passthrough + one fixed square
+- [ ] M3 — One SSVEP flicker target
+- [ ] M4 — Three independent flicker targets
+- [ ] M5 — Stimulus timing and EEG synchronization
+- [ ] M6 — Online ND8 + EEG decoding
+- [ ] M7 — Vision-based automatic target placement

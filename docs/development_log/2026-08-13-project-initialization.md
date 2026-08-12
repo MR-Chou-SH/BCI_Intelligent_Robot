@@ -1,22 +1,44 @@
-# 2026-08-13：项目初始化
+# Project Initialization — 2026-08-13
 
-## 目标
+## Objective
 
-建立一个结构清晰、受 Git 管理、具备长期背景和管理规范的空白科研工程骨架，不开展任何功能开发。
+正式启动 BCI Intelligent Robot 项目的工程管理。
 
-## 完成内容
+## Starting State
 
-- 创建文档、参考资料、VR、视觉、EEG、机械臂、集成和实验目录。
-- 创建项目 README、长期上下文、协作规范、状态文档和首个架构决策记录。
-- 只读扫描 `C:\Users\zsh21\Desktop\EEG_back_up`，筛选小型关键源码与 SDK 文档。
-- 排除大型 Python 打包环境、第三方库、exe、dll、安装器、FFmpeg 和可重新安装的运行时。
-- 创建 Unity、Python、数据、模型、日志、编辑器和本地机密文件的忽略规则。
+Before initialization:
 
-## 边界
+- International Unity had been installed.
+- Meta Quest 3 was available.
+- Neurodance ND8 SDK and documentation were available.
+- An EEG-controlled drone demonstration project from previous work was available.
+- The project did not yet have:
+  - a formal project root;
+  - a Git repository;
+  - a GitHub repository;
+  - a standardized module structure;
+  - formal project-management documentation.
 
-本次没有创建 Unity 工程，没有实现 SSVEP 刺激、视觉识别、脑电算法或机械臂控制，也没有安装或升级任何依赖。
+## Initialization Goals
 
-## 待确认
+- Create the main project structure.
+- Separate new development from legacy reference code.
+- Introduce Git version control.
+- Define long-term Codex instructions.
+- Define project context.
+- Establish milestone tracking.
+- Prepare for the first VR/SSVEP development milestone.
 
-- 原始指令提到后续章节应提供七个管理文件的指定正文，但初始化消息中未包含这些逐字正文。本次文件依据已提供的项目目标、安全约束和目录要求编写；如另有指定模板，应在后续单独审核更新。
-- 备份目录中未发现 `pics2/`。
+## Current Development Direction
+
+The first implementation target after initialization is:
+
+> Display three independently configured flickering SSVEP squares at specified spatial coordinates on Meta Quest 3.
+
+Automatic vision-based object recognition will be introduced later.
+
+## Notes
+
+This document records the initial state of the project.
+
+Further implementation work should be recorded in new development logs rather than rewriting this historical record.

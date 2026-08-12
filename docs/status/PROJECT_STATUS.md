@@ -1,31 +1,110 @@
-# 项目状态
+# Project Status
 
-- 项目：BCI_Intelligent_Robot
-- 阶段：初始化
-- 更新日期：2026-08-13
-- 总体状态：工程骨架已建立
+Last updated: 2026-08-13
 
-## 已完成
+## Overall Phase
 
-- 建立长期项目目录结构和模块边界。
-- 建立项目背景、协作规范、状态、决策和开发日志文档。
-- 筛选并复制 Neurodance 与脑电无人机流程的重要只读参考资料。
-- 配置适用于 Unity、Python、实验数据和本地环境的 `.gitignore`。
-- 初始化本地 Git 仓库并准备首次版本基线。
+VR Stimulus Development Preparation
 
-## 未开始
+## Completed Milestone
 
-- Unity 工程与 Meta Quest 3 功能开发。
-- SSVEP 刺激实现与实验参数设计。
-- 脑电采集、预处理和分类算法。
-- 视觉识别与场景理解。
-- 机械臂选型、通信和控制。
-- 端到端系统集成与人体实验。
+### M0 — Project Initialization
 
-## 待确认
+Status: Completed
 
-- Unity、Meta XR SDK 和 Python 的版本策略。
-- 脑电设备连接方式、采样参数及数据合规要求。
-- 机械臂型号、协议、工作空间和安全限制。
-- 系统进程边界、消息协议和部署拓扑。
-- 历史资料中未发现的 `pics2/` 来源位置。
+Goal:
+
+建立正式项目目录、Git版本控制、项目文档体系和参考资料结构，为后续Quest 3开发做准备。
+
+## Completed Preparation
+
+- Meta Quest 3 available
+- International Unity installed
+- Neurodance ND8 SDK/reference materials available
+- Existing EEG-controlled drone demo available
+- Initial analysis of drone demo data flow completed
+- Overall project architecture discussed
+
+## M0 Completion
+
+- Formal repository created
+- Standard directory structure created
+- Project management Markdown baseline established
+- Local Git repository initialized
+- Legacy reference materials organized
+
+## Not Started
+
+### VR Stimulus
+
+- Unity Quest project
+- Quest deployment
+- Passthrough
+- fixed square
+- flicker timing
+- three-target stimulation
+- EEG synchronization
+
+### Vision
+
+Not started.
+
+### EEG
+
+Reference implementation analyzed.
+
+Formal EEG module not yet created.
+
+### Robot Arm
+
+Not started.
+
+Hardware/control interface details still need to be documented.
+
+### Integration
+
+Not started.
+
+## Current Milestone
+
+### M1 — Minimal Unity Quest Application
+
+Scope:
+
+- create the formal Unity project under `vr_stimulus/`;
+- confirm and record the full Unity editor version;
+- configure the minimum Android/Quest build environment;
+- confirm the necessary XR foundation configuration;
+- build and run a minimal application on the physical Meta Quest 3;
+- record the important versions and configuration actually used.
+
+M1 does not implement:
+
+- SSVEP flickering;
+- three-target stimulation;
+- EEG connectivity;
+- computer vision;
+- robotic-arm control.
+
+Definition of done:
+
+- a formal minimal Unity project exists under `vr_stimulus/`;
+- the exact Unity version and important XR configuration are recorded;
+- the minimum Android/Quest build environment is configured;
+- the minimal application successfully builds and runs on the physical Meta Quest 3;
+- the verified build procedure is documented;
+- the verified state is committed to Git.
+
+## Current Priority
+
+Prepare and complete M1 before implementing SSVEP stimulation.
+
+## Known Open Questions
+
+- Exact Unity editor version to lock for all team members
+- Meta XR SDK version
+- OpenXR package version
+- ND8 detailed hardware parameters
+- Mechanical arm model and interface
+- Vision inference architecture
+- Final SSVEP target frequencies
