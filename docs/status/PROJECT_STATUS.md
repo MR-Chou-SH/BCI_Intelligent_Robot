@@ -69,6 +69,26 @@ Not started.
 
 ### M1 — Minimal Unity Quest Application
 
+Status: In Progress
+
+Current Subtask:
+
+M1.2 — Create Minimal Unity Quest Project
+
+M1 progress:
+
+- M1.0 — Development Environment Audit: Completed
+- M1.1 — Quest Android Environment Setup: Completed
+
+Verified development environment:
+
+- Unity: 6000.5.8f1
+- Android Platform Tools: 36.0.0
+- Android NDK: 27.2.12479018 (r27c)
+- OpenJDK: 17.0.18
+- adb: 1.0.41
+- Meta Quest 3 adb status: `device`
+
 Scope:
 
 - create the formal Unity project under `vr_stimulus/`;
