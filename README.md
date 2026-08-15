@@ -14,11 +14,11 @@
 
 ## Current Stage
 
-项目初始化 M0 已完成。当前工程里程碑是：
+M0、M1和M2已完成。当前工程里程碑是：
 
-`M1 — Minimal Unity Quest Application`
+`M3 — Single SSVEP Target`
 
-M1只建立能够在Meta Quest 3实机运行的最小Unity工程，不实现SSVEP刺激。
+M3.1实现与M3.2 Quest 3实机视觉验收已经通过；当前进行M3.3软件侧刷新率与帧时序日志验证。当前推导的12 Hz软件刺激频率尚未经过物理光学测量验证。
 
 后续第一个核心功能目标：
 
@@ -62,9 +62,9 @@ Codex在开始任务前应阅读：
 ## Current Milestones
 
 - [x] M0 — Project initialization
-- [ ] M1 — Empty Unity project runs on Quest 3
-- [ ] M2 — Passthrough + one fixed square
-- [ ] M3 — One SSVEP flicker target
+- [x] M1 — Empty Unity project runs on Quest 3
+- [x] M2 — Passthrough + one fixed square
+- [ ] M3 — One SSVEP flicker target (In Progress: M3.3)
 - [ ] M4 — Three independent flicker targets
 - [ ] M5 — Stimulus timing and EEG synchronization
 - [ ] M6 — Online ND8 + EEG decoding

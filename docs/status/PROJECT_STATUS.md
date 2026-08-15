@@ -4,7 +4,7 @@ Last updated: 2026-08-15
 
 ## Overall Phase
 
-VR Stimulus Development Preparation
+Single SSVEP Target Development
 
 ## Completed Milestone
 
@@ -207,11 +207,33 @@ Physical Meta Quest 3 verification:
 
 ### M3 — Single SSVEP Target
 
-Status: Ready to Start
+Status: In Progress
+
+M3 progress:
+
+- M3.0 — Pre-implementation Audit & Design: Completed
+- M3.1 — Static Single Target + Frame-driven Flicker: Completed
+- M3.2 — Quest 3 Physical Visual Acceptance: Completed / PASS
+- M3.3 — Refresh-rate / Frame-timing Logging and Verification: In Progress
+
+M3.1 implementation:
+
+- Created `Assets/Scenes/M3_1_SingleSSVEP.unity` from the verified M2.2 baseline without modifying M1, M2.1, or M2.2 scenes.
+- Reused the world-fixed Cube at position `(0, 1.5, 3.0)` and scale `(0.4, 0.4, 0.4)`.
+- Added a Built-in Render Pipeline `Unlit/Color` opaque material so black/white states do not depend on scene lighting.
+- Added a single-purpose `FrameDrivenStimulus` component with `framesPerHalfCycle = 3`.
+- The stimulus state is derived from `Time.frameCount` in `LateUpdate`, not from a wall-clock toggle timer.
+- Added runtime XR display refresh-rate observation, derived software-frequency reporting, transition diagnostics, and Unity-side frame-anomaly warnings.
+- Android Build and Quest 3 deployment: Successful.
+- Physical acceptance confirmed passthrough without the previous blue veil, visible black/white flicker, world-fixed placement, correct head/body parallax, scene cleanliness, and stable operation.
+- Quest XR runtime reported `72.000 Hz`; `Application.targetFrameRate = -1` and `framesPerHalfCycle = 3` give a derived software stimulus frequency of `12.000 Hz`.
+- No `SSVEP Unity-frame anomaly` was observed during the captured M3.2 log interval.
+- The derived 12 Hz value has not been verified as a physical optical frequency using a photodiode or high-speed camera.
+- M3.2 Physical Visual Acceptance: PASS.
 
 ## Current Priority
 
-Prepare M3 by designing and validating one frame-controlled SSVEP flickering target on top of the verified Quest 3 Passthrough baseline.
+Perform M3.3 refresh-rate and frame-timing logging and verification without changing the verified frame-driven stimulus behavior.
 
 ## Known Open Questions
 

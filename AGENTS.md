@@ -258,14 +258,16 @@ For hardware/XR/EEG tasks, explicitly distinguish:
 
 ## 11. Current Priority
 
+M1 and M2 are completed.
+
 The current engineering milestone is:
 
-M1 — create and verify a minimal Unity Quest application on the physical Meta Quest 3. M1 does not implement SSVEP flickering.
+M3 — Single SSVEP Target.
 
-The first functional development target after M1 is:
+The current task is:
 
-Create an SSVEP stimulus prototype on Meta Quest 3 that displays three flickering square targets at specified spatial coordinates.
+M3.3 — verify refresh-rate and Unity/XR frame-timing diagnostics for the physically accepted single frame-driven SSVEP target. Do not claim physical optical frequency verification from software timing alone.
 
 Visual object recognition is a later milestone.
 
-Do not prematurely implement vision, EEG decoding, robot control, or scene understanding while working on the initial VR stimulus milestone.
+Do not prematurely implement multiple targets, vision, EEG decoding, robot control, or scene understanding while working on M3.3.
