@@ -1,0 +1,13 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/M1_MinimalQuest.unity
+    guid: b4491f7fec4016346b8532529857f966
+  m_configObjects:
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 553a406ca242f9b45a91b67ff47b1db2, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 69323ec1167008a49a4725a52567ebb8, type: 2}

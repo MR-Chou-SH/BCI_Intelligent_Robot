@@ -65,20 +65,28 @@ Hardware/control interface details still need to be documented.
 
 Not started.
 
-## Current Milestone
+## Completed Milestone
 
 ### M1 — Minimal Unity Quest Application
 
-Status: In Progress
-
-Current Subtask:
-
-M1.2 — Create Minimal Unity Quest Project
+Status: Completed
 
 M1 progress:
 
 - M1.0 — Development Environment Audit: Completed
 - M1.1 — Quest Android Environment Setup: Completed
+- M1.2 — Create Minimal Unity Quest Project: Completed
+- M1.3 — Minimal Quest XR Configuration: Completed
+
+Verified Unity and OpenXR stack:
+
+- Unity: 6000.5.8f1
+- XR Plug-in Management: 4.7.0
+- OpenXR: 1.17.1
+- Meta Quest Support: Enabled
+- Oculus Touch Controller Profile: Enabled
+- Build target: Android / ARM64
+- OpenXR Project Validation: 0 Issues at validation time
 
 Verified development environment:
 
@@ -88,6 +96,16 @@ Verified development environment:
 - OpenJDK: 17.0.18
 - adb: 1.0.41
 - Meta Quest 3 adb status: `device`
+
+Physical Meta Quest 3 verification:
+
+- APK Build: Successful
+- Build And Run: Successful
+- Unity application launched successfully on Meta Quest 3
+- Minimal pure VR scene rendered successfully
+- Cube and Plane were visible with basic lighting
+- Head rotation correctly controlled the Unity camera view
+- Cube remained fixed in virtual-world coordinates and did not move with the headset view
 
 Scope:
 
@@ -115,9 +133,15 @@ Definition of done:
 - the verified build procedure is documented;
 - the verified state is committed to Git.
 
+## Current Milestone
+
+### M2 — Passthrough + Fixed Virtual Cube
+
+Status: Ready to Start
+
 ## Current Priority
 
-Prepare and complete M1 before implementing SSVEP stimulation.
+Prepare M2 while keeping SSVEP stimulation out of scope until the passthrough and fixed-cube baseline is verified.
 
 ## Known Open Questions
 
