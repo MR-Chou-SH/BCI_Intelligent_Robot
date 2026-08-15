@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-08-13
+Last updated: 2026-08-15
 
 ## Overall Phase
 
@@ -137,17 +137,51 @@ Definition of done:
 
 ### M2 — Passthrough + Fixed Virtual Cube
 
-Status: Ready to Start
+Status: In Progress
+
+### M2.1 — Passthrough Baseline
+
+Status: Completed
+
+Implementation:
+
+- Added `Assets/Scenes/M2_1_Passthrough.unity` as the Android startup scene.
+- Preserved the existing XR Rig and Main Camera tracking configuration.
+- Added `ARSession` and `ARCameraManager` for the Meta OpenXR passthrough baseline.
+- Enabled the active Android OpenXR features required by M2.1: Meta Quest Support, Oculus Touch Controller Profile, Meta Quest Camera (Passthrough), Meta Quest Session, and Composition Layers Support.
+- Used Unity 6000.5.8f1 with XR Plug-in Management 4.7.0, OpenXR 1.17.1, Unity OpenXR: Meta 2.5.1, AR Foundation 6.5.0, and Composition Layers 2.5.0.
+- Kept the Android target on ARM64 with minimum API level 32.
+
+Physical Meta Quest 3 verification:
+
+- APK Build: Successful
+- Build And Run / deployment: Successful
+- Application entered immersive OpenXR mode rather than a Horizon OS 2D panel.
+- Passthrough reality view rendered correctly and followed head rotation.
+- Cube, Plane, and Skybox were not visible in the passthrough baseline.
+- No unexpected camera or scene permission prompt appeared.
+- Application remained stable without crashes or automatic exit.
+- Functional Acceptance: PASS
+
+Passthrough color A/B verification:
+
+- Main Camera remained `Solid Color` with background alpha `0`.
+- Changing only its background RGB from `(0.19215687, 0.3019608, 0.4745098)` to `(0, 0, 0)` removed the visible light-blue veil.
+- Root cause: non-zero RGB values in the fully transparent camera clear color were still contributing to the final passthrough composition.
+- The corrected application passthrough was visually equivalent to Horizon OS passthrough in the same environment.
+
+Known non-blocking follow-up:
+
+- Horizon OS may show “Application name unavailable” for the sideloaded running application.
+- This does not block the validated immersive passthrough baseline and is intentionally deferred; no custom Manifest or Activity was added.
 
 ## Current Priority
 
-Prepare M2 while keeping SSVEP stimulation out of scope until the passthrough and fixed-cube baseline is verified.
+Proceed to M2.2 — Fixed Virtual Cube while keeping SSVEP stimulation out of scope until the fixed-cube baseline is verified.
 
 ## Known Open Questions
 
-- Exact Unity editor version to lock for all team members
-- Meta XR SDK version
-- OpenXR package version
+- Horizon OS application-name metadata for sideloaded development builds
 - ND8 detailed hardware parameters
 - Mechanical arm model and interface
 - Vision inference architecture

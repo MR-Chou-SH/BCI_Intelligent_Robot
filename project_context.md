@@ -75,7 +75,7 @@ EEG系统判断用户选择了哪个目标。
 
 ## 3. 当前开发阶段
 
-项目已完成工程初始化，当前进入VR刺激开发准备阶段。
+项目已完成M1最小Quest应用实机验证，并完成M2.1沉浸式Passthrough基线，当前进入M2.2固定虚拟方块阶段。
 
 已经完成：
 
@@ -88,10 +88,12 @@ EEG系统判断用户选择了哪个目标。
 - 已建立本地Git仓库；
 - 已建立项目管理Markdown体系；
 - 已完成reference资料整理。
+- 已创建正式Unity Quest项目；
+- 已在Meta Quest 3实机完成最小VR应用构建与运行验证；
+- 已在Meta Quest 3实机完成沉浸式Passthrough基线验证。
 
 当前尚未完成：
 
-- 正式Unity Quest项目；
 - VR刺激功能；
 - 正式EEG模块重构；
 - 视觉识别模块；
@@ -103,11 +105,11 @@ GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配�
 
 ## 4. 当前工程里程碑与长期第一功能目标
 
-当前最近工程里程碑是：
+当前工程里程碑是：
 
-> M1 — Minimal Unity Quest Application
+> M2 — Passthrough + Fixed Virtual Cube
 
-M1只验证最小Unity应用能够构建并运行在Meta Quest 3实机，不实现SSVEP闪烁。
+M1已完成。M2.1沉浸式Passthrough基线也已通过Meta Quest 3实机验收，当前下一子任务是M2.2固定虚拟方块，仍不实现SSVEP闪烁。
 
 长期第一功能目标是：
 
@@ -526,6 +528,6 @@ Codex主要负责“在仓库里执行”。
 
 当前最高优先级只有：
 
-> 完成M1最小Unity Quest应用实机验证，再开始Quest 3 SSVEP刺激功能。
+> 完成M2.2固定虚拟方块实机验证，再开始Quest 3 SSVEP刺激功能。
 
 在该目标完成前，不提前大规模开发视觉、EEG新模型、机械臂和Agent模块。
