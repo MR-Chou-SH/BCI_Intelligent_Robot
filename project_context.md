@@ -75,7 +75,7 @@ EEG系统判断用户选择了哪个目标。
 
 ## 3. 当前开发阶段
 
-项目已完成M1最小Quest应用实机验证，并完成M2.1沉浸式Passthrough基线与M2.2固定虚拟方块实机验证。M2已完成，当前准备进入M3单目标SSVEP阶段。
+项目已完成M1最小Quest应用、M2沉浸式Passthrough与固定虚拟方块，以及M3单目标SSVEP的Quest 3实机验证。当前准备进入M4三目标SSVEP阶段。
 
 已经完成：
 
@@ -92,6 +92,7 @@ EEG系统判断用户选择了哪个目标。
 - 已在Meta Quest 3实机完成最小VR应用构建与运行验证；
 - 已在Meta Quest 3实机完成沉浸式Passthrough基线验证。
 - 已在Meta Quest 3实机完成固定世界坐标虚拟方块验证。
+- 已完成单个世界坐标固定、帧驱动黑白SSVEP目标及软件侧时序诊断；Quest runtime为72 Hz，`framesPerHalfCycle = 3`，推导软件频率为12 Hz。
 
 当前尚未完成：
 
@@ -108,9 +109,9 @@ GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配�
 
 当前工程里程碑是：
 
-> M3 — Single SSVEP Target
+> M4 — Three SSVEP Targets
 
-M1、M2.1、M2.2和M2均已完成。当前里程碑M3状态为Ready to Start，将在已验证的Quest 3 Passthrough与固定虚拟方块基线上实现单个指定频率SSVEP目标。
+M1、M2和M3均已完成。M3已验证单目标frame-driven刺激与30秒软件侧时序诊断；当前里程碑M4状态为Ready to Start，将在该基线上实现三个固定世界坐标、不同刺激频率的SSVEP目标。
 
 长期第一功能目标是：
 
@@ -529,6 +530,6 @@ Codex主要负责“在仓库里执行”。
 
 当前最高优先级只有：
 
-> 准备M3单目标SSVEP方案，在已验证的Quest 3 Passthrough基线上设计并验证帧控制闪烁目标。
+> 在已验证的单目标frame-driven SSVEP baseline上，实现三个固定世界坐标、不同刺激频率的SSVEP目标。
 
-在该目标完成前，不提前大规模开发视觉、EEG新模型、机械臂和Agent模块。
+在该目标完成前，不提前大规模开发视觉、EEG新模型、机械臂和Agent模块。当前12 Hz仅为runtime刷新率与帧调度推导的软件频率，尚未经过物理光学测量验证。

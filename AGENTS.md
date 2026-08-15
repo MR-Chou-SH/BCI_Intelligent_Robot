@@ -258,16 +258,16 @@ For hardware/XR/EEG tasks, explicitly distinguish:
 
 ## 11. Current Priority
 
-M1 and M2 are completed.
+M1, M2, and M3 are completed.
 
 The current engineering milestone is:
 
-M3 — Single SSVEP Target.
+M4 — Three SSVEP Targets.
 
 The current task is:
 
-M3.3 — verify refresh-rate and Unity/XR frame-timing diagnostics for the physically accepted single frame-driven SSVEP target. Do not claim physical optical frequency verification from software timing alone.
+Implement three world-fixed SSVEP targets with different stimulus frequencies on the verified single-target frame-driven baseline. Preserve the distinction between software-derived and physically measured stimulus timing.
 
 Visual object recognition is a later milestone.
 
-Do not prematurely implement multiple targets, vision, EEG decoding, robot control, or scene understanding while working on M3.3.
+Do not prematurely implement EEG integration, vision, robot control, or scene understanding while working on M4.

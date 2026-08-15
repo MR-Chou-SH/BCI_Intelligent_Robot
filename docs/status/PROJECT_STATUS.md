@@ -203,18 +203,18 @@ Physical Meta Quest 3 verification:
 - Manual Quest 3 Acceptance: PASS
 - Definition of Done: Quest 3 physical verification passed.
 
-## Current Milestone
+## Completed Milestone
 
 ### M3 — Single SSVEP Target
 
-Status: In Progress
+Status: Completed
 
 M3 progress:
 
 - M3.0 — Pre-implementation Audit & Design: Completed
 - M3.1 — Static Single Target + Frame-driven Flicker: Completed
 - M3.2 — Quest 3 Physical Visual Acceptance: Completed / PASS
-- M3.3 — Refresh-rate / Frame-timing Logging and Verification: In Progress
+- M3.3 — Refresh-rate / Frame-timing Logging and Verification: Completed / PASS
 
 M3.1 implementation:
 
@@ -231,9 +231,26 @@ M3.1 implementation:
 - The derived 12 Hz value has not been verified as a physical optical frequency using a photodiode or high-speed camera.
 - M3.2 Physical Visual Acceptance: PASS.
 
+M3.3 timing verification:
+
+- Added an independent `SSVEPTimingDiagnostics` component with a 30-second measurement window; it observes timing without changing stimulus state.
+- The 30.006-second Quest 3 run reported a stable XR display refresh rate of `72.000 Hz` with zero refresh-rate changes.
+- Observed 2162 Unity frames with a mean interval of `13.927 ms`, an approximate mean rate of `71.803 FPS`, and one software-side long Unity frame.
+- Unity frame-index gap count was `0`; this does not prove zero physical display dropped frames.
+- XR present counter was unavailable on the current runtime.
+- XR dropped counter was available and returned start `7`, end `14`, and raw delta `7`; this must not be interpreted as proof of seven physical display frames being dropped.
+- Software timing verification does not equal physical optical frequency verification, and EEG-valid stimulus timing remains unverified.
+- M3.3 Timing Verification: PASS.
+
+## Current Milestone
+
+### M4 — Three SSVEP Targets
+
+Status: Ready to Start
+
 ## Current Priority
 
-Perform M3.3 refresh-rate and frame-timing logging and verification without changing the verified frame-driven stimulus behavior.
+On the verified single-target frame-driven SSVEP baseline, implement three world-fixed SSVEP targets at fixed coordinates with different stimulus frequencies.
 
 ## Known Open Questions
 
