@@ -133,11 +133,11 @@ Definition of done:
 - the verified build procedure is documented;
 - the verified state is committed to Git.
 
-## Current Milestone
+## Completed Milestone
 
 ### M2 — Passthrough + Fixed Virtual Cube
 
-Status: In Progress
+Status: Completed
 
 ### M2.1 — Passthrough Baseline
 
@@ -175,9 +175,43 @@ Known non-blocking follow-up:
 - Horizon OS may show “Application name unavailable” for the sideloaded running application.
 - This does not block the validated immersive passthrough baseline and is intentionally deferred; no custom Manifest or Activity was added.
 
+### M2.2 — Fixed Virtual Cube
+
+Status: Completed
+
+Implementation:
+
+- Created `Assets/Scenes/M2_2_FixedCube.unity` from the verified M2.1 passthrough baseline.
+- Retained the existing XRRig, AR Session, and ARCameraManager configuration.
+- Kept the Main Camera clear mode on `Solid Color` with background RGBA `(0, 0, 0, 0)`.
+- Enabled one static Cube as a scene-root object, outside the Camera and XRRig hierarchies.
+- Set the Cube world position to `(0, 1.5, 3.0)` and scale to `(0.4, 0.4, 0.4)`.
+- Enabled the existing Directional Light only for basic illumination of the virtual Cube.
+- Did not add interaction, spatial anchors, Scene API, MRUK, or SSVEP behavior.
+
+Physical Meta Quest 3 verification:
+
+- APK Build and Build And Run: Successful
+- Immersive OpenXR / MR and passthrough remained functional.
+- Passthrough color remained correct without the previous light-blue veil.
+- The virtual Cube was clearly visible in the passthrough view.
+- The Cube remained fixed in Unity world coordinates and did not follow head rotation.
+- Head and body movement produced the expected three-dimensional spatial relationship and parallax.
+- Plane and Skybox were not visible.
+- No unexpected permission request appeared.
+- Application remained stable without crashes or automatic exit.
+- Manual Quest 3 Acceptance: PASS
+- Definition of Done: Quest 3 physical verification passed.
+
+## Current Milestone
+
+### M3 — Single SSVEP Target
+
+Status: Ready to Start
+
 ## Current Priority
 
-Proceed to M2.2 — Fixed Virtual Cube while keeping SSVEP stimulation out of scope until the fixed-cube baseline is verified.
+Prepare M3 by designing and validating one frame-controlled SSVEP flickering target on top of the verified Quest 3 Passthrough baseline.
 
 ## Known Open Questions
 
