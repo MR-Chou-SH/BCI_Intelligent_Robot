@@ -4,7 +4,7 @@ Last updated: 2026-08-15
 
 ## Overall Phase
 
-Single SSVEP Target Development
+Three SSVEP Target Development
 
 ## Completed Milestone
 
@@ -242,15 +242,54 @@ M3.3 timing verification:
 - Software timing verification does not equal physical optical frequency verification, and EEG-valid stimulus timing remains unverified.
 - M3.3 Timing Verification: PASS.
 
-## Current Milestone
+## Completed Milestone
 
 ### M4 — Three SSVEP Targets
 
-Status: Ready to Start
+Status: Completed
+
+M4 progress:
+
+- M4.0 — Pre-implementation Audit, Frequency Design & Architecture: Completed
+- M4.1 — Static Three-target Scene + Shared Frame-driven Stimulation: Completed
+- M4.2 — Quest 3 Physical Acceptance: Completed / PASS
+- M4.3 — Multi-target Timing Verification: Completed / PASS
+
+M4.1 implementation:
+
+- Created the independent `Assets/Scenes/M4_1_ThreeSSVEP.unity` scene from the verified M3 baseline without modifying the M3 scene.
+- Added three Scene Root Cube targets at `(-0.8, 1.5, 3.0)`, `(0, 1.5, 3.0)`, and `(0.8, 1.5, 3.0)`, each using the shared `SSVEP_Unlit` material.
+- Added one `MultiTargetStimulusController` with a single `commonStartFrame` and shared `globalStimulusFrame` for all targets.
+- Configured `target_left`, `target_center`, and `target_right` with `framesPerHalfCycle` values `5`, `4`, and `3`; at 72 Hz these derive to software frequencies `7.2`, `9`, and `12 Hz`.
+- All phase offsets are `0`; M4.1 remains frequency-coded only.
+- Runtime refresh rate is observed read-only and is not forced; a non-72 Hz runtime produces a warning while stimulation continues with unchanged integer-frame parameters.
+- Unity 6000.5.8f1 compile and Android Build succeeded; Quest 3 M4.2 physical acceptance passed.
+
+M4.2 physical acceptance:
+
+- Quest 3 Build And Run succeeded with passthrough, three-target visibility, left/center/right layout, flicker differentiation, world-fixed behavior, spatial parallax, scene cleanliness, stability, and basic visual tolerability all accepted.
+- Runtime reported `72.000 Hz`, `Application.targetFrameRate = -1`, and one shared `commonStartFrame = 322` for all three targets.
+- Runtime-derived software frequencies were `7.2`, `9`, and `12 Hz`; these are not physical optical measurements.
+
+M4.3 implementation:
+
+- Added one global `MultiTargetTimingDiagnostics` component with a 30-second measurement window.
+- Added read-only controller snapshots for the common/global frame and per-target transition counts without changing the stimulus state algorithm.
+- The diagnostics compare observed transition deltas with exact frame-index-derived expectations for each target and record refresh, Unity timing, frame gaps, and XR counters.
+- Quest 3 runtime verification completed at a stable reported `72.000 Hz`; shared global-frame consistency passed with no Unity frame-index gaps.
+- Exact observed/expected transition deltas matched for left `432/432`, center `540/540`, and right `720/720`.
+- The dropped-frame API reported a raw delta of `7`; this runtime counter and the one long Unity frame are software/runtime diagnostics, not proof of physical optical frame loss.
+- M4.3 verifies software/runtime scheduling only and does not replace physical optical frequency or phase measurement.
 
 ## Current Priority
 
-On the verified single-target frame-driven SSVEP baseline, implement three world-fixed SSVEP targets at fixed coordinates with different stimulus frequencies.
+### M5 — Stimulus Timing / EEG Trigger Synchronization
+
+Status: Ready to Start
+
+On the verified three-target frame-driven SSVEP baseline, design and implement stimulus start/stop timing records and an EEG trigger synchronization interface.
+
+Do not begin online EEG classification, vision, robotic-arm control, or scene understanding as part of M5 synchronization work.
 
 ## Known Open Questions
 

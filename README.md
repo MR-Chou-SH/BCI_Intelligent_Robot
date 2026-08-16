@@ -14,11 +14,11 @@
 
 ## Current Stage
 
-M0、M1、M2和M3已完成。当前工程里程碑是：
+M0、M1、M2、M3和M4已完成。当前工程里程碑是：
 
-`M4 — Three SSVEP Targets`
+`M5 — Stimulus Timing / EEG Trigger Synchronization`
 
-M3已完成单目标frame-driven黑白闪烁、Quest 3实机视觉验收及30秒软件侧时序诊断。当前准备在该基线上实现三个固定世界坐标、不同刺激频率的SSVEP目标；已推导的12 Hz软件频率尚未经过物理光学测量验证。
+M4已完成三目标共享frame origin的frame-driven黑白闪烁、Quest 3实机视觉验收及30秒软件侧时序诊断。72 Hz runtime下推导软件频率为`7.2/9/12 Hz`；当前准备设计刺激开始/停止时间记录与EEG trigger同步接口。推导频率尚未经过物理光学测量验证。
 
 后续第一个核心功能目标：
 
@@ -65,7 +65,7 @@ Codex在开始任务前应阅读：
 - [x] M1 — Empty Unity project runs on Quest 3
 - [x] M2 — Passthrough + one fixed square
 - [x] M3 — One SSVEP flicker target
-- [ ] M4 — Three independent flicker targets (Ready to Start)
-- [ ] M5 — Stimulus timing and EEG synchronization
+- [x] M4 — Three independent flicker targets
+- [ ] M5 — Stimulus timing and EEG synchronization (Ready to Start)
 - [ ] M6 — Online ND8 + EEG decoding
 - [ ] M7 — Vision-based automatic target placement

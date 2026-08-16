@@ -258,16 +258,16 @@ For hardware/XR/EEG tasks, explicitly distinguish:
 
 ## 11. Current Priority
 
-M1, M2, and M3 are completed.
+M1, M2, M3, and M4 are completed.
 
 The current engineering milestone is:
 
-M4 — Three SSVEP Targets.
+M5 — Stimulus Timing / EEG Trigger Synchronization.
 
 The current task is:
 
-Implement three world-fixed SSVEP targets with different stimulus frequencies on the verified single-target frame-driven baseline. Preserve the distinction between software-derived and physically measured stimulus timing.
+Design and implement stimulus start/stop timing records and an EEG trigger synchronization interface on the verified three-target frame-driven baseline. Preserve the distinction between software-derived and physically measured stimulus timing.
 
 Visual object recognition is a later milestone.
 
-Do not prematurely implement EEG integration, vision, robot control, or scene understanding while working on M4.
+Do not prematurely implement online EEG classification, vision, robot control, or scene understanding while working on M5 synchronization.

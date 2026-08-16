@@ -75,7 +75,7 @@ EEG系统判断用户选择了哪个目标。
 
 ## 3. 当前开发阶段
 
-项目已完成M1最小Quest应用、M2沉浸式Passthrough与固定虚拟方块，以及M3单目标SSVEP的Quest 3实机验证。当前准备进入M4三目标SSVEP阶段。
+项目已完成M1最小Quest应用、M2沉浸式Passthrough与固定虚拟方块、M3单目标SSVEP，以及M4三目标SSVEP的Quest 3实机验证。当前准备进入M5刺激时序与EEG trigger同步阶段。
 
 已经完成：
 
@@ -93,6 +93,7 @@ EEG系统判断用户选择了哪个目标。
 - 已在Meta Quest 3实机完成沉浸式Passthrough基线验证。
 - 已在Meta Quest 3实机完成固定世界坐标虚拟方块验证。
 - 已完成单个世界坐标固定、帧驱动黑白SSVEP目标及软件侧时序诊断；Quest runtime为72 Hz，`framesPerHalfCycle = 3`，推导软件频率为12 Hz。
+- 已完成三目标共享frame origin的帧驱动SSVEP基线；Quest runtime为72 Hz，N为`5/4/3`，推导软件频率为`7.2/9/12 Hz`，30秒软件侧时序验证PASS。
 
 当前尚未完成：
 
@@ -109,9 +110,9 @@ GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配�
 
 当前工程里程碑是：
 
-> M4 — Three SSVEP Targets
+> M5 — Stimulus Timing / EEG Trigger Synchronization
 
-M1、M2和M3均已完成。M3已验证单目标frame-driven刺激与30秒软件侧时序诊断；当前里程碑M4状态为Ready to Start，将在该基线上实现三个固定世界坐标、不同刺激频率的SSVEP目标。
+M1、M2、M3和M4均已完成。M4已验证三目标共享frame origin、`7.2/9/12 Hz`推导软件频率及30秒软件侧时序；当前最高优先级切换为刺激开始/停止时间记录与EEG trigger同步接口。物理光学时序验证仍待完成。
 
 长期第一功能目标是：
 
