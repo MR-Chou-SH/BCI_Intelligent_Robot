@@ -293,7 +293,7 @@ Current substage:
 
 - M5.0 — Existing EEG / Trigger Architecture Audit & Synchronization Design: Completed
 - M5.1 — Unity Stimulus Event Model and Local Timing Records: Completed / PASS
-- M5.2 — Quest-PC Trigger Transport and Clock Synchronization: Ready to Start
+- M5.2 — Quest-PC Trigger Transport and Clock Synchronization: Completed / PASS
 
 M5.1 introduces an independent scene with explicit idle/start/stimulating/stop trial semantics, a temporary all-black idle state, standardized software-side stimulus events, and append-only local timing records. Software event timestamps do not represent measured physical optical onset or offset.
 
@@ -303,6 +303,25 @@ M5.1 Quest 3 physical/runtime acceptance:
 - The validation trial started at `commonStartFrame = 322`, stopped at `globalStimulusFrame = 2160`, and recorded `lastActiveGlobalStimulusFrame = 2159` with `stopReason = configured_frame_limit`.
 - The Quest-generated JSONL contained exactly the ordered `session_started`, `stimulus_started_software`, and `stimulus_stopped_software` events; all lines were complete and the final line was not truncated.
 - Quest reported an available XR refresh rate of approximately `72.000 Hz`; this remains a runtime/software observation and is not a physical optical timing measurement.
+
+M5.2 implementation:
+
+- TCP newline-delimited JSON transport for the unchanged M5.1 stimulus event record;
+- explicit PC ACK and append-only Quest/PC transport diagnostics;
+- repeated four-timestamp Quest-PC monotonic clock samples with raw values retained;
+- an independent M5.2 scene whose trial start remains frame-scheduled and independent of network availability.
+
+M5.2 Quest 3 transport and synchronization acceptance:
+
+- TCP Quest-PC transport, ordered event delivery, explicit ACKs, periodic four-timestamp clock synchronization, and append-only Quest/PC logs: PASS.
+- Quest 3 visual layout, differentiated flicker, world-fixed behavior, active-trial PC server shutdown, non-fatal stimulus continuation, normal black Idle stop, server restart, and reconnect: PASS.
+- Runtime refresh observation remained approximately 72 Hz; software timing records do not claim physical optical onset or EEG timing.
+
+M5.2 does not provide EEG sample association or online EEG processing.
+
+Current substage:
+
+- M5.3 — EEG Sample Association and Offline Trigger Alignment: Ready to Start
 
 Do not begin online EEG classification, vision, robotic-arm control, or scene understanding as part of M5 synchronization work.
 

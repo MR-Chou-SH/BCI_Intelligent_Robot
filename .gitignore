@@ -94,6 +94,7 @@ desktop.ini
 
 experiments/**/raw/
 experiments/**/cache/
+integration/synchronization/runtime_logs/
 
 # Keep templates/readmes
 !experiments/**/README.md

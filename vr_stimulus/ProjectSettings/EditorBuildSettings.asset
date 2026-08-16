@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/M5_1_StimulusEvents.unity
-    guid: 2c76fdf03e1f4c398d18e58c9a741b6d
+    path: Assets/Scenes/M5_2_QuestPcSynchronization.unity
+    guid: bb7ee0385d28460f8b76d9fa09f12f3b
   m_configObjects:
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 4fbe5270a0dd40a48b279bdc7240bb37, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 553a406ca242f9b45a91b67ff47b1db2, type: 2}

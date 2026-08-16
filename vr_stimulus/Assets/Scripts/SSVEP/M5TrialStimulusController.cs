@@ -86,6 +86,9 @@ namespace BCIIntelligentRobot.VRStimulus
         private LocalStimulusEventLogger m_EventLogger;
 
         [SerializeField]
+        private StimulusEventTransportClient m_EventTransport;
+
+        [SerializeField]
         private TargetConfiguration[] m_Targets = new TargetConfiguration[RequiredTargetCount];
 
         [SerializeField]
@@ -319,6 +322,15 @@ namespace BCIIntelligentRobot.VRStimulus
                 Debug.LogError(
                     $"Failed to enqueue M5 local stimulus event eventType={eventType}, " +
                     $"sessionId={m_SessionId}, trialId={trialId}.",
+                    this);
+            }
+
+            // Best-effort only: networking must never participate in trial state or frame scheduling.
+            if (m_EventTransport != null && !m_EventTransport.Publish(eventRecord))
+            {
+                Debug.LogWarning(
+                    $"M5.2 transport did not accept eventType={eventType}, sequence={eventRecord.sequence}; " +
+                    "local recording and stimulus scheduling continue unchanged.",
                     this);
             }
         }
