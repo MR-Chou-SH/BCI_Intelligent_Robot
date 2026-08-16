@@ -285,9 +285,24 @@ M4.3 implementation:
 
 ### M5 — Stimulus Timing / EEG Trigger Synchronization
 
-Status: Ready to Start
+Status: In Progress
 
 On the verified three-target frame-driven SSVEP baseline, design and implement stimulus start/stop timing records and an EEG trigger synchronization interface.
+
+Current substage:
+
+- M5.0 — Existing EEG / Trigger Architecture Audit & Synchronization Design: Completed
+- M5.1 — Unity Stimulus Event Model and Local Timing Records: Completed / PASS
+- M5.2 — Quest-PC Trigger Transport and Clock Synchronization: Ready to Start
+
+M5.1 introduces an independent scene with explicit idle/start/stimulating/stop trial semantics, a temporary all-black idle state, standardized software-side stimulus events, and append-only local timing records. Software event timestamps do not represent measured physical optical onset or offset.
+
+M5.1 Quest 3 physical/runtime acceptance:
+
+- Android Release Build, installation, immersive OpenXR/MR startup, passthrough, three-target visibility, world-fixed behavior, parallax, visibly different flicker rates, explicit stop, persistent black idle, and runtime stability: PASS.
+- The validation trial started at `commonStartFrame = 322`, stopped at `globalStimulusFrame = 2160`, and recorded `lastActiveGlobalStimulusFrame = 2159` with `stopReason = configured_frame_limit`.
+- The Quest-generated JSONL contained exactly the ordered `session_started`, `stimulus_started_software`, and `stimulus_stopped_software` events; all lines were complete and the final line was not truncated.
+- Quest reported an available XR refresh rate of approximately `72.000 Hz`; this remains a runtime/software observation and is not a physical optical timing measurement.
 
 Do not begin online EEG classification, vision, robotic-arm control, or scene understanding as part of M5 synchronization work.
 
