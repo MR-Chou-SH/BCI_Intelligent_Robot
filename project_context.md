@@ -529,8 +529,8 @@ Codex主要负责“在仓库里执行”。
 
 ## 14. 当前最高优先级
 
-当前最高优先级只有：
+M1、M2、M3和M4均已完成。当前最高优先级为：
 
-> 在已验证的单目标frame-driven SSVEP baseline上，实现三个固定世界坐标、不同刺激频率的SSVEP目标。
+> M5 — Stimulus Timing / EEG Trigger Synchronization
 
-在该目标完成前，不提前大规模开发视觉、EEG新模型、机械臂和Agent模块。当前12 Hz仅为runtime刷新率与帧调度推导的软件频率，尚未经过物理光学测量验证。
+M5将基于已经验证的三目标shared-frame、frame-driven SSVEP baseline，实现刺激开始/停止时间记录，并设计EEG trigger synchronization interface。必须继续区分软件/runtime时序验证与物理光学时序验证；M5不提前实现在线EEG classification、vision、robot arm或scene understanding。
