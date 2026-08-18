@@ -84,19 +84,28 @@ def verify_session(session):
         previous = comparable_live.get(key)
         if previous is None or previous.get("associationValid") != record.get("associationValid") or previous.get("associatedPacketSequence") != record.get("associatedPacketSequence") or previous.get("estimatedSampleOffset") != record.get("estimatedSampleOffset"):
             mismatches.append(key)
+    stimulus_records = [record for record in derived.records
+                        if record.get("stimulusEventType") in ("stimulus_started_software", "stimulus_stopped_software")]
+    valid_stimulus_records = [record for record in stimulus_records if record.get("associationValid")]
+    complete_valid_stimulus_association = bool(stimulus_records) and len(valid_stimulus_records) == len(stimulus_records)
     return {"recordType": "m5_3_offline_association_verification", "session": str(session),
             "rawEvidenceErrors": errors, "packetMetadataCount": len(metadata_records), "pcEventCount": len(events),
             "offlineAssociationCount": len(derived.records), "liveAssociationCount": len(live),
-            "liveOfflineMismatchKeys": mismatches, "passed": not errors and not mismatches,
+            "stimulusAssociationCount": len(stimulus_records),
+            "validStimulusAssociationCount": len(valid_stimulus_records),
+            "completeValidStimulusAssociation": complete_valid_stimulus_association,
+            "liveOfflineMismatchKeys": mismatches,
+            "passed": not errors and not mismatches and complete_valid_stimulus_association,
             "hardwareTimingVerified": False, "physicalOpticalTimingVerified": False}, derived.records
 
 
 def main():
     parser = argparse.ArgumentParser(description="Independent M5.3 raw-evidence association verification")
     parser.add_argument("--session", required=True, type=Path)
+    parser.add_argument("--output-name", default="offline-association-verification.json")
     args = parser.parse_args()
     summary, records = verify_session(args.session)
-    output = args.session / "offline-association-verification.json"
+    output = args.session / args.output_name
     with output.open("x", encoding="utf-8", newline="\n") as stream:
         json.dump(summary, stream, ensure_ascii=False, indent=2); stream.write("\n")
     print(json.dumps(summary, ensure_ascii=False, indent=2))

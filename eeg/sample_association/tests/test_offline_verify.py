@@ -51,6 +51,20 @@ class OfflineVerificationTests(unittest.TestCase):
             self.assertFalse(summary["passed"])
             self.assertTrue(summary["rawEvidenceErrors"])
 
+    def test_does_not_report_pass_when_stimulus_association_is_invalid(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_jsonl(root / "packet-metadata.jsonl", [])
+            write_jsonl(root / "pc-synchronization.jsonl", [])
+            event = {"recordType": "stimulus_event_received", "connectionId": "c", "pcReceiveMonotonicNs": 1,
+                     "originalQuestEvent": {"sessionId": "s", "trialId": "t", "eventType": "stimulus_started_software", "sequence": 1}}
+            write_jsonl(root / "pc-stimulus-events.jsonl", [event])
+            write_jsonl(root / "derived-association.jsonl", [{"sessionId": "s", "trialId": "t", "stimulusSequence": 1,
+                        "associationValid": False, "associatedPacketSequence": None, "estimatedSampleOffset": None}])
+            summary, _ = verify_session(root)
+            self.assertFalse(summary["passed"])
+            self.assertEqual(0, summary["validStimulusAssociationCount"])
+
 
 if __name__ == "__main__":
     unittest.main()
