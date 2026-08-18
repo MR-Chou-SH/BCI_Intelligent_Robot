@@ -75,7 +75,7 @@ EEG系统判断用户选择了哪个目标。
 
 ## 3. 当前开发阶段
 
-项目已完成M1最小Quest应用、M2沉浸式Passthrough与固定虚拟方块、M3单目标SSVEP，以及M4三目标SSVEP的Quest 3实机验证。当前准备进入M5刺激时序与EEG trigger同步阶段。
+项目已完成M1最小Quest应用、M2沉浸式Passthrough与固定虚拟方块、M3单目标SSVEP、M4三目标SSVEP的Quest 3实机验证，以及M5刺激时序与EEG trigger同步和首次真实 Quest→ND8 sample association 验证。当前准备进入M6：ND8 EEG online classification。
 
 已经完成：
 
@@ -97,8 +97,7 @@ EEG系统判断用户选择了哪个目标。
 
 当前尚未完成：
 
-- VR刺激功能；
-- 正式EEG模块重构；
+- ND8 EEG online classification；
 - 视觉识别模块；
 - 机械臂正式集成。
 
@@ -110,9 +109,9 @@ GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配�
 
 当前工程里程碑是：
 
-> M5 — Stimulus Timing / EEG Trigger Synchronization
+> M5 — Stimulus Timing / EEG Trigger Synchronization（Completed / PASS）
 
-M1、M2、M3和M4均已完成。M4已验证三目标共享frame origin、`7.2/9/12 Hz`推导软件频率及30秒软件侧时序；当前最高优先级切换为刺激开始/停止时间记录与EEG trigger同步接口。物理光学时序验证仍待完成。
+M1、M2、M3、M4和M5均已完成。M5在真实 Quest 3 + ND8 session 中验证了 software stimulus event、Quest-PC clock mapping、ND8 stable post-sync packet 和 software-derived sample estimate 的端到端关联；物理光学时序、硬件 sample anchor 和 hardware-exact EEG timing 仍待验证。
 
 长期第一功能目标是：
 
@@ -529,8 +528,8 @@ Codex主要负责“在仓库里执行”。
 
 ## 14. 当前最高优先级
 
-M1、M2、M3和M4均已完成。当前最高优先级为：
+M1、M2、M3、M4和M5均已完成。当前最高优先级为：
 
-> M5 — Stimulus Timing / EEG Trigger Synchronization
+> M6 — ND8 EEG Online Classification
 
-M5将基于已经验证的三目标shared-frame、frame-driven SSVEP baseline，实现刺激开始/停止时间记录，并设计EEG trigger synchronization interface。必须继续区分软件/runtime时序验证与物理光学时序验证；M5不提前实现在线EEG classification、vision、robot arm或scene understanding。
+M6的具体算法和架构尚未在本轮定义。M5的证据边界必须继续保留：`hardwareTimingVerified=false`、`physicalOpticalTimingVerified=false`，sample index 仅为 `software-derived estimate`。本轮不进入 M6 实现。

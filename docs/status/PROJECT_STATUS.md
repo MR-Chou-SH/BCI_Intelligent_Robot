@@ -285,7 +285,7 @@ M4.3 implementation:
 
 ### M5 — Stimulus Timing / EEG Trigger Synchronization
 
-Status: In Progress
+Status: Completed / PASS
 
 On the verified three-target frame-driven SSVEP baseline, design and implement stimulus start/stop timing records and an EEG trigger synchronization interface.
 
@@ -294,7 +294,7 @@ Current substage:
 - M5.0 — Existing EEG / Trigger Architecture Audit & Synchronization Design: Completed
 - M5.1 — Unity Stimulus Event Model and Local Timing Records: Completed / PASS
 - M5.2 — Quest-PC Trigger Transport and Clock Synchronization: Completed / PASS
-- M5.3 — EEG Sample Association and Offline Trigger Alignment: In Progress
+- M5.3 — EEG Sample Association and Offline Trigger Alignment: Completed / PASS
 
 M5.3 ND8 acquisition runtime prerequisite:
 
@@ -331,7 +331,24 @@ M5.3 software association pipeline (2026-08-18):
 - The runtime post-sync gate rejects pre-sync/non-Unix timestamps, timestamp transitions, packet continuity breaks, and incompatible packet shape; it enters `association_ready` only after a contiguous Unix-ms segment contains at least 10 packets spanning at least 1.8 seconds with cadence within a 2 ms tolerance.
 - Only events after that recorded gate time and with a recent, low-residual Quest-PC affine synchronization snapshot can produce an association. The output identifies the ND8 packet and a software-derived sample estimate, never a hardware-exact sample time.
 - The vendor demo text labels its callback timestamp as a first-point time, but this remains unverified for hardware/sample-anchor semantics in this project. Derived records explicitly mark the anchor as unverified, and retain `hardwareTimingVerified=false` and `physicalOpticalTimingVerified=false`.
-- An independent offline verifier recomputes Quest-PC mapping from saved four-timestamp evidence and replays ND8 metadata/gate logic before comparing packet/sample results with the live derived log. Real Quest→EEG association remains pending hardware-session execution and review.
+- An independent offline verifier recomputes Quest-PC mapping from saved four-timestamp evidence and replays ND8 metadata/gate logic before comparing packet/sample results with the live derived log. The subsequent real hardware session completed this association successfully; the remaining boundary is hardware/optical timing verification.
+
+M5.3 real Quest + ND8 end-to-end validation (2026-08-18):
+
+- Successful external session: `m5_3-association-20260818T140324Z-aeec2e3e` under the external EEG study root. The raw EEG/session directory is intentionally not part of Git.
+- The trial recorded ordered `stimulus_started_software` and `stimulus_stopped_software` events. The configured trial ran for `2160` frames at an approximately 72 Hz Quest runtime (approximately 30 seconds).
+- Start association: ND8 packet `433`, estimated sample offset `94`, estimated global sample `86694`, `associationValid=true`.
+- Stop association: ND8 packet `583`, estimated sample offset `96`, estimated global sample `116696`, `associationValid=true`.
+- Quest-PC affine residual RMS was approximately `5.86 ms` at start and `5.99 ms` at stop. ND8 packet-to-PC software mapping residual was approximately `20.1 ms`; reported overall software uncertainty was approximately `20.6 ms`.
+- ND8 remained in post-sync segment `4` with `association_ready` and continuous packet continuity; the session contained `1563` packet metadata records.
+- Final offline verification: `rawEvidenceErrors=[]`, `liveOfflineMismatchKeys=[]`, `validStimulusAssociationCount=2`, `completeValidStimulusAssociation=true`, `passed=true`.
+- Targeted M5 tests passed `32/32`.
+- Evidence boundary remains explicit: the result verifies Quest software event → PC software clock → stable ND8 packet → software-derived sample estimate. `hardwareTimingVerified=false` and `physicalOpticalTimingVerified=false`; ND8 hardware timing, physical optical timing, physical phase, and hardware sample-anchor semantics remain unverified.
+
+M5 completion boundary:
+
+- M5 — Stimulus Timing / EEG Trigger Synchronization is completed at the software/runtime and real end-to-end association evidence level defined above.
+- This completion does not claim hardware-exact EEG sample timing or physical optical timing, and does not include online EEG classification, vision, robotic-arm control, or scene understanding.
 
 M5.1 introduces an independent scene with explicit idle/start/stimulating/stop trial semantics, a temporary all-black idle state, standardized software-side stimulus events, and append-only local timing records. Software event timestamps do not represent measured physical optical onset or offset.
 
