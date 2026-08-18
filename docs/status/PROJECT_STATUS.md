@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-08-15
+Last updated: 2026-08-18
 
 ## Overall Phase
 
@@ -294,6 +294,36 @@ Current substage:
 - M5.0 — Existing EEG / Trigger Architecture Audit & Synchronization Design: Completed
 - M5.1 — Unity Stimulus Event Model and Local Timing Records: Completed / PASS
 - M5.2 — Quest-PC Trigger Transport and Clock Synchronization: Completed / PASS
+- M5.3 — EEG Sample Association and Offline Trigger Alignment: In Progress
+
+M5.3 ND8 acquisition runtime prerequisite:
+
+- The vendor `neuro_dance` 7.3 SDK requires an isolated external Windows x64 CPython 3.9 environment because its `core.pyd` depends on the CPython 3.9 ABI.
+- The external environment smoke test passed for `pyserial==3.5`, NumPy, `neuro_dance.core`, `neuro_dance.nd_device_process`, and the project acquisition adapter import. No serial port or device operation was performed.
+- Vendor SDK files, native extensions, and the Python runtime remain outside the Git repository. Real ND8 packet/timestamp validation is still required before hardware-timed sample association.
+
+M5.3 first serial acquisition validation (2026-08-18):
+
+- The vendor SDK opened `COM11` and produced 72 callback packets during a 15-second, explicitly configured 1000 Hz run. Packet shape was consistently 8 channels × 200 samples; SDK timestamp deltas were exactly 200 ms and the metadata timeline reported no continuity anomalies.
+- The complete raw recording was nevertheless a single constant value across every channel, sample, and packet while the SDK also reported that the dongle was not ready. This confirms serial transport and packet cadence only; it does not validate physiological EEG, packet first-sample semantics, or real stimulus-to-sample association.
+- The raw and metadata session is preserved outside Git under the configured EEG study root. A user-performed dongle/host readiness check is required before another acquisition validation.
+
+M5.3 second serial acquisition validation (2026-08-18):
+
+- The adapter now performs the vendor `host_mac_info()` query after serial transport starts and waits for the documented `host_mac_received()` callback before it configures 1000 Hz or enables EEG. The callback was observed (only the final four MAC characters were retained); the initial SDK not-ready heartbeat occurred before that callback and did not block streaming.
+- The 15-second run produced 74 packets of 8 channels × 200 samples, but raw data remained a single constant value. One SDK timestamp interval was 136 ms rather than the expected 200 ms; this is now recorded by the timeline as `timestamp_delta_mismatch`. Valid physiological EEG and real sample association remain unverified.
+
+M5.3 third serial acquisition validation (2026-08-18, device correctly worn):
+
+- The 15-second host-MAC-ready run again produced 74 packets of 8 channels × 200 samples. Packet timestamps were 200 ms apart except for a local 201/199/201 ms sequence; the prior 136 ms interval did not recur. PC receive timing remained approximately 200 ms with normal host-side jitter.
+- Python received non-constant raw values on channels 1 and 4, while the remaining six channels were still constant at the observed placeholder value. The SDK console also emitted repeated `timestamp not sync` warnings. This demonstrates partial changing data flow but does not yet establish a valid full eight-channel EEG stream or hardware-timed sample association.
+
+M5.3 90-second SDK-to-PC timestamp mapping validation (2026-08-18):
+
+- The session contained 449 packets at 8 channels × 200 samples. Packet 50→51 changed from a non-epoch SDK timestamp domain to the Unix-millisecond domain, a severe discontinuity that must be treated as a segment boundary rather than silently fitted across.
+- The following 398-packet / approximately 79.4-second segment had a PC receive UTC minus SDK timestamp median offset of approximately 311 ms (P95 approximately 353 ms), software-fit monotonic drift of approximately -75 ppm, and 20.1 ms RMS receive-time residual. No large timestamp jump recurred in that post-sync segment; only 199/201 ms millisecond quantization differences were observed.
+- Repeated native `timestamp not sync` console warnings occurred during the session but cannot be assigned to packet IDs without modifying or hooking the vendor native SDK. The post-sync segment is software-level mapping evidence only. Any future stimulus-to-sample work must exclude/prevent use of the initial pre-sync timestamp segment; hardware/optical timing remains unverified.
+- The initial pre-sync packets are not eligible for formal sample association. A trial may begin only after a stable Unix-millisecond post-sync segment has been observed and recorded; this is a software-level timestamp mapping gate only, not hardware timing or physical optical timing verification.
 
 M5.1 introduces an independent scene with explicit idle/start/stimulating/stop trial semantics, a temporary all-black idle state, standardized software-side stimulus events, and append-only local timing records. Software event timestamps do not represent measured physical optical onset or offset.
 
@@ -318,10 +348,6 @@ M5.2 Quest 3 transport and synchronization acceptance:
 - Runtime refresh observation remained approximately 72 Hz; software timing records do not claim physical optical onset or EEG timing.
 
 M5.2 does not provide EEG sample association or online EEG processing.
-
-Current substage:
-
-- M5.3 — EEG Sample Association and Offline Trigger Alignment: Ready to Start
 
 Do not begin online EEG classification, vision, robotic-arm control, or scene understanding as part of M5 synchronization work.
 
