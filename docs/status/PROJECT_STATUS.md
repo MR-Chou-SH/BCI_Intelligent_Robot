@@ -281,7 +281,7 @@ M4.3 implementation:
 - The dropped-frame API reported a raw delta of `7`; this runtime counter and the one long Unity frame are software/runtime diagnostics, not proof of physical optical frame loss.
 - M4.3 verifies software/runtime scheduling only and does not replace physical optical frequency or phase measurement.
 
-## Current Priority
+## Completed Milestone
 
 ### M5 — Stimulus Timing / EEG Trigger Synchronization
 
@@ -375,6 +375,21 @@ M5.2 Quest 3 transport and synchronization acceptance:
 M5.2 does not provide EEG sample association or online EEG processing.
 
 Do not begin online EEG classification, vision, robotic-arm control, or scene understanding as part of M5 synchronization work.
+
+## Current Priority
+
+### M6 — ND8 EEG Online Classification
+
+Status: In Progress
+
+Current substage:
+
+- M6.0 — Existing EEG / Decoder Architecture Audit & Experimental Design: In Progress
+- M6.1 — Controlled ND8 Dataset Acquisition: Not Started
+- M6.2 — Offline CCA / FBCCA Baseline: Not Started
+- M6.3 — Pseudo-online Evaluation: Not Started
+
+M6 begins only after the completed M5 software/runtime association evidence. The M5 evidence boundary remains active: hardware timing, physical optical timing, ND8 hardware sample anchor, and hardware-exact EEG sample timing are not verified. M6.0 does not implement a decoder or online classifier.
 
 ## Known Open Questions
 
