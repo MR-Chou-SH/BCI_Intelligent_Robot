@@ -88,7 +88,10 @@ class Nd8Packet:
             sampling_rate_hz=self.nominal_sampling_rate_hz,
             packet_sequence=self.packet_sequence,
             device_timestamp_unit="milliseconds",
-            device_timestamp_first_sample_assumed=True,
+            # Vendor demo wording calls this the "first point time", but no
+            # independent protocol/hardware validation has established that
+            # semantic for this project session.
+            device_timestamp_first_sample_assumed=False,
             device_timestamp_hardware_verified=False,
             source="nd8_sdk_serial_callback",
         )

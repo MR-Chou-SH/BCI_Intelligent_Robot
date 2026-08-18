@@ -16,16 +16,19 @@ def utc_now():
 
 
 class TriggerServer:
-    def __init__(self, log_directory):
+    def __init__(self, log_directory, event_observer=None):
         directory = Path(log_directory)
         self.events = AppendOnlyJsonl(directory / "pc-stimulus-events.jsonl")
         self.diagnostics = AppendOnlyJsonl(directory / "pc-synchronization.jsonl")
         self.sequences = SequenceTracker()
         self.mappers = {}
+        self.sync_state = {}
+        self.event_observer = event_observer
 
     async def handle_connection(self, reader, writer):
         connection_id = uuid.uuid4().hex
         self.mappers[connection_id] = AffineClockMapper()
+        self.sync_state[connection_id] = {"latestAcceptedPcMonotonicNs": None}
         peer = str(writer.get_extra_info("peername"))
         self.diagnostics.append({"recordType": "connection_opened", "connectionId": connection_id,
                                  "peer": peer, "pcUtc": utc_now()})
@@ -77,14 +80,19 @@ class TriggerServer:
                            if validation == "valid" else None)
         mapper = self.mappers[connection_id]
         estimate = mapper.map(event.get("questMonotonicSeconds", 0.0)) if validation == "valid" else None
-        self.events.append({
+        clock_sync = self._clock_snapshot(connection_id, p2_ns)
+        record = {
             "recordType": "stimulus_event_received", "protocolVersion": PROTOCOL_VERSION,
             "connectionId": connection_id, "pcReceiveMonotonicNs": p2_ns,
             "pcReceiveUtc": p2_utc, "validationStatus": validation,
             "sequenceStatus": sequence_result.status if sequence_result else "not_checked",
             "estimatedPcEventMonotonicNs": int(estimate * 1e9) if estimate is not None else None,
+            "clockSync": clock_sync,
             "originalQuestEvent": event,
-        })
+        }
+        self.events.append(record)
+        if self.event_observer is not None:
+            self.event_observer(record)
         ack = {
             "protocolVersion": PROTOCOL_VERSION, "messageType": "ack",
             "sessionId": session_id, "sequence": sequence, "connectionId": connection_id,
@@ -116,6 +124,7 @@ class TriggerServer:
         sample_accepted = 0.0 <= rtt <= 0.25
         if sample_accepted:
             self.mappers[connection_id].add((q1 + q4) / 2.0, (p2 + p3) / 2.0)
+            self.sync_state[connection_id]["latestAcceptedPcMonotonicNs"] = receive_ns
         coefficients = self.mappers[connection_id].coefficients()
         self.diagnostics.append({
             "recordType": "clock_sync_sample", "connectionId": connection_id,
@@ -126,6 +135,19 @@ class TriggerServer:
             "affineResidualRmsSeconds": self.mappers[connection_id].residual_rms_seconds(),
             "offsetSignConvention": "pc_minus_quest",
         })
+
+    def _clock_snapshot(self, connection_id, now_ns):
+        mapper = self.mappers[connection_id]
+        latest = self.sync_state[connection_id]["latestAcceptedPcMonotonicNs"]
+        residual = mapper.residual_rms_seconds()
+        return {
+            "status": "ready" if mapper.coefficients() is not None else "unavailable",
+            "acceptedSampleCount": mapper.sample_count,
+            "affineResidualRmsSeconds": residual,
+            "latestAcceptedPcMonotonicNs": latest,
+            "maximumAcceptedRttSeconds": 0.25,
+            "clockIsSoftwareOnly": True,
+        }
 
 
 async def run(args):

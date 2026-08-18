@@ -325,6 +325,14 @@ M5.3 90-second SDK-to-PC timestamp mapping validation (2026-08-18):
 - Repeated native `timestamp not sync` console warnings occurred during the session but cannot be assigned to packet IDs without modifying or hooking the vendor native SDK. The post-sync segment is software-level mapping evidence only. Any future stimulus-to-sample work must exclude/prevent use of the initial pre-sync timestamp segment; hardware/optical timing remains unverified.
 - The initial pre-sync packets are not eligible for formal sample association. A trial may begin only after a stable Unix-millisecond post-sync segment has been observed and recorded; this is a software-level timestamp mapping gate only, not hardware timing or physical optical timing verification.
 
+M5.3 software association pipeline (2026-08-18):
+
+- Added one explicit end-to-end recording entry point that starts ND8 acquisition and the existing Quest-PC trigger server in the same external-data session, while preserving raw EEG, ND8 metadata, Quest events, clock-sync diagnostics, gate evidence, and derived associations as separate append-only files.
+- The runtime post-sync gate rejects pre-sync/non-Unix timestamps, timestamp transitions, packet continuity breaks, and incompatible packet shape; it enters `association_ready` only after a contiguous Unix-ms segment contains at least 10 packets spanning at least 1.8 seconds with cadence within a 2 ms tolerance.
+- Only events after that recorded gate time and with a recent, low-residual Quest-PC affine synchronization snapshot can produce an association. The output identifies the ND8 packet and a software-derived sample estimate, never a hardware-exact sample time.
+- The vendor demo text labels its callback timestamp as a first-point time, but this remains unverified for hardware/sample-anchor semantics in this project. Derived records explicitly mark the anchor as unverified, and retain `hardwareTimingVerified=false` and `physicalOpticalTimingVerified=false`.
+- An independent offline verifier recomputes Quest-PC mapping from saved four-timestamp evidence and replays ND8 metadata/gate logic before comparing packet/sample results with the live derived log. Real Quest→EEG association remains pending hardware-session execution and review.
+
 M5.1 introduces an independent scene with explicit idle/start/stimulating/stop trial semantics, a temporary all-black idle state, standardized software-side stimulus events, and append-only local timing records. Software event timestamps do not represent measured physical optical onset or offset.
 
 M5.1 Quest 3 physical/runtime acceptance:

@@ -3,5 +3,7 @@
 from .models import EegPacketMetadata, EpochAssociationRecord
 from .timeline import EegPacketTimeline
 from .association import SampleTimeMapper
+from .gate import PostSyncAssociationGate
+from .runtime import AssociationCoordinator
 
-__all__ = ["EegPacketMetadata", "EpochAssociationRecord", "EegPacketTimeline", "SampleTimeMapper"]
+__all__ = ["EegPacketMetadata", "EpochAssociationRecord", "EegPacketTimeline", "SampleTimeMapper", "PostSyncAssociationGate", "AssociationCoordinator"]

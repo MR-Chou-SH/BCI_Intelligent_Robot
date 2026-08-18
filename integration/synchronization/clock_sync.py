@@ -12,6 +12,10 @@ class AffineClockMapper:
         self.maximum_samples = maximum_samples
         self._pairs = []
 
+    @property
+    def sample_count(self):
+        return len(self._pairs)
+
     def add(self, quest_midpoint, pc_midpoint):
         self._pairs.append((float(quest_midpoint), float(pc_midpoint)))
         self._pairs = self._pairs[-self.maximum_samples:]
