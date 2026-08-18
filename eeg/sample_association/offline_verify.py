@@ -53,18 +53,17 @@ def verify_session(session):
     live, live_errors = read_jsonl(session / "derived-association.jsonl")
     errors += event_errors + sync_errors + live_errors
     derived = MemoryLog(); gates = MemoryLog(); coordinator = AssociationCoordinator(derived, gates)
+    packets = []
     for record in metadata_records:
         try:
             packet = EegPacketMetadata(**record["packet"])
             raw_continuity = record["continuity"]
             continuity = PacketContinuityRecord(raw_continuity.get("packet_sequence"), raw_continuity["cumulative_first_sample_index"],
                                                 raw_continuity["status"], tuple(raw_continuity.get("issues", [])))
-            coordinator.ingest_packet(packet, continuity)
+            packets.append((packet, continuity))
         except (KeyError, TypeError, ValueError) as error:
             errors.append("invalid_packet_metadata:" + str(error))
-    ready_times = [r[0].pc_receive_monotonic_ns for r in coordinator.packets if r[2].association_ready]
-    if ready_times:
-        coordinator.gate.ready_pc_monotonic_ns = min(ready_times)
+    replay_events = []
     for event in events:
         if event.get("recordType") != "stimulus_event_received": continue
         quest = event.get("originalQuestEvent", {})
@@ -75,7 +74,18 @@ def verify_session(session):
         replay["clockSync"] = {"status": "ready" if estimate is not None else "unavailable", "acceptedSampleCount": mapper.sample_count,
                                 "affineResidualRmsSeconds": mapper.residual_rms_seconds(), "latestAcceptedPcMonotonicNs": latest,
                                 "clockIsSoftwareOnly": True}
-        coordinator.ingest_event(replay)
+        replay_events.append(replay)
+    packet_index = 0
+    ordered_packets = sorted(packets, key=lambda value: value[0].pc_receive_monotonic_ns)
+    for event in sorted(replay_events, key=lambda value: value.get("pcReceiveMonotonicNs", -1)):
+        event_receive_ns = event.get("pcReceiveMonotonicNs", -1)
+        while packet_index < len(ordered_packets) and ordered_packets[packet_index][0].pc_receive_monotonic_ns <= event_receive_ns:
+            coordinator.ingest_packet(*ordered_packets[packet_index])
+            packet_index += 1
+        coordinator.ingest_event(event)
+    while packet_index < len(ordered_packets):
+        coordinator.ingest_packet(*ordered_packets[packet_index])
+        packet_index += 1
     coordinator.finalize()
     comparable_live = {(r.get("sessionId"), r.get("trialId"), r.get("stimulusSequence")): r for r in live}
     mismatches = []

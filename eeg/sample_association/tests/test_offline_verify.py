@@ -16,8 +16,13 @@ class OfflineVerificationTests(unittest.TestCase):
             root = Path(directory)
             metadata = []
             for i in range(12):
+                receive_ns = 10_000_000_000 + 200_000_000 * i
+                # This late packet must not influence an event that was
+                # already received and associated before it arrived.
+                if i == 11:
+                    receive_ns = 30_000_000_000
                 metadata.append({"packet": {"device_timestamp": 1_700_000_000_000 + 200 * i,
-                    "pc_receive_monotonic_ns": 10_000_000_000 + 200_000_000 * i,
+                    "pc_receive_monotonic_ns": receive_ns,
                     "pc_receive_utc": "2026-01-01T00:00:00+00:00", "sample_count": 200, "channel_count": 8,
                     "sampling_rate_hz": 1000.0, "packet_sequence": i, "first_sample_index": None,
                     "device_timestamp_unit": "milliseconds", "device_timestamp_first_sample_assumed": False,
