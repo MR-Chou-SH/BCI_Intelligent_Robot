@@ -532,4 +532,4 @@ M1、M2、M3、M4和M5均已完成。当前最高优先级为：
 
 > M6 — ND8 EEG Online Classification
 
-M6的具体算法和架构尚未在本轮定义。M5的证据边界必须继续保留：`hardwareTimingVerified=false`、`physicalOpticalTimingVerified=false`，sample index 仅为 `software-derived estimate`。本轮不进入 M6 实现。
+M6.0 已完成 legacy / architecture audit。M6.1a 已建立软件侧 ND8 全八通道 sanity recording 与离线质量分析工具，真实 ND8 / Quest sanity validation 尚未执行；本轮仍未实现 CCA、FBCCA 或在线分类。M5 的证据边界必须继续保留：`hardwareTimingVerified=false`、`physicalOpticalTimingVerified=false`，sample index 仅为 `software-derived estimate`。
