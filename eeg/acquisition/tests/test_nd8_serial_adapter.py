@@ -1,6 +1,7 @@
 from queue import Empty
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 from eeg.acquisition.nd8_packet import Nd8Packet
 from eeg.acquisition.nd8_serial_adapter import AcquisitionState, Nd8SerialAdapter
@@ -107,6 +108,11 @@ class Nd8SerialAdapterTests(unittest.TestCase):
         packet = Nd8Packet.from_sdk_payload(payload(samples=5), 9, receive_monotonic_ns=42, receive_utc="2026-08-18T00:00:00+00:00")
         self.assertEqual(42, packet.pc_receive_monotonic_ns)
         self.assertEqual("2026-08-18T00:00:00+00:00", packet.pc_receive_utc)
+
+    def test_packet_default_receive_clock_uses_trigger_server_clock_domain(self):
+        with patch("eeg.acquisition.nd8_packet.perf_counter_ns", return_value=123456789):
+            packet = Nd8Packet.from_sdk_payload(payload(samples=5), 9)
+        self.assertEqual(123456789, packet.pc_receive_monotonic_ns)
 
     def test_open_port_requires_host_mac_callback_before_ready(self):
         device = None

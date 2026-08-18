@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from numbers import Real
-from time import monotonic_ns
+from time import perf_counter_ns
 from typing import Any, Optional
 
 from eeg.sample_association.models import EegPacketMetadata
@@ -60,7 +60,11 @@ class Nd8Packet:
         return cls(
             sdk_timestamp_ms=float(timestamp),
             samples=tuple(channels),
-            pc_receive_monotonic_ns=monotonic_ns() if receive_monotonic_ns is None else receive_monotonic_ns,
+            # M5.2's PC trigger server records perf_counter_ns().  Preserve
+            # the existing field name for JSON compatibility, but source this
+            # value from the same PC clock domain so gate/event comparisons
+            # are meaningful within a live association session.
+            pc_receive_monotonic_ns=perf_counter_ns() if receive_monotonic_ns is None else receive_monotonic_ns,
             pc_receive_utc=(datetime.now(timezone.utc).isoformat() if receive_utc is None else receive_utc),
             packet_sequence=packet_sequence,
             nominal_sampling_rate_hz=float(nominal_sampling_rate_hz),
