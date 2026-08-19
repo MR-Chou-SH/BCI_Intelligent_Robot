@@ -27,6 +27,8 @@ Synthetic tests cover: all-eight-channel raw reading, a constant channel, a 9-Hz
 
 For the fixed 30-second `artifact_sanity` human-action protocol, the offline summary also reports per-channel standard deviation, RMS and peak-to-peak values for the declared rest/blink/rest/jaw/rest intervals. The intervals are indexed from the first saved raw sample at the nominal 1000 Hz rate; they are descriptive markers, not a hardware trigger, artifact detector or classifier.
 
+For `single_ssvep_sanity`, the recorder can first wait for the M5 post-sync gate, then retain a separate preparation raw/metadata stream during a user-facing countdown. It switches to the formal raw/metadata files only at a recorded formal-start boundary. The offline PSD analyzer reads only those formal files, so Quest wearing and stimulus-app launch movement are excluded from the analysis window. This remains a software evidence boundary, not a physical optical or hardware sample-timing verification.
+
 ## Real-device validation pending
 
 Before M6.1b or decoder work, conduct REST, artifact sanity and center-9-Hz Quest sanity sessions with the external CPython 3.9 SDK environment and preserve data outside Git. Review the machine-readable summaries and raw/gate evidence; do not promote the result to hardware timing, physical optical timing, or a verified hardware sample anchor.
