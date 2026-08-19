@@ -1,7 +1,7 @@
 # M6.3b — FBCCA Filter Realization Validation
 
 Date: 2026-08-19
-Status: Completed / PASS WITH WARNINGS; M6.3 in progress
+Status: Completed / PASS WITH WARNINGS; M6.3 closeout complete
 
 ## Purpose and frozen comparison
 
@@ -73,3 +73,12 @@ timing, ND8 hardware sample anchoring and optical verification of nominal
 frequencies remain unverified; epoch association is software-derived. No
 channel optimization, dense window search, pseudo-online or online validation
 was performed.
+
+M6.3 closeout conclusion: the window-length curve shows a clear
+latency/accuracy trade-off, with all tested realizations stable at or above
+1.5 s in this session. At or below 1.0 s, FBCCA is sensitive to filter
+realization. Direct transfer-function versus SOS numerical stability is a
+reproducibility and implementation observation, not evidence that either
+filter is globally superior. Further same-session parameter searching would
+add selection-bias/overfitting risk; independent cross-session validation is
+the next scientific requirement.

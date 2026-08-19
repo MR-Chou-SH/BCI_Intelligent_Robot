@@ -1,7 +1,7 @@
 # M6.3a — Window-Length Characterization
 
 Date: 2026-08-19
-Status: Completed / PASS WITH WARNINGS; M6.3 in progress
+Status: Completed / PASS WITH WARNINGS; M6.3 closeout complete
 
 ## Experimental design
 
