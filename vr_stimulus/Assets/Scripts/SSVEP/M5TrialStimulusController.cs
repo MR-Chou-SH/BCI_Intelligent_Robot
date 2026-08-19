@@ -104,9 +104,18 @@ namespace BCIIntelligentRobot.VRStimulus
         private int m_CommonStartFrame = -1;
         private long m_EventSequence;
         private string m_PendingStopReason;
+        private string m_PendingPlannedTrialId;
+        private string m_PendingPlannedTargetId;
+        private int m_PendingPlannedTrialIndex = -1;
+        private float m_PendingPlannedFrequencyHz;
+        private int m_TrialIndex = -1;
+        private string m_TrialTargetId;
+        private float m_TrialFrequencyHz;
         private bool m_IsInitialized;
 
         public TrialState State => m_State;
+        public bool IsIdle => m_State == TrialState.Idle;
+        public bool IsStimulating => m_State == TrialState.Stimulating;
         public string SessionId => m_SessionId;
         public string TrialId => m_TrialId;
         public int CommonStartFrame => m_CommonStartFrame;
@@ -191,6 +200,17 @@ namespace BCIIntelligentRobot.VRStimulus
             return true;
         }
 
+        public bool RequestStartTrial(string trialId, string targetId, int trialIndex, float nominalFrequencyHz)
+        {
+            if (!m_IsInitialized || m_State != TrialState.Idle || string.IsNullOrWhiteSpace(trialId))
+                return false;
+            m_PendingPlannedTrialId = trialId;
+            m_PendingPlannedTargetId = targetId;
+            m_PendingPlannedTrialIndex = trialIndex;
+            m_PendingPlannedFrequencyHz = nominalFrequencyHz;
+            return RequestStartTrial();
+        }
+
         public bool RequestStopTrial(string stopReason)
         {
             if (!m_IsInitialized || m_State != TrialState.Stimulating)
@@ -218,7 +238,11 @@ namespace BCIIntelligentRobot.VRStimulus
         private void StartTrialSoftware(int currentFrame)
         {
             m_PendingStopReason = string.Empty;
-            m_TrialId = Guid.NewGuid().ToString("N");
+            m_TrialId = string.IsNullOrEmpty(m_PendingPlannedTrialId)
+                ? Guid.NewGuid().ToString("N") : m_PendingPlannedTrialId;
+            m_TrialIndex = m_PendingPlannedTrialIndex;
+            m_TrialTargetId = m_PendingPlannedTargetId;
+            m_TrialFrequencyHz = m_PendingPlannedFrequencyHz;
             m_CommonStartFrame = currentFrame;
             m_State = TrialState.Stimulating;
 
@@ -264,6 +288,13 @@ namespace BCIIntelligentRobot.VRStimulus
             m_TrialId = string.Empty;
             m_CommonStartFrame = -1;
             m_PendingStopReason = string.Empty;
+            m_TrialIndex = -1;
+            m_TrialTargetId = string.Empty;
+            m_TrialFrequencyHz = 0f;
+            m_PendingPlannedTrialId = string.Empty;
+            m_PendingPlannedTargetId = string.Empty;
+            m_PendingPlannedTrialIndex = -1;
+            m_PendingPlannedFrequencyHz = 0f;
         }
 
         private void ApplyStimulusStates(int globalStimulusFrame)
@@ -301,6 +332,9 @@ namespace BCIIntelligentRobot.VRStimulus
                 eventType = eventType,
                 sessionId = m_SessionId,
                 trialId = trialId,
+                trialIndex = m_TrialIndex,
+                targetId = m_TrialTargetId,
+                nominalFrequencyHz = m_TrialFrequencyHz,
                 sequence = m_EventSequence++,
                 trialState = m_State.ToString(),
                 unityFrame = unityFrame,

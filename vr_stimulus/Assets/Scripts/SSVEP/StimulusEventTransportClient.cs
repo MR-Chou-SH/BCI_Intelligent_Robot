@@ -47,6 +47,40 @@ namespace BCIIntelligentRobot.VRStimulus
     }
 
     [Serializable]
+    public sealed class DatasetProtocolTiming
+    {
+        public float preparationSeconds;
+        public float cueSeconds;
+        public float preStimulusRestSeconds;
+        public float stimulusSeconds;
+        public float postStimulusRestSeconds;
+        public int[] breakAfterTrials;
+        public float breakSeconds;
+    }
+
+    [Serializable]
+    public sealed class DatasetTrialPlanItem
+    {
+        public string sessionId;
+        public string trialId;
+        public int trialIndex;
+        public string targetId;
+        public string targetSide;
+        public float nominalFrequencyHz;
+        public float expectedStimulusDurationSeconds;
+    }
+
+    [Serializable]
+    public sealed class DatasetTrialPlanMessage
+    {
+        public int protocolVersion;
+        public string messageType;
+        public string sessionId;
+        public DatasetProtocolTiming protocol;
+        public DatasetTrialPlanItem[] trials;
+    }
+
+    [Serializable]
     internal sealed class ClockSyncResult
     {
         public int protocolVersion = 1;
@@ -96,6 +130,8 @@ namespace BCIIntelligentRobot.VRStimulus
         private readonly ConcurrentQueue<string> m_OutgoingLines = new ConcurrentQueue<string>();
         private readonly ConcurrentQueue<SynchronizationDiagnosticRecord> m_Diagnostics =
             new ConcurrentQueue<SynchronizationDiagnosticRecord>();
+        private readonly ConcurrentQueue<DatasetTrialPlanMessage> m_DatasetPlans =
+            new ConcurrentQueue<DatasetTrialPlanMessage>();
         private readonly AutoResetEvent m_WorkAvailable = new AutoResetEvent(false);
         private readonly Dictionary<long, double> m_PendingSync = new Dictionary<long, double>();
         private readonly ConcurrentDictionary<long, double> m_PendingAcks =
@@ -135,6 +171,11 @@ namespace BCIIntelligentRobot.VRStimulus
                 EnqueueDiagnostic("event_enqueue_error", eventRecord.sessionId, eventRecord.sequence, "error", exception.Message);
                 return false;
             }
+        }
+
+        public bool TryDequeueDatasetPlan(out DatasetTrialPlanMessage plan)
+        {
+            return m_DatasetPlans.TryDequeue(out plan);
         }
 
         private void Update()
@@ -283,6 +324,12 @@ namespace BCIIntelligentRobot.VRStimulus
                     EnqueueDiagnostic("event_acknowledged", message.sessionId, message.sequence,
                         message.validationStatus == "valid" ? "ok" : "error",
                         message.sequenceStatus + ";" + message.validationStatus, message.connectionId);
+                }
+                else if (message.messageType == "dataset_session_plan")
+                {
+                    DatasetTrialPlanMessage plan = JsonUtility.FromJson<DatasetTrialPlanMessage>(line);
+                    if (plan != null && plan.trials != null)
+                        m_DatasetPlans.Enqueue(plan);
                 }
                 else if (message.messageType == "clock_sync_response")
                 {

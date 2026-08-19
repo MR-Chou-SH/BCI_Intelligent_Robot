@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/M6_1b_ThreeClassDataset.unity
+    guid: af71cff32f26ebe44b1fa557997566a4
+  - enabled: 1
     path: Assets/Scenes/M5_2_QuestPcSynchronization.unity
     guid: bb7ee0385d28460f8b76d9fa09f12f3b
   m_configObjects:

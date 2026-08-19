@@ -42,7 +42,7 @@ def make_session(root, seed):
                 "packetMetadataFile": "packet-metadata.jsonl", "gateEvidenceFile": "nd8-association-gate.jsonl",
                 "trialGroundTruthFile": "trial-ground-truth.jsonl"}
     _write_manifest(session, manifest)
-    return session, manifest
+    return session, manifest, plan
 
 
 def _write_manifest(session, manifest):
@@ -50,13 +50,18 @@ def _write_manifest(session, manifest):
 
 
 async def run_session(args):
-    session, manifest = make_session(args.data_root, args.seed)
+    session, manifest, plan = make_session(args.data_root, args.seed)
     gate_log = AppendOnlyJsonl(session / "nd8-association-gate.jsonl")
     coordinator = AssociationCoordinator(session / "derived-association.jsonl", gate_log)
     adapter = Nd8SerialAdapter(args.com, metadata_log=AppendOnlyJsonl(session / "packet-metadata.jsonl"),
                                raw_packet_log=AppendOnlyJsonl(session / "raw-eeg-packets.jsonl"),
                                packet_observer=coordinator.ingest_packet)
-    endpoint = TriggerServer(session, event_observer=coordinator.ingest_event)
+    endpoint = TriggerServer(
+        session,
+        event_observer=coordinator.ingest_event,
+        dataset_plan={"sessionId": manifest["sessionId"], "protocol": PROTOCOL,
+                      "trials": [item.to_dict() for item in plan]},
+    )
     event_log = AppendOnlyJsonl(session / "session-events.jsonl")
     started = time.monotonic()
     try:

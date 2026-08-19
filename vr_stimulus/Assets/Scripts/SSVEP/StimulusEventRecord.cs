@@ -19,6 +19,9 @@ namespace BCIIntelligentRobot.VRStimulus
         public string eventType;
         public string sessionId;
         public string trialId;
+        public int trialIndex = -1;
+        public string targetId;
+        public float nominalFrequencyHz;
         public long sequence;
         public string trialState;
         public int unityFrame;

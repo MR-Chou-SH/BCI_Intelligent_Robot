@@ -16,7 +16,7 @@ def utc_now():
 
 
 class TriggerServer:
-    def __init__(self, log_directory, event_observer=None):
+    def __init__(self, log_directory, event_observer=None, dataset_plan=None):
         directory = Path(log_directory)
         self.events = AppendOnlyJsonl(directory / "pc-stimulus-events.jsonl")
         self.diagnostics = AppendOnlyJsonl(directory / "pc-synchronization.jsonl")
@@ -24,6 +24,7 @@ class TriggerServer:
         self.mappers = {}
         self.sync_state = {}
         self.event_observer = event_observer
+        self.dataset_plan = dataset_plan
 
     async def handle_connection(self, reader, writer):
         connection_id = uuid.uuid4().hex
@@ -33,6 +34,13 @@ class TriggerServer:
         self.diagnostics.append({"recordType": "connection_opened", "connectionId": connection_id,
                                  "peer": peer, "pcUtc": utc_now()})
         try:
+            if self.dataset_plan is not None:
+                writer.write(encode_line({
+                    "protocolVersion": PROTOCOL_VERSION,
+                    "messageType": "dataset_session_plan",
+                    **self.dataset_plan,
+                }))
+                await writer.drain()
             while True:
                 raw = await reader.readline()
                 if not raw:
