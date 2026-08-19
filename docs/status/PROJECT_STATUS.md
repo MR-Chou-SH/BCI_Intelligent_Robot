@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-08-18
+Last updated: 2026-08-19
 
 ## Overall Phase
 
@@ -385,12 +385,12 @@ Status: In Progress
 Current substage:
 
 - M6.0 — Existing EEG / Decoder Architecture Audit & Experimental Design: Completed
-- M6.1a — ND8 Signal & Channel Sanity Validation: Implementation Complete / Real-device Validation Pending
-- M6.1 — Controlled ND8 Dataset Acquisition: Not Started
+- M6.1a — ND8 Signal & Channel Sanity Validation: Completed / PASS WITH WARNINGS
+- M6.1b — Controlled Three-Class Offline Dataset Acquisition: Next / Not Started
 - M6.2 — Offline CCA / FBCCA Baseline: Not Started
 - M6.3 — Pseudo-online Evaluation: Not Started
 
-M6 begins only after the completed M5 software/runtime association evidence. The M5 evidence boundary remains active: hardware timing, physical optical timing, ND8 hardware sample anchor, and hardware-exact EEG sample timing are not verified. M6.1a records all eight ND8 SDK channels as append-only external raw evidence and performs deterministic offline signal/channel sanity analysis only; it does not implement a decoder or online classifier. Real ND8/Quest sanity validation is still required.
+M6 begins only after the completed M5 software/runtime association evidence. M6.1a completed real ND8 signal/channel sanity validation with five usable SDK channels (CH2/3/4/5/7) and three constant/placeholder candidates (CH0/1/6) under the current five posterior-occipital electrode setup. REST, artifact sanity, and formal nominal-9-Hz Quest sanity all passed with warnings. The M5/M6 evidence boundary remains active: hardware timing, physical optical timing, ND8 hardware sample anchor, and hardware-exact EEG sample timing are not verified. Three-class separability and classification performance are not validated.
 
 ## Known Open Questions
 

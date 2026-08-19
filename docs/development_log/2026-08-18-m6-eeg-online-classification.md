@@ -1,11 +1,11 @@
 # M6 Development Log — ND8 EEG Online Classification
 
 Date: 2026-08-18
-Status: M6.0 audit completed; M6.1a implementation complete / real-device validation pending
+Status: M6.0 audit completed; M6.1a Completed / PASS WITH WARNINGS
 
 ## M6.0 audit conclusions
 
-The Drone2.1 reference contains a legacy filter-bank CCA-style path, but it assumes timestamp/sample semantics that are not verified for this project and does not provide the M5 evidence chain. The active legacy invocation uses a 3.0-second window at 250 Hz after a 0.14-second lag; it is reference material only. No classifier code was copied or enabled in M6.0/M6.1a.
+The Drone2.1 audit found a legacy 1000 Hz acquisition path resampled to 250 Hz, a 50 Hz notch, a 0.14 s lag and legacy 8–16 Hz frequency assumptions. The reference contains a filter-bank CCA-style structure, but it assumes timestamp/sample semantics not verified for this project and does not provide the M5 evidence chain. Its class default is a 2.0 s FBCCA window; however, the active `OperationMain.py` invocation passes `Config.winLEN=3`, so the effective active call is 3.0 s at 250 Hz after the 0.14 s lag. This distinction is recorded to avoid treating the legacy reference as production behavior. M5→M6 therefore proceeds through raw evidence, channel sanity and controlled offline data before any decoder. No classifier code was copied or enabled in M6.0/M6.1a.
 
 ## M6.1a signal/channel sanity architecture
 
@@ -29,6 +29,30 @@ For the fixed 30-second `artifact_sanity` human-action protocol, the offline sum
 
 For `single_ssvep_sanity`, the recorder can first wait for the M5 post-sync gate, then retain a separate preparation raw/metadata stream during a user-facing countdown. It switches to the formal raw/metadata files only at a recorded formal-start boundary. The offline PSD analyzer reads only those formal files, so Quest wearing and stimulus-app launch movement are excluded from the analysis window. This remains a software evidence boundary, not a physical optical or hardware sample-timing verification.
 
-## Real-device validation pending
+## M6.1a real-device validation
 
-Before M6.1b or decoder work, conduct REST, artifact sanity and center-9-Hz Quest sanity sessions with the external CPython 3.9 SDK environment and preserve data outside Git. Review the machine-readable summaries and raw/gate evidence; do not promote the result to hardware timing, physical optical timing, or a verified hardware sample anchor.
+### REST
+
+Session `m6_1a-signal-sanity-20260819T055452Z-ec3ed511` recorded 149 packets, 29,800 samples/channel and 8×200 packet shape in 30.046 s. The final gate was `association_ready`, segment 2, with no `continuity_lost`, no input errors and one non-severe `timestamp_delta_mismatch`. CH2/3/4/5/7 were usable; CH0/1/6 were constant/placeholder candidates; no channel was degraded and no clipping candidate was reported. Some usable channels showed 50 Hz evidence. The result was `PASS WITH WARNINGS`.
+
+### ARTIFACT_SANITY
+
+Session `m6_1a-signal-sanity-20260819T060234Z-622e1bac` recorded 149 packets and 29,800 samples/channel in 30.079 s. The same five SDK channels remained nonconstant and the same three remained placeholder candidates; gate and continuity were normal with no input errors. Fixed descriptive segments were Rest 1 / Blink / Rest 2 / Jaw / Rest 3. Blink showed higher standard deviation than Rest 1 on CH2, CH4, CH5 and CH7; jaw showed its clearest candidate change on CH5 (74.90 versus final-rest 42.45). The absence of precise action markers limits interpretation to physiological/movement-related variation candidates. Result: `PASS WITH WARNINGS`.
+
+### SINGLE_SSVEP_SANITY
+
+Session `m6_1a-signal-sanity-20260819T061605Z-33c80383` contained 75 preparation packets and 75 formal packets. ND8 was already `association_ready` before the 13 s countdown; the formal window began approximately 13.10 s later and contained 15,000 samples/channel. Preparation and formal raw evidence were separate, and PSD read only formal raw. All five usable channels showed 9 Hz neighborhood evidence candidates (ratios CH2/3/4/5/7: 2.16/2.18/2.26/1.94/2.41) and stronger 18 Hz harmonic candidates (3.61/4.66/3.87/4.32/4.06); 27 Hz evidence was weak. 50 Hz evidence remained present. The user wore Quest 3, started the existing M5 three-target application and viewed the nominal center 9 Hz target, but this mode did not run the Quest-PC trigger server, so application start was not independently timestamped by PC. Result: `PASS WITH WARNINGS`.
+
+## Engineering lessons and research candidates
+
+- Actual electrode count and usable SDK channel count can be inferred from raw behavior without assuming 10–20 channel identity.
+- Constant placeholder channels must remain in raw evidence and must not invalidate an otherwise valid multi-channel session.
+- Preparation/movement evidence should be physically separated from formal SSVEP analysis evidence.
+- Waveform change is weaker evidence than frequency-specific spectral evidence; a single session is not classification performance.
+- Raw and derived evidence separation remains essential.
+
+Progressive evidence validation (REST → artifact sanity → frequency-specific stimulation sanity), preparation separation, retention of unusable channels, and uncertainty-aware continuation from M5 are research/paper discussion candidates only; no novelty claim is made.
+
+## M6.1a closeout boundary
+
+M6.1a is `Completed / PASS WITH WARNINGS` for the current hardware setup. It does not validate classification, three-class separability, physical optical timing, hardware timing, ND8 hardware sample anchoring, or exact standardized electrode positions. No new ADR was required for M6.1a closeout.
