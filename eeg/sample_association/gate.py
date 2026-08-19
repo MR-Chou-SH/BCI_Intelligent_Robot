@@ -39,6 +39,7 @@ class PostSyncAssociationGate:
         self.segment_id = 0
         self._stable = []
         self.ready_pc_monotonic_ns = None
+        self._previous_timestamp_was_unix_ms = False
 
     def observe(self, packet, continuity):
         timestamp = packet.device_timestamp
@@ -47,17 +48,39 @@ class PostSyncAssociationGate:
         severe = {"timestamp_jump", "timestamp_regression", "packet_sequence_gap",
                   "duplicate_packet_sequence", "out_of_order_packet_sequence",
                   "inconsistent_sample_count", "inconsistent_channel_count"}
+        transition_issues = {"timestamp_delta_mismatch", "timestamp_jump"}
+        recognized_domain_transition = (
+            unix_ms
+            and not self._previous_timestamp_was_unix_ms
+            and "timestamp_jump" in issues
+            and issues.issubset(transition_issues)
+        )
+        if recognized_domain_transition:
+            # The ND8 SDK can move from startup-relative milliseconds to Unix
+            # milliseconds after the first hardware timestamp anchor.  The
+            # timeline retains the jump as raw diagnostic evidence; the gate
+            # treats this narrowly defined, expected domain boundary as a new
+            # post-sync segment rather than a loss of packet continuity.
+            self.segment_id += 1
+            self._stable = [packet]
+            self.ready_pc_monotonic_ns = None
+            self.state = AssociationGateState.TRANSITION
+            self._previous_timestamp_was_unix_ms = True
+            return self._decision("startup_relative_to_unix_ms_timestamp_domain_transition")
         if issues.intersection(severe):
             self.segment_id += 1
             self._stable = []
             self.ready_pc_monotonic_ns = None
             self.state = AssociationGateState.CONTINUITY_LOST
+            self._previous_timestamp_was_unix_ms = unix_ms
             return self._decision("continuity_or_timestamp_discontinuity:" + ",".join(sorted(issues)))
         if not unix_ms:
             self._stable = []
             self.ready_pc_monotonic_ns = None
             self.state = AssociationGateState.PRE_SYNC
+            self._previous_timestamp_was_unix_ms = False
             return self._decision("sdk_timestamp_not_unix_milliseconds")
+        self._previous_timestamp_was_unix_ms = True
         if self.state in (AssociationGateState.PRE_SYNC, AssociationGateState.CONTINUITY_LOST):
             self.segment_id += 1
             self._stable = []
