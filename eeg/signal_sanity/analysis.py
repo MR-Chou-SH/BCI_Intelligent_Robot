@@ -94,7 +94,7 @@ def _spectral_summary(values, sampling_rate_hz, mode):
     }
 
 
-def _channel_summary(index, values, sampling_rate_hz, mode, continuity_issues):
+def _channel_summary(index, values, sampling_rate_hz, mode, severe_continuity_issues):
     values = np.asarray(values, dtype=float)
     finite = np.isfinite(values)
     finite_values = values[finite]
@@ -123,11 +123,11 @@ def _channel_summary(index, values, sampling_rate_hz, mode, continuity_issues):
         reasons.append("constant_or_placeholder_candidate")
     if clipping:
         reasons.append("repeated_extreme_or_clipping_candidate_adc_range_unknown")
-    if continuity_issues:
-        reasons.append("session_continuity_anomaly_present")
+    if severe_continuity_issues:
+        reasons.append("severe_session_continuity_anomaly_present")
     if stats["nonFiniteCount"] or constant:
         quality = "invalid"
-    elif clipping or continuity_issues:
+    elif clipping or severe_continuity_issues:
         quality = "degraded"
     else:
         quality = "usable"
@@ -179,15 +179,29 @@ def analyze_session(session):
         continuity = record.get("continuity", {})
         for issue in continuity.get("issues", []) if isinstance(continuity, dict) else []:
             issue_counts[str(issue)] += 1
-    summaries = [_channel_summary(i, values, sampling_rate_hz, mode, dict(issue_counts)) for i, values in enumerate(channels)]
+    severe_issue_names = {"timestamp_jump", "timestamp_regression", "packet_sequence_gap",
+                          "duplicate_packet_sequence", "out_of_order_packet_sequence",
+                          "inconsistent_sample_count", "inconsistent_channel_count"}
+    severe_issue_counts = {name: count for name, count in issue_counts.items() if name in severe_issue_names}
+    summaries = [_channel_summary(i, values, sampling_rate_hz, mode, severe_issue_counts) for i, values in enumerate(channels)]
     qualities = [item["quality"] for item in summaries]
-    overall = "invalid" if errors or "invalid" in qualities else ("degraded" if "degraded" in qualities else "usable")
+    usable_count = qualities.count("usable")
+    non_invalid_count = usable_count + qualities.count("degraded")
+    if errors or not non_invalid_count:
+        overall = "invalid"
+    elif usable_count and ("invalid" in qualities or issue_counts):
+        overall = "usable_with_warnings"
+    elif usable_count:
+        overall = "usable"
+    else:
+        overall = "degraded"
     output = {
         "recordType": "m6_1a_signal_quality_summary", "generatedUtc": datetime.now(timezone.utc).isoformat(),
         "session": str(session), "sessionId": manifest.get("sessionId"), "mode": mode,
         "samplingRateHz": sampling_rate_hz, "packetCount": len(raw_records),
         "sampleCountPerChannel": [item["statistics"]["sampleCount"] for item in summaries],
-        "continuity": {"metadataPacketCount": len(metadata_records), "issueCounts": dict(issue_counts)},
+        "continuity": {"metadataPacketCount": len(metadata_records), "issueCounts": dict(issue_counts),
+                       "severeIssueCounts": severe_issue_counts},
         "inputErrors": errors, "malformedRawPacketCount": malformed_raw_count, "channels": summaries,
         "overallRecommendation": overall,
         "warnings": ["Quality labels are reproducible engineering checks, not medical EEG quality metrics.",

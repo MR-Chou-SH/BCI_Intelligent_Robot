@@ -33,6 +33,7 @@ class SignalSanityAnalysisTests(unittest.TestCase):
             self.assertEqual(8, len(summary["channels"]))
             self.assertTrue(summary["channels"][0]["constantCandidate"])
             self.assertEqual("invalid", summary["channels"][0]["quality"])
+            self.assertEqual("usable_with_warnings", summary["overallRecommendation"])
             ratio = summary["channels"][1]["spectralSummary"]["neighborhoodPowers"]["9Hz"]["stimulusToNearbyBackgroundRatio"]
             self.assertGreater(ratio, 10.0)
             self.assertTrue((__import__("pathlib").Path(root) / "analysis" / "signal-quality-summary.json").exists())
