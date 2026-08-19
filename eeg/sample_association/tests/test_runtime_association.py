@@ -1,4 +1,5 @@
 import unittest
+from threading import Thread
 
 from eeg.sample_association.models import EegPacketMetadata, PacketContinuityRecord
 from eeg.sample_association.runtime import AssociationCoordinator
@@ -70,6 +71,19 @@ class RuntimeAssociationTests(unittest.TestCase):
         self.coordinator.ingest_event(self.event(12_000_000_000))
         self.assertEqual(1, len(self.output.records))
         self.assertIn(self.output.records[0]["estimatedSampleOffset"], (0, 199))
+
+    def test_duplicate_concurrent_flush_writes_one_valid_association(self):
+        self.feed_stable()
+        value = self.event()
+        base = self.coordinator._base_record(value, value["originalQuestEvent"])
+        self.coordinator.pending_events.append((value, base))
+        threads = [Thread(target=self.coordinator._flush_pending) for _ in range(2)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        valid = [record for record in self.output.records if record.get("associationValid")]
+        self.assertEqual(1, len(valid))
 
 
 if __name__ == "__main__":

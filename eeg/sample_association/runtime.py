@@ -1,5 +1,7 @@
 """Live, append-only Quest event to ND8 packet/sample association coordinator."""
 
+import threading
+
 from integration.synchronization.clock_sync import AffineClockMapper
 
 from .gate import PostSyncAssociationGate
@@ -19,39 +21,45 @@ class AssociationCoordinator:
         self.maximum_sync_residual_seconds = float(maximum_sync_residual_seconds)
         self.maximum_sync_age_seconds = float(maximum_sync_age_seconds)
         self._trial_event_types = {}
+        self._lock = threading.RLock()
+        # Only for a rounded offset landing at a continuous packet boundary.
+        self.packet_boundary_tolerance_samples = 0.5
 
     def ingest_packet(self, packet, continuity):
-        decision = self.gate.observe(packet, continuity)
-        self.packets.append((packet, continuity, decision))
-        if self.gate_log is not None:
-            self.gate_log.append({"recordType": "nd8_association_gate", "packetSequence": packet.packet_sequence,
-                                  "packetSdkTimestampMs": packet.device_timestamp,
-                                  "packetPcReceiveMonotonicNs": packet.pc_receive_monotonic_ns,
-                                  "continuity": continuity.to_dict(), "gate": decision.to_dict()})
-        self._flush_pending()
-        return decision
+        with self._lock:
+            decision = self.gate.observe(packet, continuity)
+            self.packets.append((packet, continuity, decision))
+            if self.gate_log is not None:
+                self.gate_log.append({"recordType": "nd8_association_gate", "packetSequence": packet.packet_sequence,
+                                      "packetSdkTimestampMs": packet.device_timestamp,
+                                      "packetPcReceiveMonotonicNs": packet.pc_receive_monotonic_ns,
+                                      "continuity": continuity.to_dict(), "gate": decision.to_dict()})
+            self._flush_pending()
+            return decision
 
     def ingest_event(self, pc_event):
-        event = pc_event.get("originalQuestEvent") if isinstance(pc_event, dict) else None
-        event_time = pc_event.get("estimatedPcEventMonotonicNs") if isinstance(pc_event, dict) else None
-        base = self._base_record(pc_event, event)
-        reason = self._event_order_reason(event)
-        if reason:
-            self._write_invalid(base, reason)
-        elif not isinstance(event_time, int):
-            self._write_invalid(base, "quest_pc_clock_mapping_unavailable")
-        elif not self._clock_is_acceptable(pc_event, event_time):
-            self._write_invalid(base, "quest_pc_clock_mapping_quality_unavailable_or_stale")
-        elif self.gate.ready_pc_monotonic_ns is None or event_time < self.gate.ready_pc_monotonic_ns:
-            self._write_invalid(base, "event_not_after_post_sync_association_ready")
-        else:
-            self.pending_events.append((pc_event, base))
-            self._flush_pending()
+        with self._lock:
+            event = pc_event.get("originalQuestEvent") if isinstance(pc_event, dict) else None
+            event_time = pc_event.get("estimatedPcEventMonotonicNs") if isinstance(pc_event, dict) else None
+            base = self._base_record(pc_event, event)
+            reason = self._event_order_reason(event)
+            if reason:
+                self._write_invalid(base, reason)
+            elif not isinstance(event_time, int):
+                self._write_invalid(base, "quest_pc_clock_mapping_unavailable")
+            elif not self._clock_is_acceptable(pc_event, event_time):
+                self._write_invalid(base, "quest_pc_clock_mapping_quality_unavailable_or_stale")
+            elif self.gate.ready_pc_monotonic_ns is None or event_time < self.gate.ready_pc_monotonic_ns:
+                self._write_invalid(base, "event_not_after_post_sync_association_ready")
+            else:
+                self.pending_events.append((pc_event, base))
+                self._flush_pending()
 
     def finalize(self):
-        for _, base in self.pending_events:
-            self._write_invalid(base, "no_eligible_nd8_packet_before_session_end")
-        self.pending_events = []
+        with self._lock:
+            for _, base in self.pending_events:
+                self._write_invalid(base, "no_eligible_nd8_packet_before_session_end")
+            self.pending_events = []
 
     def _flush_pending(self):
         remaining = []
@@ -80,12 +88,29 @@ class AssociationCoordinator:
         last_end = eligible[-1][0].device_timestamp + eligible[-1][0].sample_count / eligible[-1][0].sampling_rate_hz * 1000.0
         if estimated_sdk_ms >= last_end:
             return None
-        candidate = next(((p, c, d) for p, c, d in eligible
-                          if p.device_timestamp <= estimated_sdk_ms < p.device_timestamp + p.sample_count / p.sampling_rate_hz * 1000.0), None)
+        candidate_index = next((index for index, (p, _, _) in enumerate(eligible)
+                                if p.device_timestamp <= estimated_sdk_ms <
+                                p.device_timestamp + p.sample_count / p.sampling_rate_hz * 1000.0), None)
+        candidate = eligible[candidate_index] if candidate_index is not None else None
         if candidate is None:
             return self._invalid_record(base, "event_not_covered_by_eligible_nd8_packet")
         packet, continuity, decision = candidate
-        offset = int(round((estimated_sdk_ms - packet.device_timestamp) * packet.sampling_rate_hz / 1000.0))
+        raw_offset = (estimated_sdk_ms - packet.device_timestamp) * packet.sampling_rate_hz / 1000.0
+        offset = int(round(raw_offset))
+        if offset == packet.sample_count and candidate_index + 1 < len(eligible):
+            next_packet, next_continuity, next_decision = eligible[candidate_index + 1]
+            next_raw_offset = ((estimated_sdk_ms - next_packet.device_timestamp) *
+                               next_packet.sampling_rate_hz / 1000.0)
+            packets_are_adjacent = (
+                packet.packet_sequence is not None and next_packet.packet_sequence == packet.packet_sequence + 1 and
+                next_continuity.status == "continuous" and
+                abs(next_packet.device_timestamp - (
+                    packet.device_timestamp + packet.sample_count / packet.sampling_rate_hz * 1000.0
+                )) <= self.packet_boundary_tolerance_samples / packet.sampling_rate_hz * 1000.0
+            )
+            if packets_are_adjacent and abs(next_raw_offset) <= self.packet_boundary_tolerance_samples:
+                packet, continuity, decision = next_packet, next_continuity, next_decision
+                offset = 0
         if offset < 0 or offset >= packet.sample_count:
             return self._invalid_record(base, "estimated_sample_offset_outside_packet")
         residual = mapper.residual_rms_seconds()
