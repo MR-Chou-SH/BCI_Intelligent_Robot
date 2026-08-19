@@ -1,7 +1,7 @@
 # M6.2b — Legacy-informed FBCCA Baseline
 
 Date: 2026-08-19
-Status: Completed / PASS WITH WARNINGS; M6.2 pending closeout review
+Status: Completed / PASS WITH WARNINGS; M6.2 closeout complete
 
 ## Legacy audit and parameter boundary
 
@@ -47,6 +47,11 @@ differ because FBCCA sums weighted correlations, so this is evidence of
 within-decoder rank separation only, not a direct numerical superiority claim.
 
 ## Boundary and interpretation
+
+Both reproducible offline baselines reached the ceiling on this formal session.
+The next scientific questions are shorter decoding windows, latency/accuracy
+trade-offs, robustness, preprocessing/filter-bank sensitivity and session
+generalization; these belong to M6.3, not this closeout.
 
 This is single-session offline separability evidence only. Hardware timing,
 physical optical timing and ND8 hardware sample anchoring remain unverified;

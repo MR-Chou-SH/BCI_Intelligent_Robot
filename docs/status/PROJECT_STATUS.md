@@ -389,10 +389,10 @@ Current substage:
 - M6.1b — Controlled Three-Class Offline Dataset Acquisition: Completed / PASS WITH WARNINGS
 - M6.2a — Standard CCA Baseline: Completed / PASS WITH WARNINGS
 - M6.2b — Legacy-informed FBCCA Baseline: Completed / PASS WITH WARNINGS
-- M6.2 — Offline CCA / FBCCA Baseline: Pending Closeout Review
-- M6.3 — Pseudo-online Evaluation: Not Started
+- M6.2 — Offline CCA / FBCCA Baselines: Completed / PASS WITH WARNINGS
+- M6.3 — Offline Characterization: Next / Not Started
 
-M6 begins only after the completed M5 software/runtime association evidence. M6.1a completed real ND8 signal/channel sanity validation with warnings. M6.1b then acquired the first controlled three-class dataset: the preserved first formal attempt was incomplete because of a 1-based/0-based Quest plan-validation mismatch; after the validated runtime fix, session `m6_1b-dataset-20260819T090215Z-d70eaa0d` completed 30/30 trials with 10/10/10 balance, 60/60 valid software-derived associations and an independent completeness verifier result of `complete`. M6.2a and M6.2b then ran fixed Standard CCA and legacy-informed FBCCA baselines on the same 30 software-derived epochs, each obtaining 30/30 in this single session. The M5/M6 evidence boundary remains active: hardware timing, physical optical timing, ND8 hardware sample anchor and hardware-exact EEG sample timing are not verified. The results are single-session separability evidence, not generalized or online classification performance. M6.2 awaits closeout review; M6.3 has not started.
+M6 begins only after the completed M5 software/runtime association evidence. M6.1a completed real ND8 signal/channel sanity validation with warnings. M6.1b then acquired the first controlled three-class dataset: its 30/30 means dataset acquisition completeness and its verifier records `classificationPerformed=false`. M6.2a and M6.2b then ran fixed Standard CCA and legacy-informed FBCCA baselines on the same 30 software-derived epochs, each obtaining 30/30 in this single session. The M5/M6 evidence boundary remains active: hardware timing, physical optical timing, ND8 hardware sample anchor and hardware-exact EEG sample timing are not verified. The results are strong within-session separability evidence, not final, generalized or online accuracy. M6.2 is completed / PASS WITH WARNINGS; the next milestone is M6.3 Offline Characterization, which has not started.
 
 ## Known Open Questions
 
