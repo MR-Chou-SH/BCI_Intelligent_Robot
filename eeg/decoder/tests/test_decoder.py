@@ -6,6 +6,7 @@ from eeg.decoder.cca import predict, references
 from eeg.decoder.config import DecoderConfig
 from eeg.decoder.pipeline import evaluate_predictions
 from eeg.decoder.fbcca import FbccaConfig, FilterBand, apply_filter_band, predict_fbcca, validate_config
+from eeg.decoder.characterization import WINDOW_GRID_SECONDS, validate_window_grid
 
 
 class DecoderTests(unittest.TestCase):
@@ -69,6 +70,13 @@ class DecoderTests(unittest.TestCase):
             self.assertEqual(index, predicted)
             self.assertEqual(3, len(fused))
             self.assertEqual(3, len(subbands))
+
+    def test_characterization_window_grid_validation(self):
+        self.assertEqual(WINDOW_GRID_SECONDS, validate_window_grid())
+        with self.assertRaises(ValueError):
+            validate_window_grid((0.5, 0.5))
+        with self.assertRaises(ValueError):
+            validate_window_grid((1.0, 0.5))
 
 
 if __name__ == "__main__":

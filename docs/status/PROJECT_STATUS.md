@@ -390,9 +390,10 @@ Current substage:
 - M6.2a — Standard CCA Baseline: Completed / PASS WITH WARNINGS
 - M6.2b — Legacy-informed FBCCA Baseline: Completed / PASS WITH WARNINGS
 - M6.2 — Offline CCA / FBCCA Baselines: Completed / PASS WITH WARNINGS
-- M6.3 — Offline Characterization: Next / Not Started
+- M6.3a — Window-Length Characterization: Completed / PASS WITH WARNINGS
+- M6.3 — Offline Characterization: In Progress
 
-M6 begins only after the completed M5 software/runtime association evidence. M6.1a completed real ND8 signal/channel sanity validation with warnings. M6.1b then acquired the first controlled three-class dataset: its 30/30 means dataset acquisition completeness and its verifier records `classificationPerformed=false`. M6.2a and M6.2b then ran fixed Standard CCA and legacy-informed FBCCA baselines on the same 30 software-derived epochs, each obtaining 30/30 in this single session. The M5/M6 evidence boundary remains active: hardware timing, physical optical timing, ND8 hardware sample anchor and hardware-exact EEG sample timing are not verified. The results are strong within-session separability evidence, not final, generalized or online accuracy. M6.2 is completed / PASS WITH WARNINGS; the next milestone is M6.3 Offline Characterization, which has not started.
+M6 begins only after the completed M5 software/runtime association evidence. M6.1a completed real ND8 signal/channel sanity validation with warnings. M6.1b then acquired the first controlled three-class dataset: its 30/30 means dataset acquisition completeness and its verifier records `classificationPerformed=false`. M6.2a and M6.2b then ran fixed Standard CCA and legacy-informed FBCCA baselines on the same 30 software-derived epochs, each obtaining 30/30 in this single session. M6.3a characterized the predefined 0.5–3.0 s window grid with fixed onset guard: CCA reached 100% at 1.5 s and FBCCA at 1.0 s in this session. The M5/M6 evidence boundary remains active: hardware timing, physical optical timing, ND8 hardware sample anchor and hardware-exact EEG sample timing are not verified. These are current-session latency/accuracy observations, not final, generalized or online accuracy. M6.3 remains in progress.
 
 ## Known Open Questions
 
