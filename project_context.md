@@ -532,4 +532,4 @@ M1、M2、M3、M4和M5均已完成。当前最高优先级为：
 
 > M6 — ND8 EEG Online Classification
 
-M6.0 已完成 legacy / architecture audit。M6.1a 已完成真实设备验证并以 `Completed / PASS WITH WARNINGS` 收尾：当前五电极设置下观察到 5 个稳定 finite/nonconstant SDK channels（CH2/3/4/5/7），并在 nominal 9 Hz Quest formal window 中观察到 frequency-specific spectral evidence candidate。下一优先级为 M6.1b controlled three-class offline dataset acquisition；本项目仍未完成分类性能、三类可分性、CCA/FBCCA 或在线分类验证。M5 的证据边界必须继续保留：`hardwareTimingVerified=false`、`physicalOpticalTimingVerified=false`，sample index 仅为 `software-derived estimate`。
+M6.0 已完成 legacy / architecture audit。M6.1a 已完成真实设备验证并以 `Completed / PASS WITH WARNINGS` 收尾：当前五电极设置下观察到 5 个稳定 finite/nonconstant SDK channels（CH2/3/4/5/7），并在 nominal 9 Hz Quest formal window 中观察到 frequency-specific spectral evidence candidate。M6.1b 软件 infrastructure 已完成，当前状态为 `Implementation Complete / Real Dataset Acquisition Pending`；下一步是受控 30-trial 三分类数据采集。本项目仍未完成分类性能、三类可分性、CCA/FBCCA 或在线分类验证。M5 的证据边界必须继续保留：`hardwareTimingVerified=false`、`physicalOpticalTimingVerified=false`，sample index 仅为 `software-derived estimate`。

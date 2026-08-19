@@ -56,3 +56,15 @@ Progressive evidence validation (REST → artifact sanity → frequency-specific
 ## M6.1a closeout boundary
 
 M6.1a is `Completed / PASS WITH WARNINGS` for the current hardware setup. It does not validate classification, three-class separability, physical optical timing, hardware timing, ND8 hardware sample anchoring, or exact standardized electrode positions. No new ADR was required for M6.1a closeout.
+
+## M6.1b controlled dataset acquisition infrastructure
+
+M6.1b software implementation adds `eeg.dataset_acquisition` without implementing CCA, FBCCA, preprocessing optimization or online classification. `generate_trial_plan` creates exactly 10 `target_left` (7.2 Hz), 10 `target_center` (9.0 Hz), and 10 `target_right` (12.0 Hz) trials using a recorded deterministic seed. The generator rejects runs longer than two identical targets and records the full planned order in every ground-truth record. Ground truth is generated before acquisition and is never derived from EEG.
+
+The fixed protocol is: 13 s session preparation, 2 s cue, 1 s pre-stimulus rest, 4 s formal stimulation, 2 s post-stimulus rest, with 25 s breaks after trials 10 and 20. The 30-trial formal stimulation time is 120 s; cue/pre-rest/post-rest add 150 s; the two breaks add 50 s. The nominal full session is therefore 320 s plus the 13 s preparation and device/transition overhead (approximately 333 s before overhead). The state machine records cue, pre-rest, stimulating, post-rest, break, complete and aborted states. Abort leaves the session incomplete and never promotes it to PASS.
+
+`dataset_acquisition.session` reuses the M5 `Nd8SerialAdapter`, `PostSyncAssociationGate`, `TriggerServer` and `AssociationCoordinator` for one continuous ND8/evidence session. The Quest-PC server starts before the 13 s preparation interval, and raw EEG, packet metadata, gate evidence, Quest events, synchronization, derived associations, session events and `trial-ground-truth.jsonl` remain separate. `verify_cli` writes `dataset-completeness.json` and checks 30 trials, 10/10/10 balance, unique/legal labels, event pairs/order, valid software-derived associations, raw packet chronology, metadata/gate presence and continuity loss. It performs no classification.
+
+The existing M5 Unity scene remains single-trial/auto-start and was not modified in M6.1b. The new PC layer is protocol/evidence-ready, but a Quest-visible multi-trial cue/controller integration is still required before the real 30-trial acquisition; PC ground truth cannot be silently treated as a Quest cue. This is why M6.1b remains `Implementation Complete / Real Dataset Acquisition Pending`, not `Completed`.
+
+Automatic verification now covers deterministic order, balance, maximum-run constraint, lifecycle/break/abort transitions, perfect synthetic completeness, missing-trial rejection, malformed evidence handling, M6.1a signal sanity, artifact interval summaries, preparation/formal separation and all M5 regressions: 43 tests passed. The external CPython 3.9.13/NumPy 2.0.2 runtime remains unchanged; no SciPy, matplotlib or sklearn installation was performed. No new ADR is required.
