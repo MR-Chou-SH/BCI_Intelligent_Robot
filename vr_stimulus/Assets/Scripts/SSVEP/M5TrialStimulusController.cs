@@ -122,6 +122,17 @@ namespace BCIIntelligentRobot.VRStimulus
         public int CurrentGlobalStimulusFrame =>
             m_State == TrialState.Stimulating ? Time.frameCount - m_CommonStartFrame : -1;
 
+        public bool AdoptDatasetSessionId(string sessionId)
+        {
+            if (!m_IsInitialized || !IsIdle || string.IsNullOrWhiteSpace(sessionId))
+                return false;
+
+            m_SessionId = sessionId;
+            m_EventSequence = 0;
+            Debug.Log("M6DIAG stimulus_session_id_adopted sessionId=" + m_SessionId, this);
+            return true;
+        }
+
         private void Awake()
         {
             if (!ValidateConfiguration())

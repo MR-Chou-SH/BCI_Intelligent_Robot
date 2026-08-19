@@ -194,6 +194,8 @@ namespace BCIIntelligentRobot.VRStimulus
             {
                 if (m_DiagnosticLogger != null)
                     m_DiagnosticLogger.Record(record);
+                if (record.recordType.StartsWith("dataset_session_plan", StringComparison.Ordinal))
+                    Debug.Log("M6DIAG transport " + record.recordType + ": " + record.detail, this);
                 if (record.status == "error")
                     Debug.LogWarning($"M5.2 transport {record.recordType}: {record.detail}", this);
             }
@@ -329,7 +331,22 @@ namespace BCIIntelligentRobot.VRStimulus
                 {
                     DatasetTrialPlanMessage plan = JsonUtility.FromJson<DatasetTrialPlanMessage>(line);
                     if (plan != null && plan.trials != null)
+                    {
                         m_DatasetPlans.Enqueue(plan);
+                        int left = 0, center = 0, right = 0;
+                        foreach (DatasetTrialPlanItem item in plan.trials)
+                        {
+                            if (item.targetId == "target_left") left++;
+                            else if (item.targetId == "target_center") center++;
+                            else if (item.targetId == "target_right") right++;
+                        }
+                        EnqueueDiagnostic("dataset_session_plan_received", plan.sessionId, -1, "ok",
+                            "trialCount=" + plan.trials.Length + ";left=" + left + ";center=" + center + ";right=" + right);
+                    }
+                    else
+                    {
+                        EnqueueDiagnostic("dataset_session_plan_rejected", "", -1, "error", "missing_trials");
+                    }
                 }
                 else if (message.messageType == "clock_sync_response")
                 {

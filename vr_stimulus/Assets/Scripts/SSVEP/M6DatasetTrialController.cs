@@ -28,6 +28,11 @@ namespace BCIIntelligentRobot.VRStimulus
             if (m_Transport == null) m_Transport = GetComponent<StimulusEventTransportClient>();
             CreateCueText();
             SetText("Waiting for PC session plan...");
+            Debug.Log("M6DIAG controller_initialized visualDemoMode=" + m_VisualDemoMode +
+                " transportBound=" + (m_Transport != null) +
+                " stimulusBound=" + (m_Stimulus != null) +
+                " cameraBound=" + (m_CueAnchor != null) + " state=" + m_Phase, this);
+            Debug.Log("M6DIAG waiting_for_dataset_session_plan", this);
         }
 
         private void Update()
@@ -49,13 +54,22 @@ namespace BCIIntelligentRobot.VRStimulus
             }
             if (m_Transport != null && m_Transport.TryDequeueDatasetPlan(out DatasetTrialPlanMessage plan))
             {
+                Debug.Log("M6DIAG dataset_session_plan_dequeued sessionId=" + plan.sessionId +
+                    " trialCount=" + (plan.trials == null ? 0 : plan.trials.Length), this);
                 string error;
                 if (!ValidatePlan(plan, out error))
                 {
+                    Debug.LogError("M6DIAG dataset_session_plan_rejected reason=" + error, this);
                     AbortSession("Invalid PC ground-truth plan: " + error);
                     return;
                 }
                 m_SessionId = plan.sessionId;
+                if (m_Stimulus == null || !m_Stimulus.AdoptDatasetSessionId(m_SessionId))
+                {
+                    AbortSession("M5 stimulus controller could not adopt PC dataset session ID");
+                    return;
+                }
+                Debug.Log("M6DIAG dataset_session_plan_accepted sessionId=" + m_SessionId, this);
                 m_Run = StartCoroutine(RunPlan(plan, m_VisualDemoMode));
             }
         }
@@ -97,13 +111,18 @@ namespace BCIIntelligentRobot.VRStimulus
         private IEnumerator RunPlan(DatasetTrialPlanMessage plan, bool demoMode)
         {
             m_Phase = Phase.Preparation;
+            Debug.Log("M6DIAG enter_preparation countdownSeconds=" +
+                (demoMode ? 3f : plan.protocol.preparationSeconds), this);
             yield return Countdown("PREPARATION\nGet ready", demoMode ? 3f : plan.protocol.preparationSeconds);
             var trials = demoMode ? SelectDemoTrials(plan.trials) : plan.trials;
             for (int i = 0; i < trials.Length; i++)
             {
                 DatasetTrialPlanItem item = trials[i];
                 m_Phase = Phase.Cue;
+                Debug.Log("M6DIAG trial_armed trialId=" + item.trialId + " trialIndex=" + item.trialIndex +
+                    " targetId=" + item.targetId, this);
                 SetText(string.Format("Trial {0} / {1}\nLOOK {2}", i + 1, trials.Length, item.targetSide));
+                Debug.Log("M6DIAG cue_shown targetId=" + item.targetId, this);
                 yield return new WaitForSeconds(demoMode ? 1f : plan.protocol.cueSeconds);
                 m_Phase = Phase.PreRest;
                 SetText("READY");
@@ -115,6 +134,7 @@ namespace BCIIntelligentRobot.VRStimulus
                     yield break;
                 }
                 m_Phase = Phase.Stimulating;
+                Debug.Log("M6DIAG enter_stimulating stimulus_start_requested trialId=" + item.trialId, this);
                 SetText(string.Empty);
                 yield return new WaitForSeconds(plan.protocol.stimulusSeconds);
                 m_Stimulus.RequestStopTrial("m6_1b_fixed_stimulus_duration");
@@ -188,7 +208,7 @@ namespace BCIIntelligentRobot.VRStimulus
             for (int i = 0; i < plan.trials.Length; i++)
             {
                 DatasetTrialPlanItem item = plan.trials[i];
-                if (item == null || item.trialIndex != i || item.sessionId != plan.sessionId ||
+                if (item == null || item.trialIndex != i + 1 || item.sessionId != plan.sessionId ||
                     string.IsNullOrEmpty(item.trialId) || !m_SeenTrialIds.Add(item.trialId))
                 { error = "trial identity/order is invalid"; return false; }
                 if (item.targetId != "target_left" && item.targetId != "target_center" && item.targetId != "target_right")

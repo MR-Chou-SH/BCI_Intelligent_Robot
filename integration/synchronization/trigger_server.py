@@ -35,12 +35,21 @@ class TriggerServer:
                                  "peer": peer, "pcUtc": utc_now()})
         try:
             if self.dataset_plan is not None:
-                writer.write(encode_line({
+                plan_message = {
                     "protocolVersion": PROTOCOL_VERSION,
                     "messageType": "dataset_session_plan",
                     **self.dataset_plan,
-                }))
+                }
+                writer.write(encode_line(plan_message))
                 await writer.drain()
+                trials = plan_message.get("trials", [])
+                counts = {target: sum(item.get("targetId") == target for item in trials)
+                          for target in ("target_left", "target_center", "target_right")}
+                self.diagnostics.append({
+                    "recordType": "dataset_session_plan_sent", "connectionId": connection_id,
+                    "sessionId": plan_message.get("sessionId"), "trialCount": len(trials),
+                    "classCounts": counts, "pcUtc": utc_now(),
+                })
             while True:
                 raw = await reader.readline()
                 if not raw:
