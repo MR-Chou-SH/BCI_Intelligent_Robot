@@ -137,6 +137,32 @@ def _channel_summary(index, values, sampling_rate_hz, mode, severe_continuity_is
             "quality": quality, "reasons": reasons}
 
 
+def _artifact_segment_comparison(channels, sampling_rate_hz):
+    """Transparent fixed protocol summary; it does not detect artifacts."""
+    protocol = (("rest_1", 0.0, 8.0), ("blink", 8.0, 13.0), ("rest_2", 13.0, 18.0),
+                ("jaw", 18.0, 23.0), ("rest_3", 23.0, 30.0))
+    results = []
+    for label, start_seconds, end_seconds in protocol:
+        start = int(round(start_seconds * sampling_rate_hz))
+        end = int(round(end_seconds * sampling_rate_hz))
+        per_channel = []
+        for index, values in enumerate(channels):
+            segment = np.asarray(values[start:end], dtype=float)
+            finite = segment[np.isfinite(segment)]
+            if not len(finite):
+                metrics = {"sampleCount": int(segment.size), "finiteCount": 0, "standardDeviation": None,
+                           "rms": None, "peakToPeak": None}
+            else:
+                metrics = {"sampleCount": int(segment.size), "finiteCount": int(len(finite)),
+                           "standardDeviation": float(np.std(finite)), "rms": float(np.sqrt(np.mean(finite ** 2))),
+                           "peakToPeak": float(np.max(finite) - np.min(finite))}
+            per_channel.append({"channelIndex": index, "metrics": metrics})
+        results.append({"label": label, "requestedStartSeconds": start_seconds, "requestedEndSeconds": end_seconds,
+                        "timeBase": "first_saved_raw_sample_sequence_at_nominal_sampling_rate", "channels": per_channel})
+    return {"metricMeaning": "fixed-protocol descriptive statistics; no artifact detection or classification",
+            "segments": results}
+
+
 def analyze_session(session):
     """Read append-only raw evidence and write a deterministic derived summary."""
     session = Path(session)
@@ -210,6 +236,8 @@ def analyze_session(session):
         "timingEvidenceBoundary": {"hardwareTimingVerified": False, "physicalOpticalTimingVerified": False,
                                    "sampleAnchor": "unverified; no hardware-exact sample index claimed"},
     }
+    if mode == "artifact_sanity":
+        output["segmentComparison"] = _artifact_segment_comparison(channels, sampling_rate_hz)
     analysis_dir = session / "analysis"
     analysis_dir.mkdir(exist_ok=True)
     (analysis_dir / SUMMARY_FILE).write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

@@ -25,6 +25,8 @@ Quality labels are conservative engineering checks, not medical metrics: a non-f
 
 Synthetic tests cover: all-eight-channel raw reading, a constant channel, a 9-Hz sinusoid, non-finite values, malformed JSON/packet continuity evidence, and deterministic re-analysis. M5 acquisition, timestamp mapping, association and protocol regression tests remain passing. These are software checks only; no real M6 EEG result is recorded here.
 
+For the fixed 30-second `artifact_sanity` human-action protocol, the offline summary also reports per-channel standard deviation, RMS and peak-to-peak values for the declared rest/blink/rest/jaw/rest intervals. The intervals are indexed from the first saved raw sample at the nominal 1000 Hz rate; they are descriptive markers, not a hardware trigger, artifact detector or classifier.
+
 ## Real-device validation pending
 
 Before M6.1b or decoder work, conduct REST, artifact sanity and center-9-Hz Quest sanity sessions with the external CPython 3.9 SDK environment and preserve data outside Git. Review the machine-readable summaries and raw/gate evidence; do not promote the result to hardware timing, physical optical timing, or a verified hardware sample anchor.

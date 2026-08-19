@@ -67,6 +67,19 @@ class SignalSanityAnalysisTests(unittest.TestCase):
             first.pop("generatedUtc"); second.pop("generatedUtc")
             self.assertEqual(first, second)
 
+    def test_artifact_mode_reports_fixed_protocol_segments_from_raw_sequence(self):
+        with TemporaryDirectory() as root:
+            self.make_session(root, "artifact_sanity")
+            values = np.concatenate([np.zeros(8000), np.tile([0.0, 10.0], 2500), np.zeros(8000),
+                                     np.tile([0.0, 20.0], 2500), np.zeros(7000)])
+            write_jsonl(root + "/raw-eeg-packets.jsonl", [packet(0, [values for _ in range(8)])])
+            write_jsonl(root + "/packet-metadata.jsonl", [])
+            summary = analyze_session(root)
+            segments = {item["label"]: item for item in summary["segmentComparison"]["segments"]}
+            self.assertGreater(segments["blink"]["channels"][2]["metrics"]["standardDeviation"],
+                               segments["rest_1"]["channels"][2]["metrics"]["standardDeviation"])
+            self.assertGreater(segments["jaw"]["channels"][2]["metrics"]["peakToPeak"], 10.0)
+
 
 if __name__ == "__main__":
     unittest.main()
