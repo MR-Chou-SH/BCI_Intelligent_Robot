@@ -7,6 +7,7 @@ from eeg.decoder.config import DecoderConfig
 from eeg.decoder.pipeline import evaluate_predictions
 from eeg.decoder.fbcca import FbccaConfig, FilterBand, apply_filter_band, predict_fbcca, validate_config
 from eeg.decoder.characterization import WINDOW_GRID_SECONDS, validate_window_grid
+from eeg.decoder.filter_realization import apply_legacy_filter_band, legacy_filter_details
 
 
 class DecoderTests(unittest.TestCase):
@@ -77,6 +78,16 @@ class DecoderTests(unittest.TestCase):
             validate_window_grid((0.5, 0.5))
         with self.assertRaises(ValueError):
             validate_window_grid((1.0, 0.5))
+
+    def test_legacy_filter_details_and_short_window_are_finite(self):
+        config = FbccaConfig()
+        details = legacy_filter_details(1000.0, config)
+        self.assertEqual(3, len(details))
+        short = np.random.default_rng(4).standard_normal((2, 500))
+        filtered, runtime = apply_legacy_filter_band(short, config.filter_bands[0], 1000.0, details[0])
+        self.assertEqual(short.shape, filtered.shape)
+        self.assertTrue(np.isfinite(filtered).all())
+        self.assertGreater(runtime["padlen"], 0)
 
 
 if __name__ == "__main__":
