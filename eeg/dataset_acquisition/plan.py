@@ -58,7 +58,7 @@ def _runs(values):
     return lengths
 
 
-def generate_trial_plan(session_id, seed, trials_per_class=10, maximum_consecutive=2):
+def generate_trial_plan(session_id, seed, trials_per_class=10, maximum_consecutive=2, trial_prefix="m6_1b-trial"):
     if not session_id:
         raise ValueError("session_id is required")
     if trials_per_class <= 0:
@@ -66,7 +66,7 @@ def generate_trial_plan(session_id, seed, trials_per_class=10, maximum_consecuti
     if maximum_consecutive <= 0:
         raise ValueError("maximum_consecutive must be positive")
     order = _balanced_order(int(seed), int(trials_per_class), int(maximum_consecutive))
-    return [TrialPlanItem(session_id, "m6_1b-trial-{:03d}".format(index), index,
+    return [TrialPlanItem(session_id, "{}-{:03d}".format(trial_prefix, index), index,
                           target, TARGETS[target]["targetSide"], TARGETS[target]["nominalFrequencyHz"],
                           int(seed), order)
             for index, target in enumerate(order, 1)]
