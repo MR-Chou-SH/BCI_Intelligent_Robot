@@ -65,8 +65,8 @@ class LiveOnlineController:
                         "decisionPredictionIndex":record["predictionIndex"],
                         "decisionRelativeTimeSeconds":record["relativeToStimulusStartSeconds"],
                         "stabilizer":"2-Consecutive", "predictionSequence":list(state["predictions"])}
-                    if self.decision_log: self.decision_log.append(state["decision"])
-            if self.prediction_log: self.prediction_log.append(record)
+                    if self.decision_log is not None: self.decision_log.append(state["decision"])
+            if self.prediction_log is not None: self.prediction_log.append(record)
         return emitted
 
     def stop_trial(self, reason="stimulus_stopped"):
@@ -77,7 +77,7 @@ class LiveOnlineController:
             "finalDecisionLabel":None,"decisionMade":False,"decisionPredictionIndex":None,
             "decisionRelativeTimeSeconds":None,"stabilizer":"2-Consecutive",
             "predictionSequence":state["predictions"],"reason":state.get("invalidReason", reason)}
-        if state["decision"] is None and self.decision_log: self.decision_log.append(decision)
+        if state["decision"] is None and self.decision_log is not None: self.decision_log.append(decision)
         result = dict(decision)
         result["predictionTimeline"] = list(state["predictions"])
         return result
