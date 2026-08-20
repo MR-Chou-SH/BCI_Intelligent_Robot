@@ -6,8 +6,8 @@ class FormalOnlineTests(unittest.TestCase):
   a=np.zeros((8,1000));
   for c in (2,3,4,5,7)[:usable]: a[c]=np.linspace(0,1,1000)+c
   return a
- def test_channel_gate_five_four_ready_three_fails(self):
-  self.assertEqual('READY',channel_admission(self.data(5))['verdict']); self.assertEqual('READY',channel_admission(self.data(4))['verdict']); self.assertEqual('CHANNEL CHECK FAILED',channel_admission(self.data(3))['verdict'])
+ def test_channel_gate_five_four_three_ready_two_one_zero_fail(self):
+  self.assertEqual('READY',channel_admission(self.data(5))['verdict']); self.assertEqual('READY',channel_admission(self.data(4))['verdict']); self.assertEqual('READY',channel_admission(self.data(3))['verdict']); self.assertEqual('CHANNEL CHECK FAILED',channel_admission(self.data(2))['verdict']); self.assertEqual('CHANNEL CHECK FAILED',channel_admission(self.data(1))['verdict']); self.assertEqual('CHANNEL CHECK FAILED',channel_admission(self.data(0))['verdict'])
  def test_channel_gate_rejects_rail_nonfinite_and_continuity(self):
   a=self.data(5); a[2]=375000; a[3,0]=np.nan; r=channel_admission(a,['continuous']); self.assertFalse(r['channels'][0]['usable']); self.assertFalse(r['channels'][1]['usable']); self.assertEqual('CHANNEL CHECK FAILED',channel_admission(self.data(5),['lost'])['verdict'])
  def test_plan_replacement_and_no_decision(self):

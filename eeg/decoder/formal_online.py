@@ -10,7 +10,7 @@ from .pseudo_online import DecoderBackend
 
 CANDIDATE_CHANNELS = (2, 3, 4, 5, 7)
 CHANNEL_RULE_VERSION = "m6_7a_channel_admission_v1"
-FORMAL_MINIMUM_USABLE = 4
+FORMAL_MINIMUM_USABLE = 3
 RAIL_VALUE = 375000.0
 RAIL_FRACTION_LIMIT = 0.95
 
