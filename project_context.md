@@ -127,6 +127,8 @@ M6.4 closeout evidence summary:
 
 M6.5a 使用同一冻结配置建立了 `historical packet → rolling buffer → event → eligibility → window → decoder → prediction` 的 replay-only pseudo-online pipeline。其 0.5 s guard + 1.5 s window 的 first decision 在 A/B1/B2 固定 QC-valid trials 上逐 trial 复现了对应 offline prediction；这验证软件 extraction semantics，不等于真实 online、端到端 latency 或泛化验证。
 
+M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 First、2-Consecutive、3-Consecutive 三个预声明策略。当前仅形成 exploratory engineering candidate，不进行 threshold/step tuning；真实 ND8 online 仍需另行授权与验证。
+
 现阶段：
 
 - 不自动识别物体；

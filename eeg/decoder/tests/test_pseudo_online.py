@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from eeg.decoder.config import DecoderConfig
-from eeg.decoder.pseudo_online import DecoderBackend, ReplayPacket, RollingEegBuffer, replay_event_locked
+from eeg.decoder.pseudo_online import DecoderBackend, ReplayPacket, RollingEegBuffer, replay_continuous, replay_event_locked, stabilize
 
 
 class BufferTests(unittest.TestCase):
@@ -52,6 +52,22 @@ class ReplayTests(unittest.TestCase):
         for name in ("standard_cca", "numpy_fbcca", "legacy_fbcca"):
             index, scores = DecoderBackend(name, config).predict(data)
             self.assertIn(index, range(3)); self.assertEqual(3, len(scores))
+
+    def test_stabilization_policies_and_interruptions(self):
+        values = [{"predictionIndex": i, "relativeToStimulusStartSeconds": 2 + .2 * i,
+                   "predictedClass": label, "groundTruthLabel": "target_left"}
+                  for i, label in enumerate(("target_left", "target_right", "target_left", "target_left", "target_left"))]
+        self.assertEqual(0, stabilize(values, 1)["decisionPredictionIndex"])
+        self.assertEqual(3, stabilize(values, 2)["decisionPredictionIndex"])
+        self.assertEqual(4, stabilize(values, 3)["decisionPredictionIndex"])
+
+    def test_continuous_runner_stops_at_stimulation_boundary(self):
+        config = DecoderConfig(analysis_duration_seconds=.01, onset_guard_seconds=.01)
+        packets = [ReplayPacket(np.random.default_rng(i).normal(size=(8, 10)), i * 10, i, i, "continuous") for i in range(8)]
+        event = {"sessionId": "s", "trialId": "t", "groundTruthLabel": "target_left", "startSample": 0, "eventKnownLogicalNs": 0}
+        rows = replay_continuous(packets, [event], DecoderBackend("standard_cca", config), [0, 1], config,
+                                 stimulation_samples=40, step_samples=10)
+        self.assertEqual([20, 30, 40], [x["analysisWindowEnd"] for x in rows[0]["predictionSequence"]])
 
 
 if __name__ == "__main__":

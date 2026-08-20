@@ -22,6 +22,7 @@ from .pipeline import evaluate_predictions
 LABELS = ("target_left", "target_center", "target_right")
 # M6.5a frozen first-decision candidate: 0.5 s onset guard + 1.5 s EEG.
 DEFAULT_PSEUDO_ONLINE_CONFIG = DecoderConfig(analysis_duration_seconds=1.5)
+SLIDING_STEP_SAMPLES = 200
 
 
 @dataclass(frozen=True)
@@ -236,3 +237,87 @@ def summarize(decisions):
             "computeMilliseconds": ({"min": float(durations.min()), "median": float(np.median(durations)),
                                      "mean": float(durations.mean()), "p95": float(np.percentile(durations, 95)),
                                      "max": float(durations.max())} if len(durations) else None)}
+
+
+def stabilize(predictions, required_consecutive):
+    """Return the first fixed-consecutive decision; labels never affect timing."""
+    if required_consecutive not in (1, 2, 3):
+        raise ValueError("required_consecutive must be 1, 2, or 3")
+    previous, run = None, 0
+    for item in predictions:
+        run = run + 1 if item["predictedClass"] == previous else 1
+        previous = item["predictedClass"]
+        if run >= required_consecutive:
+            return {"finalDecisionLabel": previous, "decisionMade": True,
+                    "decisionPredictionIndex": item["predictionIndex"],
+                    "decisionRelativeTimeSeconds": item["relativeToStimulusStartSeconds"],
+                    "correct": previous == item["groundTruthLabel"],
+                    "preDecisionPredictionCount": item["predictionIndex"] + 1,
+                    "reason": "fixed_consecutive_run"}
+    return {"finalDecisionLabel": None, "decisionMade": False, "decisionPredictionIndex": None,
+            "decisionRelativeTimeSeconds": None, "correct": False,
+            "preDecisionPredictionCount": len(predictions), "reason": "no_sufficient_consecutive_run"}
+
+
+def replay_continuous(packets, start_events, backend, selected_channels, config=None,
+                      stimulation_samples=4000, step_samples=SLIDING_STEP_SAMPLES):
+    """Causal 200-sample sliding replay; windows must remain inside stimulation."""
+    config = config or DEFAULT_PSEUDO_ONLINE_CONFIG
+    if step_samples <= 0:
+        raise ValueError("step_samples must be positive")
+    packets = sorted(packets, key=lambda item: item.logical_time_ns)
+    events = sorted(start_events, key=lambda item: item["eventKnownLogicalNs"])
+    buffer, states, event_index = RollingEegBuffer(), [], 0
+    for packet in packets:
+        while event_index < len(events) and events[event_index]["eventKnownLogicalNs"] <= packet.logical_time_ns:
+            event = dict(events[event_index]); event["predictions"] = []
+            event["nextStop"] = event["startSample"] + config.onset_guard_samples + config.analysis_sample_count
+            states.append(event); event_index += 1
+        buffer.append(packet)
+        for state in states:
+            latest = state["startSample"] + stimulation_samples
+            while state["nextStop"] <= latest and buffer.stop_sample >= state["nextStop"]:
+                start, stop = state["nextStop"] - config.analysis_sample_count, state["nextStop"]
+                try:
+                    data = buffer.window(start, stop)[selected_channels]
+                except ValueError:
+                    state["invalid"] = "continuity_or_history_rejected"; break
+                started = time.perf_counter_ns(); index, scores = backend.predict(data)
+                state["predictions"].append({"sessionId": state["sessionId"], "trialId": state["trialId"],
+                    "groundTruthLabel": state["groundTruthLabel"], "decoder": backend.name,
+                    "predictionIndex": len(state["predictions"]), "logicalPredictionTimeNs": packet.logical_time_ns,
+                    "relativeToStimulusStartSeconds": (state["nextStop"] - state["startSample"]) / config.input_sampling_rate_hz,
+                    "analysisWindowStart": start, "analysisWindowEnd": stop,
+                    "candidateScores": {str(f): float(v) for f, v in zip(config.target_frequencies_hz, scores)},
+                    "predictedClass": LABELS[index], "computeDurationNs": time.perf_counter_ns() - started,
+                    "latestPacketSequence": packet.packet_sequence, "latestSampleAvailable": buffer.stop_sample,
+                    "continuityState": "contiguous"})
+                state["nextStop"] += step_samples
+    trials = []
+    for state in states:
+        predictions = state["predictions"]
+        changes = sum(a["predictedClass"] != b["predictedClass"] for a, b in zip(predictions, predictions[1:]))
+        policies = {str(n): stabilize(predictions, n) for n in (1, 2, 3)}
+        trials.append({"sessionId": state["sessionId"], "trialId": state["trialId"],
+                       "groundTruthLabel": state["groundTruthLabel"], "predictionSequence": predictions,
+                       "numberOfLabelChanges": changes, "invalidReason": state.get("invalid"), "policies": policies})
+    return trials
+
+
+def summarize_policies(trials):
+    result = {}
+    for policy in ("1", "2", "3"):
+        values = [trial["policies"][policy] for trial in trials]
+        made = [item for item in values if item["decisionMade"]]
+        latency = np.asarray([item["decisionRelativeTimeSeconds"] for item in made], dtype=float)
+        changes = [trial["numberOfLabelChanges"] for trial in trials]
+        result[policy] = {"decisionCoverage": len(made) / len(trials) if trials else None,
+                          "decisions": len(made), "validTrials": len(trials),
+                          "accuracyAmongDecisions": sum(item["correct"] for item in made) / len(made) if made else None,
+                          "correctAllValid": sum(item["correct"] for item in made) / len(trials) if trials else None,
+                          "latencySeconds": ({"min": float(latency.min()), "median": float(np.median(latency)),
+                              "mean": float(latency.mean()), "p95": float(np.percentile(latency, 95)), "max": float(latency.max())} if len(latency) else None),
+                          "stability": {"zeroLabelChanges": sum(value == 0 for value in changes),
+                                        "oneOrMoreLabelChanges": sum(value >= 1 for value in changes),
+                                        "meanLabelChanges": float(np.mean(changes)) if changes else None}}
+    return result

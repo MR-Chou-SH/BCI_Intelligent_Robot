@@ -404,6 +404,8 @@ M6.4 PASS means association robustness audit, real failure-mode fixes, historica
 
 M6.5a validates a replay-only pseudo-online software architecture: historical packet → rolling buffer → event → eligibility → frozen window → decoder → prediction. Its frozen first-decision policy is 0.5 s guard + 1.5 s analysis (2.0 s algorithmic wait), CH2/3/4/5/7 and the existing three CCA/FBCCA backends. In A/B1/B2 it reproduced the 1.5 s offline prediction for every fixed QC-valid trial: A 30/30, B1 29/29, B2 30/30 equivalence for each backend. Classification results remain A 30/30 / 30/30 / 30/30, B1 26/29 / 28/29 / 27/29, B2 29/30 / 29/30 / 30/30 (Standard / NumPy FBCCA / legacy-style FBCCA). Compute time is recorded separately from algorithmic wait and packetization. M6.5a must not use future packets, cannot establish true online performance or end-to-end latency, and does not authorize real ND8 online acquisition.
 
+M6.5b adds fixed 0.2 s continuous replay and First / 2-Consecutive / 3-Consecutive stabilization. NumPy FBCCA characterization retains full decision coverage on A/B1/B2. First and 2-Consecutive give A 30/30, B1 28/29, B2 29/30 at 2.0/2.2 s; 3-Consecutive gives A 30/30, B1 29/29, B2 30/30 with a typical 2.4 s decision. This is exploratory engineering characterization, not policy optimization or real online validation.
+
 ## Known Open Questions
 
 - Horizon OS application-name metadata for sideloaded development builds
