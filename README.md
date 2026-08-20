@@ -16,9 +16,9 @@
 
 M0 至 M5 已完成；M6 正在进行离线 EEG decoder 与跨 session robustness 验证：
 
-`M6.4 — Cross-Session Generalization / Robustness Validation: exploratory analysis performed; formal completion pending`
+`M6.5a — Pseudo-Online Decoder Infrastructure: replay-based first-decision validation in progress`
 
-M6.1b 的 Session A 是当前最完整的正式 dataset（30/30 QC-valid）。M6.2 与 M6.3 已完成固定 CCA/FBCCA offline baselines 和 window/filter-realization characterization。M6.4 已完成 B1/B2 的只读 replay 与 exploratory cross-session analysis；B1 为 29 QC-valid trials，B2 的 replay 30/30 仅是 post-hoc exploratory evidence，原始 formal 状态仍为 incomplete。
+M6.1b 的 Session A 是当前最完整的正式 dataset（30/30 QC-valid）。M6.2 与 M6.3 已完成固定 CCA/FBCCA offline baselines 和 window/filter-realization characterization。M6.4 已以 `Completed / PASS WITH WARNINGS` 收口：B1/B2 replay 提供 exploratory cross-session evidence；B1 为 29 QC-valid trials，B2 的 replay 30/30 仅是 post-hoc exploratory evidence，原始 formal 状态仍为 incomplete。M6.5a 正在用历史 packet replay 验证 rolling-buffer pseudo-online architecture。
 
 当前不进入 pseudo-online，也不计划立即进行第四次 EEG acquisition。软件 sample association、硬件 sample anchor、硬件/光学 timing 与名义刺激频率的光学验证仍是证据边界。
 

@@ -125,6 +125,8 @@ M6.4 closeout evidence summary:
 - Session B2：原始 formal status 为 `incomplete`，但 association bug 修复后的只读 replay 为 30/30（10/10/10），仅属 post-hoc exploratory replay evidence；
 - 固定 CH2/3/4/5/7、1000 Hz、0.5 s onset guard、demean-only、7.2/9/12 Hz、3 harmonics 的 exploratory results 显示明显 session effect，不能写成 generalized 或 online accuracy。
 
+M6.5a 使用同一冻结配置建立了 `historical packet → rolling buffer → event → eligibility → window → decoder → prediction` 的 replay-only pseudo-online pipeline。其 0.5 s guard + 1.5 s window 的 first decision 在 A/B1/B2 固定 QC-valid trials 上逐 trial 复现了对应 offline prediction；这验证软件 extraction semantics，不等于真实 online、端到端 latency 或泛化验证。
+
 现阶段：
 
 - 不自动识别物体；
