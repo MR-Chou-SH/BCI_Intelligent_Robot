@@ -75,7 +75,7 @@ EEG系统判断用户选择了哪个目标。
 
 ## 3. 当前开发阶段
 
-项目已完成M1最小Quest应用、M2沉浸式Passthrough与固定虚拟方块、M3单目标SSVEP、M4三目标SSVEP的Quest 3实机验证，以及M5刺激时序与EEG trigger同步和首次真实 Quest→ND8 sample association 验证。当前准备进入M6：ND8 EEG online classification。
+项目已完成 M1–M5 的 Quest/SSVEP/同步工作，并完成 M6.0–M6.3 的 ND8 offline decoder baselines 与 characterization。当前处于 M6.4：已完成多 session 的 acquisition evidence、association robustness replay 与 exploratory cross-session analysis；formal completion pending，当前不进入 pseudo-online。
 
 已经完成：
 
@@ -97,7 +97,8 @@ EEG系统判断用户选择了哪个目标。
 
 当前尚未完成：
 
-- ND8 EEG online classification；
+- M6.4 formal cross-session validation completion；
+- pseudo-online / real-time classification readiness；
 - 视觉识别模块；
 - 机械臂正式集成。
 
@@ -109,7 +110,7 @@ GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配�
 
 当前工程里程碑是：
 
-> M5 — Stimulus Timing / EEG Trigger Synchronization（Completed / PASS）
+> M6.4 — Cross-Session Generalization / Robustness Validation（In Progress / exploratory evidence available / formal validation pending）
 
 M1、M2、M3、M4和M5均已完成。M5在真实 Quest 3 + ND8 session 中验证了 software stimulus event、Quest-PC clock mapping、ND8 stable post-sync packet 和 software-derived sample estimate 的端到端关联；物理光学时序、硬件 sample anchor 和 hardware-exact EEG timing 仍待验证。
 
@@ -117,11 +118,18 @@ M1、M2、M3、M4和M5均已完成。M5在真实 Quest 3 + ND8 session 中验证
 
 > 在Meta Quest 3中，在三个指定三维坐标显示三个具有指定刺激频率的黑白闪烁方块。
 
+M6 evidence summary:
+
+- Session A：30/30 QC-valid，是当前最完整的正式 baseline session；
+- Session B1：29/30 QC-valid（10/9/10）；trial 011 因固定 5 秒 clock-sync freshness gate 无效；
+- Session B2：原始 formal status 为 `incomplete`，但 association bug 修复后的只读 replay 为 30/30（10/10/10），仅属 post-hoc exploratory replay evidence；
+- 固定 CH2/3/4/5/7、1000 Hz、0.5 s onset guard、demean-only、7.2/9/12 Hz、3 harmonics 的 exploratory results 显示明显 session effect，不能写成 generalized 或 online accuracy。
+
 现阶段：
 
 - 不自动识别物体；
 - 不接入机械臂；
-- 不要求EEG在线分类；
+- 不开始 pseudo-online；
 - 三个刺激位置可以预先指定；
 - 刺激频率可以预先指定。
 
@@ -154,7 +162,7 @@ M1、M2、M3、M4和M5均已完成。M5在真实 Quest 3 + ND8 session 中验证
 - 帧/时序管理
 - EEG trigger同步
 
-当前优先开发此模块。
+M6 阶段优先保持已冻结的 stimulus/protocol 与 decoder evidence boundary，不在此轮改动刺激模块。
 
 ### 5.2 `vision`
 
@@ -197,7 +205,7 @@ M1、M2、M3、M4和M5均已完成。M5在真实 Quest 3 + ND8 session 中验证
 - 机械臂状态
 - 安全处理
 
-机械臂具体型号及控制接口后续补充。
+MuJoCo 机械臂仿真与底层控制系统允许复用同门正在开发的系统；本项目不需从零重建。`robot_arm/` 主要定义/适配 BCI→robot command/task interface、执行状态与安全反馈，并与 integration 完成端到端实验。
 
 ### 5.5 `integration`
 
@@ -532,4 +540,4 @@ M1、M2、M3、M4和M5均已完成。当前最高优先级为：
 
 > M6 — ND8 EEG Online Classification
 
-M6.0 已完成 legacy / architecture audit。M6.1a 已完成真实设备验证并以 `Completed / PASS WITH WARNINGS` 收尾。M6.1b 已完成第一份受控三类别 EEG dataset：其 30/30 表示 dataset acquisition completeness，且 `classificationPerformed=false`。M6.2a/2b 已在同一固定 30 个 epoch 上完成 Standard CCA 和 legacy-informed FBCCA baseline；两者在该单 session 中均为 30/30。M6.3a 已完成固定 0.5–3.0 秒 window grid characterization：该 session 中 Standard CCA 在预定义 grid 上首次达到 100% 的窗口为 1.5 秒，NumPy FBCCA 为 1.0 秒。M6.3b 已完成当前 NumPy 与稳定 legacy-style Chebyshev-I SOS zero-phase FBCCA realization 对比，短窗 0.5/1.0 秒出现 prediction disagreement，1.5/3.0 秒完全一致。M6.3 已完成并判定为 `Completed / PASS WITH WARNINGS`。这些结果仅是当前单 session、30 trials 的 latency/filter-realization 与 strong within-session separability evidence，不代表最终系统、泛化、在线或硬件精确分类性能。当前 workspace 使用 NumPy 2.2.6 与 SciPy 1.14.1，但仓库尚无正式 requirements/pyproject dependency declaration，属于可复现性 warning。下一阶段为 M6.4 Cross-Session Generalization Validation，尚未开始。M5/M6 的证据边界必须继续保留：`hardwareTimingVerified=false`、`physicalOpticalTimingVerified=false`，sample index 仅为 `software-derived estimate`。
+M6.0 已完成 legacy / architecture audit。M6.1a、M6.1b、M6.2、M6.3 均已完成并带 warnings。M6.4 已有 exploratory cross-session evidence：A 为正式 30/30 baseline；B1 为固定 QC-valid subset 29/30；B2 原始 formal status 为 incomplete，但修复 packet-boundary rounding 与 concurrent flush 后的只读 replay 为 30/30 exploratory evidence。固定 decoder 下 B1/B2 相对 A 出现 session effect，因此 formal cross-session validation 仍 pending，pseudo-online readiness 为 `NO`，当前不计划立即进行第四次 acquisition。M5/M6 的证据边界必须继续保留：`hardwareTimingVerified=false`、`physicalOpticalTimingVerified=false`，ND8 hardware sample anchor 与 hardware-exact timing 未验证，sample index 仅为 `software-derived estimate`，且名义刺激频率未获独立 optical measurement。当前 workspace 使用 NumPy 2.2.6 与 SciPy 1.14.1，但仓库尚无正式 requirements/pyproject dependency declaration，属于可复现性 warning。

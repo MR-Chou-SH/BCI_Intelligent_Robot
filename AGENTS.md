@@ -258,16 +258,16 @@ For hardware/XR/EEG tasks, explicitly distinguish:
 
 ## 11. Current Priority
 
-M1, M2, M3, and M4 are completed.
+M1 through M5 are completed. M6.0 through M6.3 are completed with warnings.
 
 The current engineering milestone is:
 
-M5 — Stimulus Timing / EEG Trigger Synchronization.
+M6.4 — Cross-Session Generalization / Robustness Validation.
 
 The current task is:
 
-Design and implement stimulus start/stop timing records and an EEG trigger synchronization interface on the verified three-target frame-driven baseline. Preserve the distinction between software-derived and physically measured stimulus timing.
+Use existing-session exploratory evidence and formal-completion decisions carefully. Do not treat post-hoc replay as formal dataset completeness, and do not enter pseudo-online classification without explicit authorization and evidence review.
 
-Visual object recognition is a later milestone.
+For future robot work, prefer integration with the labmate-provided MuJoCo simulation / low-level control system. This repository owns the BCI target-selection output, robot command/task interface, integration, execution status/feedback, and end-to-end experiments; it does not need to rebuild the complete simulator or low-level controller from scratch.
 
 Do not prematurely implement online EEG classification, vision, robot control, or scene understanding while working on M5 synchronization.

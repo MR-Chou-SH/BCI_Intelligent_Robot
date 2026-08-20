@@ -1,10 +1,10 @@
 # Project Status
 
-Last updated: 2026-08-19
+Last updated: 2026-08-20
 
 ## Overall Phase
 
-Three SSVEP Target Development
+M6 — ND8 EEG Decoder and Cross-Session Robustness Validation
 
 ## Completed Milestone
 
@@ -393,9 +393,13 @@ Current substage:
 - M6.3a — Window-Length Characterization: Completed / PASS WITH WARNINGS
 - M6.3b — FBCCA Filter Realization Validation: Completed / PASS WITH WARNINGS
 - M6.3 — Offline Characterization: Completed / PASS WITH WARNINGS
-- M6.4 — Cross-Session Generalization Validation: Next / Not Started
+- M6.4 — Cross-Session Generalization / Robustness Validation: In Progress / exploratory evidence available / formal validation pending
 
-M6 begins only after the completed M5 software/runtime association evidence. M6.1a completed real ND8 signal/channel sanity validation with warnings. M6.1b then acquired the first controlled three-class dataset: its 30/30 means dataset acquisition completeness and its verifier records `classificationPerformed=false`. M6.2a and M6.2b then ran fixed Standard CCA and legacy-informed FBCCA baselines on the same 30 software-derived epochs, each obtaining 30/30 in this single session. M6.3a characterized the predefined 0.5–3.0 s window grid with fixed onset guard: CCA first reached 100% at 1.5 s and NumPy FBCCA at 1.0 s in this session. M6.3b then compared the current NumPy and stable legacy-style Chebyshev-I SOS zero-phase realizations; they agreed at 1.5/3.0 s but diverged at 0.5/1.0 s. M6.3 is therefore `Completed / PASS WITH WARNINGS`. The results establish latency/accuracy and short-window filter-realization observations for one 30-trial session, not final, generalized or online accuracy. The M5/M6 evidence boundary remains active: hardware timing, physical optical timing, ND8 hardware sample anchor and hardware-exact EEG sample timing are not verified. The next milestone is M6.4 Cross-Session Generalization Validation, not started.
+M6.1b Session A is the complete 30/30 QC-valid baseline dataset; its acquisition verifier records `classificationPerformed=false`. M6.2a/2b completed fixed Standard CCA and FBCCA baselines, and M6.3 completed fixed window/filter-realization characterization, all as within-session evidence. M6.4 has now performed independent-session acquisition and read-only association replay. B1 has 29/30 fixed QC-valid trials (LEFT/CENTER/RIGHT = 10/9/10); trial 011 remains invalid because its clock-sync freshness exceeded the frozen five-second limit. B2's original formal runtime/manifest status remains `incomplete`, but corrected read-only replay yields 30/30 QC-valid trials (10/10/10). That B2 result is post-hoc exploratory replay evidence, not formal dataset completeness.
+
+Frozen exploratory decoding (CH2/3/4/5/7; 1000 Hz; 0.5 s onset guard; demean-only; 7.2/9/12 Hz; three harmonics) shows a session effect. At 1.5 s, Standard CCA / NumPy FBCCA / legacy-style FBCCA are A 30/30 / 30/30 / 30/30, B1 26/29 / 28/29 / 27/29, and B2 29/30 / 29/30 / 30/30. At 1.0 s they are A 29/30 / 30/30 / 28/30, B1 26/29 / 28/29 / 26/29, and B2 29/30 / 28/30 / 27/30. These are exploratory cross-session observations, not generalized, cross-subject, online, or final-system accuracy.
+
+The fixed QC-valid subsets were created before decoding and are not outcome-selected. Association replay retains the software-derived boundary: hardware timing, physical optical timing, nominal stimulus-frequency optical verification, ND8 hardware sample anchor, and hardware-exact EEG sample timing are unverified. Pseudo-online readiness is `NO`; no immediate fourth EEG acquisition is planned. The next decision point is formal M6.4 completion versus an explicitly approved new formal acquisition/validation plan.
 
 ## Known Open Questions
 

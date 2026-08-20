@@ -10,21 +10,21 @@
 
 总体流程：
 
-`Vision → SSVEP Stimulus → EEG Classification → Task Reasoning → Robot Execution`
+`Vision → XR/SSVEP Stimulus → EEG Target Selection → Scene Understanding / Task Reasoning → Robot Execution`
 
 ## Current Stage
 
-M0、M1、M2、M3和M4已完成。当前工程里程碑是：
+M0 至 M5 已完成；M6 正在进行离线 EEG decoder 与跨 session robustness 验证：
 
-`M5 — Stimulus Timing / EEG Trigger Synchronization`
+`M6.4 — Cross-Session Generalization / Robustness Validation: exploratory analysis performed; formal completion pending`
 
-M4已完成三目标共享frame origin的frame-driven黑白闪烁、Quest 3实机视觉验收及30秒软件侧时序诊断。72 Hz runtime下推导软件频率为`7.2/9/12 Hz`；当前准备设计刺激开始/停止时间记录与EEG trigger同步接口。推导频率尚未经过物理光学测量验证。
+M6.1b 的 Session A 是当前最完整的正式 dataset（30/30 QC-valid）。M6.2 与 M6.3 已完成固定 CCA/FBCCA offline baselines 和 window/filter-realization characterization。M6.4 已完成 B1/B2 的只读 replay 与 exploratory cross-session analysis；B1 为 29 QC-valid trials，B2 的 replay 30/30 仅是 post-hoc exploratory evidence，原始 formal 状态仍为 incomplete。
 
-后续第一个核心功能目标：
+当前不进入 pseudo-online，也不计划立即进行第四次 EEG acquisition。软件 sample association、硬件 sample anchor、硬件/光学 timing 与名义刺激频率的光学验证仍是证据边界。
 
-> 在Meta Quest 3中，在三个指定三维坐标显示三个指定频率的黑白SSVEP闪烁方块。
+EEG 在系统中承担离散 target / intention selection，不承担机械臂关节或位置的连续控制。机械臂 MuJoCo 仿真与底层控制将复用同门系统；本项目负责 BCI→robot command/task interface、integration、execution status/feedback 与端到端实验。
 
-视觉识别、机械臂和智能场景理解暂不在当前里程碑实施。
+视觉、scene understanding 与 robot integration 仍是后续里程碑。
 
 ## Main Directories
 
@@ -66,6 +66,6 @@ Codex在开始任务前应阅读：
 - [x] M2 — Passthrough + one fixed square
 - [x] M3 — One SSVEP flicker target
 - [x] M4 — Three independent flicker targets
-- [ ] M5 — Stimulus timing and EEG synchronization (Ready to Start)
-- [ ] M6 — Online ND8 + EEG decoding
+- [x] M5 — Stimulus timing and EEG synchronization
+- [ ] M6 — ND8 EEG decoding and validation (M6.0–M6.3 complete; M6.4 exploratory/formal pending)
 - [ ] M7 — Vision-based automatic target placement
