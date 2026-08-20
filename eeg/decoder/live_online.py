@@ -36,6 +36,12 @@ class LiveOnlineController:
             self.buffer.append(packet)
             state = self.active
             if state is None: return []
+            if continuity.status not in ("continuous", "anomaly"):
+                self._generation += 1
+                state["invalidReason"] = "continuity_failure"
+                return []
+            if state.get("invalidReason"):
+                return []
             jobs = []
             while state["nextStop"] <= state["startSample"] + 4000 and self.buffer.stop_sample >= state["nextStop"]:
                 jobs.append((state["nextStop"] - self.config.analysis_sample_count, state["nextStop"], packet,
@@ -70,6 +76,8 @@ class LiveOnlineController:
         decision = state["decision"] or {"sessionId":state["sessionId"],"trialId":state["trialId"],
             "finalDecisionLabel":None,"decisionMade":False,"decisionPredictionIndex":None,
             "decisionRelativeTimeSeconds":None,"stabilizer":"2-Consecutive",
-            "predictionSequence":state["predictions"],"reason":reason}
+            "predictionSequence":state["predictions"],"reason":state.get("invalidReason", reason)}
         if state["decision"] is None and self.decision_log: self.decision_log.append(decision)
-        return decision
+        result = dict(decision)
+        result["predictionTimeline"] = list(state["predictions"])
+        return result
