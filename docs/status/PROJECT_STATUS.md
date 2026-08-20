@@ -394,7 +394,11 @@ Current substage:
 - M6.3b — FBCCA Filter Realization Validation: Completed / PASS WITH WARNINGS
 - M6.3 — Offline Characterization: Completed / PASS WITH WARNINGS
 - M6.4 — Cross-Session Generalization / Robustness Exploration: Completed / PASS WITH WARNINGS
-- M6.5a — Pseudo-Online Decoder Infrastructure: In Progress
+- M6.5a — Pseudo-Online Decoder Infrastructure: Completed / PASS WITH WARNINGS
+- M6.5b — Continuous / Stabilized Pseudo-Online Decoding: Completed / PASS WITH WARNINGS
+- M6.6a — Live-Source Integration: Completed / PASS WITH WARNINGS
+- M6.6b — Real ND8 Online Diagnostic Smoke Test: Completed / PASS WITH WARNINGS
+- M6.7 — Same-Subject Formal Online Validation: Protocol Defined / Not Started
 
 M6.1b Session A is the complete 30/30 QC-valid baseline dataset; its acquisition verifier records `classificationPerformed=false`. M6.2a/2b completed fixed Standard CCA and FBCCA baselines, and M6.3 completed fixed window/filter-realization characterization, all as within-session evidence. M6.4 has now performed independent-session acquisition and read-only association replay. B1 has 29/30 fixed QC-valid trials (LEFT/CENTER/RIGHT = 10/9/10); trial 011 remains invalid because its clock-sync freshness exceeded the frozen five-second limit. B2's original formal runtime/manifest status remains `incomplete`, but corrected read-only replay yields 30/30 QC-valid trials (10/10/10). That B2 result is post-hoc exploratory replay evidence, not formal dataset completeness.
 
@@ -407,6 +411,10 @@ M6.5a validates a replay-only pseudo-online software architecture: historical pa
 M6.5b adds fixed 0.2 s continuous replay and First / 2-Consecutive / 3-Consecutive stabilization. NumPy FBCCA characterization retains full decision coverage on A/B1/B2. First and 2-Consecutive give A 30/30, B1 28/29, B2 29/30 at 2.0/2.2 s; 3-Consecutive gives A 30/30, B1 29/29, B2 30/30 with a typical 2.4 s decision. This is exploratory engineering characterization, not policy optimization or real online validation.
 
 M6.6a live-source integration is `Completed / PASS WITH WARNINGS`. The callback-style controller is numerically equivalent to M6.5b across all 89 fixed historical trials (A 30/30, B1 29/29, B2 30/30 agreement; zero mismatch), diagnostic-live evidence orchestration is prepared, and deterministic stop-during-compute plus new-trial-isolation concurrency gates pass. This establishes software readiness only for a separately approved short diagnostic hardware smoke test; true online accuracy, end-to-end latency, hardware timing, optical timing, and hardware sample anchoring remain unverified.
+
+M6.6b is `Completed / PASS WITH WARNINGS`. Real session `m6_6b-live-20260820T143946Z-ac87baf2` executed Quest stimulus → software-derived association → live ND8 packets → rolling NumPy FBCCA → 2-Consecutive. It produced three valid, unique live decisions (LEFT/CENTER/RIGHT once each; 3/3 post-hoc correct), with first prediction at 2.0 s and logical final decision at 2.2 s. This is a three-trial engineering diagnostic, not formal online accuracy. One physical electrode detached during wearing; the session therefore had four effective EEG channels, and the near-rail channel is recorded only as an unusable/disconnected-channel candidate without claiming an exact electrode-to-SDK mapping or a validated four-channel configuration. Hardware sample anchor, physical optical timing, hardware-exact timing, physical end-to-end latency, generalized performance, and robot integration remain unverified.
+
+The next milestone is M6.7, protocol-defined but not started. Its frozen same-subject prospective online protocol is `docs/protocols/M6_7_formal_online_validation_protocol.json`: a separate no-tuning 9-trial pilot followed only by a new randomized 30-trial 10/10/10 formal session. Formal admission requires all frozen CH2/3/4/5/7 channels to pass a pre-session quality gate; a four-channel condition is diagnostic-only and aborts the formal session.
 
 ## Known Open Questions
 
