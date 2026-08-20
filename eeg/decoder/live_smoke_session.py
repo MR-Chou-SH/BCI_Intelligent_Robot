@@ -79,7 +79,8 @@ async def run(args):
         deadline = time.monotonic() + args.preflight_timeout_seconds
         while time.monotonic() < deadline:
             packets_ok = bool(packet_shapes) and all(len(shape) == 2 and shape[0] == 8 and shape[1] > 0 for shape in packet_shapes[-5:])
-            if coordinator.gate.ready_pc_monotonic_ns is not None and _quest_sync_ready(endpoint) and packets_ok:
+            if (coordinator.gate.ready_pc_monotonic_ns is not None and _quest_sync_ready(endpoint)
+                    and bool(endpoint.writers) and packets_ok):
                 break
             await asyncio.sleep(0.05)
         else: raise RuntimeError("live preflight did not reach ND8/Quest/association readiness")
