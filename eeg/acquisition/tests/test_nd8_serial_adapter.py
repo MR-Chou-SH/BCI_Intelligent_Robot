@@ -155,6 +155,18 @@ class Nd8SerialAdapterTests(unittest.TestCase):
             self.assertIn('"sampleCountPerChannel":3', raw)
             self.assertIn('"recordType":"nd8_packet_metadata"', metadata)
 
+    def test_live_packet_observer_receives_samples_without_changing_metadata_observer(self):
+        device = MockDevice(); received = []
+        def factory(port, eeg_callback, host_callback):
+            device.host_callback = host_callback
+            return device
+        adapter = Nd8SerialAdapter("COM11", device_factory=factory,
+                                   live_packet_observer=lambda packet, continuity: received.append((packet, continuity)))
+        adapter.open_port(); adapter.start_streaming(); adapter.eeg_received(payload(samples=3))
+        self.assertEqual(1, len(received))
+        self.assertEqual(3, len(received[0][0].samples[0]))
+        self.assertEqual("continuous", received[0][1].status)
+
 
 if __name__ == "__main__":
     unittest.main()

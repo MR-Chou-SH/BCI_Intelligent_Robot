@@ -53,6 +53,13 @@ class RuntimeAssociationTests(unittest.TestCase):
         self.assertEqual("software_derived_estimate", record["sampleIndexKind"])
         self.assertFalse(record["hardwareTimingVerified"])
 
+    def test_association_observer_receives_only_written_records(self):
+        observed = []
+        self.coordinator = AssociationCoordinator(self.output, self.gates, association_observer=observed.append)
+        self.feed_stable(); self.coordinator.ingest_event(self.event())
+        self.assertEqual(1, len(observed))
+        self.assertTrue(observed[0]["associationValid"])
+
     def test_continuity_break_invalidates_later_event(self):
         self.feed_stable()
         p = packet(20, 1_700_000_005_000, 13_000_000_000)

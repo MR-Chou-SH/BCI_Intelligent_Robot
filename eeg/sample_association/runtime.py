@@ -12,7 +12,7 @@ class AssociationCoordinator:
     """Keeps raw evidence external and writes only derived association records."""
 
     def __init__(self, association_log, gate_log=None, maximum_sync_residual_seconds=0.050,
-                 maximum_sync_age_seconds=5.0):
+                 maximum_sync_age_seconds=5.0, association_observer=None):
         self.association_log = association_log if hasattr(association_log, "append") else AppendOnlyJsonl(association_log)
         self.gate_log = gate_log if gate_log is None or hasattr(gate_log, "append") else AppendOnlyJsonl(gate_log)
         self.gate = PostSyncAssociationGate()
@@ -20,6 +20,7 @@ class AssociationCoordinator:
         self.pending_events = []
         self.maximum_sync_residual_seconds = float(maximum_sync_residual_seconds)
         self.maximum_sync_age_seconds = float(maximum_sync_age_seconds)
+        self.association_observer = association_observer
         self._trial_event_types = {}
         self._lock = threading.RLock()
         # Only for a rounded offset landing at a continuous packet boundary.
@@ -69,6 +70,8 @@ class AssociationCoordinator:
                 remaining.append((pc_event, base))
             else:
                 self.association_log.append(result)
+                if self.association_observer is not None:
+                    self.association_observer(dict(result))
         self.pending_events = remaining
 
     def _associate(self, pc_event, base):
@@ -164,7 +167,10 @@ class AssociationCoordinator:
         return None
 
     def _write_invalid(self, base, reason):
-        self.association_log.append(self._invalid_record(base, reason))
+        record = self._invalid_record(base, reason)
+        self.association_log.append(record)
+        if self.association_observer is not None:
+            self.association_observer(dict(record))
 
     @staticmethod
     def _invalid_record(base, reason):

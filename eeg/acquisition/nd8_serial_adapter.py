@@ -61,6 +61,7 @@ class Nd8SerialAdapter:
         metadata_log: Optional[AppendOnlyJsonl] = None,
         raw_packet_log: Optional[AppendOnlyJsonl] = None,
         packet_observer: Optional[Callable[[object, object], None]] = None,
+        live_packet_observer: Optional[Callable[[Nd8Packet, object], None]] = None,
         readiness_timeout_seconds: float = 5.0,
     ):
         if not com_port:
@@ -75,6 +76,9 @@ class Nd8SerialAdapter:
         self._metadata_log = metadata_log
         self._raw_packet_log = raw_packet_log
         self._packet_observer = packet_observer
+        # Kept separate from packet_observer so existing association consumers
+        # retain their metadata-only boundary.  The live decoder needs samples.
+        self._live_packet_observer = live_packet_observer
         self.readiness_timeout_seconds = float(readiness_timeout_seconds)
         self.timeline = EegPacketTimeline()
         self.packet_queue = SimpleQueue()
@@ -136,6 +140,8 @@ class Nd8SerialAdapter:
                 self._metadata_log.append(packet.metadata_log_record(continuity))
             if self._packet_observer is not None:
                 self._packet_observer(packet.to_metadata(), continuity)
+            if self._live_packet_observer is not None:
+                self._live_packet_observer(packet, continuity)
             self._next_packet_sequence += 1
         except (TypeError, ValueError) as error:
             self.callback_errors.append(str(error))
