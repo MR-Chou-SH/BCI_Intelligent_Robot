@@ -393,13 +393,16 @@ Current substage:
 - M6.3a — Window-Length Characterization: Completed / PASS WITH WARNINGS
 - M6.3b — FBCCA Filter Realization Validation: Completed / PASS WITH WARNINGS
 - M6.3 — Offline Characterization: Completed / PASS WITH WARNINGS
-- M6.4 — Cross-Session Generalization / Robustness Validation: In Progress / exploratory evidence available / formal validation pending
+- M6.4 — Cross-Session Generalization / Robustness Exploration: Completed / PASS WITH WARNINGS
+- M6.5a — Pseudo-Online Decoder Infrastructure: In Progress
 
 M6.1b Session A is the complete 30/30 QC-valid baseline dataset; its acquisition verifier records `classificationPerformed=false`. M6.2a/2b completed fixed Standard CCA and FBCCA baselines, and M6.3 completed fixed window/filter-realization characterization, all as within-session evidence. M6.4 has now performed independent-session acquisition and read-only association replay. B1 has 29/30 fixed QC-valid trials (LEFT/CENTER/RIGHT = 10/9/10); trial 011 remains invalid because its clock-sync freshness exceeded the frozen five-second limit. B2's original formal runtime/manifest status remains `incomplete`, but corrected read-only replay yields 30/30 QC-valid trials (10/10/10). That B2 result is post-hoc exploratory replay evidence, not formal dataset completeness.
 
 Frozen exploratory decoding (CH2/3/4/5/7; 1000 Hz; 0.5 s onset guard; demean-only; 7.2/9/12 Hz; three harmonics) shows a session effect. At 1.5 s, Standard CCA / NumPy FBCCA / legacy-style FBCCA are A 30/30 / 30/30 / 30/30, B1 26/29 / 28/29 / 27/29, and B2 29/30 / 29/30 / 30/30. At 1.0 s they are A 29/30 / 30/30 / 28/30, B1 26/29 / 28/29 / 26/29, and B2 29/30 / 28/30 / 27/30. These are exploratory cross-session observations, not generalized, cross-subject, online, or final-system accuracy.
 
-The fixed QC-valid subsets were created before decoding and are not outcome-selected. Association replay retains the software-derived boundary: hardware timing, physical optical timing, nominal stimulus-frequency optical verification, ND8 hardware sample anchor, and hardware-exact EEG sample timing are unverified. Pseudo-online readiness is `NO`; no immediate fourth EEG acquisition is planned. The next decision point is formal M6.4 completion versus an explicitly approved new formal acquisition/validation plan.
+M6.4 PASS means association robustness audit, real failure-mode fixes, historical replay, and fixed-subset exploratory evaluation are complete. It does not mean formal prospective cross-session generalization is proven. The fixed QC-valid subsets were created before decoding and are not outcome-selected. Association replay retains the software-derived boundary: hardware timing, physical optical timing, nominal stimulus-frequency optical verification, ND8 hardware sample anchor, and hardware-exact EEG sample timing are unverified. No immediate fourth EEG acquisition is planned.
+
+M6.5a now validates a replay-only pseudo-online software architecture: historical packet → rolling buffer → event → eligibility → frozen window → decoder → prediction. It must not use future packets, cannot establish true online performance or end-to-end latency, and does not authorize real ND8 online acquisition.
 
 ## Known Open Questions
 

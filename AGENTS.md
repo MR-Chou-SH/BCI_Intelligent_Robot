@@ -262,11 +262,11 @@ M1 through M5 are completed. M6.0 through M6.3 are completed with warnings.
 
 The current engineering milestone is:
 
-M6.4 — Cross-Session Generalization / Robustness Validation.
+M6.5a — Pseudo-Online Decoder Infrastructure.
 
 The current task is:
 
-Use existing-session exploratory evidence and formal-completion decisions carefully. Do not treat post-hoc replay as formal dataset completeness, and do not enter pseudo-online classification without explicit authorization and evidence review.
+Implement only replay-based pseudo-online infrastructure with frozen decoder settings. Do not treat post-hoc replay as formal dataset completeness, do not start real ND8 online acquisition, and do not use future EEG packets in a replay decision.
 
 For future robot work, prefer integration with the labmate-provided MuJoCo simulation / low-level control system. This repository owns the BCI target-selection output, robot command/task interface, integration, execution status/feedback, and end-to-end experiments; it does not need to rebuild the complete simulator or low-level controller from scratch.
 

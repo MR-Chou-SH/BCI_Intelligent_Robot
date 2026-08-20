@@ -22,4 +22,8 @@ These are cross-session exploratory observations, not a formal M6.4 pass. They s
 
 ## Evidence boundary and maturity
 
-The sample association remains a software-derived estimate; hardware sample anchoring, physical optical timing, and nominal optical frequencies remain unverified. Existing sessions are sufficient for the present offline robustness analysis, but formal Session B completeness is not retroactively changed. Pseudo-online classification remains blocked until a separately approved formal acquisition/validation decision.
+The sample association remains a software-derived estimate; hardware sample anchoring, physical optical timing, and nominal optical frequencies remain unverified. Existing sessions are sufficient for the present offline robustness analysis, but formal Session B completeness is not retroactively changed.
+
+## Closeout
+
+M6.4 is closed as `Completed / PASS WITH WARNINGS`. The completed object is the association robustness audit and exploratory cross-session evidence: boundary rounding and concurrent flush failure modes were corrected, historical replay was performed without changing formal manifests, and fixed QC-valid subsets were evaluated with frozen decoders. It does not prove formal prospective cross-session generalization, cross-subject generalization, physical timing, hardware-exact timing, or true online performance. M6.5a may implement replay-only pseudo-online decoder infrastructure; it does not begin a real ND8 online experiment.
