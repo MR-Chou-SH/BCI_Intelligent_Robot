@@ -380,7 +380,7 @@ Do not begin online EEG classification, vision, robotic-arm control, or scene un
 
 ### M6 — ND8 EEG Online Classification
 
-Status: In Progress
+Status: Completed / PASS WITH WARNINGS
 
 Current substage:
 
@@ -398,7 +398,7 @@ Current substage:
 - M6.5b — Continuous / Stabilized Pseudo-Online Decoding: Completed / PASS WITH WARNINGS
 - M6.6a — Live-Source Integration: Completed / PASS WITH WARNINGS
 - M6.6b — Real ND8 Online Diagnostic Smoke Test: Completed / PASS WITH WARNINGS
-- M6.7 — Same-Subject Formal Online Validation: Protocol Defined / Not Started
+- M6.7 — Stress Online Validation: Completed / PASS WITH WARNINGS
 
 M6.1b Session A is the complete 30/30 QC-valid baseline dataset; its acquisition verifier records `classificationPerformed=false`. M6.2a/2b completed fixed Standard CCA and FBCCA baselines, and M6.3 completed fixed window/filter-realization characterization, all as within-session evidence. M6.4 has now performed independent-session acquisition and read-only association replay. B1 has 29/30 fixed QC-valid trials (LEFT/CENTER/RIGHT = 10/9/10); trial 011 remains invalid because its clock-sync freshness exceeded the frozen five-second limit. B2's original formal runtime/manifest status remains `incomplete`, but corrected read-only replay yields 30/30 QC-valid trials (10/10/10). That B2 result is post-hoc exploratory replay evidence, not formal dataset completeness.
 
@@ -414,7 +414,7 @@ M6.6a live-source integration is `Completed / PASS WITH WARNINGS`. The callback-
 
 M6.6b is `Completed / PASS WITH WARNINGS`. Real session `m6_6b-live-20260820T143946Z-ac87baf2` executed Quest stimulus → software-derived association → live ND8 packets → rolling NumPy FBCCA → 2-Consecutive. It produced three valid, unique live decisions (LEFT/CENTER/RIGHT once each; 3/3 post-hoc correct), with first prediction at 2.0 s and logical final decision at 2.2 s. This is a three-trial engineering diagnostic, not formal online accuracy. One physical electrode detached during wearing; the session therefore had four effective EEG channels, and the near-rail channel is recorded only as an unusable/disconnected-channel candidate without claiming an exact electrode-to-SDK mapping or a validated four-channel configuration. Hardware sample anchor, physical optical timing, hardware-exact timing, physical end-to-end latency, generalized performance, and robot integration remain unverified.
 
-M6.7 formal infrastructure is implemented and software-tested; no real formal experiment has started. Total control skipped the separate 9-trial pilot because the completed M6.6b three-trial real-device diagnostic already supplied the small-scale live-chain validation role. The next real experiment is an independent randomized 30-trial 10/10/10 formal session under `docs/protocols/M6_7_formal_online_validation_protocol.json`. A predeclared checkpoint after formal trials 1--3 inspects technical integrity only, never correctness or accuracy; technically healthy trials continue even when classifications are wrong or absent. Pre-plan admission is quality-driven from candidate CH2/3/4/5/7 and requires at least three usable channels; the selected set is then frozen, and any later selected-channel failure pauses then aborts the session if unrecoverable. This is an engineering admission rule, not a three-channel sufficiency, validation, or equivalence claim.
+M6.7 is `Completed / PASS WITH WARNINGS` as a non-ideal-condition `stress_online` engineering validation. Session `m6_7-formal-20260820T160940Z-0ef360f6` completed 30 randomized trials (10/10/10) with frozen CH2/CH4/CH7 (3/5 admission), 30/30 technical-valid trials, 30/30 decisions, 30/30 post-hoc correct, and 0 no-decisions. This is stress evidence, not primary formal-online accuracy. Two earlier M6.7 incomplete preflight sessions caused by real ND8 disconnects remain preserved as incomplete evidence; a separate ND8-only 120 s stability check then passed (594 packets, 593 continuous and one startup anomaly, no callback/runtime error). The fixed decoder chain is now sufficiently exercised to proceed to a separately scoped BCI decision → robot command interface integration, while hardware/optical timing, three-channel equivalence, generalized performance, and physical end-to-end latency remain unverified. The 3/5 channel admission remains an engineering rule, not a three-channel sufficiency or validation claim.
 
 ## Known Open Questions
 
