@@ -406,7 +406,7 @@ M6.5a validates a replay-only pseudo-online software architecture: historical pa
 
 M6.5b adds fixed 0.2 s continuous replay and First / 2-Consecutive / 3-Consecutive stabilization. NumPy FBCCA characterization retains full decision coverage on A/B1/B2. First and 2-Consecutive give A 30/30, B1 28/29, B2 29/30 at 2.0/2.2 s; 3-Consecutive gives A 30/30, B1 29/29, B2 30/30 with a typical 2.4 s decision. This is exploratory engineering characterization, not policy optimization or real online validation.
 
-M6.6a live-source software gate is complete with warnings. The callback-style controller is numerically equivalent to M6.5b across all 89 fixed historical trials (A 30/30, B1 29/29, B2 30/30 agreement; zero mismatch), and diagnostic-live evidence orchestration is prepared. This authorizes only a separately approved short diagnostic hardware smoke test, not formal online accuracy evidence.
+M6.6a live-source equivalence is complete, but the final software gate remains pending. The callback-style controller is numerically equivalent to M6.5b across all 89 fixed historical trials (A 30/30, B1 29/29, B2 30/30 agreement; zero mismatch), and diagnostic-live evidence orchestration is prepared. A deterministic stop/reset-during-decoder-compute concurrency test is still required before authorizing a hardware smoke test.
 
 ## Known Open Questions
 
