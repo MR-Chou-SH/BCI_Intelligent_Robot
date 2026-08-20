@@ -23,6 +23,7 @@ class TriggerServer:
         self.sequences = SequenceTracker()
         self.mappers = {}
         self.sync_state = {}
+        self.writers = {}
         self.event_observer = event_observer
         self.dataset_plan = dataset_plan
 
@@ -34,22 +35,9 @@ class TriggerServer:
         self.diagnostics.append({"recordType": "connection_opened", "connectionId": connection_id,
                                  "peer": peer, "pcUtc": utc_now()})
         try:
+            self.writers[connection_id] = writer
             if self.dataset_plan is not None:
-                plan_message = {
-                    "protocolVersion": PROTOCOL_VERSION,
-                    "messageType": "dataset_session_plan",
-                    **self.dataset_plan,
-                }
-                writer.write(encode_line(plan_message))
-                await writer.drain()
-                trials = plan_message.get("trials", [])
-                counts = {target: sum(item.get("targetId") == target for item in trials)
-                          for target in ("target_left", "target_center", "target_right")}
-                self.diagnostics.append({
-                    "recordType": "dataset_session_plan_sent", "connectionId": connection_id,
-                    "sessionId": plan_message.get("sessionId"), "trialCount": len(trials),
-                    "classCounts": counts, "pcUtc": utc_now(),
-                })
+                await self._send_dataset_plan(writer, connection_id, self.dataset_plan)
             while True:
                 raw = await reader.readline()
                 if not raw:
@@ -83,10 +71,30 @@ class TriggerServer:
             self.diagnostics.append({"recordType": "connection_error", "connectionId": connection_id,
                                      "pcUtc": utc_now(), "error": str(error)})
         finally:
+            self.writers.pop(connection_id, None)
             writer.close()
             await writer.wait_closed()
             self.diagnostics.append({"recordType": "connection_closed", "connectionId": connection_id,
                                      "pcUtc": utc_now()})
+
+    async def _send_dataset_plan(self, writer, connection_id, dataset_plan):
+        plan_message = {"protocolVersion": PROTOCOL_VERSION, "messageType": "dataset_session_plan", **dataset_plan}
+        writer.write(encode_line(plan_message))
+        await writer.drain()
+        trials = plan_message.get("trials", [])
+        counts = {target: sum(item.get("targetId") == target for item in trials)
+                  for target in ("target_left", "target_center", "target_right")}
+        self.diagnostics.append({"recordType": "dataset_session_plan_sent", "connectionId": connection_id,
+                                 "sessionId": plan_message.get("sessionId"), "trialCount": len(trials),
+                                 "classCounts": counts, "pcUtc": utc_now()})
+
+    async def broadcast_dataset_plan(self, dataset_plan):
+        """Send an explicitly approved plan only after the live preflight completes."""
+        if not self.writers:
+            raise RuntimeError("no Quest connection is available for dataset plan")
+        self.dataset_plan = dataset_plan
+        await asyncio.gather(*(self._send_dataset_plan(writer, connection_id, dataset_plan)
+                               for connection_id, writer in list(self.writers.items())))
 
     async def _handle_event(self, message, writer, connection_id, p2_ns, p2_utc):
         validation = validate_stimulus_event(message)
