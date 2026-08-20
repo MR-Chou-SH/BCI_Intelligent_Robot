@@ -52,7 +52,7 @@ def synthetic_warmup(selected_channels):
 
 
 def generate_online_plan(session_id, seed, session_type):
-    if session_type not in ("pilot_online", "formal_online"): raise ValueError("invalid session type")
+    if session_type not in ("pilot_online", "formal_online", "stress_online"): raise ValueError("invalid session type")
     per_class = 3 if session_type == "pilot_online" else 10
     items = generate_trial_plan(session_id, seed, trials_per_class=per_class, maximum_consecutive=2,
                                 trial_prefix="{}-trial".format(session_type))

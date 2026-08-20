@@ -19,8 +19,8 @@ def commit():
 
 async def run(args):
     sid="m6_7-formal-{}-{}".format(datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"),uuid.uuid4().hex[:8]); root=Path(args.data_root)/sid
-    plan=generate_online_plan(sid,args.seed,"formal_online"); plan["protocol"]=dict(PROTOCOL)
-    manifest=prepare_manifest(root,sid,commit(),[]); manifest.update({"mode":"formal_online","randomSeed":args.seed,"plannedTrialCount":30,"status":"preflight","groundTruthLeakage":False})
+    plan=generate_online_plan(sid,args.seed,"stress_online"); plan["protocol"]=dict(PROTOCOL)
+    manifest=prepare_manifest(root,sid,commit(),[]); manifest.update({"mode":"stress_online","interpretation":"stress validation; not primary formal online accuracy","randomSeed":args.seed,"plannedTrialCount":30,"status":"preflight","groundTruthLeakage":False})
     (root/"formal-plan.json").write_text(json.dumps(plan,indent=2)+"\n",encoding="utf-8")
     events, results_log, predictions, decisions, session_events=(AppendOnlyJsonl(root/"quest-events.jsonl"),AppendOnlyJsonl(root/"trial-results.jsonl"),AppendOnlyJsonl(root/"predictions.jsonl"),AppendOnlyJsonl(root/"decisions.jsonl"),AppendOnlyJsonl(root/"session-events.jsonl"))
     packets=[]; continuity=[]; shapes=[]; results=[]; errors=[]; controller=None; checkpoint=None; selected=[]; abort_requested=False
