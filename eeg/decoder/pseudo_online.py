@@ -15,7 +15,6 @@ import numpy as np
 from .cca import predict, references
 from .config import DecoderConfig
 from .fbcca import FbccaConfig, predict_fbcca
-from .filter_realization import predict_legacy_fbcca
 from .pipeline import evaluate_predictions
 
 
@@ -98,6 +97,9 @@ class DecoderBackend:
                                               self.config.harmonic_count,
                                               self.config.decoder_sampling_rate_hz, self.fbcca_config)
         else:
+            # SciPy belongs only to the optional legacy-style realization.
+            # Live NumPy FBCCA must remain runnable in the vendor ND8 runtime.
+            from .filter_realization import predict_legacy_fbcca
             index, scores, _, _ = predict_legacy_fbcca(epoch, self.config.target_frequencies_hz,
                                                         self.config.harmonic_count,
                                                         self.config.decoder_sampling_rate_hz, self.fbcca_config)
