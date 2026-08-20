@@ -96,6 +96,17 @@ class TriggerServer:
         await asyncio.gather(*(self._send_dataset_plan(writer, connection_id, dataset_plan)
                                for connection_id, writer in list(self.writers.items())))
 
+    async def abort_formal_session(self, session_id, reason):
+        """Safety control for a running formal plan; this is not a trial result."""
+        if not self.writers:
+            raise RuntimeError("no Quest connection is available for formal abort")
+        message = {"protocolVersion": PROTOCOL_VERSION, "messageType": "formal_session_control",
+                   "sessionId": session_id, "action": "abort", "reason": str(reason)}
+        for connection_id, writer in list(self.writers.items()):
+            writer.write(encode_line(message)); await writer.drain()
+            self.diagnostics.append({"recordType": "formal_session_control_sent", "connectionId": connection_id,
+                                     "sessionId": session_id, "action": "abort", "reason": str(reason), "pcUtc": utc_now()})
+
     async def _handle_event(self, message, writer, connection_id, p2_ns, p2_utc):
         validation = validate_stimulus_event(message)
         event = message.get("eventPayload") if isinstance(message.get("eventPayload"), dict) else {}

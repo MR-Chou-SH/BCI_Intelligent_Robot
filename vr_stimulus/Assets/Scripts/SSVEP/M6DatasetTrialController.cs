@@ -37,6 +37,11 @@ namespace BCIIntelligentRobot.VRStimulus
 
         private void Update()
         {
+            if (!m_VisualDemoMode && m_Transport != null && m_Transport.TryDequeueFormalControl(out string action, out string reason))
+            {
+                if (action == "abort") AbortSession("PC formal safety control: " + reason);
+                return;
+            }
             if (m_Run != null) return;
             if (m_VisualDemoMode && m_Transport == null)
             {

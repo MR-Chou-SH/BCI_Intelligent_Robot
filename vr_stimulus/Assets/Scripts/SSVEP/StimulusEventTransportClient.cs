@@ -31,7 +31,7 @@ namespace BCIIntelligentRobot.VRStimulus
     }
 
     [Serializable]
-    internal sealed class IncomingTransportMessage
+        internal sealed class IncomingTransportMessage
     {
         public int protocolVersion;
         public string messageType;
@@ -44,6 +44,8 @@ namespace BCIIntelligentRobot.VRStimulus
         public long p3PcSendMonotonicNs;
         public string validationStatus;
         public string sequenceStatus;
+        public string action;
+        public string reason;
     }
 
     [Serializable]
@@ -134,6 +136,8 @@ namespace BCIIntelligentRobot.VRStimulus
             new ConcurrentQueue<SynchronizationDiagnosticRecord>();
         private readonly ConcurrentQueue<DatasetTrialPlanMessage> m_DatasetPlans =
             new ConcurrentQueue<DatasetTrialPlanMessage>();
+        private readonly ConcurrentQueue<IncomingTransportMessage> m_FormalControls =
+            new ConcurrentQueue<IncomingTransportMessage>();
         private readonly AutoResetEvent m_WorkAvailable = new AutoResetEvent(false);
         private readonly Dictionary<long, double> m_PendingSync = new Dictionary<long, double>();
         private readonly ConcurrentDictionary<long, double> m_PendingAcks =
@@ -178,6 +182,13 @@ namespace BCIIntelligentRobot.VRStimulus
         public bool TryDequeueDatasetPlan(out DatasetTrialPlanMessage plan)
         {
             return m_DatasetPlans.TryDequeue(out plan);
+        }
+
+        public bool TryDequeueFormalControl(out string action, out string reason)
+        {
+            if (m_FormalControls.TryDequeue(out IncomingTransportMessage message))
+            { action = message.action; reason = message.reason; return true; }
+            action = null; reason = null; return false;
         }
 
         private void Update()
@@ -349,6 +360,16 @@ namespace BCIIntelligentRobot.VRStimulus
                     {
                         EnqueueDiagnostic("dataset_session_plan_rejected", "", -1, "error", "missing_trials");
                     }
+                }
+                else if (message.messageType == "formal_session_control")
+                {
+                    if (message.action == "abort" && !string.IsNullOrEmpty(message.reason))
+                    {
+                        m_FormalControls.Enqueue(message);
+                        EnqueueDiagnostic("formal_session_control_received", message.sessionId, -1, "ok",
+                            message.action + ";" + message.reason);
+                    }
+                    else EnqueueDiagnostic("formal_session_control_rejected", message.sessionId, -1, "error", "invalid_action_or_reason");
                 }
                 else if (message.messageType == "clock_sync_response")
                 {
