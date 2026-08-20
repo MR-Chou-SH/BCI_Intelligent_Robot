@@ -76,6 +76,8 @@ namespace BCIIntelligentRobot.VRStimulus
         public int protocolVersion;
         public string messageType;
         public string sessionId;
+        // Absent means the established formal 30-trial protocol.
+        public string planMode;
         public DatasetProtocolTiming protocol;
         public DatasetTrialPlanItem[] trials;
     }

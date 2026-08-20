@@ -202,8 +202,16 @@ namespace BCIIntelligentRobot.VRStimulus
         private bool ValidatePlan(DatasetTrialPlanMessage plan, out string error)
         {
             error = string.Empty;
-            if (plan == null || plan.protocol == null || plan.trials == null || plan.trials.Length != 30)
-            { error = "expected exactly 30 trials"; return false; }
+            if (plan == null || plan.protocol == null || plan.trials == null)
+            { error = "missing protocol or trials"; return false; }
+            bool diagnostic = plan.planMode == "diagnostic_live";
+            bool formal = string.IsNullOrEmpty(plan.planMode) || plan.planMode == "formal";
+            if (!diagnostic && !formal)
+            { error = "unsupported plan mode"; return false; }
+            int expectedTrialCount = diagnostic ? 3 : 30;
+            int expectedPerClass = diagnostic ? 1 : 10;
+            if (plan.trials.Length != expectedTrialCount)
+            { error = "unexpected trial count for plan mode"; return false; }
             var counts = new Dictionary<string, int>(StringComparer.Ordinal);
             for (int i = 0; i < plan.trials.Length; i++)
             {
@@ -213,14 +221,25 @@ namespace BCIIntelligentRobot.VRStimulus
                 { error = "trial identity/order is invalid"; return false; }
                 if (item.targetId != "target_left" && item.targetId != "target_center" && item.targetId != "target_right")
                 { error = "unexpected target id"; return false; }
+                if (!MatchesFrozenTargetMapping(item))
+                { error = "target side or frequency does not match frozen mapping"; return false; }
                 if (!counts.ContainsKey(item.targetId)) counts[item.targetId] = 0;
                 counts[item.targetId]++;
             }
-            if (!counts.ContainsKey("target_left") || counts["target_left"] != 10 ||
-                !counts.ContainsKey("target_center") || counts["target_center"] != 10 ||
-                !counts.ContainsKey("target_right") || counts["target_right"] != 10)
-            { error = "class balance is not 10/10/10"; return false; }
+            if (!counts.ContainsKey("target_left") || counts["target_left"] != expectedPerClass ||
+                !counts.ContainsKey("target_center") || counts["target_center"] != expectedPerClass ||
+                !counts.ContainsKey("target_right") || counts["target_right"] != expectedPerClass)
+            { error = "class balance does not match plan mode"; return false; }
             return true;
+        }
+
+        private static bool MatchesFrozenTargetMapping(DatasetTrialPlanItem item)
+        {
+            if (item.targetId == "target_left")
+                return item.targetSide == "left" && Mathf.Abs(item.nominalFrequencyHz - 7.2f) < 0.001f;
+            if (item.targetId == "target_center")
+                return item.targetSide == "center" && Mathf.Abs(item.nominalFrequencyHz - 9.0f) < 0.001f;
+            return item.targetSide == "right" && Mathf.Abs(item.nominalFrequencyHz - 12.0f) < 0.001f;
         }
 
         private void CreateCueText()

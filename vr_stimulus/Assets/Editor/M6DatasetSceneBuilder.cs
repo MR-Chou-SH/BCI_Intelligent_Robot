@@ -81,6 +81,29 @@ public static class M6DatasetSceneBuilder
         Debug.Log("Built M6.1b visual demo APK: " + report.summary.outputPath);
     }
 
+    // This build deliberately keeps the existing formal scene configuration;
+    // the PC declares diagnostic_live in the received plan, not in scene state.
+    public static void BuildM6LiveDiagnostic()
+    {
+        Scene scene = EditorSceneManager.OpenScene(DatasetScene, OpenSceneMode.Single);
+        M6DatasetTrialController dataset = Object.FindFirstObjectByType<M6DatasetTrialController>();
+        if (dataset == null)
+            throw new System.InvalidOperationException("M6 dataset controller was not found in " + DatasetScene);
+        var serialized = new SerializedObject(dataset);
+        if (serialized.FindProperty("m_VisualDemoMode").boolValue)
+            throw new System.InvalidOperationException("M6 diagnostic build requires the existing formal scene mode");
+        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+        {
+            scenes = new[] { DatasetScene },
+            locationPathName = "D:/EEG_Study/m6_6b/M6_6b_live_diagnostic.apk",
+            target = BuildTarget.Android,
+            options = BuildOptions.StrictMode
+        });
+        if (report.summary.result != BuildResult.Succeeded)
+            throw new System.InvalidOperationException("Android diagnostic build failed: " + report.summary.result);
+        Debug.Log("Built M6.6b live diagnostic APK: " + report.summary.outputPath);
+    }
+
     private static void SetDemoMode(Scene scene, bool enabled)
     {
         M6DatasetTrialController dataset = Object.FindFirstObjectByType<M6DatasetTrialController>();
