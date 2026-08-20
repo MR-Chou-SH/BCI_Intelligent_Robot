@@ -77,6 +77,17 @@ def technical_validity(trial):
     return {"trialId": trial["trialId"], "technicalStatus": "technical_valid", "reason": None}
 
 
+def early_technical_checkpoint(first_three_outcomes):
+    """Engineering-only gate after trials 1--3; deliberately ignores labels."""
+    if len(first_three_outcomes) != 3:
+        return {"verdict": "ABORT", "reason": "checkpoint_requires_three_outcomes"}
+    invalid = [technical_validity(outcome) for outcome in first_three_outcomes]
+    failures = [item for item in invalid if item["technicalStatus"] != "technical_valid"]
+    return {"verdict": "CONTINUE" if not failures else "ABORT", "technicalValidity": invalid,
+            "classificationValuesInspected": False,
+            "reason": None if not failures else "systemic_technical_failure_in_first_three"}
+
+
 def replacements(planned_trials, validity_records, maximum=3):
     invalid = [record for record in validity_records if record["technicalStatus"] == "technical_invalid"]
     if len(invalid) > maximum: return {"abort": True, "reason": "replacement_limit_exceeded", "records": []}

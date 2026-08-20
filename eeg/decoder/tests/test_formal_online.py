@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from eeg.decoder.formal_online import channel_admission,generate_online_plan,technical_validity,replacements,evaluate_formal
+from eeg.decoder.formal_online import channel_admission,generate_online_plan,technical_validity,replacements,evaluate_formal,early_technical_checkpoint
 class FormalOnlineTests(unittest.TestCase):
  def data(self,usable=5):
   a=np.zeros((8,1000));
@@ -12,6 +12,11 @@ class FormalOnlineTests(unittest.TestCase):
   a=self.data(5); a[2]=375000; a[3,0]=np.nan; r=channel_admission(a,['continuous']); self.assertFalse(r['channels'][0]['usable']); self.assertFalse(r['channels'][1]['usable']); self.assertEqual('CHANNEL CHECK FAILED',channel_admission(self.data(5),['lost'])['verdict'])
  def test_plan_replacement_and_no_decision(self):
   p=generate_online_plan('s',4,'pilot_online')['trials']; v=[{'trialId':p[0]['trialId'],'technicalStatus':'technical_invalid','reason':'stale_sync'}]; x=replacements(p,v); self.assertEqual(p[0]['targetId'],x['records'][0]['replacementTarget']); self.assertFalse(x['abort']); self.assertTrue(replacements(p,v*4)['abort'])
+ def test_early_checkpoint_ignores_correctness_and_aborts_technical_failure(self):
+  outcomes=[{'trialId':str(i),'startAssociationValid':True,'stopAssociationValid':True,'finalDecisionLabel':'wrong'} for i in range(3)]
+  self.assertEqual('CONTINUE',early_technical_checkpoint(outcomes)['verdict'])
+  outcomes[1]['technicalReason']='stale_sync'; result=early_technical_checkpoint(outcomes)
+  self.assertEqual('ABORT',result['verdict']); self.assertFalse(result['classificationValuesInspected'])
  def test_evaluator_denominators_and_no_decision(self):
   p=generate_online_plan('s',4,'pilot_online')['trials']; o=[]
   for i,t in enumerate(p): o.append({'trialId':t['trialId'],'startAssociationValid':True,'stopAssociationValid':True,'finalDecisionLabel':t['targetId'] if i<2 else None})
