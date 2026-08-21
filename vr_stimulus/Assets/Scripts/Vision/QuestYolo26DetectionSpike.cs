@@ -64,6 +64,7 @@ namespace BCIIntelligentRobot.Vision
 
         private Worker m_Worker;
         private Tensor<float> m_InputTensor;
+        private readonly StableTargetManager m_StableTargetManager = new StableTargetManager();
         private NativeArray<byte> m_ConversionBuffer;
         private JobHandle m_CpuPreprocessJob;
         private bool m_CpuPreprocessInFlight;
@@ -459,6 +460,7 @@ namespace BCIIntelligentRobot.Vision
             int detectionCount = 0;
             StringBuilder builder = new StringBuilder("desktop_detection_count=");
             StringBuilder details = new StringBuilder();
+            var stableDetections = new List<TargetDetection2D>();
 
             for (int offset = 0; offset + ValuesPerDetection <= values.Length; offset += ValuesPerDetection)
             {
@@ -477,6 +479,13 @@ namespace BCIIntelligentRobot.Vision
                 if (details.Length > 0)
                     details.Append(";");
 
+                stableDetections.Add(new TargetDetection2D(
+                    CocoClassNames[classId],
+                    confidence,
+                    new TargetBoundingBox(x1, y1, x2 - x1, y2 - y1),
+                    sourceWidth,
+                    sourceHeight));
+
                 details.Append("class=").Append(CocoClassNames[classId])
                     .Append(" confidence=").Append(confidence.ToString("F3", CultureInfo.InvariantCulture))
                     .Append(" bbox_px=(").Append(x1.ToString("F1", CultureInfo.InvariantCulture))
@@ -489,6 +498,30 @@ namespace BCIIntelligentRobot.Vision
             builder.Append(detectionCount);
             if (detectionCount > 0)
                 builder.Append(" detections=[").Append(details).Append("]");
+
+            IReadOnlyList<StableTargetSnapshot> stableTargets =
+                m_StableTargetManager.Update(stableDetections, Time.realtimeSinceStartupAsDouble);
+            builder.Append(" stable_target_count=").Append(stableTargets.Count);
+            if (stableTargets.Count > 0)
+            {
+                builder.Append(" stable_targets=[");
+                for (int i = 0; i < stableTargets.Count; i++)
+                {
+                    if (i > 0)
+                        builder.Append(";");
+
+                    StableTargetSnapshot target = stableTargets[i];
+                    builder.Append("target_id=").Append(target.TargetId)
+                        .Append(" class_name=").Append(target.ClassName)
+                        .Append(" confidence=").Append(target.Confidence.ToString("F3", CultureInfo.InvariantCulture))
+                        .Append(" bbox_px=").Append(target.Bbox.ToString())
+                        .Append(" first_seen=").Append(target.FirstSeen.ToString("F3", CultureInfo.InvariantCulture))
+                        .Append(" last_seen=").Append(target.LastSeen.ToString("F3", CultureInfo.InvariantCulture))
+                        .Append(" state=").Append(target.State.ToString().ToLowerInvariant());
+                }
+
+                builder.Append("]");
+            }
 
             return builder.ToString();
         }
