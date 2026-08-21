@@ -21,7 +21,8 @@ namespace BCIIntelligentRobot.Vision
 {
     /// <summary>
     /// M7.2 runtime-only probe: Quest CPU camera image to YOLO26n detections.
-    /// It intentionally has no target tracking, world mapping, persistence, or BCI binding.
+    /// It owns detection and stable 2D target production only; later M7 consumers
+    /// subscribe to the result without altering the frozen inference chain.
     /// </summary>
     [RequireComponent(typeof(ARCameraManager))]
     public sealed class QuestYolo26DetectionSpike : MonoBehaviour
@@ -90,6 +91,12 @@ namespace BCIIntelligentRobot.Vision
         private int m_PendingInferenceIndex;
         private readonly List<XRDisplaySubsystem> m_XrDisplays = new List<XRDisplaySubsystem>();
         private bool m_Disposed;
+
+        /// <summary>
+        /// Raised after one completed YOLO result has been converted into stable 2D targets.
+        /// The source dimensions are the CPU camera image dimensions used for the bbox coordinates.
+        /// </summary>
+        public event Action<IReadOnlyList<StableTargetSnapshot>, int, int> StableTargetsUpdated;
 
 #if UNITY_ANDROID && !UNITY_EDITOR
         private PermissionCallbacks m_PermissionCallbacks;
@@ -523,7 +530,28 @@ namespace BCIIntelligentRobot.Vision
                 builder.Append("]");
             }
 
+            NotifyStableTargetsUpdated(stableTargets, sourceWidth, sourceHeight);
+
             return builder.ToString();
+        }
+
+        private void NotifyStableTargetsUpdated(
+            IReadOnlyList<StableTargetSnapshot> stableTargets,
+            int sourceWidth,
+            int sourceHeight)
+        {
+            if (StableTargetsUpdated == null)
+                return;
+
+            try
+            {
+                StableTargetsUpdated.Invoke(stableTargets, sourceWidth, sourceHeight);
+            }
+            catch (Exception exception)
+            {
+                // A later-stage observer must not interrupt the frozen detector result path.
+                Debug.LogException(exception, this);
+            }
         }
     }
 }
