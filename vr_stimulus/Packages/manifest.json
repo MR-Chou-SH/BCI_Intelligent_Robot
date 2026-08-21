@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.ai.inference": "2.6.1",
     "com.unity.multiplayer.center": "1.0.1",
     "com.unity.xr.management": "4.7.0",
     "com.unity.xr.meta-openxr": "2.5.1",
