@@ -69,6 +69,14 @@ desktop.ini
 *.tmp
 *.bak
 
+# M7 official-sample generated Unity files (upstream also ignores these)
+m7_unity6000/Packages/packages-lock.json
+m7_unity6000/ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json
+m7_unity6000/RuntimeActionBindings.json
+m7_unity6000/RuntimeActionBindings.json.meta
+m7_unity6000/PerformanceTestRun*.*
+m7_unity6000/StreamingAssets*
+
 # =========================
 # Executables / packaged runtimes
 # =========================

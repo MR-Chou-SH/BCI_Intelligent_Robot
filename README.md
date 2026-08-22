@@ -24,11 +24,14 @@ M6.1b 的 Session A 是当前最完整的正式 dataset（30/30 QC-valid）。M6
 
 EEG 在系统中承担离散 target / intention selection，不承担机械臂关节或位置的连续控制。机械臂 MuJoCo 仿真与底层控制将复用同门系统；本项目负责 BCI→robot command/task interface、integration、execution status/feedback 与端到端实验。
 
-视觉、scene understanding 与 robot integration 仍是后续里程碑。
+M7 已进入正式开发：`m7_unity6000/` 是 Unity 6000.0.66f2 的唯一 active Unity application，基于已在 Quest 3 真机通过的 Meta Passthrough Camera API sample。M7.5 已验证官方检测中心点经 PCA、world ray 和 EnvironmentRaycast 定位至 world marker；SSVEP target binding 尚未开始。
+
+`vr_stimulus/` 保留为 Unity 6000.5.8f1 的 M1–M6 历史工程与可复用 SSVEP / trigger 实现。视觉、scene understanding 与 robot integration 的新集成均从 `m7_unity6000/` 开始。
 
 ## Main Directories
 
-- `vr_stimulus/` — Quest 3与SSVEP视觉刺激
+- `vr_stimulus/` — M1–M6 legacy Unity project（Unity 6000.5.8f1）与已验证 SSVEP / trigger 代码来源
+- `m7_unity6000/` — M7+ active Unity project（Unity 6000.0.66f2；Meta 官方 PCA sample 基线）
 - `vision/` — 视觉识别与空间定位
 - `eeg/` — ND8采集、预处理和SSVEP分类
 - `robot_arm/` — 机械臂控制
@@ -68,4 +71,4 @@ Codex在开始任务前应阅读：
 - [x] M4 — Three independent flicker targets
 - [x] M5 — Stimulus timing and EEG synchronization
 - [ ] M6 — ND8 EEG decoding and validation (M6.0–M6.3 complete; M6.4 exploratory/formal pending)
-- [ ] M7 — Vision-based automatic target placement
+- [ ] M7 — Vision-based automatic target placement（M7.5 官方 localization 已 Quest 3 PASS；SSVEP binding 待开发）

@@ -1,10 +1,20 @@
 # Project Status
 
-Last updated: 2026-08-20
+Last updated: 2026-08-22
 
 ## Overall Phase
 
-M6 — ND8 EEG Decoder and Cross-Session Robustness Validation
+M7 — Vision-guided SSVEP Target Binding
+
+## M7 Active Unity Application
+
+- `vr_stimulus/` remains the Unity 6000.5.8f1 M1–M6 legacy project. Its frame-driven SSVEP, trigger and communication code remains the source for selective future reuse.
+- `m7_unity6000/` is the Unity 6000.0.66f2 M7+ active Unity application. It is a tracked, non-nested-Git import of Meta `Unity-PassthroughCameraApiSamples` upstream commit `9105be64da8690b41154baf5629cb82dc2dbe4a7`, with MRUK / Meta Core 85.0.0.
+- M7.5 official localization is `Completed / PASS` on Quest 3: `MultiObjectDetection → PassthroughCameraAccess.ViewportPointToRay → EnvironmentRaycastManager.Raycast → world marker`. The result covers geometric localization only, not StableTarget binding, SSVEP selection, EEG or robot control.
+- M7.4 self-developed RGB→Environment Depth UV remains preserved by historical checkpoint and is not the active route.
+- The separate `BCI_Intelligent_Robot_unity6000_migration` worktree remains an experiment/reference only and is not merged wholesale.
+
+Current M7 scope: add only the smallest stable-target / target-binding layers on top of the verified official sample; do not repeat baseline validation or change M1–M6 evidence.
 
 ## Completed Milestone
 
@@ -376,7 +386,7 @@ M5.2 does not provide EEG sample association or online EEG processing.
 
 Do not begin online EEG classification, vision, robotic-arm control, or scene understanding as part of M5 synchronization work.
 
-## Current Priority
+## Historical Milestone Record
 
 ### M6 — ND8 EEG Online Classification
 

@@ -258,16 +258,16 @@ For hardware/XR/EEG tasks, explicitly distinguish:
 
 ## 11. Current Priority
 
-M1 through M5 are completed. M6.0 through M6.3 are completed with warnings.
+M1 through M6 are completed with their documented warnings and evidence boundaries preserved.
 
 The current engineering milestone is:
 
-M6.5a — Pseudo-Online Decoder Infrastructure.
+M7 — Vision-guided SSVEP Target Binding.
 
 The current task is:
 
-Implement only replay-based pseudo-online infrastructure with frozen decoder settings. Do not treat post-hoc replay as formal dataset completeness, do not start real ND8 online acquisition, and do not use future EEG packets in a replay decision.
+Develop M7+ Unity work only in `m7_unity6000/`, the Unity 6000.0.66f2 official Passthrough Camera API sample baseline. Reuse `vr_stimulus/` only selectively as the M1–M6 legacy source for verified frame-driven SSVEP and trigger/communication code. Do not repeat the M7.5 Passthrough/Camera API/YOLO/raycast baseline, revive M7.4 RGB→Environment Depth UV, or start EEG selection or robot control before target binding is separately scoped.
 
 For future robot work, prefer integration with the labmate-provided MuJoCo simulation / low-level control system. This repository owns the BCI target-selection output, robot command/task interface, integration, execution status/feedback, and end-to-end experiments; it does not need to rebuild the complete simulator or low-level controller from scratch.
 
-Do not prematurely implement online EEG classification, vision, robot control, or scene understanding while working on M5 synchronization.
+Do not prematurely implement EEG selection, robot control, or scene understanding while the M7 stable-target and SSVEP-binding boundary is being established.

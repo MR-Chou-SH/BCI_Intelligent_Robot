@@ -75,7 +75,9 @@ EEG系统判断用户选择了哪个目标。
 
 ## 3. 当前开发阶段
 
-项目已完成 M1–M5 的 Quest/SSVEP/同步工作、M6.0–M6.3 的 ND8 offline decoder baselines 与 characterization，以及 M6.4 association robustness / exploratory cross-session analysis。M6.4 以 `Completed / PASS WITH WARNINGS` 收口：其 PASS 指 audit、historical replay 和 exploratory evaluation 已完成，而不是 formal prospective generalization 已获证明。当前进入 M6.5a：只用历史连续 EEG 建立 pseudo-online replay infrastructure，不进行真实 ND8 online acquisition。
+项目已完成 M1–M5 的 Quest/SSVEP/同步工作、M6 的 ND8 decoder / diagnostic-live 验证（均保留其 warnings 与证据边界），并进入 M7 的视觉目标自动放置开发。M7+ 的唯一 active Unity application 为仓库内 `m7_unity6000/`（Unity 6000.0.66f2）；`vr_stimulus/` 是 Unity 6000.5.8f1 的 M1–M6 legacy 工程，不再作为 M7 默认入口。
+
+M7.5 已在 Quest 3 真机验证 Meta 官方链路：`MultiObjectDetection → PassthroughCameraAccess.ViewportPointToRay → EnvironmentRaycastManager.Raycast → world marker`。M7.4 自研 RGB→Environment Depth UV 路线保留在历史 checkpoint 中但继续暂停；下一步是稳定视觉目标到 SSVEP target binding，而不是重做 PCA、YOLO 或 raycast 基线。
 
 已经完成：
 
@@ -99,7 +101,7 @@ EEG系统判断用户选择了哪个目标。
 
 - formal prospective cross-session validation；
 - pseudo-online replay infrastructure and later real-time classification readiness；
-- 视觉识别模块；
+- 检测到的稳定视觉目标与 SSVEP stimulus 的正式绑定；
 - 机械臂正式集成。
 
 GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配置为准。
@@ -108,9 +110,11 @@ GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配�
 
 ## 4. 当前工程里程碑与长期第一功能目标
 
-当前工程里程碑是：
+当前 active 工程里程碑是：
 
-> M6.5a — Pseudo-Online Decoder Infrastructure（In Progress）
+> M7 — Vision-guided SSVEP Target Binding（In Progress）
+
+M6 的历史证据、冻结 decoder 配置和 warnings 仍保留；本轮不因 Unity 工程入口切换而重做或重新解释 M1–M6 实验。
 
 M1、M2、M3、M4和M5均已完成。M5在真实 Quest 3 + ND8 session 中验证了 software stimulus event、Quest-PC clock mapping、ND8 stable post-sync packet 和 software-derived sample estimate 的端到端关联；物理光学时序、硬件 sample anchor 和 hardware-exact EEG timing 仍待验证。
 
@@ -131,11 +135,11 @@ M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 Fir
 
 现阶段：
 
-- 不自动识别物体；
+- M7.5 官方 2D detection 到 world marker 已 Quest 3 PASS；
+- 尚未将稳定视觉目标正式绑定到 SSVEP stimulus；
 - 不接入机械臂；
-- 不开始 pseudo-online；
-- 三个刺激位置可以预先指定；
-- 刺激频率可以预先指定。
+- 不在本轮改动 M6 pseudo-online / decoder 证据；
+- 三个刺激的历史 frame-driven 参数仍是后续复用来源。
 
 完成刺激模块后再逐步：
 
@@ -166,7 +170,11 @@ M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 Fir
 - 帧/时序管理
 - EEG trigger同步
 
-M6 阶段优先保持已冻结的 stimulus/protocol 与 decoder evidence boundary，不在此轮改动刺激模块。
+这是 Unity 6000.5.8f1 的 M1–M6 legacy Unity project。它保留已验证的 frame-driven SSVEP、M5 trigger / Quest-PC communication 及相关历史场景；M7+ 不再直接在此工程继续 Unity 开发。
+
+### 5.1.1 `m7_unity6000`
+
+这是 Unity 6000.0.66f2 的 M7+ active Unity application，来源于 Meta `Unity-PassthroughCameraApiSamples` upstream commit `9105be64da8690b41154baf5629cb82dc2dbe4a7`，使用 MRUK / Meta Core 85.0.0。它包含已通过 Quest 3 真机验证的 Passthrough、Camera API、官方 MultiObjectDetection 与 2D→world localization 基线。后续视觉→SSVEP→EEG→robot 的 Unity 侧集成优先在此进行；具体来源、本地 M7.5 修改和许可证见 `m7_unity6000/BCI_M7_PROVENANCE.md`。
 
 ### 5.2 `vision`
 
@@ -540,8 +548,10 @@ Codex主要负责“在仓库里执行”。
 
 ## 14. 当前最高优先级
 
-M1、M2、M3、M4和M5均已完成。当前最高优先级为：
+M1–M6 已完成并保留 warnings。当前最高优先级为：
 
-> M6 — ND8 EEG Online Classification
+> M7 — Vision-guided SSVEP Target Binding
+
+以 `m7_unity6000/` 为唯一 active Unity application；先把官方 sample 的检测结果输出为稳定 `TargetId` / target state，再将最多三个 world-fixed stimulus 绑定到这些目标。不得重做已 PASS 的 Passthrough、Camera API、YOLO 或 official raycast 基线；不得在此阶段接入 EEG selection 或机械臂。`vr_stimulus/` 仅作为 M1–M6 的代码与实验证据来源。
 
 M6.0–M6.7 已完成并保留 warnings。M6.7 的 `stress_online` session `m6_7-formal-20260820T160940Z-0ef360f6` 在非理想精神/注意力状态下，以冻结 CH2/CH4/CH7（3/5 engineering admission）完成 30 trials、10/10/10 randomized、30/30 technical-valid、30/30 decisions、30/30 post-hoc correct，logical decision 为 2.2 s。该结果是 non-ideal-condition engineering stress evidence，不是 primary formal online accuracy；不能宣称 three-channel equivalence、cross-subject/generalized performance 或 physical end-to-end latency。两次真实 ND8 disconnect 导致的 incomplete preflight 必须保留；随后 120 s ND8-only stability check PASS（594 packets、593 continuous、1 startup anomaly、无 callback/runtime error）。当前冻结 decoder 已足以支持下一阶段 BCI decision → robot command interface 集成，但该集成属于下一 milestone，M6 closeout 不开始 M7 编码。M5/M6 的证据边界继续保留：`hardwareTimingVerified=false`、`physicalOpticalTimingVerified=false`，ND8 hardware sample anchor 与 hardware-exact timing 未验证，sample index 仅为 `software-derived estimate`，且名义刺激频率未获独立 optical measurement。当前 workspace 使用 NumPy 2.2.6 与 SciPy 1.14.1，但仓库尚无正式 requirements/pyproject dependency declaration，属于可复现性 warning。
