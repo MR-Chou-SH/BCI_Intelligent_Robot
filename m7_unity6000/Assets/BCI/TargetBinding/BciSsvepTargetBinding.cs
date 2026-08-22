@@ -20,6 +20,7 @@ namespace BCIIntelligentRobot.Vision
 
         private readonly BciTargetSlotAllocator m_slotAllocator = new BciTargetSlotAllocator();
         private readonly Dictionary<string, int> m_slotByTargetId = new Dictionary<string, int>(StringComparer.Ordinal);
+        private readonly BciSelectionTarget[] m_selectionTargets = new BciSelectionTarget[BciTargetSlotAllocator.SlotCount];
         private readonly GameObject[] m_slotObjects = new GameObject[BciTargetSlotAllocator.SlotCount];
         private readonly TextMesh[] m_slotLabels = new TextMesh[BciTargetSlotAllocator.SlotCount];
 
@@ -45,6 +46,11 @@ namespace BCIIntelligentRobot.Vision
             m_detectionManager.StableWorldAnchorUpdated += OnStableWorldAnchorUpdated;
             m_initialized = true;
             Debug.Log("M7_BCI_SLOT binding initialized slots=3 frames_per_half_cycle=5,4,3", this);
+        }
+
+        public BciSelectionSnapshot CreateSelectionSnapshot()
+        {
+            return new BciSelectionSnapshot(m_selectionTargets);
         }
 
         private void OnDestroy()
@@ -89,17 +95,20 @@ namespace BCIIntelligentRobot.Vision
             {
                 case BciSlotUpdateKind.Assigned:
                     m_slotByTargetId[anchor.TargetId] = update.SlotIndex;
+                    m_selectionTargets[update.SlotIndex] = new BciSelectionTarget(update.SlotIndex, anchor.TargetId, anchor.ClassName, anchor.State);
                     SetSlot(anchor, update.SlotIndex, true);
                     LogSlot(anchor, update, "assigned");
                     break;
 
                 case BciSlotUpdateKind.Retained:
                     m_slotByTargetId[anchor.TargetId] = update.SlotIndex;
+                    m_selectionTargets[update.SlotIndex] = new BciSelectionTarget(update.SlotIndex, anchor.TargetId, anchor.ClassName, anchor.State);
                     SetSlot(anchor, update.SlotIndex, true);
                     break;
 
                 case BciSlotUpdateKind.Released:
                     m_slotByTargetId.Remove(anchor.TargetId);
+                    m_selectionTargets[update.SlotIndex] = default(BciSelectionTarget);
                     SetSlotVisible(update.SlotIndex, false);
                     LogSlot(anchor, update, "released");
                     break;

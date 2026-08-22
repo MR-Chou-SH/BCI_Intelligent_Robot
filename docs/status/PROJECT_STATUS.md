@@ -20,7 +20,7 @@ M7 acceptance boundary:
 - Allowlisted classes enter the BCI target pipeline; non-allowlisted background classes such as `person`, `dining table` and `chair` do not.
 - Stable `TargetId`, temporary-missing retention, world-fixed anchor behavior and deterministic three-slot assignment were accepted on Quest 3.
 - Known non-blockers are approximately 1–2 seconds of stale target retention when a static target moves quickly, and black stimuli appearing subjectively lighter than the legacy M6 scene. Neither is changed in this closeout.
-- EEG classification, `SSVEP slot ↔ EEG class ↔ real-world TargetId` integration and robot control are outside this completed M7 boundary.
+- EEG transport and robot control remain outside this completed M7 boundary. The next active software-only milestone is `SSVEP slot ↔ EEG class ↔ real-world TargetId` integration; its first selection contract is implemented with immutable per-decision snapshots and automatic editor tests. Real ND8/Quest-PC transport is not connected.
 
 ## Completed Milestone
 
