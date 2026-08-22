@@ -45,7 +45,7 @@ namespace BCIIntelligentRobot.Vision
     {
         private readonly BciSelectionTarget[] m_targets;
 
-        internal BciSelectionSnapshot(IReadOnlyList<BciSelectionTarget> targets)
+        public BciSelectionSnapshot(IReadOnlyList<BciSelectionTarget> targets)
         {
             m_targets = new BciSelectionTarget[BciTargetSlotAllocator.SlotCount];
             for (int slot = 0; slot < m_targets.Length; slot++)
