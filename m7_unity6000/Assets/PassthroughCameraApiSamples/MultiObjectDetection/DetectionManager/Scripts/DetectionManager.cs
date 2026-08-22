@@ -1,7 +1,9 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using BCIIntelligentRobot.Vision;
 using Meta.XR;
 using Meta.XR.Samples;
 using UnityEngine;
@@ -18,16 +20,51 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private DetectionSpawnMarkerAnim m_spawnMarker;
 
         [SerializeField] private SentisInferenceUiManager m_uiInference;
+        [SerializeField] private EnvironmentRayCastSampleManager m_environmentRaycast;
         [Space(10)]
         public UnityEvent<int> OnObjectsIdentified;
+        public event Action<StableWorldAnchorSnapshot> StableWorldAnchorUpdated;
 
         private readonly List<DetectionSpawnMarkerAnim> m_spawnedEntities = new();
+        private readonly Dictionary<string, StableWorldAnchorRecord> m_stableWorldAnchors = new();
+        private readonly Dictionary<string, float> m_lastStableLogTime = new();
+        private BciSsvepTargetBinding m_ssvepBinding;
         private bool m_isStarted;
         internal OVRSpatialAnchor m_spatialAnchor;
         private bool m_isHeadsetTracking;
 
+        // A world anchor is created or moved only after continuous, geometrically
+        // consistent Active evidence. These values are deliberately small and explicit.
+        private const double AnchorConfirmationSeconds = 0.75d;
+        private const double CandidateMaximumGapSeconds = 0.9d;
+        private const float CandidateAgreementMeters = 0.10f;
+        private const float AnchorUpdateDistanceMeters = 0.15f;
+        private const float StableLocalizationLogIntervalSeconds = 1f;
+
+        private sealed class StableWorldAnchorRecord
+        {
+            public string TargetId;
+            public string ClassName;
+            public bool HasAnchor;
+            public Vector3 WorldPosition;
+            public DetectionSpawnMarkerAnim Marker;
+            public Vector3 CandidatePosition;
+            public double CandidateFirstSeen;
+            public double CandidateLastSeen;
+        }
+
         private void Awake()
         {
+            if (m_environmentRaycast == null)
+            {
+                m_environmentRaycast = FindFirstObjectByType<EnvironmentRayCastSampleManager>();
+            }
+
+            if (m_uiInference != null)
+            {
+                m_uiInference.StableTargetsUpdated += OnStableTargetsUpdated;
+            }
+
             StartCoroutine(UpdateSpatialAnchor());
             OVRManager.TrackingLost += OnTrackingLost;
             OVRManager.TrackingAcquired += OnTrackingAcquired;
@@ -35,6 +72,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         private void OnDestroy()
         {
+            if (m_uiInference != null)
+            {
+                m_uiInference.StableTargetsUpdated -= OnStableTargetsUpdated;
+            }
+
             EraseSpatialAnchor();
             OVRManager.TrackingLost -= OnTrackingLost;
             OVRManager.TrackingAcquired -= OnTrackingAcquired;
@@ -196,7 +238,286 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 Destroy(e.gameObject);
             }
             m_spawnedEntities.Clear();
+
+            foreach (var anchor in m_stableWorldAnchors.Values)
+            {
+                PublishStableAnchor(anchor, StableTargetState.Lost);
+                if (anchor.Marker != null)
+                {
+                    Destroy(anchor.Marker.gameObject);
+                }
+            }
+            m_stableWorldAnchors.Clear();
+            m_lastStableLogTime.Clear();
             OnObjectsIdentified?.Invoke(-1);
+        }
+
+        private void OnStableTargetsUpdated(
+            IReadOnlyList<StableTargetSnapshot> stableTargets,
+            Vector2 inputSize,
+            Pose cameraPose)
+        {
+            if (m_environmentRaycast == null || m_cameraAccess == null || m_spawnMarker == null || m_uiInference == null)
+            {
+                return;
+            }
+
+            EnsureSsvepBinding();
+
+            for (int i = 0; i < stableTargets.Count; i++)
+            {
+                StableTargetSnapshot target = stableTargets[i];
+                if (target.State == StableTargetState.Lost)
+                {
+                    ReleaseStableAnchor(target);
+                    continue;
+                }
+
+                if (!m_stableWorldAnchors.TryGetValue(target.TargetId, out StableWorldAnchorRecord anchor))
+                {
+                    if (target.State == StableTargetState.Active && TryGetWorldHit(target, inputSize, cameraPose, out var firstHit, out _))
+                    {
+                        anchor = new StableWorldAnchorRecord
+                        {
+                            TargetId = target.TargetId,
+                            ClassName = target.ClassName,
+                            CandidatePosition = firstHit,
+                            CandidateFirstSeen = target.LastSeen,
+                            CandidateLastSeen = target.LastSeen
+                        };
+                        m_stableWorldAnchors.Add(target.TargetId, anchor);
+                        LogStable(target, "candidate", firstHit);
+                    }
+
+                    continue;
+                }
+
+                anchor.ClassName = target.ClassName;
+                if (target.State == StableTargetState.TemporarilyMissing)
+                {
+                    LogStable(target, anchor.HasAnchor ? "hold_missing" : "hold_missing_before_anchor", anchor.HasAnchor ? anchor.WorldPosition : null);
+                    continue;
+                }
+
+                if (!TryGetWorldHit(target, inputSize, cameraPose, out var worldHit, out var ray))
+                {
+                    LogStable(target, anchor.HasAnchor ? "hold_raycast_miss" : "candidate_raycast_miss", anchor.HasAnchor ? anchor.WorldPosition : null);
+                    continue;
+                }
+
+                if (!anchor.HasAnchor)
+                {
+                    if (!IsContinuousCandidate(anchor, worldHit, target.LastSeen))
+                    {
+                        ResetCandidate(anchor, worldHit, target.LastSeen);
+                        LogStable(target, "candidate_reset", worldHit);
+                        continue;
+                    }
+
+                    anchor.CandidatePosition = worldHit;
+                    anchor.CandidateLastSeen = target.LastSeen;
+
+                    if (target.LastSeen - anchor.CandidateFirstSeen >= AnchorConfirmationSeconds)
+                    {
+                        CreateStableAnchor(anchor, target, worldHit, ray);
+                    }
+
+                    continue;
+                }
+
+                float anchorDistance = Vector3.Distance(anchor.WorldPosition, worldHit);
+                if (anchorDistance <= AnchorUpdateDistanceMeters)
+                {
+                    ResetCandidate(anchor, worldHit, target.LastSeen);
+                    LogStable(target, "hold", anchor.WorldPosition);
+                    PublishStableAnchor(anchor, StableTargetState.Active);
+                    continue;
+                }
+
+                if (!IsContinuousCandidate(anchor, worldHit, target.LastSeen))
+                {
+                    ResetCandidate(anchor, worldHit, target.LastSeen);
+                    LogStable(target, "move_candidate", worldHit);
+                    PublishStableAnchor(anchor, StableTargetState.Active);
+                    continue;
+                }
+
+                anchor.CandidatePosition = worldHit;
+                anchor.CandidateLastSeen = target.LastSeen;
+
+                if (target.LastSeen - anchor.CandidateFirstSeen >= AnchorConfirmationSeconds)
+                {
+                    anchor.WorldPosition = worldHit;
+                    anchor.Marker.transform.SetPositionAndRotation(worldHit, Quaternion.LookRotation(ray.direction));
+                    ResetCandidate(anchor, worldHit, target.LastSeen);
+                    LogStable(target, "updated", worldHit);
+                    PublishStableAnchor(anchor, StableTargetState.Active);
+                }
+                else
+                {
+                    PublishStableAnchor(anchor, StableTargetState.Active);
+                }
+            }
+        }
+
+        private void EnsureSsvepBinding()
+        {
+            if (m_ssvepBinding == null)
+            {
+                m_ssvepBinding = GetComponent<BciSsvepTargetBinding>();
+                if (m_ssvepBinding == null)
+                {
+                    m_ssvepBinding = gameObject.AddComponent<BciSsvepTargetBinding>();
+                }
+            }
+
+            m_ssvepBinding.Initialize(this, m_uiInference.ContentParent);
+        }
+
+        private bool TryGetWorldHit(
+            StableTargetSnapshot target,
+            Vector2 inputSize,
+            Pose cameraPose,
+            out Vector3 worldHit,
+            out Ray ray)
+        {
+            Vector2 bboxCenter = new Vector2(
+                (target.Bbox.XMin + target.Bbox.XMax) * 0.5f,
+                (target.Bbox.YMin + target.Bbox.YMax) * 0.5f);
+            Vector2 viewportPoint = new Vector2(
+                bboxCenter.x / inputSize.x,
+                1f - (bboxCenter.y / inputSize.y));
+            ray = m_cameraAccess.ViewportPointToRay(viewportPoint, cameraPose);
+            Vector3? hit = m_environmentRaycast.Raycast(ray);
+            if (hit.HasValue)
+            {
+                worldHit = hit.Value;
+                LogStableLocalization(target, bboxCenter, viewportPoint, ray, worldHit);
+                return true;
+            }
+
+            worldHit = default;
+            LogStableLocalizationMiss(target, bboxCenter, viewportPoint, ray);
+            return false;
+        }
+
+        private static bool IsContinuousCandidate(StableWorldAnchorRecord anchor, Vector3 worldHit, double timestamp)
+        {
+            return timestamp - anchor.CandidateLastSeen <= CandidateMaximumGapSeconds &&
+                Vector3.Distance(anchor.CandidatePosition, worldHit) <= CandidateAgreementMeters;
+        }
+
+        private static void ResetCandidate(StableWorldAnchorRecord anchor, Vector3 worldPosition, double timestamp)
+        {
+            anchor.CandidatePosition = worldPosition;
+            anchor.CandidateFirstSeen = timestamp;
+            anchor.CandidateLastSeen = timestamp;
+        }
+
+        private void CreateStableAnchor(StableWorldAnchorRecord anchor, StableTargetSnapshot target, Vector3 worldPosition, Ray ray)
+        {
+            anchor.HasAnchor = true;
+            anchor.WorldPosition = worldPosition;
+            anchor.Marker = Instantiate(
+                m_spawnMarker,
+                worldPosition,
+                Quaternion.LookRotation(ray.direction),
+                m_uiInference.ContentParent);
+            anchor.Marker.SetYoloClassName(target.ClassName);
+            LogStable(target, "created", worldPosition);
+            PublishStableAnchor(anchor, StableTargetState.Active);
+        }
+
+        private void ReleaseStableAnchor(StableTargetSnapshot target)
+        {
+            if (!m_stableWorldAnchors.TryGetValue(target.TargetId, out StableWorldAnchorRecord anchor))
+            {
+                return;
+            }
+
+            if (anchor.Marker != null)
+            {
+                Destroy(anchor.Marker.gameObject);
+            }
+            PublishStableAnchor(anchor, StableTargetState.Lost);
+            m_stableWorldAnchors.Remove(target.TargetId);
+            LogStable(target, "released", null);
+        }
+
+        private void PublishStableAnchor(StableWorldAnchorRecord anchor, StableTargetState state)
+        {
+            if (!anchor.HasAnchor && state != StableTargetState.Lost)
+                return;
+
+            StableWorldAnchorUpdated?.Invoke(new StableWorldAnchorSnapshot(
+                anchor.TargetId,
+                anchor.ClassName,
+                state,
+                anchor.WorldPosition));
+        }
+
+        private void LogStableLocalization(StableTargetSnapshot target, Vector2 bboxCenter, Vector2 viewportPoint, Ray ray, Vector3 worldHit)
+        {
+            string key = target.TargetId + ":localization";
+            if (m_lastStableLogTime.TryGetValue(key, out float lastLogTime) &&
+                Time.unscaledTime - lastLogTime < StableLocalizationLogIntervalSeconds)
+            {
+                return;
+            }
+
+            m_lastStableLogTime[key] = Time.unscaledTime;
+            Debug.Log(
+                "M7_STABLE_LOCALIZATION target_id=" + target.TargetId +
+                " state=" + target.State +
+                " class=" + target.ClassName +
+                " bbox_center_model_px=" + bboxCenter.ToString("F1") +
+                " viewport=" + viewportPoint.ToString("F4") +
+                " ray_origin=" + ray.origin.ToString("F4") +
+                " ray_direction=" + ray.direction.ToString("F4") +
+                " raycast=hit world_hit_point=" + worldHit.ToString("F4"));
+        }
+
+        private void LogStableLocalizationMiss(StableTargetSnapshot target, Vector2 bboxCenter, Vector2 viewportPoint, Ray ray)
+        {
+            string key = target.TargetId + ":localization_miss";
+            if (m_lastStableLogTime.TryGetValue(key, out float lastLogTime) &&
+                Time.unscaledTime - lastLogTime < StableLocalizationLogIntervalSeconds)
+            {
+                return;
+            }
+
+            m_lastStableLogTime[key] = Time.unscaledTime;
+            Debug.LogWarning(
+                "M7_STABLE_LOCALIZATION target_id=" + target.TargetId +
+                " state=" + target.State +
+                " class=" + target.ClassName +
+                " bbox_center_model_px=" + bboxCenter.ToString("F1") +
+                " viewport=" + viewportPoint.ToString("F4") +
+                " ray_origin=" + ray.origin.ToString("F4") +
+                " ray_direction=" + ray.direction.ToString("F4") +
+                " raycast=miss world_hit_point=unavailable");
+        }
+
+        private void LogStable(StableTargetSnapshot target, string eventName, Vector3? worldPosition)
+        {
+            string key = target.TargetId + ":" + eventName;
+            if (m_lastStableLogTime.TryGetValue(key, out float lastLogTime) &&
+                Time.unscaledTime - lastLogTime < StableLocalizationLogIntervalSeconds)
+            {
+                return;
+            }
+
+            m_lastStableLogTime[key] = Time.unscaledTime;
+            string message =
+                "M7_WORLD_ANCHOR target_id=" + target.TargetId +
+                " state=" + target.State +
+                " class=" + target.ClassName +
+                " event=" + eventName;
+            if (worldPosition.HasValue)
+            {
+                message += " world_point=" + worldPosition.Value.ToString("F4");
+            }
+            Debug.Log(message);
         }
 
         private static void LogSpatialAnchor(string message, LogType logType = LogType.Log)

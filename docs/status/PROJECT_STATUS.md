@@ -1,20 +1,36 @@
 # Project Status
 
-Last updated: 2026-08-22
+Last updated: 2026-08-23
 
 ## Overall Phase
 
-M7 — Vision-guided SSVEP Target Binding
+M7 — Vision-guided SSVEP Target Binding — Completed / PASS
 
 ## M7 Active Unity Application
 
 - `vr_stimulus/` remains the Unity 6000.5.8f1 M1–M6 legacy project. Its frame-driven SSVEP, trigger and communication code remains the source for selective future reuse.
 - `m7_unity6000/` is the Unity 6000.0.66f2 M7+ active Unity application. It is a tracked, non-nested-Git import of Meta `Unity-PassthroughCameraApiSamples` upstream commit `9105be64da8690b41154baf5629cb82dc2dbe4a7`, with MRUK / Meta Core 85.0.0.
-- M7.5 official localization is `Completed / PASS` on Quest 3: `MultiObjectDetection → PassthroughCameraAccess.ViewportPointToRay → EnvironmentRaycastManager.Raycast → world marker`. The result covers geometric localization only, not StableTarget binding, SSVEP selection, EEG or robot control.
+- M7.5 official localization is `Completed / PASS` on Quest 3: `MultiObjectDetection → PassthroughCameraAccess.ViewportPointToRay → EnvironmentRaycastManager.Raycast → world marker`.
+- M7 visual binding is now `Completed / PASS` on Quest 3: eligible detection → StableTarget → stable world anchor → at most three frame-driven SSVEP slots. Slot 0/1/2 use 7.2/9/12 Hz from shared frame origin with `framesPerHalfCycle = 5/4/3`.
 - M7.4 self-developed RGB→Environment Depth UV remains preserved by historical checkpoint and is not the active route.
 - The separate `BCI_Intelligent_Robot_unity6000_migration` worktree remains an experiment/reference only and is not merged wholesale.
 
-Current M7 scope: add only the smallest stable-target / target-binding layers on top of the verified official sample; do not repeat baseline validation or change M1–M6 evidence.
+M7 acceptance boundary:
+
+- Allowlisted classes enter the BCI target pipeline; non-allowlisted background classes such as `person`, `dining table` and `chair` do not.
+- Stable `TargetId`, temporary-missing retention, world-fixed anchor behavior and deterministic three-slot assignment were accepted on Quest 3.
+- Known non-blockers are approximately 1–2 seconds of stale target retention when a static target moves quickly, and black stimuli appearing subjectively lighter than the legacy M6 scene. Neither is changed in this closeout.
+- EEG classification, `SSVEP slot ↔ EEG class ↔ real-world TargetId` integration and robot control are outside this completed M7 boundary.
+
+## Completed Milestone
+
+### M7 — Vision-guided SSVEP Target Binding
+
+Status: Completed / PASS
+
+The formal M7 Unity application is `m7_unity6000/` on Unity `6000.0.66f2`. Quest 3 acceptance confirmed eligible detection, StableTarget state/ID continuity, stable world anchors, and no more than three world-space black/white SSVEP targets. The fixed mapping is slot 0 → 7.2 Hz, slot 1 → 9 Hz, and slot 2 → 12 Hz, implemented with the verified shared-frame-origin `5/4/3` frame-driven controller.
+
+M7 does not include EEG selection, EEG transport, robot control, dynamic-object tracking optimization, or any revival of the M7.4 RGB→Environment Depth UV route. The next scoped milestone is `SSVEP slot ↔ EEG class ↔ real-world TargetId` integration.
 
 ## Completed Milestone
 

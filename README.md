@@ -14,17 +14,17 @@
 
 ## Current Stage
 
-M0 至 M5 已完成；M6 正在进行离线 EEG decoder 与跨 session robustness 验证：
+M0 至 M6 已完成并保留各自 warnings 与证据边界；M7 视觉→SSVEP binding 已完成 Quest 3 真机验收：
 
-`M6.5a — Pseudo-Online Decoder Infrastructure: replay-based first-decision validation in progress`
+`M7 — Vision-guided SSVEP Target Binding: Completed / PASS`
 
-M6.1b 的 Session A 是当前最完整的正式 dataset（30/30 QC-valid）。M6.2 与 M6.3 已完成固定 CCA/FBCCA offline baselines 和 window/filter-realization characterization。M6.4 已以 `Completed / PASS WITH WARNINGS` 收口：B1/B2 replay 提供 exploratory cross-session evidence；B1 为 29 QC-valid trials，B2 的 replay 30/30 仅是 post-hoc exploratory evidence，原始 formal 状态仍为 incomplete。M6.5a 正在用历史 packet replay 验证 rolling-buffer pseudo-online architecture。
+M6.1b 的 Session A 是当前最完整的正式 dataset（30/30 QC-valid）。M6.2–M6.7 已完成固定 decoder、replay/live-source 验证与 stress engineering evidence；其 warnings、硬件/光学 timing 边界和未验证项均保留，不因 M7 收口而重新解释。
 
-当前不进入 pseudo-online，也不计划立即进行第四次 EEG acquisition。软件 sample association、硬件 sample anchor、硬件/光学 timing 与名义刺激频率的光学验证仍是证据边界。
+当前不开始 EEG selection 集成。软件 sample association、硬件 sample anchor、硬件/光学 timing 与名义刺激频率的光学验证仍是证据边界。
 
 EEG 在系统中承担离散 target / intention selection，不承担机械臂关节或位置的连续控制。机械臂 MuJoCo 仿真与底层控制将复用同门系统；本项目负责 BCI→robot command/task interface、integration、execution status/feedback 与端到端实验。
 
-M7 已进入正式开发：`m7_unity6000/` 是 Unity 6000.0.66f2 的唯一 active Unity application，基于已在 Quest 3 真机通过的 Meta Passthrough Camera API sample。M7.5 已验证官方检测中心点经 PCA、world ray 和 EnvironmentRaycast 定位至 world marker；SSVEP target binding 尚未开始。
+M7 视觉→SSVEP binding 已完成：`m7_unity6000/` 是 Unity 6000.0.66f2 的唯一 active Unity application，基于已在 Quest 3 真机通过的 Meta Passthrough Camera API sample。M7.5 官方检测中心点经 PCA、world ray 和 EnvironmentRaycast 定位至 world marker；M7.6 已将 eligible detection、StableTarget、stable world anchor 与最多三个 frame-driven SSVEP slot 在 Quest 3 真机闭环验证。
 
 `vr_stimulus/` 保留为 Unity 6000.5.8f1 的 M1–M6 历史工程与可复用 SSVEP / trigger 实现。视觉、scene understanding 与 robot integration 的新集成均从 `m7_unity6000/` 开始。
 
@@ -70,5 +70,6 @@ Codex在开始任务前应阅读：
 - [x] M3 — One SSVEP flicker target
 - [x] M4 — Three independent flicker targets
 - [x] M5 — Stimulus timing and EEG synchronization
-- [ ] M6 — ND8 EEG decoding and validation (M6.0–M6.3 complete; M6.4 exploratory/formal pending)
-- [ ] M7 — Vision-based automatic target placement（M7.5 官方 localization 已 Quest 3 PASS；SSVEP binding 待开发）
+- [x] M6 — ND8 EEG decoding and validation（Completed / PASS WITH WARNINGS；证据边界保留）
+- [x] M7 — Vision-guided SSVEP Target Binding（Quest 3 PASS；slot 0/1/2 = 7.2/9/12 Hz，`5/4/3` frame-driven）
+- [ ] Next — `SSVEP slot ↔ EEG class ↔ real-world TargetId` integration

@@ -1,6 +1,8 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates.
 
+using System;
 using System.Collections.Generic;
+using BCIIntelligentRobot.Vision;
 using Meta.XR;
 using Meta.XR.Samples;
 using UnityEngine;
@@ -17,14 +19,29 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private PassthroughCameraAccess m_cameraAccess;
 
         [SerializeField] private RectTransform m_detectionBoxPrefab;
+        [Header("BCI target eligibility")]
+        [SerializeField] private string[] m_bciAllowedClasses =
+        {
+            "cup",
+            "bottle",
+            "book",
+            "mouse",
+            "cell phone",
+            "keyboard"
+        };
         [Space(10)]
         public UnityEvent<int> OnObjectsDetected;
+        public event Action<IReadOnlyList<StableTargetSnapshot>, Vector2, Pose> StableTargetsUpdated;
 
         internal readonly List<BoundingBoxData> m_boxDrawn = new();
         private string[] m_labels;
         private readonly List<BoundingBoxData> m_boxPool = new();
+        private readonly List<TargetDetection2D> m_stableDetections = new();
+        private readonly List<(int classId, Vector4 boundingBox)> m_eligibleDetections = new();
+        private readonly StableTargetManager m_stableTargetManager = new();
         private readonly Dictionary<string, float> m_lastLocalizationLogTime = new();
         private RecentDetectionData m_recentValidDetection;
+        private BciTargetEligibilityFilter m_bciEligibilityFilter;
 
         // Raycasts run at inference cadence. Keep the Quest log usable without changing detection or raycast behavior.
         private const float LocalizationLogIntervalSeconds = 1f;
@@ -48,7 +65,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             public float ValidAtTime;
         }
 
-        private void Awake() => m_detectionBoxPrefab.gameObject.SetActive(false);
+        private void Awake()
+        {
+            m_detectionBoxPrefab.gameObject.SetActive(false);
+            m_bciEligibilityFilter = new BciTargetEligibilityFilter(m_bciAllowedClasses);
+        }
 
         private void Update()
         {
@@ -74,19 +95,22 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         public void DrawUIBoxes(List<(int classId, Vector4 boundingBox)> detections, Vector2 inputSize, Pose cameraPose)
         {
             Vector2 currentResolution = m_cameraAccess.CurrentResolution;
+            List<(int classId, Vector4 boundingBox)> eligibleDetections = FilterEligibleDetections(detections);
 
-            if (detections.Count == 0)
+            UpdateStableTargets(eligibleDetections, inputSize, cameraPose);
+
+            if (eligibleDetections.Count == 0)
             {
                 OnObjectsDetected?.Invoke(0);
                 return;
             }
 
-            OnObjectsDetected?.Invoke(detections.Count);
+            OnObjectsDetected?.Invoke(eligibleDetections.Count);
 
             // Draw the bounding boxes
-            for (var i = 0; i < detections.Count; i++)
+            for (var i = 0; i < eligibleDetections.Count; i++)
             {
-                var detection = detections[i];
+                var detection = eligibleDetections[i];
                 float x1 = detection.boundingBox[0];
                 float y1 = detection.boundingBox[1];
                 float x2 = detection.boundingBox[2];
@@ -314,6 +338,57 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             {
                 Debug.LogWarning(common + " raycast=miss world_hit_point=unavailable");
             }
+        }
+
+        private void UpdateStableTargets(
+            List<(int classId, Vector4 boundingBox)> detections,
+            Vector2 inputSize,
+            Pose cameraPose)
+        {
+            m_stableDetections.Clear();
+            for (int i = 0; i < detections.Count; i++)
+            {
+                var detection = detections[i];
+                float x1 = detection.boundingBox[0];
+                float y1 = detection.boundingBox[1];
+                float x2 = detection.boundingBox[2];
+                float y2 = detection.boundingBox[3];
+                string className = m_labels[detection.classId].Replace(" ", "_");
+                m_stableDetections.Add(new TargetDetection2D(
+                    className,
+                    1f,
+                    new TargetBoundingBox(x1, y1, x2 - x1, y2 - y1),
+                    inputSize.x,
+                    inputSize.y));
+            }
+
+            // The official post-NMS tuple intentionally exposes class and bbox only;
+            // confidence has already been applied by the unchanged score threshold.
+            m_stableTargetManager.Update(m_stableDetections, Time.realtimeSinceStartupAsDouble);
+            StableTargetsUpdated?.Invoke(m_stableTargetManager.GetAllTargets(), inputSize, cameraPose);
+        }
+
+        private List<(int classId, Vector4 boundingBox)> FilterEligibleDetections(
+            List<(int classId, Vector4 boundingBox)> detections)
+        {
+            m_eligibleDetections.Clear();
+            if (detections == null || m_labels == null)
+                return m_eligibleDetections;
+
+            if (m_bciEligibilityFilter == null)
+                m_bciEligibilityFilter = new BciTargetEligibilityFilter(m_bciAllowedClasses);
+
+            for (int i = 0; i < detections.Count; i++)
+            {
+                var detection = detections[i];
+                if (detection.classId < 0 || detection.classId >= m_labels.Length)
+                    continue;
+
+                if (m_bciEligibilityFilter.IsEligible(m_labels[detection.classId]))
+                    m_eligibleDetections.Add(detection);
+            }
+
+            return m_eligibleDetections;
         }
     }
 }
