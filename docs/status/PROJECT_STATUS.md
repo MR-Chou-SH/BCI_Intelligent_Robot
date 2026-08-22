@@ -4,7 +4,7 @@ Last updated: 2026-08-23
 
 ## Overall Phase
 
-M7 — Vision-guided SSVEP Target Binding — Completed / PASS
+M8.1 — PC → Quest Simulated EEG Selection Transport — Implemented; Unity automated / Quest acceptance pending
 
 ## M7 Active Unity Application
 
@@ -21,6 +21,14 @@ M7 acceptance boundary:
 - Stable `TargetId`, temporary-missing retention, world-fixed anchor behavior and deterministic three-slot assignment were accepted on Quest 3.
 - Known non-blockers are approximately 1–2 seconds of stale target retention when a static target moves quickly, and black stimuli appearing subjectively lighter than the legacy M6 scene. Neither is changed in this closeout.
 - EEG transport and robot control remain outside this completed M7 boundary. The next active software-only milestone is `SSVEP slot ↔ EEG class ↔ real-world TargetId` integration; its first selection contract is implemented with immutable per-decision snapshots and automatic editor tests. Real ND8/Quest-PC transport is not connected.
+
+## Active Milestone
+
+### M8.1 — PC → Quest Simulated EEG Selection Transport
+
+Status: Implemented; Unity automated / Quest acceptance pending
+
+M8.0 established the immutable `BciSelectionSnapshot` contract. M8.1 adds only a minimal simulated-PC selection transport: PC sends a unique selection ID and canonical class index; Quest captures/owns the matching snapshot and resolves the TargetId locally. Real ND8 decoding, robot actions, and additional clock-synchronization claims remain outside this milestone.
 
 ## Completed Milestone
 

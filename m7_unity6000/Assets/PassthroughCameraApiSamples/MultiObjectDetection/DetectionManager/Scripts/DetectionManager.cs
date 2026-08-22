@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using BCIIntelligentRobot.Vision;
+using BCIIntelligentRobot.Integration;
 using Meta.XR;
 using Meta.XR.Samples;
 using UnityEngine;
@@ -29,6 +30,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private readonly Dictionary<string, StableWorldAnchorRecord> m_stableWorldAnchors = new();
         private readonly Dictionary<string, float> m_lastStableLogTime = new();
         private BciSsvepTargetBinding m_ssvepBinding;
+        [Header("M8 PC selection transport")]
+        [SerializeField] private string m_selectionServerHost = "127.0.0.1";
+        [SerializeField, Min(1)] private int m_selectionServerPort = 11001;
+        private BciSelectionTransportClient m_selectionTransport;
         private bool m_isStarted;
         internal OVRSpatialAnchor m_spatialAnchor;
         private bool m_isHeadsetTracking;
@@ -372,6 +377,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
 
             m_ssvepBinding.Initialize(this, m_uiInference.ContentParent);
+            if (m_selectionTransport == null)
+            {
+                m_selectionTransport = GetComponent<BciSelectionTransportClient>();
+                if (m_selectionTransport == null)
+                    m_selectionTransport = gameObject.AddComponent<BciSelectionTransportClient>();
+            }
+            m_selectionTransport.Initialize(m_ssvepBinding, m_selectionServerHost, m_selectionServerPort);
         }
 
         private bool TryGetWorldHit(

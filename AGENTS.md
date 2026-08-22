@@ -262,12 +262,12 @@ M1 through M6 are completed with their documented warnings and evidence boundari
 
 The current engineering milestone is:
 
-M7 — Vision-guided SSVEP Target Binding.
+M8 — SSVEP Slot / EEG Class / TargetId Integration.
 
 The current task is:
 
-Develop M7+ Unity work only in `m7_unity6000/`, the Unity 6000.0.66f2 official Passthrough Camera API sample baseline. Reuse `vr_stimulus/` only selectively as the M1–M6 legacy source for verified frame-driven SSVEP and trigger/communication code. Do not repeat the M7.5 Passthrough/Camera API/YOLO/raycast baseline, revive M7.4 RGB→Environment Depth UV, or start EEG selection or robot control before target binding is separately scoped.
+Develop M7+ Unity work only in `m7_unity6000/`, the Unity 6000.0.66f2 official Passthrough Camera API sample baseline. M8 selection work may selectively reuse the M1–M6 legacy frame-driven SSVEP and TCP transport patterns, but must keep Quest as the authority that resolves EEG class/index through a frozen `BciSelectionSnapshot` to `TargetId`. Do not repeat the M7.5 Passthrough/Camera API/YOLO/raycast baseline, revive M7.4 RGB→Environment Depth UV, connect real ND8 online decoding, or start robot control before separately scoped.
 
 For future robot work, prefer integration with the labmate-provided MuJoCo simulation / low-level control system. This repository owns the BCI target-selection output, robot command/task interface, integration, execution status/feedback, and end-to-end experiments; it does not need to rebuild the complete simulator or low-level controller from scratch.
 
-Do not prematurely implement EEG selection, robot control, or scene understanding while the M7 stable-target and SSVEP-binding boundary is being established.
+Do not prematurely implement real ND8 online integration, robot control, or scene understanding while the M8 software selection boundary is being established.
