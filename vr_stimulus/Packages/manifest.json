@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.meta.xr.mrutilitykit": "85.0.0",
     "com.unity.ai.inference": "2.6.1",
     "com.unity.multiplayer.center": "1.0.1",
     "com.unity.xr.management": "4.7.0",
