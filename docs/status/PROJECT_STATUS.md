@@ -4,7 +4,7 @@ Last updated: 2026-08-23
 
 ## Overall Phase
 
-M8.1 — PC → Quest Simulated EEG Selection Transport — Implemented; Unity automated / Quest acceptance pending
+M8.2a — M6 Final Decision → M8 Selection Transport — Completed / PASS (software/replay scope)
 
 ## M7 Active Unity Application
 
@@ -20,15 +20,27 @@ M7 acceptance boundary:
 - Allowlisted classes enter the BCI target pipeline; non-allowlisted background classes such as `person`, `dining table` and `chair` do not.
 - Stable `TargetId`, temporary-missing retention, world-fixed anchor behavior and deterministic three-slot assignment were accepted on Quest 3.
 - Known non-blockers are approximately 1–2 seconds of stale target retention when a static target moves quickly, and black stimuli appearing subjectively lighter than the legacy M6 scene. Neither is changed in this closeout.
-- EEG transport and robot control remain outside this completed M7 boundary. The next active software-only milestone is `SSVEP slot ↔ EEG class ↔ real-world TargetId` integration; its first selection contract is implemented with immutable per-decision snapshots and automatic editor tests. Real ND8/Quest-PC transport is not connected.
+- EEG transport and robot control remain outside this completed M7 boundary. M8.1 has now completed Quest 3 transport acceptance; M8.2a is limited to the PC-side M6 final-decision integration and does not start ND8 hardware or robot control.
 
-## Active Milestone
+## Completed Milestone
+
+### M8.2a — M6 Final Decision → M8 Selection Transport
+
+Status: Completed / PASS (software/replay scope)
+
+M8.2a connects only M6's existing `decisionMade=True` / `finalDecisionLabel` output through one PC-side canonical mapping to M8's `eeg_selection` message. Mock/replay and real `LiveOnlineController` final-record tests verify open-ACK gating, 0/1/2 mapping, one-shot submission, stale/abort/no-decision suppression, Quest rejection logging, newline JSON/ACK handling and a single-command mock CLI. The Quest snapshot remains the authority for slot/TargetId resolution. Intermediate M6 predictions, real ND8 startup, timing/latency claims, and robot actions remain outside this completed substage.
+
+The next M8.2b activity requires separately scoped, user-operated Quest + ND8 validation; its hardware mode is intentionally fail-closed in M8.2a.
+
+## Completed Milestone
 
 ### M8.1 — PC → Quest Simulated EEG Selection Transport
 
-Status: Implemented; Unity automated / Quest acceptance pending
+Status: Completed / PASS (Quest 3 acceptance)
 
 M8.0 established the immutable `BciSelectionSnapshot` contract. M8.1 adds only a minimal simulated-PC selection transport: PC sends a unique selection ID and canonical class index; Quest captures/owns the matching snapshot and resolves the TargetId locally. Real ND8 decoding, robot actions, and additional clock-synchronization claims remain outside this milestone.
+
+Quest 3 acceptance confirmed class 0 → slot 0 → `target-0001`, class 1 → slot 1 → `target-0007`, and class 2 → slot 2 → `target-0005`. Duplicate decisions were rejected as `DuplicateDecision`; unknown IDs as `UnknownSelectionId`. Android TCP handling was corrected so `remote_eof` exits the connected loop and reconnects, while Android idle `WouldBlock` is not treated as a connection failure. M7 StableTarget and three-slot SSVEP behavior showed no regression.
 
 ## Completed Milestone
 

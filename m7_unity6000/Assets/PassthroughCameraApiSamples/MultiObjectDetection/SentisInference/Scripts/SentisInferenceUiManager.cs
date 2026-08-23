@@ -90,6 +90,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         {
             // Parse neural net labels
             m_labels = labelsAsset.text.Split('\n');
+            for (int i = 0; i < m_labels.Length; i++)
+                m_labels[i] = NormalizeModelLabel(m_labels[i]);
+        }
+
+        public static string NormalizeModelLabel(string label)
+        {
+            return (label ?? string.Empty).TrimEnd('\r');
         }
 
         public void DrawUIBoxes(List<(int classId, Vector4 boundingBox)> detections, Vector2 inputSize, Pose cameraPose)

@@ -140,7 +140,8 @@ M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 Fir
 - 固定映射为 slot 0/1/2 → 7.2/9/12 Hz，对应 `framesPerHalfCycle = 5/4/3` 和共享 frame origin；
 - 非 allowlist 类别不进入 BCI target pipeline；稳定目标短暂漏检时保持 anchor/slot；
 - 已知非 blocker：快速移动静态目标时约 1–2 秒旧 target 滞留；黑色刺激主观上可能比旧 M6 scene 略浅；本轮不调整；
-- 当前不接入 EEG selection、SSVEP slot 与 EEG class/real-world TargetId 的集成或机械臂；
+- M8.1 已完成 Quest 3 software transport 验收：Quest 以冻结 snapshot 将 class 0/1/2 分别解析为 slot 0/1/2 与当前 TargetId；duplicate/unknown decision 与 Android EOF/reconnect 行为均已验证；
+- M8.2a 已完成 PC-side software/replay 接线：仅允许 M6 的 2-Consecutive final decision 进入 canonical class → M8 transport；下一步 M8.2b 的真实 Quest + ND8 验证仍需单独授权、人工执行；不做 timing/latency claim，不接入机械臂；
 - 不接入机械臂；
 - 不在本轮改动 M6 pseudo-online / decoder 证据；
 - 三个刺激的历史 frame-driven 参数仍是后续复用来源。
