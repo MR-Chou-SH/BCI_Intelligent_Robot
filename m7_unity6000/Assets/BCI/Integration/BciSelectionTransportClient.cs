@@ -178,14 +178,12 @@ namespace BCIIntelligentRobot.Integration
 
                 try
                 {
-                    if (!stream.DataAvailable)
-                    {
-                        m_workAvailable.WaitOne(10);
-                        continue;
-                    }
                     int count = stream.Read(receiveBuffer, 0, receiveBuffer.Length);
                     if (count == 0)
+                    {
+                        m_diagnostics.Enqueue("M8_SELECTION connection_closed remote_eof");
                         return;
+                    }
                     textBuffer.Append(Encoding.UTF8.GetString(receiveBuffer, 0, count));
                     DequeueCompleteLines(textBuffer);
                 }
