@@ -187,10 +187,22 @@ namespace BCIIntelligentRobot.Integration
                     textBuffer.Append(Encoding.UTF8.GetString(receiveBuffer, 0, count));
                     DequeueCompleteLines(textBuffer);
                 }
-                catch (IOException exception) when (exception.InnerException is SocketException socket && socket.SocketErrorCode == SocketError.TimedOut)
+                catch (IOException exception) when (IsTransientReadException(exception))
                 {
+                    // WouldBlock can return immediately on Android; avoid a worker-thread busy-spin.
+                    m_workAvailable.WaitOne(10);
                 }
             }
+        }
+
+        public static bool IsTransientReadException(IOException exception)
+        {
+            var socket = exception == null ? null : exception.InnerException as SocketException;
+            if (socket == null)
+                return false;
+
+            return socket.SocketErrorCode == SocketError.TimedOut ||
+                   socket.SocketErrorCode == SocketError.WouldBlock;
         }
 
         private void DequeueCompleteLines(StringBuilder buffer)
