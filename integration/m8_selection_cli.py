@@ -1,8 +1,4 @@
-"""M8.2a PC entry point for replay/mock M6 final decisions.
-
-The live-ND8 mode deliberately fails closed in M8.2a: it is reserved for the
-separately scoped M8.2b source wiring and never opens an ND8 device here.
-"""
+"""M8 PC entry point for mock/replay and separately scoped M8.2b live ND8 runs."""
 import argparse
 import json
 from pathlib import Path
@@ -12,6 +8,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from eeg.sample_association.jsonl import AppendOnlyJsonl
+from integration.m8_live_nd8 import run_live_nd8
 from integration.m8_selection_orchestration import M8SelectionOrchestrator, QuestSelectionTcpServer
 
 
@@ -34,22 +31,41 @@ def _run_records(orchestrator, records, selection_id_prefix):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="M8.2a M6 final-decision to Quest selection orchestration")
+    parser = argparse.ArgumentParser(description="M8 M6 final-decision to Quest selection orchestration")
     parser.add_argument("--mode", choices=("mock", "replay", "live-nd8"), default="mock")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", default=11001, type=int)
     parser.add_argument("--accept-timeout-seconds", default=30.0, type=float)
     parser.add_argument("--ack-timeout-seconds", default=5.0, type=float)
-    parser.add_argument("--event-log", required=True, type=Path)
-    parser.add_argument("--selection-id-prefix", required=True)
+    parser.add_argument("--event-log", type=Path)
+    parser.add_argument("--selection-id-prefix")
     parser.add_argument("--trial-id")
     parser.add_argument("--final-label", choices=("target_left", "target_center", "target_right"))
     parser.add_argument("--no-decision", action="store_true")
     parser.add_argument("--replay-final-decisions", type=Path)
+    parser.add_argument("--com", choices=("COM11",))
+    parser.add_argument("--data-root", type=Path)
+    parser.add_argument("--session-prefix", default="m8_2b-live")
+    parser.add_argument("--preflight-only", action="store_true")
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--preflight-timeout-seconds", default=150.0, type=float)
+    parser.add_argument("--packet-stall-seconds", default=2.0, type=float)
+    parser.set_defaults(preparation_seconds=13.0, trial_window_seconds=4.0)
     args = parser.parse_args(argv)
 
     if args.mode == "live-nd8":
-        parser.error("live-nd8 is reserved for M8.2b; M8.2a must not open ND8 hardware")
+        if args.data_root is None:
+            parser.error("live-nd8 requires --data-root under the external EEG study root")
+        if args.com is None:
+            parser.error("live-nd8 requires the verified --com COM11 configuration")
+        if args.dry_run and args.preflight_only:
+            parser.error("--dry-run and --preflight-only are mutually exclusive")
+        exit_code, _ = run_live_nd8(args)
+        return exit_code
+    if args.dry_run or args.preflight_only or args.com or args.data_root:
+        parser.error("live-nd8-only arguments require --mode live-nd8")
+    if args.event_log is None or not args.selection_id_prefix:
+        parser.error("mock/replay mode requires --event-log and --selection-id-prefix")
     if args.mode == "mock" and (not args.trial_id or (not args.final_label and not args.no_decision)):
         parser.error("mock mode requires --trial-id and exactly one of --final-label or --no-decision")
     if args.mode == "mock" and args.final_label and args.no_decision:

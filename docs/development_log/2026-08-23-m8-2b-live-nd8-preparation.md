@@ -1,0 +1,15 @@
+# M8.2b Live ND8 Preparation
+
+Date: 2026-08-23
+
+## Prepared entry point
+
+M8.2b adds one future live command at `integration/m8_selection_cli.py --mode live-nd8`. It does not create a new ND8 reader or decoder. The command reuses the external Windows x64 CPython 3.9 Neurodance environment, `Nd8SerialAdapter(COM11)`, M6.7 channel admission and synthetic warm-up, frozen NumPy FBCCA `LiveOnlineController`, the existing 2-Consecutive final-decision policy, and the completed M8.2a Quest snapshot transport.
+
+The fixed engineering-smoke plan is exactly three trials: slot/class 0 at 7.2 Hz, slot/class 1 at 9 Hz, then slot/class 2 at 12 Hz. Expected classes are stored only as post-hoc evidence and are not supplied to the decoder. Each trial performs the console 13-second preparation countdown, then `selection_open` / Quest ACK, then starts the M6 controller at the next software ND8 packet boundary. Only `LiveOnlineController.stop_trial()`'s immutable final record can submit `eeg_selection`.
+
+## Fail-closed and evidence behavior
+
+The command refuses a non-CPython-3.9 / missing-Neurodance runtime before constructing an ND8 adapter. It records a unique session below the external EEG study root and stops on host/dongle failure, channel-admission failure, ND8 callback/stall/continuity/frozen-channel failure, decoder exception, open rejection, no-decision, invalid final label, final transport failure, or Quest rejection. Raw EEG is written once as the session's M6/ND8 evidence; M8 records store only references and derived selection evidence.
+
+No ND8 streaming acquisition, raw EEG recording or formal trial occurred while preparing this entry point. A test initially reached the adapter's host-MAC readiness query under the real vendor interpreter; it timed out and closed before `start_streaming()`, so it is not hardware acceptance and prompted removal of that environment-dependent test. A no-hardware dry run using the verified external runtime created `D:\EEG_Study\m8_2b-dryrun-20260823T092355Z-51174cb2` with `status=dry_run_passed`, `nd8Started=false`, and the three planned unique selection IDs. The runtime import check confirmed CPython 3.9.13 x64 plus `neuro_dance.core` and `neuro_dance.nd_device_process` imports. This does not establish EEG performance, hardware sample timing, physical optical timing, physical end-to-end latency, or robot behavior.
