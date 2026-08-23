@@ -4,7 +4,7 @@ Last updated: 2026-08-24
 
 ## Overall Phase
 
-M8.3 — EEG-selected TargetId closed-loop / downstream selection contract — Implemented / software validation PASS; Quest acceptance pending
+M8.3 — EEG-selected TargetId closed-loop / downstream selection contract — Completed / PASS
 
 ## M7 Active Unity Application
 
@@ -26,9 +26,9 @@ M7 acceptance boundary:
 
 ### M8.3 — EEG-selected TargetId closed-loop / downstream selection contract
 
-Status: Implemented / software validation PASS; Quest acceptance pending
+Status: Completed / PASS
 
-Quest remains the sole authority that resolves a PC-provided canonical class index through the `selection_open` frozen snapshot. On an accepted terminal decision, `BciSelectionCoordinator` publishes exactly one immutable `BciTargetSelectionResult` / `target_selected` C# event containing the selection ID, class index, slot, TargetId, semantic label, frozen stable-world position when available, software UTC, and `quest_frozen_selection_snapshot` provenance. Downstream consumers subscribe to this event and must not query the live slot binding again. Duplicate, stale, invalid, empty, inactive, no-decision, abort, and reconnect-delivered messages cannot publish a second or fabricated result. This is a software boundary only; it does not begin robot control or define a robot command schema.
+Quest remains the sole authority that resolves a PC-provided canonical class index through the `selection_open` frozen snapshot. On an accepted terminal decision, `BciSelectionCoordinator` publishes exactly one immutable `BciTargetSelectionResult` / `target_selected` C# event containing the selection ID, class index, slot, TargetId, semantic label, frozen stable-world position when available, software UTC, and `quest_frozen_selection_snapshot` provenance. Downstream consumers subscribe to this event and must not query the live slot binding again. Duplicate, stale, invalid, empty, inactive, no-decision, abort, and reconnect-delivered messages cannot publish a second or fabricated result. Quest acceptance verified one accepted class-1 result, duplicate rejection, abort suppression, and unknown-selection rejection on the rebuilt current-HEAD APK, with no M7/HUD regression or app crash. This is a software boundary only; it does not begin robot control or define a robot command schema.
 
 ## Completed Milestone
 
