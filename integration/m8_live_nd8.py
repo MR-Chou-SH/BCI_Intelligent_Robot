@@ -15,6 +15,11 @@ import threading
 import time
 import uuid
 
+try:
+    import winsound
+except ImportError:  # pragma: no cover - exercised on non-Windows development hosts.
+    winsound = None
+
 import numpy as np
 
 from eeg.acquisition.nd8_serial_adapter import Nd8SerialAdapter
@@ -27,7 +32,6 @@ from eeg.decoder.formal_online import (
 from eeg.decoder.live_online import LiveOnlineController
 from eeg.decoder.pseudo_online import DecoderBackend
 from eeg.sample_association.jsonl import AppendOnlyJsonl
-from eeg.signal_sanity.record import _run_countdown
 from integration.m8_selection_orchestration import (
     M8LiveTrialBridge,
     M8SelectionOrchestrator,
@@ -52,6 +56,74 @@ M8_LIVE_EVIDENCE_FILES = (
     "m8-trial-results.jsonl",
     "m8-session-events.jsonl",
 )
+
+
+class M8WindowsAudibleCue:
+    """Best-effort Windows cues; audio failure must never change trial state."""
+
+    def __init__(self, beep=None, output=print):
+        self._beep = winsound.Beep if beep is None and winsound is not None else beep
+        self._output = output
+        self._emitted_cues = []
+        self._warnings = []
+
+    def _emit(self, name, frequency, duration_ms):
+        self._emitted_cues.append(name)
+        if self._beep is None:
+            self._warn("{} unavailable on this host".format(name))
+            return
+        try:
+            self._beep(frequency, duration_ms)
+        except (OSError, RuntimeError) as error:
+            self._warn("{} failed: {}".format(name, error))
+
+    def _warn(self, message):
+        self._warnings.append(message)
+        self._output("WARNING: M8 audible cue {}".format(message))
+
+    def preparation_started(self):
+        self._emit("preparation_started", 440, 140)
+
+    def countdown_tick(self, remaining):
+        self._emit("countdown_{}".format(int(remaining)), 700, 100)
+
+    def observation_started(self):
+        self._emit("observation_started", 1200, 350)
+
+    def trial_ended(self):
+        self._emit("trial_ended", 320, 450)
+
+    def summary(self):
+        return {
+            "available": self._beep is not None,
+            "emittedCueCount": len(self._emitted_cues),
+            "warningCount": len(self._warnings),
+        }
+
+
+def run_m8_preparation_countdown(seconds, cue, sleep=time.sleep, output=print, on_cue_failure=None):
+    """Keep the existing countdown while adding non-blocking business-level cue handling."""
+    seconds = int(seconds)
+
+    def emit(method, *args):
+        try:
+            getattr(cue, method)(*args)
+        except Exception as error:  # cue is advisory and cannot abort a trial.
+            message = "{} failed: {}".format(method, error)
+            if on_cue_failure is not None:
+                on_cue_failure(message)
+            else:
+                output("WARNING: M8 audible cue {}".format(message))
+
+    if seconds <= 0:
+        return
+    emit("preparation_started")
+    for remaining in range(seconds, 0, -1):
+        if remaining in {seconds, 10, 5, 3, 2, 1}:
+            output("Preparation countdown: {} s remaining".format(remaining), flush=True)
+        if remaining in {3, 2, 1}:
+            emit("countdown_tick", remaining)
+        sleep(1.0)
 
 
 class M8LiveNd8PreflightError(RuntimeError):
@@ -209,7 +281,7 @@ class M8LiveNd8Session:
     """One external-CPython command for M8.2b preflight and its fixed three trials."""
     def __init__(self, args, adapter_factory=Nd8SerialAdapter, transport_factory=QuestSelectionTcpServer,
                  controller_factory=LiveOnlineController, runtime_validator=validate_vendor_cpython39_runtime,
-                 countdown=_run_countdown, sleep=time.sleep, monotonic=time.monotonic):
+                 countdown=None, sleep=time.sleep, monotonic=time.monotonic, cue=None):
         self.args = args
         self.adapter_factory = adapter_factory
         self.transport_factory = transport_factory
@@ -218,6 +290,8 @@ class M8LiveNd8Session:
         self.countdown = countdown
         self.sleep = sleep
         self.monotonic = monotonic
+        self.cue = M8WindowsAudibleCue() if cue is None else cue
+        self._cue_warnings = []
         self._lock = threading.RLock()
         self._preflight_packets = []
         self._continuity = []
@@ -227,6 +301,25 @@ class M8LiveNd8Session:
         self._runtime_failure = None
         self._selected_channels = []
         self._controller = None
+
+    def _record_cue_warning(self, message):
+        self._cue_warnings.append(message)
+        print("WARNING: M8 audible cue {}".format(message), flush=True)
+
+    def _emit_cue(self, method, *args):
+        try:
+            getattr(self.cue, method)(*args)
+        except Exception as error:  # injected/custom cue failures remain non-fatal.
+            self._record_cue_warning("{} failed: {}".format(method, error))
+
+    def _cue_summary(self):
+        try:
+            summary = dict(self.cue.summary())
+        except Exception as error:
+            self._record_cue_warning("summary failed: {}".format(error))
+            summary = {}
+        summary["warningCount"] = int(summary.get("warningCount", 0)) + len(self._cue_warnings)
+        return summary
 
     def _event(self, event_type, **values):
         self.session_events.append({"recordType": "m8_live_nd8_event", "eventType": event_type,
@@ -331,7 +424,16 @@ class M8LiveNd8Session:
         print(trial["operatorPrompt"], flush=True)
         self._event("trial_preparation_started", trialId=trial["trialId"], selectionId=trial["selectionId"],
                     expectedClassIndex=trial["expectedClassIndex"], slot=trial["slot"], frequencyHz=trial["frequencyHz"])
-        self.countdown(self.args.preparation_seconds)
+        if self.countdown is None:
+            run_m8_preparation_countdown(
+                self.args.preparation_seconds,
+                self.cue,
+                sleep=self.sleep,
+                on_cue_failure=self._record_cue_warning,
+            )
+        else:
+            self._emit_cue("preparation_started")
+            self.countdown(self.args.preparation_seconds)
         failure = self._ensure_packet_liveness()
         if failure:
             raise M8LiveNd8PreflightError(failure)
@@ -360,14 +462,17 @@ class M8LiveNd8Session:
         self._event("trial_started_after_quest_open_ack", trialId=trial["trialId"], selectionId=trial["selectionId"],
                     estimatedGlobalSampleIndex=start_sample)
         deadline = self.monotonic() + self.args.trial_window_seconds
+        self._emit_cue("observation_started")
         while self.monotonic() < deadline:
             failure = self._ensure_packet_liveness()
             if failure:
                 aborted = coordinator.abort_trial(failure)
                 self._record_trial(aborted, "aborted", failure)
+                self._emit_cue("trial_ended")
                 raise M8LiveNd8PreflightError(failure)
             self.sleep(0.025)
         completed = coordinator.finish_trial()
+        self._emit_cue("trial_ended")
         m8_result = completed["m8Selection"]
         status = m8_result.get("status")
         if status != "quest_accepted":
@@ -457,6 +562,7 @@ class M8LiveNd8Session:
                 self.adapter.close()
                 self.manifest["callbackErrors"] = list(self.adapter.callback_errors)
                 self.manifest["observedPacketCount"] = len(self.adapter.timeline.packets)
+            self.manifest["audibleCue"] = self._cue_summary()
             self.manifest.update({"status": status, "failureReason": failure, "endedUtc": _utc_now()})
             self._save_manifest()
 

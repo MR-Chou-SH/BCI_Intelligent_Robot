@@ -7,8 +7,10 @@ from types import SimpleNamespace
 from integration.m8_live_nd8 import (
     M8LiveNd8Session,
     M8LiveTrialCoordinator,
+    M8WindowsAudibleCue,
     build_m8_live_trial_plan,
     create_m8_live_dry_run,
+    run_m8_preparation_countdown,
     validate_vendor_cpython39_runtime,
 )
 from integration.m8_selection_cli import main as cli_main
@@ -58,6 +60,32 @@ class FakeLiveController:
 
 
 class M8LiveNd8Tests(unittest.TestCase):
+    def test_audible_preparation_cues_do_not_change_fixed_trial_mapping(self):
+        cues = []
+
+        class RecordingCue:
+            def preparation_started(self):
+                cues.append("preparation")
+
+            def countdown_tick(self, remaining):
+                cues.append("countdown-{}".format(remaining))
+
+        run_m8_preparation_countdown(13, RecordingCue(), sleep=lambda _: None, output=lambda *args, **kwargs: None)
+
+        self.assertEqual(["preparation", "countdown-3", "countdown-2", "countdown-1"], cues)
+        self.assertEqual([0, 1, 2], [item["expectedClassIndex"] for item in build_m8_live_trial_plan("m8-session")])
+
+    def test_audible_cue_failure_is_a_warning_not_a_business_failure(self):
+        cue = M8WindowsAudibleCue(beep=lambda frequency, duration: (_ for _ in ()).throw(OSError("speaker")))
+
+        cue.preparation_started()
+        cue.countdown_tick(3)
+        cue.observation_started()
+        cue.trial_ended()
+
+        self.assertEqual(4, cue.summary()["emittedCueCount"])
+        self.assertEqual(4, cue.summary()["warningCount"])
+
     def test_fixed_three_trial_plan_keeps_expected_class_post_hoc(self):
         trials = build_m8_live_trial_plan("m8-session")
 
