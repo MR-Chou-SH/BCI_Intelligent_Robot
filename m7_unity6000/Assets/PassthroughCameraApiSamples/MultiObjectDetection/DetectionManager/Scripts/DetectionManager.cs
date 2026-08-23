@@ -34,7 +34,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField] private string m_selectionServerHost = "127.0.0.1";
         [SerializeField, Min(1)] private int m_selectionServerPort = 11001;
         [Header("M8 SSVEP experimental display layout")]
+        [SerializeField] private BciSsvepLayoutMode m_ssvepLayoutMode = BciSsvepLayoutMode.WorldSpaceExperimental;
         [SerializeField, Min(0.1f)] private float m_ssvepStimulusSizeMeters = BciSsvepDisplayLayout.ExperimentalStimulusSizeMeters;
+        [SerializeField] private Vector3 m_ssvepHudLocalCenter = new Vector3(0f, BciSsvepDisplayLayout.HudHeightMeters, BciSsvepDisplayLayout.HudDepthMeters);
+        [SerializeField, Min(0f)] private float m_ssvepHudHorizontalSpacingMeters = BciSsvepDisplayLayout.HudHorizontalSpacingMeters;
+        [SerializeField, Min(0.1f)] private float m_ssvepHudStimulusSizeMeters = BciSsvepDisplayLayout.HudStimulusSizeMeters;
         private BciSelectionTransportClient m_selectionTransport;
         private bool m_isStarted;
         internal OVRSpatialAnchor m_spatialAnchor;
@@ -378,6 +382,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 }
             }
 
+            m_ssvepBinding.ConfigureLayout(
+                m_ssvepLayoutMode,
+                m_ssvepHudLocalCenter,
+                m_ssvepHudHorizontalSpacingMeters,
+                m_ssvepHudStimulusSizeMeters);
             m_ssvepBinding.Initialize(this, m_uiInference.ContentParent, m_ssvepStimulusSizeMeters);
             if (m_selectionTransport == null)
             {

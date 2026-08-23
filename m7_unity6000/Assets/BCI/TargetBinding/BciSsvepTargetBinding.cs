@@ -24,8 +24,12 @@ namespace BCIIntelligentRobot.Vision
         private readonly StableWorldAnchorSnapshot[] m_slotAnchors = new StableWorldAnchorSnapshot[BciTargetSlotAllocator.SlotCount];
         private readonly bool[] m_slotHasAnchor = new bool[BciTargetSlotAllocator.SlotCount];
         private readonly Vector3[] m_displayPositions = new Vector3[BciTargetSlotAllocator.SlotCount];
+        private readonly Vector3[] m_hudLocalPositions = new Vector3[BciTargetSlotAllocator.SlotCount];
+        private readonly Vector3[] m_frozenAnchorPositions = new Vector3[BciTargetSlotAllocator.SlotCount];
+        private readonly bool[] m_frozenAnchorVisible = new bool[BciTargetSlotAllocator.SlotCount];
         private readonly GameObject[] m_slotObjects = new GameObject[BciTargetSlotAllocator.SlotCount];
         private readonly TextMesh[] m_slotLabels = new TextMesh[BciTargetSlotAllocator.SlotCount];
+        private readonly TextMesh[] m_slotTargetLabels = new TextMesh[BciTargetSlotAllocator.SlotCount];
         private readonly LineRenderer[] m_slotLeaderLines = new LineRenderer[BciTargetSlotAllocator.SlotCount];
         private readonly GameObject[] m_slotTargetMarkers = new GameObject[BciTargetSlotAllocator.SlotCount];
         private readonly BciSelectionLayoutFreezeGate m_layoutFreezeGate = new BciSelectionLayoutFreezeGate();
@@ -34,10 +38,32 @@ namespace BCIIntelligentRobot.Vision
         private MultiTargetStimulusController m_stimulusController;
         private Transform m_contentParent;
         private Camera m_mainCamera;
+        private Transform m_viewLockedHudRoot;
         private Material m_associationMaterial;
         private float m_stimulusSizeMeters;
+        private BciSsvepLayoutMode m_layoutMode = BciSsvepLayoutMode.WorldSpaceExperimental;
+        private Vector3 m_hudLocalCenter = BciSsvepDisplayLayout.DefaultHudLocalCenter;
+        private float m_hudHorizontalSpacing = BciSsvepDisplayLayout.HudHorizontalSpacingMeters;
+        private float m_hudStimulusSizeMeters = BciSsvepDisplayLayout.HudStimulusSizeMeters;
         private bool m_layoutDirty;
         private bool m_initialized;
+
+        public BciSsvepLayoutMode LayoutMode => m_layoutMode;
+
+        public void ConfigureLayout(
+            BciSsvepLayoutMode layoutMode,
+            Vector3 hudLocalCenter,
+            float hudHorizontalSpacing,
+            float hudStimulusSizeMeters)
+        {
+            if (m_initialized)
+                return;
+
+            m_layoutMode = layoutMode;
+            m_hudLocalCenter = hudLocalCenter;
+            m_hudHorizontalSpacing = Mathf.Max(0f, hudHorizontalSpacing);
+            m_hudStimulusSizeMeters = Mathf.Max(0.1f, hudStimulusSizeMeters);
+        }
 
         public void Initialize(DetectionManager detectionManager, Transform contentParent)
         {
@@ -79,8 +105,20 @@ namespace BCIIntelligentRobot.Vision
                 return;
 
             RefreshLiveLayout();
+            bool wasFrozen = m_layoutFreezeGate.IsFrozen;
             if (m_layoutFreezeGate.Begin(selectionId))
+            {
+                if (!wasFrozen)
+                {
+                    for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+                    {
+                        m_frozenAnchorVisible[slot] = m_slotHasAnchor[slot];
+                        if (m_frozenAnchorVisible[slot])
+                            m_frozenAnchorPositions[slot] = m_slotAnchors[slot].WorldPosition;
+                    }
+                }
                 Debug.Log("M8_SELECTION layout_frozen selection_id=" + selectionId, this);
+            }
         }
 
         /// <summary>
@@ -94,6 +132,7 @@ namespace BCIIntelligentRobot.Vision
 
             if (!m_layoutFreezeGate.IsFrozen)
             {
+                Array.Clear(m_frozenAnchorVisible, 0, m_frozenAnchorVisible.Length);
                 m_layoutDirty = true;
                 RefreshLiveLayout();
                 Debug.Log("M8_SELECTION layout_released selection_id=" + selectionId, this);
@@ -106,6 +145,8 @@ namespace BCIIntelligentRobot.Vision
                 m_detectionManager.StableWorldAnchorUpdated -= OnStableWorldAnchorUpdated;
             if (m_associationMaterial != null)
                 Destroy(m_associationMaterial);
+            if (m_viewLockedHudRoot != null)
+                Destroy(m_viewLockedHudRoot.gameObject);
         }
 
         private void LateUpdate()
@@ -121,11 +162,19 @@ namespace BCIIntelligentRobot.Vision
             if (m_layoutDirty && !m_layoutFreezeGate.IsFrozen)
                 RefreshLiveLayout();
 
+            if (m_layoutMode == BciSsvepLayoutMode.ViewLockedHud)
+                UpdateViewLockedHudPresentation();
+
             for (int slot = 0; slot < m_slotObjects.Length; slot++)
             {
                 GameObject slotObject = m_slotObjects[slot];
                 if (slotObject == null || !slotObject.activeSelf)
                     continue;
+
+                if (m_layoutMode == BciSsvepLayoutMode.ViewLockedHud)
+                {
+                    slotObject.transform.localRotation = Quaternion.identity;
+                }
 
                 Vector3 cameraDirection = m_mainCamera.transform.position - slotObject.transform.position;
                 if (cameraDirection.sqrMagnitude > Mathf.Epsilon)
@@ -137,6 +186,13 @@ namespace BCIIntelligentRobot.Vision
                     slotObject.transform.rotation = Quaternion.LookRotation(-cameraDirection.normalized);
                     if (m_slotLabels[slot] != null)
                         m_slotLabels[slot].transform.rotation = Quaternion.LookRotation(cameraDirection.normalized);
+                }
+
+                if (m_slotTargetLabels[slot] != null && m_slotTargetMarkers[slot] != null)
+                {
+                    Vector3 markerDirection = m_mainCamera.transform.position - m_slotTargetMarkers[slot].transform.position;
+                    if (markerDirection.sqrMagnitude > Mathf.Epsilon)
+                        m_slotTargetLabels[slot].transform.rotation = Quaternion.LookRotation(markerDirection.normalized);
                 }
             }
         }
@@ -260,8 +316,27 @@ namespace BCIIntelligentRobot.Vision
             Collider markerCollider = marker.GetComponent<Collider>();
             if (markerCollider != null)
                 Destroy(markerCollider);
+            m_slotTargetLabels[slotIndex] = CreateMarkerLabel(marker.transform, slotIndex);
             marker.SetActive(false);
             return marker;
+        }
+
+        private static TextMesh CreateMarkerLabel(Transform parent, int slotIndex)
+        {
+            var labelObject = new GameObject("MarkerLabel");
+            labelObject.transform.SetParent(parent, false);
+            // The label inherits the 0.035 m marker scale; compensate so the
+            // number remains a small, readable world-space annotation.
+            labelObject.transform.localPosition = new Vector3(0f, 0.65f, 0f);
+            labelObject.transform.localScale = new Vector3(-0.35f, 0.35f, 0.35f);
+            var label = labelObject.AddComponent<TextMesh>();
+            label.text = (slotIndex + 1).ToString();
+            label.anchor = TextAnchor.MiddleCenter;
+            label.alignment = TextAlignment.Center;
+            label.characterSize = 0.25f;
+            label.fontSize = 48;
+            label.color = Color.cyan;
+            return label;
         }
 
         private static TextMesh CreateLabel(Transform parent)
@@ -299,6 +374,12 @@ namespace BCIIntelligentRobot.Vision
             if (m_mainCamera == null)
                 return;
 
+            if (m_layoutMode == BciSsvepLayoutMode.ViewLockedHud)
+            {
+                RefreshViewLockedHudLayout();
+                return;
+            }
+
             BciSsvepDisplayLayout.CalculatePositions(
                 m_slotAnchors,
                 m_slotHasAnchor,
@@ -335,7 +416,103 @@ namespace BCIIntelligentRobot.Vision
             m_layoutDirty = false;
         }
 
+        private void RefreshViewLockedHudLayout()
+        {
+            EnsureViewLockedHudRoot();
+            BciSsvepDisplayLayout.CalculateViewLockedPositions(
+                m_hudLocalCenter,
+                m_hudHorizontalSpacing,
+                m_hudLocalPositions);
+
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+            {
+                if (!m_slotHasAnchor[slot])
+                {
+                    SetSlotPresentationVisible(slot, false);
+                    continue;
+                }
+
+                GameObject slotObject = m_slotObjects[slot];
+                slotObject.transform.localPosition = m_hudLocalPositions[slot];
+                slotObject.transform.localRotation = Quaternion.identity;
+                slotObject.transform.localScale = Vector3.one * m_hudStimulusSizeMeters;
+                UpdateSlotLabel(slot, m_slotAnchors[slot]);
+
+                GameObject marker = m_slotTargetMarkers[slot];
+                if (marker != null)
+                    marker.transform.position = m_slotAnchors[slot].WorldPosition;
+                UpdateLeaderLine(slot, slotObject.transform.position, m_slotAnchors[slot].WorldPosition, m_hudStimulusSizeMeters);
+                SetSlotPresentationVisible(slot, true);
+            }
+
+            m_layoutDirty = false;
+        }
+
+        private void EnsureViewLockedHudRoot()
+        {
+            if (m_viewLockedHudRoot != null || m_mainCamera == null)
+                return;
+
+            var rootObject = new GameObject("M7_BCI_ViewLockedHudRoot");
+            m_viewLockedHudRoot = rootObject.transform;
+            m_viewLockedHudRoot.SetParent(m_mainCamera.transform, false);
+            m_viewLockedHudRoot.localPosition = Vector3.zero;
+            m_viewLockedHudRoot.localRotation = Quaternion.identity;
+            m_viewLockedHudRoot.localScale = Vector3.one;
+
+            for (int slot = 0; slot < m_slotObjects.Length; slot++)
+            {
+                if (m_slotObjects[slot] == null)
+                    continue;
+                m_slotObjects[slot].transform.SetParent(m_viewLockedHudRoot, false);
+                m_slotObjects[slot].transform.localScale = Vector3.one * m_hudStimulusSizeMeters;
+            }
+        }
+
+        private void UpdateViewLockedHudPresentation()
+        {
+            if (m_viewLockedHudRoot == null)
+                return;
+
+            for (int slot = 0; slot < m_slotObjects.Length; slot++)
+            {
+                GameObject slotObject = m_slotObjects[slot];
+                if (slotObject == null || !slotObject.activeSelf)
+                    continue;
+
+                Vector3 anchorPosition;
+                if (m_layoutFreezeGate.IsFrozen)
+                {
+                    if (!m_frozenAnchorVisible[slot])
+                        continue;
+                    anchorPosition = m_frozenAnchorPositions[slot];
+                }
+                else
+                {
+                    if (!m_slotHasAnchor[slot])
+                        continue;
+                    anchorPosition = m_slotAnchors[slot].WorldPosition;
+                }
+
+                UpdateLeaderLine(slot, slotObject.transform.position, anchorPosition, m_hudStimulusSizeMeters);
+            }
+        }
+
+        private void UpdateSlotLabel(int slot, StableWorldAnchorSnapshot anchor)
+        {
+            if (m_slotLabels[slot] == null)
+                return;
+
+            string prefix = (slot + 1).ToString() + "\n";
+            m_slotLabels[slot].text = prefix + anchor.TargetId + "\n" + anchor.ClassName;
+        }
+
         private void UpdateLeaderLine(int slotIndex, Vector3 displayPosition, Vector3 anchorPosition)
+        {
+            UpdateLeaderLine(slotIndex, displayPosition, anchorPosition, m_stimulusSizeMeters);
+        }
+
+        private void UpdateLeaderLine(int slotIndex, Vector3 displayPosition, Vector3 anchorPosition, float stimulusSizeMeters)
         {
             LineRenderer line = m_slotLeaderLines[slotIndex];
             if (line == null)
@@ -346,7 +523,7 @@ namespace BCIIntelligentRobot.Vision
                 BciSsvepDisplayLayout.CalculateLeaderLineStart(
                     displayPosition,
                     anchorPosition,
-                    m_stimulusSizeMeters));
+                    stimulusSizeMeters));
             line.SetPosition(1, anchorPosition);
         }
 

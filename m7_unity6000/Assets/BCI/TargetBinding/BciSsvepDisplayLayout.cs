@@ -4,6 +4,12 @@ using UnityEngine;
 
 namespace BCIIntelligentRobot.Vision
 {
+    public enum BciSsvepLayoutMode
+    {
+        WorldSpaceExperimental,
+        ViewLockedHud
+    }
+
     /// <summary>
     /// Small deterministic display-only layout for the three fixed BCI slots.
     /// It does not assign slots or hold selection state.
@@ -13,6 +19,13 @@ namespace BCIIntelligentRobot.Vision
         public const float ExperimentalStimulusSizeMeters = 0.32f;
         public const float MinimumGapMeters = 0.06f;
         public const float DisplayVerticalOffsetMeters = 0.24f;
+        public const float HudStimulusSizeMeters = 0.20f;
+        public const float HudHorizontalSpacingMeters = 0.24f;
+        public const float HudDepthMeters = 0.85f;
+        public const float HudHeightMeters = 0.18f;
+
+        public static Vector3 DefaultHudLocalCenter =>
+            new Vector3(0f, HudHeightMeters, HudDepthMeters);
 
         private readonly struct SlotPosition
         {
@@ -97,6 +110,24 @@ namespace BCIIntelligentRobot.Vision
                 displayPositions[entry.SlotIndex] =
                     anchorPosition + up * DisplayVerticalOffsetMeters + right * lateralOffset;
             }
+        }
+
+        /// <summary>
+        /// Calculates the fixed camera-local HUD positions without consulting
+        /// world anchors. Slot order remains the canonical 0/1/2 order.
+        /// </summary>
+        public static void CalculateViewLockedPositions(
+            Vector3 localCenter,
+            float horizontalSpacing,
+            Vector3[] localPositions)
+        {
+            if (localPositions == null || localPositions.Length < BciTargetSlotAllocator.SlotCount)
+                throw new ArgumentException("Three slot entries are required.");
+
+            float spacing = Mathf.Max(0f, horizontalSpacing);
+            localPositions[0] = localCenter + Vector3.left * spacing;
+            localPositions[1] = localCenter;
+            localPositions[2] = localCenter + Vector3.right * spacing;
         }
 
         public static bool HasViewSpaceOverlap(
