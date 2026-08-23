@@ -4,7 +4,7 @@ Last updated: 2026-08-23
 
 ## Overall Phase
 
-M8.2a — M6 Final Decision → M8 Selection Transport — Completed / PASS (software/replay scope)
+M8.2a — M6 Final Decision → M8 Selection Transport — Completed / PASS (software/replay + Quest 3 orchestration acceptance)
 
 ## M7 Active Unity Application
 
@@ -20,15 +20,15 @@ M7 acceptance boundary:
 - Allowlisted classes enter the BCI target pipeline; non-allowlisted background classes such as `person`, `dining table` and `chair` do not.
 - Stable `TargetId`, temporary-missing retention, world-fixed anchor behavior and deterministic three-slot assignment were accepted on Quest 3.
 - Known non-blockers are approximately 1–2 seconds of stale target retention when a static target moves quickly, and black stimuli appearing subjectively lighter than the legacy M6 scene. Neither is changed in this closeout.
-- EEG transport and robot control remain outside this completed M7 boundary. M8.1 has now completed Quest 3 transport acceptance; M8.2a is limited to the PC-side M6 final-decision integration and does not start ND8 hardware or robot control.
+- EEG transport and robot control remain outside this completed M7 boundary. M8.1 has now completed Quest 3 transport acceptance; M8.2a adds only PC-side M6 final-decision orchestration over the existing Quest transport and does not start ND8 hardware or robot control.
 
 ## Completed Milestone
 
 ### M8.2a — M6 Final Decision → M8 Selection Transport
 
-Status: Completed / PASS (software/replay scope)
+Status: Completed / PASS (software/replay + Quest 3 orchestration acceptance)
 
-M8.2a connects only M6's existing `decisionMade=True` / `finalDecisionLabel` output through one PC-side canonical mapping to M8's `eeg_selection` message. Mock/replay and real `LiveOnlineController` final-record tests verify open-ACK gating, 0/1/2 mapping, one-shot submission, stale/abort/no-decision suppression, Quest rejection logging, newline JSON/ACK handling and a single-command mock CLI. The Quest snapshot remains the authority for slot/TargetId resolution. Intermediate M6 predictions, real ND8 startup, timing/latency claims, and robot actions remain outside this completed substage.
+M8.2a connects only M6's existing `decisionMade=True` / `finalDecisionLabel` output through one PC-side canonical mapping to M8's `eeg_selection` message. Mock/replay and real `LiveOnlineController` final-record tests verify open-ACK gating, 0/1/2 mapping, one-shot submission, stale/abort/no-decision suppression, Quest rejection logging, newline JSON/ACK handling and a single-command mock CLI. Quest 3 orchestration acceptance then verified the complete mock path for class 0/1/2, plus no-decision and abort suppression, with the Quest snapshot remaining the authority for slot/TargetId resolution. Intermediate M6 predictions, real ND8 startup, timing/latency claims, and robot actions remain outside this completed substage.
 
 The next M8.2b activity requires separately scoped, user-operated Quest + ND8 validation; its hardware mode is intentionally fail-closed in M8.2a.
 
