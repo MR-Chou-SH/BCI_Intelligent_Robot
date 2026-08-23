@@ -63,8 +63,8 @@ namespace BCIIntelligentRobot.Tests
             finally
             {
                 listener.Stop();
-                Object.DestroyImmediate(transportObject);
-                Object.DestroyImmediate(bindingObject);
+                UnityEngine.Object.DestroyImmediate(transportObject);
+                UnityEngine.Object.DestroyImmediate(bindingObject);
             }
         }
 
@@ -114,8 +114,8 @@ namespace BCIIntelligentRobot.Tests
             finally
             {
                 listener.Stop();
-                Object.DestroyImmediate(transportObject);
-                Object.DestroyImmediate(bindingObject);
+                UnityEngine.Object.DestroyImmediate(transportObject);
+                UnityEngine.Object.DestroyImmediate(bindingObject);
             }
         }
 
