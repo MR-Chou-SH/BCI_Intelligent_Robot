@@ -101,7 +101,7 @@ M7.5 已在 Quest 3 真机验证 Meta 官方链路：`MultiObjectDetection → P
 
 - formal prospective cross-session validation；
 - pseudo-online replay infrastructure and later real-time classification readiness；
-- `SSVEP slot ↔ EEG class ↔ real-world TargetId` 集成；
+- downstream selection-result 的 Quest 真机 acceptance 与后续机器人接口定义；
 - 机械臂正式集成。
 
 GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配置为准。
@@ -112,7 +112,7 @@ GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配�
 
 当前 active 工程里程碑是：
 
-> M7 — Vision-guided SSVEP Target Binding（Completed / PASS）
+> M8.3 — EEG-selected TargetId closed-loop / downstream selection contract（Implemented / software validation PASS）
 
 M6 的历史证据、冻结 decoder 配置和 warnings 仍保留；本轮不因 Unity 工程入口切换而重做或重新解释 M1–M6 实验。
 
@@ -140,8 +140,9 @@ M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 Fir
 - 固定映射为 slot 0/1/2 → 7.2/9/12 Hz，对应 `framesPerHalfCycle = 5/4/3` 和共享 frame origin；
 - 非 allowlist 类别不进入 BCI target pipeline；稳定目标短暂漏检时保持 anchor/slot；
 - 已知非 blocker：快速移动静态目标时约 1–2 秒旧 target 滞留；黑色刺激主观上可能比旧 M6 scene 略浅；本轮不调整；
-- M8.1 已完成 Quest 3 software transport 验收：Quest 以冻结 snapshot 将 class 0/1/2 分别解析为 slot 0/1/2 与当前 TargetId；duplicate/unknown decision 与 Android EOF/reconnect 行为均已验证；
-- M8.2a 已完成 PC-side software/replay 接线：仅允许 M6 的 2-Consecutive final decision 进入 canonical class → M8 transport；下一步 M8.2b 的真实 Quest + ND8 验证仍需单独授权、人工执行；不做 timing/latency claim，不接入机械臂；
+- M8.1/M8.2a 已完成 Quest snapshot transport 与 PC final-decision orchestration；Quest 始终以冻结 snapshot 将 class 0/1/2 解析为 slot 0/1/2 与 TargetId，duplicate/unknown、EOF/reconnect、no-decision/abort 均已验证；
+- M8.2b 已完成 real Quest + ND8 engineering validation 并冻结 ViewLockedHud baseline：camera-local `(-0.32, 0.18, 0.85)/(0, 0.18, 0.85)/(0.32, 0.18, 0.85)` m、`0.20 m` Quad、left-to-right assignment、duplicate suppression、leader line/marker、selection freeze；结果是 `Completed / PASS WITH WARNINGS`，不是 accuracy/latency/causal claim；
+- M8.3 将 accepted frozen class → slot → TargetId + stable-world position 发布为一次性 downstream selection result；下游不得重新查询 live binding，也不开始机械臂控制；
 - 不接入机械臂；
 - 不在本轮改动 M6 pseudo-online / decoder 证据；
 - 三个刺激的历史 frame-driven 参数仍是后续复用来源。
@@ -553,10 +554,10 @@ Codex主要负责“在仓库里执行”。
 
 ## 14. 当前最高优先级
 
-M1–M6 已完成并保留 warnings，M7 视觉→SSVEP binding 已 Completed / PASS。当前最高优先级为：
+M1–M6 已完成并保留 warnings，M7 视觉→SSVEP binding 已 Completed / PASS，M8.2b 已 Completed / PASS WITH WARNINGS。当前最高优先级为：
 
-> `SSVEP slot ↔ EEG class ↔ real-world TargetId` integration
+> M8.3 — frozen `EEG class → slot → TargetId + world snapshot` downstream selection result
 
-以 `m7_unity6000/` 为唯一 active Unity application；下一阶段只定义并实现 SSVEP 槽位、EEG 分类结果与稳定 `TargetId` 的最小接口。不得重做已 PASS 的 Passthrough、Camera API、YOLO、official raycast、StableTarget 或 frame-driven SSVEP baseline；不得在接口尚未单独设计前开始机械臂集成。`vr_stimulus/` 仅作为 M1–M6 的代码与实验证据来源。
+以 `m7_unity6000/` 为唯一 active Unity application；下一阶段只验收该 result 的 Quest event/log，并在后续单独定义机器人消费接口。不得重做已 PASS 的 Passthrough、Camera API、YOLO、official raycast、StableTarget 或 frame-driven SSVEP baseline；不得在接口尚未单独设计前开始机械臂集成。`vr_stimulus/` 仅作为 M1–M6 的代码与实验证据来源。
 
 M6.0–M6.7 已完成并保留 warnings。M6.7 的 `stress_online` session `m6_7-formal-20260820T160940Z-0ef360f6` 在非理想精神/注意力状态下，以冻结 CH2/CH4/CH7（3/5 engineering admission）完成 30 trials、10/10/10 randomized、30/30 technical-valid、30/30 decisions、30/30 post-hoc correct，logical decision 为 2.2 s。该结果是 non-ideal-condition engineering stress evidence，不是 primary formal online accuracy；不能宣称 three-channel equivalence、cross-subject/generalized performance 或 physical end-to-end latency。两次真实 ND8 disconnect 导致的 incomplete preflight 必须保留；随后 120 s ND8-only stability check PASS（594 packets、593 continuous、1 startup anomaly、无 callback/runtime error）。当前冻结 decoder 已足以支持下一阶段 BCI decision → robot command interface 集成，但该集成属于下一 milestone，M6 closeout 不开始 M7 编码。M5/M6 的证据边界继续保留：`hardwareTimingVerified=false`、`physicalOpticalTimingVerified=false`，ND8 hardware sample anchor 与 hardware-exact timing 未验证，sample index 仅为 `software-derived estimate`，且名义刺激频率未获独立 optical measurement。当前 workspace 使用 NumPy 2.2.6 与 SciPy 1.14.1，但仓库尚无正式 requirements/pyproject dependency declaration，属于可复现性 warning。

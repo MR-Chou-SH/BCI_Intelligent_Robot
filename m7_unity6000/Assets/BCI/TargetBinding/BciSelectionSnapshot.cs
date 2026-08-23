@@ -1,22 +1,43 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace BCIIntelligentRobot.Vision
 {
     public readonly struct BciSelectionTarget
     {
         public BciSelectionTarget(int slotIndex, string targetId, string className, StableTargetState state)
+            : this(slotIndex, targetId, className, state, default(Vector3), false)
+        {
+        }
+
+        public BciSelectionTarget(int slotIndex, StableWorldAnchorSnapshot anchor)
+            : this(slotIndex, anchor.TargetId, anchor.ClassName, anchor.State, anchor.WorldPosition, true)
+        {
+        }
+
+        private BciSelectionTarget(
+            int slotIndex,
+            string targetId,
+            string className,
+            StableTargetState state,
+            Vector3 worldPosition,
+            bool hasWorldPosition)
         {
             SlotIndex = slotIndex;
             TargetId = targetId;
             ClassName = className;
             State = state;
+            WorldPosition = worldPosition;
+            HasWorldPosition = hasWorldPosition;
         }
 
         public int SlotIndex { get; }
         public string TargetId { get; }
         public string ClassName { get; }
         public StableTargetState State { get; }
+        public Vector3 WorldPosition { get; }
+        public bool HasWorldPosition { get; }
     }
 
     public enum BciSelectionRejection

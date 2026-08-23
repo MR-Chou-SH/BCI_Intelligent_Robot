@@ -1,10 +1,10 @@
 # Project Status
 
-Last updated: 2026-08-23
+Last updated: 2026-08-24
 
 ## Overall Phase
 
-M8.2b — Live ND8 Final Decision → Quest Selection — Active diagnostic variant / Awaiting Quest-only visual acceptance
+M8.3 — EEG-selected TargetId closed-loop / downstream selection contract — Implemented / software validation PASS; Quest acceptance pending
 
 ## M7 Active Unity Application
 
@@ -22,15 +22,25 @@ M7 acceptance boundary:
 - Known non-blockers are approximately 1–2 seconds of stale target retention when a static target moves quickly, and black stimuli appearing subjectively lighter than the legacy M6 scene. Neither is changed in this closeout.
 - EEG transport and robot control remain outside this completed M7 boundary. M8.1 has now completed Quest 3 transport acceptance; M8.2a adds only PC-side M6 final-decision orchestration over the existing Quest transport and does not start ND8 hardware or robot control.
 
-## Prepared Milestone
+## Active Milestone
+
+### M8.3 — EEG-selected TargetId closed-loop / downstream selection contract
+
+Status: Implemented / software validation PASS; Quest acceptance pending
+
+Quest remains the sole authority that resolves a PC-provided canonical class index through the `selection_open` frozen snapshot. On an accepted terminal decision, `BciSelectionCoordinator` publishes exactly one immutable `BciTargetSelectionResult` / `target_selected` C# event containing the selection ID, class index, slot, TargetId, semantic label, frozen stable-world position when available, software UTC, and `quest_frozen_selection_snapshot` provenance. Downstream consumers subscribe to this event and must not query the live slot binding again. Duplicate, stale, invalid, empty, inactive, no-decision, abort, and reconnect-delivered messages cannot publish a second or fabricated result. This is a software boundary only; it does not begin robot control or define a robot command schema.
+
+## Completed Milestone
 
 ### M8.2b — Live ND8 Final Decision → Quest Selection
 
-Status: Prepared / Awaiting real Quest + ND8 validation
+Status: Completed / PASS WITH WARNINGS
 
-The formal `integration/m8_selection_cli.py --mode live-nd8` command now composes the existing external CPython 3.9 Neurodance runtime, `Nd8SerialAdapter(COM11)`, M6.7 frozen channel admission, NumPy FBCCA `LiveOnlineController`, 2-Consecutive final-decision policy and the completed M8 Quest snapshot transport. It has a no-hardware dry-run path and fail-closed runtime/preflight handling. The fixed first engineering smoke plan is slot/class 0/1/2 at 7.2/9/12 Hz, with expected classes retained only for post-hoc evidence. No ND8 streaming acquisition, raw EEG recording or formal trial was run in this preparation; no online result, physical timing claim or robot action is implied.
+The formal `integration/m8_selection_cli.py --mode live-nd8` command composed the external CPython 3.9 Neurodance runtime, `Nd8SerialAdapter(COM11)`, M6.7 channel admission, frozen NumPy FBCCA `LiveOnlineController`, first-2-Consecutive final-decision policy, and the Quest snapshot transport. Multiple real Quest + ND8 engineering sessions repeatedly validated the accepted chain `real ND8 → online FBCCA → final class → Quest → slot → TargetId → ACK`; a complete three-class ViewLockedHud + separation session reached 3/3. This is engineering evidence, not an accuracy benchmark or a latency claim.
 
-M8.2b currently includes two experimental Quest visual-layout variants awaiting the next focused Quest-only acceptance: the existing world-space方案 A uses a `0.32 m` Quad, deterministic camera-right separation, and static cyan leader lines plus small anchor markers; the `ViewLockedHud` mode uses three `0.20 m` Quads at camera-local `(-0.32, 0.18, 0.85)`, `(0, 0.18, 0.85)`, and `(0.32, 0.18, 0.85)` meters. HUD candidates now pass through a conservative presentation-side physical duplicate gate and are assigned left-to-right by current camera-right position; same-label objects without strong overlap and world-proximity evidence remain separate. In HUD mode the Quads follow the active camera while leader lines remain world-space and are recomputed each frame. The frame-driven `5/4/3` timing, black/white material, decoder, slot/class mapping and Quest snapshot contract are unchanged. Selection freeze holds the existing presentation-to-target association, while HUD transforms continue following the headset; terminal decision or explicit abort releases the association freeze and rebuilds live ordering. This is a visibility/layout diagnostic only; it does not claim an EEG-accuracy improvement or mark M8.2b complete.
+The frozen engineering presentation baseline is `ViewLockedHud`: camera-local slots `(-0.32, 0.18, 0.85)`, `(0, 0.18, 0.85)`, `(0.32, 0.18, 0.85)` m, uniform `0.20 m` scale, left-to-right target assignment after conservative physical duplicate suppression, world-space leader lines and `1/2/3` markers, plus selection layout freeze while HUD Quads remain camera-local. Slots remain 7.2/9/12 Hz with shared frame origin and `5/4/3` half-cycle frames on black/white Unlit material. World-space方案 A remains a diagnostic/fallback path, not the default experiment direction.
+
+Warnings remain: real-session variation and early first-2-Consecutive sensitivity exist; 12 Hz was initially less stable and later HUD sessions showed improved evidence without proving a presentation cause. Purple-background and eyelid observations are exploratory, ordered, and not causal evidence. Hardware-exact sample timing, physical optical timing, physical phase, hardware sample-anchor semantics, generalized accuracy, and end-to-end latency remain unverified.
 
 ## Completed Milestone
 
@@ -40,7 +50,7 @@ Status: Completed / PASS (software/replay + Quest 3 orchestration acceptance)
 
 M8.2a connects only M6's existing `decisionMade=True` / `finalDecisionLabel` output through one PC-side canonical mapping to M8's `eeg_selection` message. Mock/replay and real `LiveOnlineController` final-record tests verify open-ACK gating, 0/1/2 mapping, one-shot submission, stale/abort/no-decision suppression, Quest rejection logging, newline JSON/ACK handling and a single-command mock CLI. Quest 3 orchestration acceptance then verified the complete mock path for class 0/1/2, plus no-decision and abort suppression, with the Quest snapshot remaining the authority for slot/TargetId resolution. Intermediate M6 predictions, real ND8 startup, timing/latency claims, and robot actions remain outside this completed substage.
 
-The next M8.2b activity is the separately scoped, user-operated Quest + ND8 smoke validation using the prepared command; it remains fail-closed on runtime, ND8, channel, Quest ACK or final-decision failure.
+M8.2b closeout is complete; subsequent work must consume its frozen Quest-owned selection boundary rather than reopen decoder tuning or hardware validation by default.
 
 ## Completed Milestone
 
@@ -60,7 +70,7 @@ Status: Completed / PASS
 
 The formal M7 Unity application is `m7_unity6000/` on Unity `6000.0.66f2`. Quest 3 acceptance confirmed eligible detection, StableTarget state/ID continuity, stable world anchors, and no more than three world-space black/white SSVEP targets. The fixed mapping is slot 0 → 7.2 Hz, slot 1 → 9 Hz, and slot 2 → 12 Hz, implemented with the verified shared-frame-origin `5/4/3` frame-driven controller.
 
-M7 does not include EEG selection, EEG transport, robot control, dynamic-object tracking optimization, or any revival of the M7.4 RGB→Environment Depth UV route. The next scoped milestone is `SSVEP slot ↔ EEG class ↔ real-world TargetId` integration.
+M7 does not include robot control, dynamic-object tracking optimization, or any revival of the M7.4 RGB→Environment Depth UV route. M8 now owns the completed EEG selection integration and active downstream result boundary.
 
 ## Completed Milestone
 

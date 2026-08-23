@@ -1,5 +1,6 @@
 using BCIIntelligentRobot.Vision;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace BCIIntelligentRobot.Tests
 {
@@ -69,6 +70,26 @@ namespace BCIIntelligentRobot.Tests
             Assert.That(snapshot.ResolveClassIndex(3).Rejection, Is.EqualTo(BciSelectionRejection.InvalidClassIndex));
             Assert.That(snapshot.ResolveClassIndex(1).Rejection, Is.EqualTo(BciSelectionRejection.EmptySlot));
             Assert.That(snapshot.ResolveClassIndex(2).Rejection, Is.EqualTo(BciSelectionRejection.TargetInvalid));
+        }
+
+        [Test]
+        public void SelectionSnapshot_PreservesTheStableWorldPositionCapturedAtOpen()
+        {
+            var source = new[]
+            {
+                new BciSelectionTarget(0, new StableWorldAnchorSnapshot(
+                    "target-1", "cup", StableTargetState.Active, new Vector3(1f, 2f, 3f))),
+                new BciSelectionTarget(1, "target-2", "bottle", StableTargetState.Active),
+                new BciSelectionTarget(2, "target-3", "book", StableTargetState.Active)
+            };
+            var snapshot = new BciSelectionSnapshot(source);
+            source[0] = new BciSelectionTarget(0, new StableWorldAnchorSnapshot(
+                "replacement", "cup", StableTargetState.Active, new Vector3(9f, 9f, 9f)));
+
+            BciSelectionTarget resolved = snapshot.ResolveClassIndex(0).Target;
+            Assert.That(resolved.TargetId, Is.EqualTo("target-1"));
+            Assert.That(resolved.HasWorldPosition, Is.True);
+            Assert.That(resolved.WorldPosition, Is.EqualTo(new Vector3(1f, 2f, 3f)));
         }
     }
 }

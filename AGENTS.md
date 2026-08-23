@@ -266,7 +266,7 @@ M8 — SSVEP Slot / EEG Class / TargetId Integration.
 
 The current task is:
 
-Develop M7+ Unity work only in `m7_unity6000/`, the Unity 6000.0.66f2 official Passthrough Camera API sample baseline. M8.1 Quest transport and M8.2a software/replay final-decision adapter are completed/PASS. M8.2b real Quest + ND8 validation must remain separately scoped and user-operated. Quest remains the authority that resolves EEG class/index through a frozen `BciSelectionSnapshot` to `TargetId`. Do not repeat the M7.5 Passthrough/Camera API/YOLO/raycast baseline, revive M7.4 RGB→Environment Depth UV, start unscoped real ND8/Quest EEG experiments, or start robot control.
+Develop M7+ Unity work only in `m7_unity6000/`, the Unity 6000.0.66f2 official Passthrough Camera API sample baseline. M8.2b real Quest + ND8 engineering validation is completed/PASS WITH WARNINGS and the ViewLockedHud baseline is frozen. M8.3 now establishes the one-shot downstream selection-result boundary: Quest remains the authority that resolves EEG class/index through a frozen `BciSelectionSnapshot` to TargetId and stable-world snapshot data; downstream consumers must not re-query live binding. Do not repeat the M7.5 Passthrough/Camera API/YOLO/raycast baseline, revive M7.4 RGB→Environment Depth UV, start unscoped real ND8/Quest EEG experiments, or start robot control.
 
 For future robot work, prefer integration with the labmate-provided MuJoCo simulation / low-level control system. This repository owns the BCI target-selection output, robot command/task interface, integration, execution status/feedback, and end-to-end experiments; it does not need to rebuild the complete simulator or low-level controller from scratch.
 

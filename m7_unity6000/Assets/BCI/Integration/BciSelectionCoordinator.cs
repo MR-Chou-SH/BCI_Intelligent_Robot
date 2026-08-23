@@ -39,6 +39,9 @@ namespace BCIIntelligentRobot.Integration
         private readonly Dictionary<string, BciSelectionSnapshot> m_pendingSnapshots = new Dictionary<string, BciSelectionSnapshot>(StringComparer.Ordinal);
         private readonly HashSet<string> m_completedSelectionIds = new HashSet<string>(StringComparer.Ordinal);
 
+        /// <summary>Raised once only for a Quest-accepted result resolved from a frozen snapshot.</summary>
+        public event Action<BciTargetSelectionResult> TargetSelected;
+
         public BciSelectionTransportResult Open(string selectionId, BciSelectionSnapshot snapshot)
         {
             if (string.IsNullOrWhiteSpace(selectionId) || snapshot == null)
@@ -63,9 +66,20 @@ namespace BCIIntelligentRobot.Integration
             m_pendingSnapshots.Remove(selectionId);
             m_completedSelectionIds.Add(selectionId);
             BciSelectionResolution resolution = snapshot.ResolveClassIndex(predictedClassIndex);
-            return resolution.IsAccepted
-                ? new BciSelectionTransportResult(selectionId, predictedClassIndex, BciSelectionTransportRejection.None, resolution.Target)
-                : Reject(selectionId, predictedClassIndex, MapRejection(resolution.Rejection));
+            if (!resolution.IsAccepted)
+                return Reject(selectionId, predictedClassIndex, MapRejection(resolution.Rejection));
+
+            var result = new BciSelectionTransportResult(
+                selectionId,
+                predictedClassIndex,
+                BciSelectionTransportRejection.None,
+                resolution.Target);
+            TargetSelected?.Invoke(new BciTargetSelectionResult(
+                selectionId,
+                predictedClassIndex,
+                resolution.Target,
+                DateTime.UtcNow));
+            return result;
         }
 
         /// <summary>

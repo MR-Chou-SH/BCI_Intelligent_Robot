@@ -97,6 +97,11 @@ namespace BCIIntelligentRobot.Vision
 
         public BciSelectionSnapshot CreateSelectionSnapshot()
         {
+            // HUD assignment is normally refreshed in LateUpdate. Snapshot it
+            // synchronously here so selection_open cannot freeze a slot view
+            // older than the visible HUD association.
+            if (m_layoutMode == BciSsvepLayoutMode.ViewLockedHud && !m_layoutFreezeGate.IsFrozen)
+                RefreshHudAssignments(true);
             return new BciSelectionSnapshot(m_selectionTargets);
         }
 
@@ -231,14 +236,14 @@ namespace BCIIntelligentRobot.Vision
             {
                 case BciSlotUpdateKind.Assigned:
                     m_slotByTargetId[anchor.TargetId] = update.SlotIndex;
-                    m_selectionTargets[update.SlotIndex] = new BciSelectionTarget(update.SlotIndex, anchor.TargetId, anchor.ClassName, anchor.State);
+                    m_selectionTargets[update.SlotIndex] = new BciSelectionTarget(update.SlotIndex, anchor);
                     UpdateSlotAnchor(anchor, update.SlotIndex, true);
                     LogSlot(anchor, update, "assigned");
                     break;
 
                 case BciSlotUpdateKind.Retained:
                     m_slotByTargetId[anchor.TargetId] = update.SlotIndex;
-                    m_selectionTargets[update.SlotIndex] = new BciSelectionTarget(update.SlotIndex, anchor.TargetId, anchor.ClassName, anchor.State);
+                    m_selectionTargets[update.SlotIndex] = new BciSelectionTarget(update.SlotIndex, anchor);
                     UpdateSlotAnchor(anchor, update.SlotIndex, true);
                     break;
 
@@ -483,11 +488,7 @@ namespace BCIIntelligentRobot.Vision
                 {
                     StableWorldAnchorSnapshot anchor = ordered[slot];
                     m_slotByTargetId[anchor.TargetId] = slot;
-                    m_selectionTargets[slot] = new BciSelectionTarget(
-                        slot,
-                        anchor.TargetId,
-                        anchor.ClassName,
-                        anchor.State);
+                    m_selectionTargets[slot] = new BciSelectionTarget(slot, anchor);
                     m_slotAnchors[slot] = anchor;
                     m_slotHasAnchor[slot] = true;
                     LogHudAssignment(anchor, slot);

@@ -45,6 +45,16 @@ namespace BCIIntelligentRobot.Integration
         private int m_serverPort;
         private string m_retryLine;
 
+        /// <summary>
+        /// Downstream boundary for a resolved target. Subscribers receive only
+        /// an accepted result created from the Quest-owned frozen snapshot.
+        /// </summary>
+        public event Action<BciTargetSelectionResult> TargetSelected
+        {
+            add => m_coordinator.TargetSelected += value;
+            remove => m_coordinator.TargetSelected -= value;
+        }
+
         public void Initialize(BciSsvepTargetBinding binding, string serverHost, int serverPort)
         {
             if (m_worker != null)
@@ -58,6 +68,7 @@ namespace BCIIntelligentRobot.Integration
             m_binding = binding;
             m_serverHost = serverHost;
             m_serverPort = serverPort;
+            m_coordinator.TargetSelected += LogTargetSelected;
             m_worker = new Thread(NetworkLoop) { IsBackground = true, Name = "M8QuestSelectionTransport" };
             m_worker.Start();
             Debug.Log("M8_SELECTION transport initialized host=" + m_serverHost + " port=" + m_serverPort, this);
@@ -133,6 +144,20 @@ namespace BCIIntelligentRobot.Integration
                 " target_id=" + (result.resolvedTargetId ?? "") +
                 " class=" + (result.resolvedClassName ?? "") +
                 " rejection=" + result.rejectionReason, this);
+        }
+
+        private void LogTargetSelected(BciTargetSelectionResult result)
+        {
+            Debug.Log(
+                "M8_TARGET_SELECTED selection_id=" + result.SelectionId +
+                " predicted_class=" + result.PredictedClassIndex +
+                " slot=" + result.SlotIndex +
+                " target_id=" + result.TargetId +
+                " class=" + result.SemanticLabel +
+                " has_world_position=" + result.HasWorldPosition +
+                " world_position=" + result.WorldPosition.ToString("F4") +
+                " provenance=" + result.Provenance,
+                this);
         }
 
         private void NetworkLoop()
@@ -234,6 +259,7 @@ namespace BCIIntelligentRobot.Integration
 
         private void OnDestroy()
         {
+            m_coordinator.TargetSelected -= LogTargetSelected;
             m_stopRequested = true;
             m_workAvailable.Set();
             if (m_worker != null && m_worker.IsAlive)
