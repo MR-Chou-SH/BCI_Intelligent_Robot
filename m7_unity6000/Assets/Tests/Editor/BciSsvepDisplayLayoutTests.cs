@@ -18,6 +18,7 @@ namespace BCIIntelligentRobot.Tests
         [Test]
         public void ViewLockedHudPositions_AreDeterministicEqualHeightAndOrderedBySlot()
         {
+            Assert.That(BciSsvepDisplayLayout.HudHorizontalSpacingMeters, Is.EqualTo(0.32f));
             var first = new Vector3[3];
             var second = new Vector3[3];
             Vector3 center = BciSsvepDisplayLayout.DefaultHudLocalCenter;
@@ -241,9 +242,123 @@ namespace BCIIntelligentRobot.Tests
             }
         }
 
+        [Test]
+        public void ViewLockedHud_AssignsTargetsLeftToRightAndRestoresOrderingAfterFreeze()
+        {
+            var cameraObject = new GameObject("BciHudOrderingCamera");
+            var managerObject = new GameObject("BciHudOrderingManager");
+            var parentObject = new GameObject("BciHudOrderingParent");
+            var bindingObject = new GameObject("BciHudOrderingBinding");
+            cameraObject.tag = "MainCamera";
+            cameraObject.AddComponent<Camera>();
+            var binding = bindingObject.AddComponent<BciSsvepTargetBinding>();
+            var manager = managerObject.AddComponent<DetectionManager>();
+
+            try
+            {
+                binding.ConfigureLayout(
+                    BciSsvepLayoutMode.ViewLockedHud,
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter,
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters,
+                    BciSsvepDisplayLayout.HudStimulusSizeMeters);
+                binding.Initialize(manager, parentObject.transform, BciSsvepDisplayLayout.ExperimentalStimulusSizeMeters);
+
+                InvokeStableAnchor(binding, RichAnchor("center", new Vector3(0f, 0f, 2f), 0f));
+                InvokeStableAnchor(binding, RichAnchor("right", new Vector3(1f, 0f, 2f), 1f));
+                InvokeStableAnchor(binding, RichAnchor("left", new Vector3(-1f, 0f, 2f), 2f));
+                Assert.That(binding.CreateSelectionSnapshot().ResolveClassIndex(0).Target.TargetId, Is.EqualTo("left"));
+                Assert.That(binding.CreateSelectionSnapshot().ResolveClassIndex(1).Target.TargetId, Is.EqualTo("center"));
+                Assert.That(binding.CreateSelectionSnapshot().ResolveClassIndex(2).Target.TargetId, Is.EqualTo("right"));
+
+                binding.FreezeLayout("hud-ordering");
+                InvokeStableAnchor(binding, RichAnchor("left", new Vector3(2f, 0f, 2f), 2f));
+                InvokeStableAnchor(binding, RichAnchor("right", new Vector3(-2f, 0f, 2f), 1f));
+                Assert.That(binding.CreateSelectionSnapshot().ResolveClassIndex(0).Target.TargetId, Is.EqualTo("left"));
+                Assert.That(binding.CreateSelectionSnapshot().ResolveClassIndex(2).Target.TargetId, Is.EqualTo("right"));
+
+                binding.ReleaseLayout("hud-ordering");
+                Assert.That(binding.CreateSelectionSnapshot().ResolveClassIndex(0).Target.TargetId, Is.EqualTo("right"));
+                Assert.That(binding.CreateSelectionSnapshot().ResolveClassIndex(2).Target.TargetId, Is.EqualTo("left"));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(bindingObject);
+                UnityEngine.Object.DestroyImmediate(parentObject);
+                UnityEngine.Object.DestroyImmediate(managerObject);
+                UnityEngine.Object.DestroyImmediate(cameraObject);
+            }
+        }
+
+        [Test]
+        public void ViewLockedHud_DuplicatePhysicalTrackOccupiesOnlyOneSlot()
+        {
+            var cameraObject = new GameObject("BciHudDuplicateCamera");
+            var managerObject = new GameObject("BciHudDuplicateManager");
+            var parentObject = new GameObject("BciHudDuplicateParent");
+            var bindingObject = new GameObject("BciHudDuplicateBinding");
+            cameraObject.tag = "MainCamera";
+            cameraObject.AddComponent<Camera>();
+            var binding = bindingObject.AddComponent<BciSsvepTargetBinding>();
+            var manager = managerObject.AddComponent<DetectionManager>();
+
+            try
+            {
+                binding.ConfigureLayout(
+                    BciSsvepLayoutMode.ViewLockedHud,
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter,
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters,
+                    BciSsvepDisplayLayout.HudStimulusSizeMeters);
+                binding.Initialize(manager, parentObject.transform, BciSsvepDisplayLayout.ExperimentalStimulusSizeMeters);
+                InvokeStableAnchor(binding, PhysicalAnchor("track-young", new Vector3(0f, 0f, 2f), 0d, 1d));
+                InvokeStableAnchor(binding, PhysicalAnchor("track-mature", new Vector3(0.01f, 0f, 2f), 0d, 5d));
+
+                BciSelectionSnapshot snapshot = binding.CreateSelectionSnapshot();
+                Assert.That(snapshot.ResolveClassIndex(0).IsAccepted, Is.True);
+                Assert.That(snapshot.ResolveClassIndex(1).Rejection, Is.EqualTo(BciSelectionRejection.EmptySlot));
+                Assert.That(snapshot.ResolveClassIndex(0).Target.TargetId, Is.EqualTo("track-mature"));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(bindingObject);
+                UnityEngine.Object.DestroyImmediate(parentObject);
+                UnityEngine.Object.DestroyImmediate(managerObject);
+                UnityEngine.Object.DestroyImmediate(cameraObject);
+            }
+        }
+
         private static StableWorldAnchorSnapshot Anchor(string targetId, Vector3 position)
         {
             return new StableWorldAnchorSnapshot(targetId, "cup", StableTargetState.Active, position);
+        }
+
+        private static StableWorldAnchorSnapshot RichAnchor(string targetId, Vector3 position, double firstSeen)
+        {
+            return new StableWorldAnchorSnapshot(
+                targetId,
+                "bottle-" + targetId,
+                StableTargetState.Active,
+                position,
+                0.9f,
+                new TargetBoundingBox((float)(firstSeen * 100f), 10f, 40f, 40f),
+                firstSeen,
+                firstSeen + 1d);
+        }
+
+        private static StableWorldAnchorSnapshot PhysicalAnchor(
+            string targetId,
+            Vector3 position,
+            double firstSeen,
+            double lastSeen)
+        {
+            return new StableWorldAnchorSnapshot(
+                targetId,
+                "bottle",
+                StableTargetState.Active,
+                position,
+                0.9f,
+                new TargetBoundingBox(20f, 20f, 40f, 40f),
+                firstSeen,
+                lastSeen);
         }
 
         private static void InvokeStableAnchor(BciSsvepTargetBinding binding, StableWorldAnchorSnapshot anchor)

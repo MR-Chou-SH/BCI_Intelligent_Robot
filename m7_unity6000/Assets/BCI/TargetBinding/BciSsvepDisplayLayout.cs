@@ -20,7 +20,7 @@ namespace BCIIntelligentRobot.Vision
         public const float MinimumGapMeters = 0.06f;
         public const float DisplayVerticalOffsetMeters = 0.24f;
         public const float HudStimulusSizeMeters = 0.20f;
-        public const float HudHorizontalSpacingMeters = 0.24f;
+        public const float HudHorizontalSpacingMeters = 0.32f;
         public const float HudDepthMeters = 0.85f;
         public const float HudHeightMeters = 0.18f;
 

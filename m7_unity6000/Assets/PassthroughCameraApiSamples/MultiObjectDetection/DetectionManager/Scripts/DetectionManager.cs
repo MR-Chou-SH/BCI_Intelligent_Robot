@@ -56,6 +56,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         {
             public string TargetId;
             public string ClassName;
+            public float Confidence;
+            public TargetBoundingBox Bbox;
+            public double FirstSeen;
+            public double LastSeen;
             public bool HasAnchor;
             public Vector3 WorldPosition;
             public DetectionSpawnMarkerAnim Marker;
@@ -292,6 +296,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                         {
                             TargetId = target.TargetId,
                             ClassName = target.ClassName,
+                            Confidence = target.Confidence,
+                            Bbox = target.Bbox,
+                            FirstSeen = target.FirstSeen,
+                            LastSeen = target.LastSeen,
                             CandidatePosition = firstHit,
                             CandidateFirstSeen = target.LastSeen,
                             CandidateLastSeen = target.LastSeen
@@ -304,6 +312,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 }
 
                 anchor.ClassName = target.ClassName;
+                anchor.Confidence = target.Confidence;
+                anchor.Bbox = target.Bbox;
+                anchor.FirstSeen = target.FirstSeen;
+                anchor.LastSeen = target.LastSeen;
                 if (target.State == StableTargetState.TemporarilyMissing)
                 {
                     LogStable(target, anchor.HasAnchor ? "hold_missing" : "hold_missing_before_anchor", anchor.HasAnchor ? anchor.WorldPosition : null);
@@ -476,7 +488,11 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 anchor.TargetId,
                 anchor.ClassName,
                 state,
-                anchor.WorldPosition));
+                anchor.WorldPosition,
+                anchor.Confidence,
+                anchor.Bbox,
+                anchor.FirstSeen,
+                anchor.LastSeen));
         }
 
         private void LogStableLocalization(StableTargetSnapshot target, Vector2 bboxCenter, Vector2 viewportPoint, Ray ray, Vector3 worldHit)

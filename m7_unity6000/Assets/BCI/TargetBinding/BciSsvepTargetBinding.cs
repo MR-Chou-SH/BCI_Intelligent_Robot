@@ -33,6 +33,11 @@ namespace BCIIntelligentRobot.Vision
         private readonly LineRenderer[] m_slotLeaderLines = new LineRenderer[BciTargetSlotAllocator.SlotCount];
         private readonly GameObject[] m_slotTargetMarkers = new GameObject[BciTargetSlotAllocator.SlotCount];
         private readonly BciSelectionLayoutFreezeGate m_layoutFreezeGate = new BciSelectionLayoutFreezeGate();
+        // HUD-only presentation registry. The selection snapshot remains the
+        // canonical slot output; this registry lets HUD ordering be rebuilt
+        // from all currently published stable anchors after deduplication.
+        private readonly Dictionary<string, StableWorldAnchorSnapshot> m_hudCandidatesByTargetId =
+            new Dictionary<string, StableWorldAnchorSnapshot>(StringComparer.Ordinal);
 
         private DetectionManager m_detectionManager;
         private MultiTargetStimulusController m_stimulusController;
@@ -104,6 +109,8 @@ namespace BCIIntelligentRobot.Vision
             if (!m_initialized || string.IsNullOrWhiteSpace(selectionId))
                 return;
 
+            if (m_layoutMode == BciSsvepLayoutMode.ViewLockedHud && !m_layoutFreezeGate.IsFrozen)
+                RefreshHudAssignments(true);
             RefreshLiveLayout();
             bool wasFrozen = m_layoutFreezeGate.IsFrozen;
             if (m_layoutFreezeGate.Begin(selectionId))
@@ -134,7 +141,10 @@ namespace BCIIntelligentRobot.Vision
             {
                 Array.Clear(m_frozenAnchorVisible, 0, m_frozenAnchorVisible.Length);
                 m_layoutDirty = true;
-                RefreshLiveLayout();
+                if (m_layoutMode == BciSsvepLayoutMode.ViewLockedHud)
+                    RefreshHudAssignments(true);
+                else
+                    RefreshLiveLayout();
                 Debug.Log("M8_SELECTION layout_released selection_id=" + selectionId, this);
             }
         }
@@ -158,6 +168,9 @@ namespace BCIIntelligentRobot.Vision
                 m_mainCamera = Camera.main;
             if (m_mainCamera == null)
                 return;
+
+            if (m_layoutMode == BciSsvepLayoutMode.ViewLockedHud && !m_layoutFreezeGate.IsFrozen)
+                RefreshHudAssignments(false);
 
             if (m_layoutDirty && !m_layoutFreezeGate.IsFrozen)
                 RefreshLiveLayout();
@@ -199,6 +212,20 @@ namespace BCIIntelligentRobot.Vision
 
         private void OnStableWorldAnchorUpdated(StableWorldAnchorSnapshot anchor)
         {
+            if (m_layoutMode == BciSsvepLayoutMode.ViewLockedHud)
+            {
+                if (anchor.State == StableTargetState.Lost)
+                    m_hudCandidatesByTargetId.Remove(anchor.TargetId);
+                else
+                    m_hudCandidatesByTargetId[anchor.TargetId] = anchor;
+
+                // Keep receiving live metadata while a selection is active,
+                // but do not mutate the frozen slot/anchor association.
+                if (!m_layoutFreezeGate.IsFrozen)
+                    RefreshHudAssignments(true);
+                return;
+            }
+
             BciSlotUpdate update = m_slotAllocator.Update(anchor.TargetId, anchor.ClassName, anchor.State);
             switch (update.Kind)
             {
@@ -416,6 +443,82 @@ namespace BCIIntelligentRobot.Vision
             m_layoutDirty = false;
         }
 
+        private void RefreshHudAssignments(bool force)
+        {
+            if (m_layoutFreezeGate.IsFrozen)
+                return;
+
+            var candidates = new List<StableWorldAnchorSnapshot>(m_hudCandidatesByTargetId.Values);
+            candidates.RemoveAll(candidate => candidate.State == StableTargetState.Lost);
+            IReadOnlyList<StableWorldAnchorSnapshot> deduplicated =
+                BciPhysicalTargetDeduplicator.Select(candidates);
+            var ordered = new List<StableWorldAnchorSnapshot>(deduplicated);
+
+            if (m_mainCamera == null)
+                m_mainCamera = Camera.main;
+
+            Vector3 cameraPosition = m_mainCamera != null ? m_mainCamera.transform.position : Vector3.zero;
+            Vector3 cameraRight = m_mainCamera != null ? m_mainCamera.transform.right : Vector3.right;
+            cameraRight = cameraRight.sqrMagnitude > Mathf.Epsilon ? cameraRight.normalized : Vector3.right;
+            ordered.Sort((left, right) =>
+            {
+                float leftX = Vector3.Dot(left.WorldPosition - cameraPosition, cameraRight);
+                float rightX = Vector3.Dot(right.WorldPosition - cameraPosition, cameraRight);
+                int byPosition = leftX.CompareTo(rightX);
+                return byPosition != 0
+                    ? byPosition
+                    : string.Compare(left.TargetId, right.TargetId, StringComparison.Ordinal);
+            });
+
+            if (ordered.Count > BciTargetSlotAllocator.SlotCount)
+                ordered.RemoveRange(BciTargetSlotAllocator.SlotCount, ordered.Count - BciTargetSlotAllocator.SlotCount);
+
+            if (!force && HasSameHudAssignment(ordered))
+                return;
+
+            m_slotByTargetId.Clear();
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+            {
+                if (slot < ordered.Count)
+                {
+                    StableWorldAnchorSnapshot anchor = ordered[slot];
+                    m_slotByTargetId[anchor.TargetId] = slot;
+                    m_selectionTargets[slot] = new BciSelectionTarget(
+                        slot,
+                        anchor.TargetId,
+                        anchor.ClassName,
+                        anchor.State);
+                    m_slotAnchors[slot] = anchor;
+                    m_slotHasAnchor[slot] = true;
+                    LogHudAssignment(anchor, slot);
+                }
+                else
+                {
+                    m_selectionTargets[slot] = default(BciSelectionTarget);
+                    m_slotAnchors[slot] = default(StableWorldAnchorSnapshot);
+                    m_slotHasAnchor[slot] = false;
+                }
+            }
+
+            m_layoutDirty = true;
+            RefreshLiveLayout();
+        }
+
+        private bool HasSameHudAssignment(IReadOnlyList<StableWorldAnchorSnapshot> ordered)
+        {
+            if (m_slotByTargetId.Count != ordered.Count)
+                return false;
+
+            for (int slot = 0; slot < ordered.Count; slot++)
+            {
+                if (!m_slotByTargetId.TryGetValue(ordered[slot].TargetId, out int currentSlot) ||
+                    currentSlot != slot)
+                    return false;
+            }
+
+            return true;
+        }
+
         private void RefreshViewLockedHudLayout()
         {
             EnsureViewLockedHudRoot();
@@ -505,6 +608,16 @@ namespace BCIIntelligentRobot.Vision
 
             string prefix = (slot + 1).ToString() + "\n";
             m_slotLabels[slot].text = prefix + anchor.TargetId + "\n" + anchor.ClassName;
+        }
+
+        private void LogHudAssignment(StableWorldAnchorSnapshot anchor, int slot)
+        {
+            Debug.Log("M7_BCI_SLOT target_id=" + anchor.TargetId +
+                " class=" + anchor.ClassName +
+                " event=hud_spatial_assignment" +
+                " slot=" + slot +
+                " nominal_frequency_hz=" + NominalFrequenciesHz[slot].ToString("0.#") +
+                " world_point=" + anchor.WorldPosition.ToString("F4"), this);
         }
 
         private void UpdateLeaderLine(int slotIndex, Vector3 displayPosition, Vector3 anchorPosition)
