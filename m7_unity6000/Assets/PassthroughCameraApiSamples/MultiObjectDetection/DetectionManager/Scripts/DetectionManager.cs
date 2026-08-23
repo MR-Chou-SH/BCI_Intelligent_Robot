@@ -33,6 +33,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [Header("M8 PC selection transport")]
         [SerializeField] private string m_selectionServerHost = "127.0.0.1";
         [SerializeField, Min(1)] private int m_selectionServerPort = 11001;
+        [Header("M8 SSVEP experimental display layout")]
+        [SerializeField, Min(0.1f)] private float m_ssvepStimulusSizeMeters = BciSsvepDisplayLayout.ExperimentalStimulusSizeMeters;
         private BciSelectionTransportClient m_selectionTransport;
         private bool m_isStarted;
         internal OVRSpatialAnchor m_spatialAnchor;
@@ -376,7 +378,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 }
             }
 
-            m_ssvepBinding.Initialize(this, m_uiInference.ContentParent);
+            m_ssvepBinding.Initialize(this, m_uiInference.ContentParent, m_ssvepStimulusSizeMeters);
             if (m_selectionTransport == null)
             {
                 m_selectionTransport = GetComponent<BciSelectionTransportClient>();

@@ -34,6 +34,7 @@ class FakeQuestTransport:
     def __init__(self):
         self.opens = []
         self.decisions = []
+        self.aborts = []
 
     def open_selection(self, selection_id):
         self.opens.append(selection_id)
@@ -41,6 +42,10 @@ class FakeQuestTransport:
 
     def submit_eeg_selection(self, selection_id, predicted_class_index):
         self.decisions.append((selection_id, predicted_class_index))
+        return accepted_ack(selection_id)
+
+    def abort_selection(self, selection_id):
+        self.aborts.append(selection_id)
         return accepted_ack(selection_id)
 
 
@@ -140,6 +145,7 @@ class M8LiveNd8Tests(unittest.TestCase):
         self.assertTrue(coordinator.start_trial(trials[1], 20))
         self.assertEqual("aborted", coordinator.abort_trial("nd8_packet_stall")["m8Selection"]["status"])
         self.assertEqual([], transport.decisions)
+        self.assertEqual([trials[0]["selectionId"], trials[1]["selectionId"]], transport.aborts)
 
     def test_dry_run_writes_one_unique_prepared_session_without_vendor_runtime(self):
         with tempfile.TemporaryDirectory() as directory:

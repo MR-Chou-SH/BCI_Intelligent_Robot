@@ -108,6 +108,9 @@ class QuestSelectionTcpServer:
             request["predictedLabel"] = predicted_label
         return self._request(request, selection_id)
 
+    def abort_selection(self, selection_id):
+        return self._request({"messageType": "selection_abort", "selectionId": selection_id}, selection_id)
+
     def _request(self, payload, selection_id):
         connection = self._ensure_connection()
         message = {
@@ -203,14 +206,24 @@ class M8SelectionOrchestrator:
             "decisionRelativeTimeSeconds": final_decision.get("decisionRelativeTimeSeconds"),
         }
         if not final_decision.get("decisionMade"):
-            return self._record("final_decision_not_submitted", selection_id, trial_id, status="no_decision",
-                                reason=final_decision.get("reason"), **common)
+            return self._abort_selection(
+                selection_id,
+                trial_id,
+                status="no_decision",
+                reason=final_decision.get("reason"),
+                **common
+            )
         self._submitted_final_trial_ids.add(trial_id)
         try:
             class_index = canonical_class_index(final_decision.get("finalDecisionLabel"))
         except ValueError as error:
-            return self._record("final_decision_not_submitted", selection_id, trial_id, status="invalid_final_label",
-                                reason=str(error), **common)
+            return self._abort_selection(
+                selection_id,
+                trial_id,
+                status="invalid_final_label",
+                reason=str(error),
+                **common
+            )
         try:
             ack = self.transport.submit_eeg_selection(selection_id, class_index)
             ack = normalize_selection_ack(ack, selection_id)
@@ -226,7 +239,42 @@ class M8SelectionOrchestrator:
         if selection_id is None:
             return self._record("trial_abort_rejected", None, trial_id, status="stale_or_unknown_trial", reason=reason)
         self._completed_trial_ids.add(trial_id)
-        return self._record("trial_aborted", selection_id, trial_id, status="aborted", reason=reason)
+        return self._abort_selection(selection_id, trial_id, status="aborted", reason=reason)
+
+    def _abort_selection(self, selection_id, trial_id, status, reason, **common):
+        try:
+            ack = self.transport.abort_selection(selection_id)
+            ack = normalize_selection_ack(ack, selection_id)
+        except QuestSelectionTransportError as error:
+            return self._record(
+                "selection_abort_transport_failure",
+                selection_id,
+                trial_id,
+                status="transport_failure",
+                reason=str(error),
+                **common
+            )
+
+        if not ack["accepted"]:
+            return self._record(
+                "selection_abort_ack",
+                selection_id,
+                trial_id,
+                status="quest_rejected",
+                reason=reason,
+                ack=ack,
+                rejectionReason=ack.get("rejectionReason"),
+                **common
+            )
+        return self._record(
+            "selection_abort_ack",
+            selection_id,
+            trial_id,
+            status=status,
+            reason=reason,
+            ack=ack,
+            **common
+        )
 
     def _record(self, event_type, selection_id, trial_id, **values):
         record = {

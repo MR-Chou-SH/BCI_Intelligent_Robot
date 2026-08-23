@@ -53,6 +53,18 @@ namespace BCIIntelligentRobot.Tests
             Assert.That(coordinator.Resolve("frozen", 0).Target.TargetId, Is.EqualTo("original"));
         }
 
+        [Test]
+        public void Abort_TerminatesTheSnapshotAndRejectsDelayedDecision()
+        {
+            var coordinator = new BciSelectionCoordinator();
+            coordinator.Open("aborted", Snapshot("target-0", "target-1", "target-2"));
+
+            Assert.That(coordinator.Abort("aborted").IsAccepted, Is.True);
+            Assert.That(
+                coordinator.Resolve("aborted", 1).Rejection,
+                Is.EqualTo(BciSelectionTransportRejection.DuplicateDecision));
+        }
+
         private static BciSelectionSnapshot Snapshot(string slot0, string slot1, string slot2)
         {
             return new BciSelectionSnapshot(new[]

@@ -4,7 +4,7 @@ Last updated: 2026-08-23
 
 ## Overall Phase
 
-M8.2b — Live ND8 Final Decision → Quest Selection — Prepared / Awaiting real Quest + ND8 validation
+M8.2b — Live ND8 Final Decision → Quest Selection — Active diagnostic variant / Awaiting Quest-only visual acceptance
 
 ## M7 Active Unity Application
 
@@ -29,6 +29,8 @@ M7 acceptance boundary:
 Status: Prepared / Awaiting real Quest + ND8 validation
 
 The formal `integration/m8_selection_cli.py --mode live-nd8` command now composes the existing external CPython 3.9 Neurodance runtime, `Nd8SerialAdapter(COM11)`, M6.7 frozen channel admission, NumPy FBCCA `LiveOnlineController`, 2-Consecutive final-decision policy and the completed M8 Quest snapshot transport. It has a no-hardware dry-run path and fail-closed runtime/preflight handling. The fixed first engineering smoke plan is slot/class 0/1/2 at 7.2/9/12 Hz, with expected classes retained only for post-hoc evidence. No ND8 streaming acquisition, raw EEG recording or formal trial was run in this preparation; no online result, physical timing claim or robot action is implied.
+
+M8.2b currently includes an experimental Quest visual-layout variant awaiting Quest-only acceptance: the runtime SSVEP Quad is enlarged from `0.16 m` to `0.32 m`, displays are deterministically separated in camera-right view space, and static cyan leader lines plus small anchor markers preserve object association. The frame-driven `5/4/3` timing, black/white material, decoder and Quest snapshot contract are unchanged. Layout is held while a selection is pending and resumes only after terminal decision or explicit abort. This is a visibility/layout diagnostic only; it does not claim an EEG-accuracy improvement or mark M8.2b complete.
 
 ## Completed Milestone
 

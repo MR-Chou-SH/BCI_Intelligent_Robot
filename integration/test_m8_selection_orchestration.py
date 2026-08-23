@@ -38,6 +38,7 @@ class FakeQuestTransport:
         self.decision_ack = decision_ack
         self.opens = []
         self.decisions = []
+        self.aborts = []
 
     def open_selection(self, selection_id):
         self.opens.append(selection_id)
@@ -46,6 +47,10 @@ class FakeQuestTransport:
     def submit_eeg_selection(self, selection_id, predicted_class_index):
         self.decisions.append((selection_id, predicted_class_index))
         return self.decision_ack or accepted_ack(selection_id)
+
+    def abort_selection(self, selection_id):
+        self.aborts.append(selection_id)
+        return accepted_ack(selection_id)
 
 
 class FakeLiveController:
@@ -128,6 +133,7 @@ class M8SelectionOrchestrationTests(unittest.TestCase):
         self.assertEqual("quest_accepted", orchestrator.submit_final_decision({
             "trialId": "trial-e", "decisionMade": True, "finalDecisionLabel": "target_right",
         })["status"])
+        self.assertEqual(["selection-c", "selection-d"], transport.aborts)
         self.assertEqual([("selection-e", 2)], transport.decisions)
 
     def test_quest_rejection_is_reported_as_a_terminal_integration_failure(self):
@@ -231,6 +237,33 @@ class QuestSelectionTcpServerTests(unittest.TestCase):
         self.assertEqual("bottle", decision_ack["resolvedClassName"])
         self.assertTrue(open_ack["accepted"])
 
+    def test_abort_uses_its_own_terminal_message_without_an_eeg_selection(self):
+        transport = QuestSelectionTcpServer("127.0.0.1", 0, accept_timeout_seconds=1.0, ack_timeout_seconds=1.0)
+        transport.start()
+        received = []
+
+        def quest_client():
+            with socket.create_connection(("127.0.0.1", transport.port), timeout=1.0) as client:
+                stream = client.makefile("rwb")
+                for expected_type in ("selection_open", "selection_abort"):
+                    request = json.loads(stream.readline().decode("utf-8"))
+                    received.append(request)
+                    self.assertEqual(expected_type, request["messageType"])
+                    stream.write((json.dumps(accepted_ack(request["selectionId"])) + "\n").encode("utf-8"))
+                    stream.flush()
+
+        worker = threading.Thread(target=quest_client)
+        worker.start()
+        try:
+            self.assertTrue(transport.open_selection("selection-abort")["accepted"])
+            self.assertTrue(transport.abort_selection("selection-abort")["accepted"])
+        finally:
+            transport.close()
+        worker.join(1.0)
+
+        self.assertFalse(worker.is_alive())
+        self.assertEqual(["selection_open", "selection_abort"], [item["messageType"] for item in received])
+
 
 class M8SelectionCliTests(unittest.TestCase):
     def test_mock_command_opens_then_submits_one_final_decision(self):
@@ -272,6 +305,48 @@ class M8SelectionCliTests(unittest.TestCase):
             records = [json.loads(line) for line in event_log.read_text(encoding="utf-8").splitlines()]
             self.assertEqual(["selection_open_ack", "eeg_selection_ack"], [record["eventType"] for record in records])
             self.assertEqual("quest_accepted", records[-1]["status"])
+
+    def test_mock_no_decision_terminates_the_quest_snapshot_without_eeg_selection(self):
+        reservation = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        reservation.bind(("127.0.0.1", 0))
+        port = reservation.getsockname()[1]
+        reservation.close()
+        with tempfile.TemporaryDirectory() as directory:
+            event_log = Path(directory) / "events.jsonl"
+            exit_codes = []
+            worker = threading.Thread(target=lambda: exit_codes.append(cli_main([
+                "--mode", "mock", "--host", "127.0.0.1", "--port", str(port),
+                "--event-log", str(event_log), "--selection-id-prefix", "cli-no-decision",
+                "--trial-id", "cli-no-decision-trial", "--no-decision",
+            ])))
+            worker.start()
+
+            deadline = time.monotonic() + 1.0
+            while True:
+                try:
+                    client = socket.create_connection(("127.0.0.1", port), timeout=0.1)
+                    break
+                except OSError:
+                    if time.monotonic() >= deadline:
+                        self.fail("CLI did not open the selection listener")
+                    time.sleep(0.01)
+            with client:
+                stream = client.makefile("rwb")
+                received_types = []
+                for expected_type in ("selection_open", "selection_abort"):
+                    request = json.loads(stream.readline().decode("utf-8"))
+                    received_types.append(request["messageType"])
+                    self.assertEqual(expected_type, request["messageType"])
+                    stream.write((json.dumps(accepted_ack(request["selectionId"])) + "\n").encode("utf-8"))
+                    stream.flush()
+            worker.join(1.0)
+
+            self.assertFalse(worker.is_alive())
+            self.assertEqual([0], exit_codes)
+            self.assertEqual(["selection_open", "selection_abort"], received_types)
+            records = [json.loads(line) for line in event_log.read_text(encoding="utf-8").splitlines()]
+            self.assertEqual(["selection_open_ack", "selection_abort_ack"], [record["eventType"] for record in records])
+            self.assertEqual("no_decision", records[-1]["status"])
 
 
 if __name__ == "__main__":

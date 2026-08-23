@@ -87,11 +87,21 @@ namespace BCIIntelligentRobot.Integration
             if (message.messageType == "selection_open")
             {
                 BciSelectionTransportResult result = m_coordinator.Open(message.selectionId, m_binding.CreateSelectionSnapshot());
+                if (result.IsAccepted)
+                    m_binding.FreezeLayout(message.selectionId);
                 SendResult(message, result.Rejection, result.Target);
             }
             else if (message.messageType == "eeg_selection")
             {
                 BciSelectionTransportResult result = m_coordinator.Resolve(message.selectionId, message.predictedClassIndex);
+                m_binding.ReleaseLayout(message.selectionId);
+                SendResult(message, result.Rejection, result.Target);
+            }
+            else if (message.messageType == "selection_abort")
+            {
+                BciSelectionTransportResult result = m_coordinator.Abort(message.selectionId);
+                if (result.IsAccepted)
+                    m_binding.ReleaseLayout(message.selectionId);
                 SendResult(message, result.Rejection, result.Target);
             }
             else

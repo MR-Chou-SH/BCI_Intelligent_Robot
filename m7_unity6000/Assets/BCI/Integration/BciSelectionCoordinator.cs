@@ -68,6 +68,27 @@ namespace BCIIntelligentRobot.Integration
                 : Reject(selectionId, predictedClassIndex, MapRejection(resolution.Rejection));
         }
 
+        /// <summary>
+        /// Ends an opened selection without applying a class. A later delayed
+        /// decision is rejected exactly like any other completed selection.
+        /// </summary>
+        public BciSelectionTransportResult Abort(string selectionId)
+        {
+            if (string.IsNullOrWhiteSpace(selectionId))
+                return Reject(selectionId, -1, BciSelectionTransportRejection.InvalidSelectionId);
+            if (m_completedSelectionIds.Contains(selectionId))
+                return Reject(selectionId, -1, BciSelectionTransportRejection.DuplicateDecision);
+            if (!m_pendingSnapshots.Remove(selectionId))
+                return Reject(selectionId, -1, BciSelectionTransportRejection.UnknownSelectionId);
+
+            m_completedSelectionIds.Add(selectionId);
+            return new BciSelectionTransportResult(
+                selectionId,
+                -1,
+                BciSelectionTransportRejection.None,
+                default(BciSelectionTarget));
+        }
+
         private static BciSelectionTransportRejection MapRejection(BciSelectionRejection rejection)
         {
             switch (rejection)
