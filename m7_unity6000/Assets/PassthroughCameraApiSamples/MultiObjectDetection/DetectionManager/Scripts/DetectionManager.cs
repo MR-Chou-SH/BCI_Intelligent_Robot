@@ -40,6 +40,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         [SerializeField, Min(0f)] private float m_ssvepHudHorizontalSpacingMeters = BciSsvepDisplayLayout.HudHorizontalSpacingMeters;
         [SerializeField, Min(0.1f)] private float m_ssvepHudStimulusSizeMeters = BciSsvepDisplayLayout.HudStimulusSizeMeters;
         private BciSelectionTransportClient m_selectionTransport;
+        private BciTargetBatchController m_targetBatchController;
         private bool m_isStarted;
         internal OVRSpatialAnchor m_spatialAnchor;
         private bool m_isHeadsetTracking;
@@ -407,6 +408,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     m_selectionTransport = gameObject.AddComponent<BciSelectionTransportClient>();
             }
             m_selectionTransport.Initialize(m_ssvepBinding, m_selectionServerHost, m_selectionServerPort);
+            if (m_targetBatchController == null)
+            {
+                m_targetBatchController = GetComponent<BciTargetBatchController>();
+                if (m_targetBatchController == null)
+                    m_targetBatchController = gameObject.AddComponent<BciTargetBatchController>();
+            }
+            m_targetBatchController.Initialize(m_ssvepBinding, m_selectionTransport);
         }
 
         private bool TryGetWorldHit(

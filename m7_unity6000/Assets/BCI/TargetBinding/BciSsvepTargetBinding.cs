@@ -17,6 +17,12 @@ namespace BCIIntelligentRobot.Vision
         private const string StimulusMaterialResourcePath = "BCI/SSVEP/SSVEP_Unlit";
         private const float TargetMarkerSizeMeters = 0.035f;
         private const float LeaderLineWidthMeters = 0.006f;
+        private const float CandidateIndicatorSizeMeters = 0.11f;
+        private const float CandidateIndicatorWidthMeters = 0.003f;
+        private static readonly Color DefaultAssociationColor = new Color(0.1f, 0.75f, 0.95f, 0.75f);
+        private static readonly Color GroupAvailableColor = new Color(0.15f, 0.95f, 0.25f, 0.9f);
+        private static readonly Color GroupSelectedColor = new Color(0.15f, 0.45f, 1f, 0.95f);
+        private static readonly Color GroupInactiveColor = new Color(0.55f, 0.55f, 0.55f, 0.65f);
 
         private readonly BciTargetSlotAllocator m_slotAllocator = new BciTargetSlotAllocator();
         private readonly Dictionary<string, int> m_slotByTargetId = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -38,6 +44,13 @@ namespace BCIIntelligentRobot.Vision
         // from all currently published stable anchors after deduplication.
         private readonly Dictionary<string, StableWorldAnchorSnapshot> m_hudCandidatesByTargetId =
             new Dictionary<string, StableWorldAnchorSnapshot>(StringComparer.Ordinal);
+        private readonly Dictionary<string, LineRenderer> m_candidateIndicatorsByTargetId =
+            new Dictionary<string, LineRenderer>(StringComparer.Ordinal);
+        private readonly Dictionary<string, TextMesh> m_candidateIndicatorLabelsByTargetId =
+            new Dictionary<string, TextMesh>(StringComparer.Ordinal);
+        private readonly HashSet<string> m_processedTargetIds = new HashSet<string>(StringComparer.Ordinal);
+        private readonly HashSet<string> m_submittedTargetIds = new HashSet<string>(StringComparer.Ordinal);
+        private readonly bool[] m_groupSlotSelected = new bool[BciTargetSlotAllocator.SlotCount];
 
         private DetectionManager m_detectionManager;
         private MultiTargetStimulusController m_stimulusController;
@@ -52,8 +65,18 @@ namespace BCIIntelligentRobot.Vision
         private float m_hudStimulusSizeMeters = BciSsvepDisplayLayout.HudStimulusSizeMeters;
         private bool m_layoutDirty;
         private bool m_initialized;
+        private bool m_batchGroupModeEnabled;
+        private string m_activeGroupId;
 
         public BciSsvepLayoutMode LayoutMode => m_layoutMode;
+        public bool IsBatchGroupModeEnabled => m_batchGroupModeEnabled;
+        public bool HasActiveGroup => !string.IsNullOrWhiteSpace(m_activeGroupId);
+        public event Action<IReadOnlyList<StableWorldAnchorSnapshot>> HudCandidatesChanged;
+
+        public bool IsSlotActiveCandidate(int slotIndex)
+        {
+            return m_stimulusController != null && m_stimulusController.IsSlotCandidateActive(slotIndex);
+        }
 
         public void ConfigureLayout(
             BciSsvepLayoutMode layoutMode,
@@ -102,7 +125,123 @@ namespace BCIIntelligentRobot.Vision
             // older than the visible HUD association.
             if (m_layoutMode == BciSsvepLayoutMode.ViewLockedHud && !m_layoutFreezeGate.IsFrozen)
                 RefreshHudAssignments(true);
-            return new BciSelectionSnapshot(m_selectionTargets);
+            if (!m_batchGroupModeEnabled || !HasActiveGroup)
+                return new BciSelectionSnapshot(m_selectionTargets);
+
+            var snapshotTargets = new BciSelectionTarget[BciTargetSlotAllocator.SlotCount];
+            for (int slot = 0; slot < snapshotTargets.Length; slot++)
+            {
+                BciSelectionTarget target = m_selectionTargets[slot];
+                snapshotTargets[slot] = m_groupSlotSelected[slot]
+                    ? target.WithState(StableTargetState.TemporarilyMissing)
+                    : target;
+            }
+            return new BciSelectionSnapshot(snapshotTargets);
+        }
+
+        /// <summary>
+        /// Enables the outer M8.4 lifecycle. It is HUD-only because the HUD
+        /// already retains the complete stable-anchor candidate pool.
+        /// </summary>
+        public bool EnableBatchGroupMode()
+        {
+            if (!m_initialized || m_layoutMode != BciSsvepLayoutMode.ViewLockedHud)
+                return false;
+
+            m_batchGroupModeEnabled = true;
+            ClearActiveGroupPresentation();
+            RefreshHudAssignments(true);
+            return true;
+        }
+
+        public void DisableBatchGroupMode()
+        {
+            if (!m_batchGroupModeEnabled)
+                return;
+
+            m_batchGroupModeEnabled = false;
+            m_activeGroupId = null;
+            m_processedTargetIds.Clear();
+            m_submittedTargetIds.Clear();
+            Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
+            HideCandidateIndicators();
+            RefreshHudAssignments(true);
+        }
+
+        /// <summary>Applies one already ordered, frozen group to slots 0/1/2.</summary>
+        public bool ActivateGroup(string groupId, IReadOnlyList<StableWorldAnchorSnapshot> targets)
+        {
+            if (!m_batchGroupModeEnabled || string.IsNullOrWhiteSpace(groupId) ||
+                targets == null || targets.Count == 0 || targets.Count > BciTargetSlotAllocator.SlotCount ||
+                m_layoutFreezeGate.IsFrozen)
+                return false;
+
+            m_activeGroupId = groupId;
+            Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
+            m_slotByTargetId.Clear();
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+            {
+                if (slot < targets.Count)
+                {
+                    StableWorldAnchorSnapshot anchor = targets[slot];
+                    m_slotByTargetId[anchor.TargetId] = slot;
+                    m_selectionTargets[slot] = new BciSelectionTarget(slot, anchor);
+                    m_slotAnchors[slot] = anchor;
+                    m_slotHasAnchor[slot] = true;
+                    SetSlotCandidateActive(slot, true);
+                    ApplySlotAssociationColor(slot, GroupAvailableColor);
+                    LogHudAssignment(anchor, slot);
+                }
+                else
+                {
+                    m_selectionTargets[slot] = default(BciSelectionTarget);
+                    m_slotAnchors[slot] = default(StableWorldAnchorSnapshot);
+                    m_slotHasAnchor[slot] = false;
+                    SetSlotCandidateActive(slot, false);
+                }
+            }
+            m_layoutDirty = true;
+            RefreshLiveLayout();
+            RefreshCandidateIndicators(BuildOrderedHudCandidates());
+            Debug.Log("M8_GROUP activated group_id=" + groupId + " targets=" + targets.Count, this);
+            return true;
+        }
+
+        public bool SetGroupSlotSelected(string groupId, int slotIndex, bool selected)
+        {
+            if (!HasActiveGroup || !string.Equals(m_activeGroupId, groupId, StringComparison.Ordinal) ||
+                slotIndex < 0 || slotIndex >= BciTargetSlotAllocator.SlotCount || !m_slotHasAnchor[slotIndex])
+                return false;
+
+            m_groupSlotSelected[slotIndex] = selected;
+            SetSlotCandidateActive(slotIndex, !selected);
+            ApplySlotAssociationColor(slotIndex, selected ? GroupSelectedColor : GroupAvailableColor);
+            UpdateSlotLabel(slotIndex, m_slotAnchors[slotIndex]);
+            RefreshCandidateIndicators(BuildOrderedHudCandidates());
+            return true;
+        }
+
+        public bool EndActiveGroup(string groupId)
+        {
+            if (!HasActiveGroup || !string.Equals(m_activeGroupId, groupId, StringComparison.Ordinal) ||
+                m_layoutFreezeGate.IsFrozen)
+                return false;
+
+            ClearActiveGroupPresentation();
+            RefreshCandidateIndicators(BuildOrderedHudCandidates());
+            Debug.Log("M8_GROUP ended group_id=" + groupId, this);
+            return true;
+        }
+
+        public void SetProcessedTargetIds(
+            IEnumerable<string> processedTargetIds,
+            IEnumerable<string> submittedTargetIds)
+        {
+            m_processedTargetIds.Clear();
+            m_submittedTargetIds.Clear();
+            AddTargetIds(m_processedTargetIds, processedTargetIds);
+            AddTargetIds(m_submittedTargetIds, submittedTargetIds);
+            RefreshCandidateIndicators(BuildOrderedHudCandidates());
         }
 
         /// <summary>
@@ -162,6 +301,11 @@ namespace BCIIntelligentRobot.Vision
                 Destroy(m_associationMaterial);
             if (m_viewLockedHudRoot != null)
                 Destroy(m_viewLockedHudRoot.gameObject);
+            foreach (LineRenderer indicator in m_candidateIndicatorsByTargetId.Values)
+            {
+                if (indicator != null)
+                    Destroy(indicator.gameObject);
+            }
         }
 
         private void LateUpdate()
@@ -224,10 +368,9 @@ namespace BCIIntelligentRobot.Vision
                 else
                     m_hudCandidatesByTargetId[anchor.TargetId] = anchor;
 
-                // Keep receiving live metadata while a selection is active,
-                // but do not mutate the frozen slot/anchor association.
-                if (!m_layoutFreezeGate.IsFrozen)
-                    RefreshHudAssignments(true);
+                // Keep receiving live metadata while a selection or group is
+                // frozen. M8.4 may use it only for a later group.
+                RefreshHudAssignments(true);
                 return;
             }
 
@@ -450,30 +593,18 @@ namespace BCIIntelligentRobot.Vision
 
         private void RefreshHudAssignments(bool force)
         {
+            List<StableWorldAnchorSnapshot> ordered = BuildOrderedHudCandidates();
+            PublishHudCandidates(ordered);
+
+            if (m_batchGroupModeEnabled)
+            {
+                if (!m_layoutFreezeGate.IsFrozen)
+                    RefreshCandidateIndicators(ordered);
+                return;
+            }
+
             if (m_layoutFreezeGate.IsFrozen)
                 return;
-
-            var candidates = new List<StableWorldAnchorSnapshot>(m_hudCandidatesByTargetId.Values);
-            candidates.RemoveAll(candidate => candidate.State == StableTargetState.Lost);
-            IReadOnlyList<StableWorldAnchorSnapshot> deduplicated =
-                BciPhysicalTargetDeduplicator.Select(candidates);
-            var ordered = new List<StableWorldAnchorSnapshot>(deduplicated);
-
-            if (m_mainCamera == null)
-                m_mainCamera = Camera.main;
-
-            Vector3 cameraPosition = m_mainCamera != null ? m_mainCamera.transform.position : Vector3.zero;
-            Vector3 cameraRight = m_mainCamera != null ? m_mainCamera.transform.right : Vector3.right;
-            cameraRight = cameraRight.sqrMagnitude > Mathf.Epsilon ? cameraRight.normalized : Vector3.right;
-            ordered.Sort((left, right) =>
-            {
-                float leftX = Vector3.Dot(left.WorldPosition - cameraPosition, cameraRight);
-                float rightX = Vector3.Dot(right.WorldPosition - cameraPosition, cameraRight);
-                int byPosition = leftX.CompareTo(rightX);
-                return byPosition != 0
-                    ? byPosition
-                    : string.Compare(left.TargetId, right.TargetId, StringComparison.Ordinal);
-            });
 
             if (ordered.Count > BciTargetSlotAllocator.SlotCount)
                 ordered.RemoveRange(BciTargetSlotAllocator.SlotCount, ordered.Count - BciTargetSlotAllocator.SlotCount);
@@ -491,6 +622,8 @@ namespace BCIIntelligentRobot.Vision
                     m_selectionTargets[slot] = new BciSelectionTarget(slot, anchor);
                     m_slotAnchors[slot] = anchor;
                     m_slotHasAnchor[slot] = true;
+                    SetSlotCandidateActive(slot, true);
+                    ApplySlotAssociationColor(slot, DefaultAssociationColor);
                     LogHudAssignment(anchor, slot);
                 }
                 else
@@ -498,11 +631,212 @@ namespace BCIIntelligentRobot.Vision
                     m_selectionTargets[slot] = default(BciSelectionTarget);
                     m_slotAnchors[slot] = default(StableWorldAnchorSnapshot);
                     m_slotHasAnchor[slot] = false;
+                    SetSlotCandidateActive(slot, false);
                 }
             }
 
             m_layoutDirty = true;
             RefreshLiveLayout();
+        }
+
+        private List<StableWorldAnchorSnapshot> BuildOrderedHudCandidates()
+        {
+            var candidates = new List<StableWorldAnchorSnapshot>(m_hudCandidatesByTargetId.Values);
+            candidates.RemoveAll(candidate => candidate.State == StableTargetState.Lost);
+            IReadOnlyList<StableWorldAnchorSnapshot> deduplicated = BciPhysicalTargetDeduplicator.Select(candidates);
+            var ordered = new List<StableWorldAnchorSnapshot>(deduplicated);
+
+            if (m_mainCamera == null)
+                m_mainCamera = Camera.main;
+
+            Vector3 cameraPosition = m_mainCamera != null ? m_mainCamera.transform.position : Vector3.zero;
+            Vector3 cameraRight = m_mainCamera != null ? m_mainCamera.transform.right : Vector3.right;
+            cameraRight = cameraRight.sqrMagnitude > Mathf.Epsilon ? cameraRight.normalized : Vector3.right;
+            ordered.Sort((left, right) =>
+            {
+                float leftX = Vector3.Dot(left.WorldPosition - cameraPosition, cameraRight);
+                float rightX = Vector3.Dot(right.WorldPosition - cameraPosition, cameraRight);
+                int byPosition = leftX.CompareTo(rightX);
+                return byPosition != 0
+                    ? byPosition
+                    : string.Compare(left.TargetId, right.TargetId, StringComparison.Ordinal);
+            });
+            return ordered;
+        }
+
+        private void PublishHudCandidates(IReadOnlyList<StableWorldAnchorSnapshot> candidates)
+        {
+            if (!m_batchGroupModeEnabled || HudCandidatesChanged == null)
+                return;
+
+            var copy = new StableWorldAnchorSnapshot[candidates.Count];
+            for (int index = 0; index < copy.Length; index++)
+                copy[index] = candidates[index];
+            HudCandidatesChanged.Invoke(copy);
+        }
+
+        private void ClearActiveGroupPresentation()
+        {
+            m_activeGroupId = null;
+            Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
+            m_slotByTargetId.Clear();
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+            {
+                m_selectionTargets[slot] = default(BciSelectionTarget);
+                m_slotAnchors[slot] = default(StableWorldAnchorSnapshot);
+                m_slotHasAnchor[slot] = false;
+                SetSlotCandidateActive(slot, false);
+                SetSlotPresentationVisible(slot, false);
+            }
+            m_layoutDirty = false;
+        }
+
+        private void AddTargetIds(HashSet<string> destination, IEnumerable<string> source)
+        {
+            if (source == null)
+                return;
+            foreach (string targetId in source)
+            {
+                if (!string.IsNullOrWhiteSpace(targetId))
+                    destination.Add(targetId);
+            }
+        }
+
+        private void RefreshCandidateIndicators(IReadOnlyList<StableWorldAnchorSnapshot> candidates)
+        {
+            if (!m_batchGroupModeEnabled)
+                return;
+
+            if (m_mainCamera == null)
+                m_mainCamera = Camera.main;
+            Vector3 right = m_mainCamera != null ? m_mainCamera.transform.right : Vector3.right;
+            Vector3 up = m_mainCamera != null ? m_mainCamera.transform.up : Vector3.up;
+            right = right.sqrMagnitude > Mathf.Epsilon ? right.normalized : Vector3.right;
+            up = up.sqrMagnitude > Mathf.Epsilon ? up.normalized : Vector3.up;
+
+            var liveIds = new HashSet<string>(StringComparer.Ordinal);
+            for (int index = 0; index < candidates.Count; index++)
+            {
+                StableWorldAnchorSnapshot anchor = candidates[index];
+                liveIds.Add(anchor.TargetId);
+                LineRenderer indicator = GetOrCreateCandidateIndicator(anchor.TargetId);
+                if (indicator == null)
+                    continue;
+
+                bool isCurrentGroupTarget = m_slotByTargetId.ContainsKey(anchor.TargetId) && HasActiveGroup;
+                bool isSelected = isCurrentGroupTarget && m_groupSlotSelected[m_slotByTargetId[anchor.TargetId]];
+                bool isSubmitted = m_submittedTargetIds.Contains(anchor.TargetId);
+                Color color = isSubmitted || isSelected
+                    ? GroupSelectedColor
+                    : isCurrentGroupTarget ? GroupAvailableColor : GroupInactiveColor;
+                indicator.startColor = color;
+                indicator.endColor = color;
+                SetCandidateIndicatorRectangle(indicator, anchor.WorldPosition, right, up);
+                indicator.gameObject.SetActive(true);
+
+                if (m_candidateIndicatorLabelsByTargetId.TryGetValue(anchor.TargetId, out TextMesh label) && label != null)
+                {
+                    label.text = isSubmitted ? "✓" : string.Empty;
+                    label.color = color;
+                    label.transform.position = anchor.WorldPosition + up * (CandidateIndicatorSizeMeters * 0.75f);
+                    Vector3 direction = m_mainCamera != null
+                        ? m_mainCamera.transform.position - label.transform.position
+                        : Vector3.forward;
+                    if (direction.sqrMagnitude > Mathf.Epsilon)
+                        label.transform.rotation = Quaternion.LookRotation(direction.normalized);
+                }
+            }
+
+            var staleIds = new List<string>();
+            foreach (KeyValuePair<string, LineRenderer> entry in m_candidateIndicatorsByTargetId)
+            {
+                if (!liveIds.Contains(entry.Key))
+                    staleIds.Add(entry.Key);
+            }
+            for (int index = 0; index < staleIds.Count; index++)
+            {
+                string targetId = staleIds[index];
+                if (m_candidateIndicatorsByTargetId.TryGetValue(targetId, out LineRenderer indicator) && indicator != null)
+                    Destroy(indicator.gameObject);
+                m_candidateIndicatorsByTargetId.Remove(targetId);
+                m_candidateIndicatorLabelsByTargetId.Remove(targetId);
+            }
+        }
+
+        private LineRenderer GetOrCreateCandidateIndicator(string targetId)
+        {
+            if (m_candidateIndicatorsByTargetId.TryGetValue(targetId, out LineRenderer existing))
+                return existing;
+
+            var indicatorObject = new GameObject("M8_BCI_CandidateIndicator_" + targetId);
+            indicatorObject.transform.SetParent(m_contentParent, false);
+            var indicator = indicatorObject.AddComponent<LineRenderer>();
+            indicator.useWorldSpace = true;
+            indicator.positionCount = 5;
+            indicator.loop = false;
+            indicator.startWidth = CandidateIndicatorWidthMeters;
+            indicator.endWidth = CandidateIndicatorWidthMeters;
+            indicator.alignment = LineAlignment.View;
+            if (m_associationMaterial != null)
+                indicator.sharedMaterial = m_associationMaterial;
+            m_candidateIndicatorsByTargetId.Add(targetId, indicator);
+
+            var labelObject = new GameObject("SubmittedMarker");
+            labelObject.transform.SetParent(indicatorObject.transform, false);
+            var label = labelObject.AddComponent<TextMesh>();
+            label.anchor = TextAnchor.MiddleCenter;
+            label.alignment = TextAlignment.Center;
+            label.characterSize = 0.06f;
+            label.fontSize = 64;
+            m_candidateIndicatorLabelsByTargetId.Add(targetId, label);
+            return indicator;
+        }
+
+        private static void SetCandidateIndicatorRectangle(LineRenderer indicator, Vector3 center, Vector3 right, Vector3 up)
+        {
+            float half = CandidateIndicatorSizeMeters * 0.5f;
+            indicator.SetPosition(0, center + right * -half + up * -half);
+            indicator.SetPosition(1, center + right * half + up * -half);
+            indicator.SetPosition(2, center + right * half + up * half);
+            indicator.SetPosition(3, center + right * -half + up * half);
+            indicator.SetPosition(4, center + right * -half + up * -half);
+        }
+
+        private void HideCandidateIndicators()
+        {
+            foreach (LineRenderer indicator in m_candidateIndicatorsByTargetId.Values)
+            {
+                if (indicator != null)
+                    indicator.gameObject.SetActive(false);
+            }
+        }
+
+        private void ApplySlotAssociationColor(int slotIndex, Color color)
+        {
+            if (m_slotLeaderLines[slotIndex] != null)
+            {
+                m_slotLeaderLines[slotIndex].startColor = color;
+                m_slotLeaderLines[slotIndex].endColor = color;
+            }
+            GameObject marker = m_slotTargetMarkers[slotIndex];
+            Renderer markerRenderer = marker != null ? marker.GetComponent<Renderer>() : null;
+            if (markerRenderer != null)
+            {
+                var block = new MaterialPropertyBlock();
+                markerRenderer.GetPropertyBlock(block);
+                block.SetColor("_Color", color);
+                markerRenderer.SetPropertyBlock(block);
+            }
+            if (m_slotLabels[slotIndex] != null)
+                m_slotLabels[slotIndex].color = color;
+            if (m_slotTargetLabels[slotIndex] != null)
+                m_slotTargetLabels[slotIndex].color = color;
+        }
+
+        private void SetSlotCandidateActive(int slotIndex, bool active)
+        {
+            if (m_stimulusController != null)
+                m_stimulusController.SetSlotCandidateActive(slotIndex, active);
         }
 
         private bool HasSameHudAssignment(IReadOnlyList<StableWorldAnchorSnapshot> ordered)

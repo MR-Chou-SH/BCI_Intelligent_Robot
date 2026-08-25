@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using BCIIntelligentRobot.Integration;
@@ -65,6 +68,43 @@ namespace BCIIntelligentRobot.Tests
                 listener.Stop();
                 UnityEngine.Object.DestroyImmediate(transportObject);
                 UnityEngine.Object.DestroyImmediate(bindingObject);
+            }
+        }
+
+        [Test]
+        public void ConfirmedBatch_QueuesOneExistingTransportMessageInSelectionOrder()
+        {
+            GameObject transportObject = new GameObject("BciConfirmedBatchTransportTests");
+            BciSelectionTransportClient transport = transportObject.AddComponent<BciSelectionTransportClient>();
+            var selections = new List<BciTargetSelectionResult>
+            {
+                Result("selection-c", 2, "target-c"),
+                Result("selection-a", 0, "target-a")
+            };
+            var batch = new ConfirmedTargetBatch(
+                "batch-1", "group-1", 1, selections, DateTime.UtcNow);
+
+            try
+            {
+                Assert.That(transport.PublishConfirmedTargetBatch(batch), Is.True);
+                Assert.That(transport.PublishConfirmedTargetBatch(batch), Is.False);
+
+                FieldInfo field = typeof(BciSelectionTransportClient).GetField(
+                    "m_outgoingLines", BindingFlags.Instance | BindingFlags.NonPublic);
+                var queue = (ConcurrentQueue<string>)field.GetValue(transport);
+                Assert.That(queue.TryDequeue(out string line), Is.True);
+                BciSelectionTransportMessage message = JsonUtility.FromJson<BciSelectionTransportMessage>(line);
+                Assert.That(message.messageType, Is.EqualTo("target_batch_confirmed"));
+                Assert.That(message.confirmedBatch.batchId, Is.EqualTo("batch-1"));
+                Assert.That(new[]
+                {
+                    message.confirmedBatch.selections[0].targetId,
+                    message.confirmedBatch.selections[1].targetId
+                }, Is.EqualTo(new[] { "target-c", "target-a" }));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(transportObject);
             }
         }
 
@@ -149,6 +189,17 @@ namespace BCIIntelligentRobot.Tests
             string line = all.Substring(0, newline).TrimEnd('\r');
             buffer.Remove(0, newline + 1);
             return line;
+        }
+
+        private static BciTargetSelectionResult Result(string selectionId, int slotIndex, string targetId)
+        {
+            return new BciTargetSelectionResult(
+                selectionId,
+                slotIndex,
+                new BciSelectionTarget(
+                    slotIndex,
+                    new StableWorldAnchorSnapshot(targetId, "bottle", StableTargetState.Active, Vector3.zero)),
+                DateTime.UtcNow);
         }
     }
 }

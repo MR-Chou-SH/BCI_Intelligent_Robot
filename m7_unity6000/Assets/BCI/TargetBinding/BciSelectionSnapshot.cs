@@ -38,6 +38,21 @@ namespace BCIIntelligentRobot.Vision
         public StableTargetState State { get; }
         public Vector3 WorldPosition { get; }
         public bool HasWorldPosition { get; }
+
+        /// <summary>
+        /// Keeps the same frozen target facts while exposing a temporary
+        /// selection-state overlay to one snapshot.
+        /// </summary>
+        public BciSelectionTarget WithState(StableTargetState state)
+        {
+            return new BciSelectionTarget(
+                SlotIndex,
+                TargetId,
+                ClassName,
+                state,
+                WorldPosition,
+                HasWorldPosition);
+        }
     }
 
     public enum BciSelectionRejection

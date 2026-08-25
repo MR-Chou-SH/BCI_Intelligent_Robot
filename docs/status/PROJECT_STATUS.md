@@ -1,10 +1,10 @@
 # Project Status
 
-Last updated: 2026-08-24
+Last updated: 2026-08-25
 
 ## Overall Phase
 
-M8.3 — EEG-selected TargetId closed-loop / downstream selection contract — Completed / PASS
+M8.4 — Multi-Target Selection UX & Batch Confirmation — Implemented / awaiting Quest UX acceptance
 
 ## M7 Active Unity Application
 
@@ -24,13 +24,19 @@ M7 acceptance boundary:
 
 ## Active Milestone
 
+### M8.4 — Multi-Target Selection UX & Batch Confirmation
+
+Status: Implemented / awaiting Quest UX acceptance
+
+M8.4 preserves the immutable single-target M8.3 contract and adds a Quest-owned outer group lifecycle for ViewLockedHud. The existing full HUD candidate pool remains deduplicated and camera-right ordered; a current group freezes up to three anchors to slot `0/1/2`, while remaining candidates receive gray indicators. A result accepted through M8.3 adds its frozen fact once to the current batch, changes that group target to blue/static (its slot no longer flickers or resolves), and keeps remaining slot identities/frequencies unchanged. Right-controller A submits one non-empty immutable `ConfirmedTargetBatch`; right-controller B undoes the most recent current-group membership. Submit aborts a pending local selection first, so delayed PC EEG decisions are stale. The batch is sent as one `target_batch_confirmed` newline-JSON message over the existing Quest→PC connection; no robot command is defined. Submitted targets remain blue with `✓`; unselected group targets are processed/skipped and the next remaining group is activated.
+
+## Completed Milestone
+
 ### M8.3 — EEG-selected TargetId closed-loop / downstream selection contract
 
 Status: Completed / PASS
 
 Quest remains the sole authority that resolves a PC-provided canonical class index through the `selection_open` frozen snapshot. On an accepted terminal decision, `BciSelectionCoordinator` publishes exactly one immutable `BciTargetSelectionResult` / `target_selected` C# event containing the selection ID, class index, slot, TargetId, semantic label, frozen stable-world position when available, software UTC, and `quest_frozen_selection_snapshot` provenance. Downstream consumers subscribe to this event and must not query the live slot binding again. Duplicate, stale, invalid, empty, inactive, no-decision, abort, and reconnect-delivered messages cannot publish a second or fabricated result. Quest acceptance verified one accepted class-1 result, duplicate rejection, abort suppression, and unknown-selection rejection on the rebuilt current-HEAD APK, with no M7/HUD regression or app crash. This is a software boundary only; it does not begin robot control or define a robot command schema.
-
-## Completed Milestone
 
 ### M8.2b — Live ND8 Final Decision → Quest Selection
 

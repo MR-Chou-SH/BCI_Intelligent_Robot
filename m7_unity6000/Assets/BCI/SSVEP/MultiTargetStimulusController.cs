@@ -36,6 +36,7 @@ namespace BCIIntelligentRobot.VRStimulus
         }
 
         private static readonly int ColorPropertyId = Shader.PropertyToID("_Color");
+        private static readonly Color SelectedStaticColor = new Color(0.15f, 0.45f, 1f, 1f);
         private const int RequiredTargetCount = 3;
         private const int RefreshRateRetryIntervalFrames = 30;
         private const int RefreshRateUnavailableWarningFrame = 300;
@@ -72,6 +73,12 @@ namespace BCIIntelligentRobot.VRStimulus
             [NonSerialized]
             private int m_TransitionCount;
 
+            [NonSerialized]
+            private bool m_IsCandidateActive = true;
+
+            [NonSerialized]
+            private bool m_IsStaticSelectionVisual;
+
             public string TargetId => m_TargetId;
             public int TargetIndex => m_TargetIndex;
             public Renderer TargetRenderer => m_TargetRenderer;
@@ -79,6 +86,7 @@ namespace BCIIntelligentRobot.VRStimulus
             public int PhaseOffsetFrames => m_PhaseOffsetFrames;
             public int TransitionCount => m_TransitionCount;
             public bool IsWhite => m_IsWhite;
+            public bool IsCandidateActive => m_IsCandidateActive;
 
             public void Configure(
                 string targetId,
@@ -99,15 +107,41 @@ namespace BCIIntelligentRobot.VRStimulus
                 m_PropertyBlock = new MaterialPropertyBlock();
                 m_HasAppliedState = false;
                 m_TransitionCount = 0;
+                m_IsCandidateActive = true;
+                m_IsStaticSelectionVisual = false;
+            }
+
+            public void SetCandidateActive(bool active)
+            {
+                if (m_IsCandidateActive == active)
+                    return;
+
+                m_IsCandidateActive = active;
+                m_HasAppliedState = false;
             }
 
             public void ApplyState(bool white)
             {
-                if (m_HasAppliedState && white == m_IsWhite)
+                if (!m_IsCandidateActive)
+                {
+                    if (m_HasAppliedState && m_IsStaticSelectionVisual)
+                        return;
+
+                    m_HasAppliedState = true;
+                    m_IsStaticSelectionVisual = true;
+                    m_TransitionCount++;
+                    m_TargetRenderer.GetPropertyBlock(m_PropertyBlock);
+                    m_PropertyBlock.SetColor(ColorPropertyId, SelectedStaticColor);
+                    m_TargetRenderer.SetPropertyBlock(m_PropertyBlock);
+                    return;
+                }
+
+                if (m_HasAppliedState && !m_IsStaticSelectionVisual && white == m_IsWhite)
                     return;
 
                 m_IsWhite = white;
                 m_HasAppliedState = true;
+                m_IsStaticSelectionVisual = false;
                 m_TransitionCount++;
                 m_TargetRenderer.GetPropertyBlock(m_PropertyBlock);
                 m_PropertyBlock.SetColor(ColorPropertyId, white ? Color.white : Color.black);
@@ -128,6 +162,12 @@ namespace BCIIntelligentRobot.VRStimulus
         public int CurrentGlobalStimulusFrame => Time.frameCount - m_CommonStartFrame;
         public bool IsInitialized => m_IsInitialized;
         public int TargetCount => m_Targets?.Length ?? 0;
+
+        public bool IsSlotCandidateActive(int slotIndex)
+        {
+            return m_IsInitialized && slotIndex >= 0 && slotIndex < m_Targets.Length &&
+                   m_Targets[slotIndex].IsCandidateActive;
+        }
 
         /// <summary>
         /// Configures the verified three-slot frame-driven controller from runtime-created world targets.
@@ -159,6 +199,18 @@ namespace BCIIntelligentRobot.VRStimulus
             Renderer renderer = m_Targets[slotIndex].TargetRenderer;
             if (renderer != null)
                 renderer.gameObject.SetActive(visible);
+        }
+
+        /// <summary>
+        /// Keeps the slot identity and renderer visible, but removes a selected
+        /// target from the active frame-driven SSVEP candidate set.
+        /// </summary>
+        public void SetSlotCandidateActive(int slotIndex, bool active)
+        {
+            if (!m_IsInitialized || slotIndex < 0 || slotIndex >= m_Targets.Length)
+                return;
+
+            m_Targets[slotIndex].SetCandidateActive(active);
         }
 
         public TargetRuntimeSnapshot[] GetTargetRuntimeSnapshots()

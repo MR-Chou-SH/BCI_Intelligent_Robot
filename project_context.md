@@ -101,7 +101,7 @@ M7.5 已在 Quest 3 真机验证 Meta 官方链路：`MultiObjectDetection → P
 
 - formal prospective cross-session validation；
 - pseudo-online replay infrastructure and later real-time classification readiness；
-- downstream selection-result 的 Quest 真机 acceptance 与后续机器人接口定义；
+- M8.4 multi-target group / confirmed batch 的 Quest UX acceptance 与后续机器人接口定义；
 - 机械臂正式集成。
 
 GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配置为准。
@@ -112,7 +112,7 @@ GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配�
 
 当前 active 工程里程碑是：
 
-> M8.3 — EEG-selected TargetId closed-loop / downstream selection contract（Implemented / software validation PASS）
+> M8.4 — Multi-Target Selection UX & Batch Confirmation（Implemented / awaiting Quest UX acceptance）
 
 M6 的历史证据、冻结 decoder 配置和 warnings 仍保留；本轮不因 Unity 工程入口切换而重做或重新解释 M1–M6 实验。
 
@@ -143,6 +143,7 @@ M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 Fir
 - M8.1/M8.2a 已完成 Quest snapshot transport 与 PC final-decision orchestration；Quest 始终以冻结 snapshot 将 class 0/1/2 解析为 slot 0/1/2 与 TargetId，duplicate/unknown、EOF/reconnect、no-decision/abort 均已验证；
 - M8.2b 已完成 real Quest + ND8 engineering validation 并冻结 ViewLockedHud baseline：camera-local `(-0.32, 0.18, 0.85)/(0, 0.18, 0.85)/(0.32, 0.18, 0.85)` m、`0.20 m` Quad、left-to-right assignment、duplicate suppression、leader line/marker、selection freeze；结果是 `Completed / PASS WITH WARNINGS`，不是 accuracy/latency/causal claim；
 - M8.3 将 accepted frozen class → slot → TargetId + stable-world position 发布为一次性 downstream selection result；下游不得重新查询 live binding，也不开始机械臂控制；
+- M8.4 在 M8.3 immutable result 上增加 group-level freeze、最多三目标的连续选择/Undo、controller Submit 与 `ConfirmedTargetBatch`；Quest 通过既有 newline JSON transport 向 PC 发布 batch，当前仅等待 simulated-EEG Quest UX acceptance；
 - 不接入机械臂；
 - 不在本轮改动 M6 pseudo-online / decoder 证据；
 - 三个刺激的历史 frame-driven 参数仍是后续复用来源。

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -26,6 +27,7 @@ namespace BCIIntelligentRobot.Integration
         public string resolvedTargetId;
         public string resolvedClassName;
         public string questUtc;
+        public ConfirmedTargetBatchPayload confirmedBatch;
     }
 
     /// <summary>Quest TCP client for minimal PC-to-Quest EEG selection messages.</summary>
@@ -37,6 +39,7 @@ namespace BCIIntelligentRobot.Integration
         private readonly ConcurrentQueue<string> m_diagnostics = new ConcurrentQueue<string>();
         private readonly AutoResetEvent m_workAvailable = new AutoResetEvent(false);
         private readonly BciSelectionCoordinator m_coordinator = new BciSelectionCoordinator();
+        private readonly HashSet<string> m_publishedBatchIds = new HashSet<string>(StringComparer.Ordinal);
 
         private Thread m_worker;
         private volatile bool m_stopRequested;
@@ -55,6 +58,12 @@ namespace BCIIntelligentRobot.Integration
             remove => m_coordinator.TargetSelected -= value;
         }
 
+        /// <summary>Raised only when Quest has accepted an opened snapshot.</summary>
+        public event Action<string> SelectionOpened;
+
+        /// <summary>Raised when an accepted selection becomes terminal locally.</summary>
+        public event Action<string> SelectionTerminated;
+
         public void Initialize(BciSsvepTargetBinding binding, string serverHost, int serverPort)
         {
             if (m_worker != null)
@@ -72,6 +81,49 @@ namespace BCIIntelligentRobot.Integration
             m_worker = new Thread(NetworkLoop) { IsBackground = true, Name = "M8QuestSelectionTransport" };
             m_worker.Start();
             Debug.Log("M8_SELECTION transport initialized host=" + m_serverHost + " port=" + m_serverPort, this);
+        }
+
+        /// <summary>
+        /// Submit has priority over a PC trial that is still open. The existing
+        /// coordinator marks it terminal so a delayed eeg_selection is rejected.
+        /// </summary>
+        public bool AbortPendingSelectionForGroupSubmit(string selectionId)
+        {
+            BciSelectionTransportResult result = m_coordinator.Abort(selectionId);
+            if (!result.IsAccepted)
+                return false;
+
+            m_binding.ReleaseLayout(selectionId);
+            SelectionTerminated?.Invoke(selectionId);
+            Debug.Log("M8_GROUP pending_selection_aborted selection_id=" + selectionId, this);
+            return true;
+        }
+
+        /// <summary>
+        /// Queues exactly one Quest-originated batch notification on the existing
+        /// newline-delimited transport. No robot semantics are added here.
+        /// </summary>
+        public bool PublishConfirmedTargetBatch(ConfirmedTargetBatch batch)
+        {
+            if (batch == null || string.IsNullOrWhiteSpace(batch.BatchId) || !m_publishedBatchIds.Add(batch.BatchId))
+                return false;
+
+            var message = new BciSelectionTransportMessage
+            {
+                messageType = "target_batch_confirmed",
+                confirmedBatch = ConfirmedTargetBatchPayload.From(batch),
+                questUtc = DateTime.UtcNow.ToString("O")
+            };
+            m_outgoingLines.Enqueue(JsonUtility.ToJson(message) + "\n");
+            m_workAvailable.Set();
+            Debug.Log(
+                "M8_TARGET_BATCH_CONFIRMED batch_id=" + batch.BatchId +
+                " group_id=" + batch.GroupId +
+                " group_index=" + batch.GroupIndex +
+                " selection_count=" + batch.Selections.Count +
+                " provenance=" + batch.Provenance,
+                this);
+            return true;
         }
 
         private void Update()
@@ -99,20 +151,29 @@ namespace BCIIntelligentRobot.Integration
             {
                 BciSelectionTransportResult result = m_coordinator.Open(message.selectionId, m_binding.CreateSelectionSnapshot());
                 if (result.IsAccepted)
+                {
                     m_binding.FreezeLayout(message.selectionId);
+                    SelectionOpened?.Invoke(message.selectionId);
+                }
                 SendResult(message, result.Rejection, result.Target);
             }
             else if (message.messageType == "eeg_selection")
             {
                 BciSelectionTransportResult result = m_coordinator.Resolve(message.selectionId, message.predictedClassIndex);
                 m_binding.ReleaseLayout(message.selectionId);
+                if (result.Rejection != BciSelectionTransportRejection.UnknownSelectionId &&
+                    result.Rejection != BciSelectionTransportRejection.DuplicateDecision)
+                    SelectionTerminated?.Invoke(message.selectionId);
                 SendResult(message, result.Rejection, result.Target);
             }
             else if (message.messageType == "selection_abort")
             {
                 BciSelectionTransportResult result = m_coordinator.Abort(message.selectionId);
                 if (result.IsAccepted)
+                {
                     m_binding.ReleaseLayout(message.selectionId);
+                    SelectionTerminated?.Invoke(message.selectionId);
+                }
                 SendResult(message, result.Rejection, result.Target);
             }
             else
