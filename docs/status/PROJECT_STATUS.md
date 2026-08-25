@@ -4,7 +4,7 @@ Last updated: 2026-08-25
 
 ## Overall Phase
 
-M8.4 — Multi-Target Selection UX & Batch Confirmation — Implemented / awaiting Quest UX acceptance
+M8.4 — Multi-Target Selection UX & Batch Confirmation — Implemented / awaiting Quest UX re-acceptance
 
 ## M7 Active Unity Application
 
@@ -26,9 +26,9 @@ M7 acceptance boundary:
 
 ### M8.4 — Multi-Target Selection UX & Batch Confirmation
 
-Status: Implemented / awaiting Quest UX acceptance
+Status: Implemented / awaiting Quest UX re-acceptance
 
-M8.4 preserves the immutable single-target M8.3 contract and adds a Quest-owned outer group lifecycle for ViewLockedHud. The existing full HUD candidate pool remains deduplicated and camera-right ordered; a current group freezes up to three anchors to slot `0/1/2`, while remaining candidates receive gray indicators. A result accepted through M8.3 adds its frozen fact once to the current batch, changes that group target to blue/static (its slot no longer flickers or resolves), and keeps remaining slot identities/frequencies unchanged. Right-controller A submits one non-empty immutable `ConfirmedTargetBatch`; right-controller B undoes the most recent current-group membership. Submit aborts a pending local selection first, so delayed PC EEG decisions are stale. The batch is sent as one `target_batch_confirmed` newline-JSON message over the existing Quest→PC connection; no robot command is defined. Submitted targets remain blue with `✓`; unselected group targets are processed/skipped and the next remaining group is activated.
+M8.4 preserves the immutable single-target M8.3 contract and adds a Quest-owned outer group lifecycle for ViewLockedHud. The existing full HUD candidate pool remains deduplicated and camera-right ordered; a current group freezes up to three anchors to slot `0/1/2`, while remaining candidates receive gray indicators. A result accepted through M8.3 adds its frozen fact once to the current batch, changes that group target to blue/static (its slot no longer flickers or resolves), and keeps remaining slot identities/frequencies unchanged. Right-controller A submits one non-empty immutable `ConfirmedTargetBatch`; right-controller B undoes the most recent current-group membership. In batch mode the raw Meta detection-box presentation is hidden, so only StableTarget-backed BCI indicators own gray/green/blue/`✓` semantics; the old marker A/B commands yield to batch input. Submit aborts a pending local selection first, so delayed PC EEG decisions are stale. The batch is sent as one `target_batch_confirmed` newline-JSON message over the existing Quest→PC connection; no robot command is defined. Submitted targets remain blue with `✓`; unselected group targets are processed/skipped and the next remaining group is activated. Quest re-acceptance is required.
 
 ## Completed Milestone
 

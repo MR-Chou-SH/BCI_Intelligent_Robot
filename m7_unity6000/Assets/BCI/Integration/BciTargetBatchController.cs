@@ -1,5 +1,6 @@
 using System;
 using BCIIntelligentRobot.Vision;
+using PassthroughCameraSamples.MultiObjectDetection;
 using UnityEngine;
 
 namespace BCIIntelligentRobot.Integration
@@ -13,11 +14,18 @@ namespace BCIIntelligentRobot.Integration
     {
         private BciSsvepTargetBinding m_binding;
         private BciSelectionTransportClient m_transport;
+        private SentisInferenceUiManager m_detectionVisuals;
         private BciTargetGroupCoordinator m_groups;
         private string m_pendingSelectionId;
         private bool m_initialized;
+        private int m_lastCandidateCount = -1;
 
-        public void Initialize(BciSsvepTargetBinding binding, BciSelectionTransportClient transport)
+        public bool OwnsBatchInput => m_initialized && m_binding != null && m_binding.IsBatchGroupModeEnabled;
+
+        public void Initialize(
+            BciSsvepTargetBinding binding,
+            BciSelectionTransportClient transport,
+            SentisInferenceUiManager detectionVisuals = null)
         {
             if (m_initialized)
                 return;
@@ -26,16 +34,22 @@ namespace BCIIntelligentRobot.Integration
                 Debug.LogWarning("M8_GROUP initialization rejected: missing binding or selection transport.", this);
                 return;
             }
-            if (!binding.EnableBatchGroupMode())
+            m_binding = binding;
+            m_transport = transport;
+            m_detectionVisuals = detectionVisuals;
+            m_groups = new BciTargetGroupCoordinator();
+            m_binding.HudCandidatesChanged += OnHudCandidatesChanged;
+            if (!m_binding.EnableBatchGroupMode())
             {
-                Debug.LogWarning("M8_GROUP requires the frozen ViewLockedHud presentation mode.", this);
+                m_binding.HudCandidatesChanged -= OnHudCandidatesChanged;
+                m_groups = null;
+                m_binding = null;
+                m_transport = null;
+                m_detectionVisuals = null;
+                Debug.LogWarning("M8_GROUP initialization rejected: requires the frozen ViewLockedHud presentation mode.", this);
                 return;
             }
 
-            m_binding = binding;
-            m_transport = transport;
-            m_groups = new BciTargetGroupCoordinator();
-            m_binding.HudCandidatesChanged += OnHudCandidatesChanged;
             m_transport.TargetSelected += OnTargetSelected;
             m_transport.SelectionOpened += OnSelectionOpened;
             m_transport.SelectionTerminated += OnSelectionTerminated;
@@ -43,7 +57,11 @@ namespace BCIIntelligentRobot.Integration
             m_groups.GroupSlotSelectionChanged += OnGroupSlotSelectionChanged;
             m_groups.BatchConfirmed += OnBatchConfirmed;
             m_initialized = true;
-            Debug.Log("M8_GROUP controller initialized submit=right_A undo=right_B", this);
+            if (m_detectionVisuals != null)
+                m_detectionVisuals.SetBciSelectionPresentationActive(true);
+            else
+                Debug.LogWarning("M8_GROUP raw_detection_visual_not_managed reason=missing_SentisInferenceUiManager", this);
+            Debug.Log("M8_GROUP controller_initialized input_owner=batch submit=right_A undo=right_B", this);
         }
 
         private void Update()
@@ -66,11 +84,32 @@ namespace BCIIntelligentRobot.Integration
         private void OnHudCandidatesChanged(System.Collections.Generic.IReadOnlyList<StableWorldAnchorSnapshot> candidates)
         {
             m_groups.UpdateCandidatePool(candidates);
+            if (candidates.Count == m_lastCandidateCount)
+                return;
+
+            m_lastCandidateCount = candidates.Count;
+            int rawCount = m_detectionVisuals != null ? m_detectionVisuals.LastRawDetectionCount : -1;
+            Debug.Log(
+                "M8_GROUP bci_stable_candidate_count=" + candidates.Count +
+                " raw_detection_count=" + rawCount +
+                (candidates.Count == 0 ? " reason=no_active_stable_world_anchor" : string.Empty),
+                this);
         }
 
         private void OnGroupActivated(BciActiveTargetGroup group)
         {
             m_binding.ActivateGroup(group.GroupId, group.Targets);
+            string mapping = string.Empty;
+            for (int slot = 0; slot < group.Targets.Count; slot++)
+            {
+                if (slot > 0)
+                    mapping += " ";
+                mapping += "slot" + slot + "_target_id=" + group.Targets[slot].TargetId;
+            }
+            Debug.Log(
+                "M8_GROUP group_activated group_id=" + group.GroupId +
+                " group_index=" + group.GroupIndex + " " + mapping,
+                this);
         }
 
         private void OnTargetSelected(BciTargetSelectionResult result)
@@ -79,7 +118,8 @@ namespace BCIIntelligentRobot.Integration
             {
                 Debug.Log("M8_GROUP selection_added group_id=" + m_groups.ActiveGroup.Value.GroupId +
                     " selection_id=" + result.SelectionId + " slot=" + result.SlotIndex +
-                    " target_id=" + result.TargetId, this);
+                    " target_id=" + result.TargetId +
+                    " selected_count=" + m_groups.CurrentSelections.Count, this);
             }
             else
             {
@@ -107,18 +147,20 @@ namespace BCIIntelligentRobot.Integration
                 m_pendingSelectionId = null;
         }
 
-        private void UndoLastSelection()
+        public bool UndoLastSelection()
         {
             if (!m_groups.TryUndoLastSelection(out BciTargetSelectionResult undone))
             {
                 Debug.Log("M8_GROUP undo_noop reason=empty_batch", this);
-                return;
+                return false;
             }
             Debug.Log("M8_GROUP selection_undone selection_id=" + undone.SelectionId +
-                " slot=" + undone.SlotIndex + " target_id=" + undone.TargetId, this);
+                " slot=" + undone.SlotIndex + " target_id=" + undone.TargetId +
+                " selected_count=" + m_groups.CurrentSelections.Count, this);
+            return true;
         }
 
-        private void SubmitCurrentGroup()
+        public bool SubmitCurrentGroup()
         {
             if (!string.IsNullOrWhiteSpace(m_pendingSelectionId))
             {
@@ -133,11 +175,12 @@ namespace BCIIntelligentRobot.Integration
             if (!m_groups.TryConfirmCurrentGroup(out ConfirmedTargetBatch batch))
             {
                 Debug.Log("M8_GROUP submit_noop reason=empty_batch", this);
-                return;
+                return false;
             }
 
             Debug.Log("M8_GROUP submitted batch_id=" + batch.BatchId +
                 " group_id=" + batch.GroupId + " selections=" + batch.Selections.Count, this);
+            return true;
         }
 
         private void OnBatchConfirmed(ConfirmedTargetBatch batch)
@@ -160,6 +203,8 @@ namespace BCIIntelligentRobot.Integration
             m_groups.GroupActivated -= OnGroupActivated;
             m_groups.GroupSlotSelectionChanged -= OnGroupSlotSelectionChanged;
             m_groups.BatchConfirmed -= OnBatchConfirmed;
+            if (m_detectionVisuals != null)
+                m_detectionVisuals.SetBciSelectionPresentationActive(false);
             m_binding.DisableBatchGroupMode();
         }
     }

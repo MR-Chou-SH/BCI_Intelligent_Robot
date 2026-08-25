@@ -42,10 +42,39 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private readonly Dictionary<string, float> m_lastLocalizationLogTime = new();
         private RecentDetectionData m_recentValidDetection;
         private BciTargetEligibilityFilter m_bciEligibilityFilter;
+        private bool m_bciSelectionPresentationActive;
+        private int m_lastLoggedRawDetectionCount = -1;
 
         // Raycasts run at inference cadence. Keep the Quest log usable without changing detection or raycast behavior.
         private const float LocalizationLogIntervalSeconds = 1f;
         private const float RecentDetectionHoldSeconds = 1.5f;
+
+        public int LastRawDetectionCount { get; private set; }
+        public int LastBciEligibleDetectionCount { get; private set; }
+        public bool IsBciSelectionPresentationActive => m_bciSelectionPresentationActive;
+
+        public static bool ShouldRenderRawDetectionVisuals(bool bciSelectionPresentationActive)
+        {
+            return !bciSelectionPresentationActive;
+        }
+
+        /// <summary>
+        /// Hides only the Meta Sample's raw-YOLO presentation. Inference,
+        /// eligible-detection filtering and StableTarget publication continue.
+        /// </summary>
+        public void SetBciSelectionPresentationActive(bool active)
+        {
+            if (m_bciSelectionPresentationActive == active)
+                return;
+
+            m_bciSelectionPresentationActive = active;
+            m_lastLoggedRawDetectionCount = -1;
+            ClearRawDetectionVisuals();
+            if (active)
+                Debug.Log("M8_GROUP raw_detection_visual=hidden presentation_owner=bci_stable_target_overlay", this);
+            else
+                Debug.Log("M8_GROUP raw_detection_visual=restored presentation_owner=meta_sample", this);
+        }
 
         internal class BoundingBoxData
         {
@@ -102,7 +131,9 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         public void DrawUIBoxes(List<(int classId, Vector4 boundingBox)> detections, Vector2 inputSize, Pose cameraPose)
         {
             Vector2 currentResolution = m_cameraAccess.CurrentResolution;
+            LastRawDetectionCount = detections != null ? detections.Count : 0;
             List<(int classId, Vector4 boundingBox)> eligibleDetections = FilterEligibleDetections(detections);
+            LastBciEligibleDetectionCount = eligibleDetections.Count;
 
             UpdateStableTargets(eligibleDetections, inputSize, cameraPose);
 
@@ -113,6 +144,20 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
 
             OnObjectsDetected?.Invoke(eligibleDetections.Count);
+
+            if (!ShouldRenderRawDetectionVisuals(m_bciSelectionPresentationActive))
+            {
+                if (m_lastLoggedRawDetectionCount != LastRawDetectionCount)
+                {
+                    m_lastLoggedRawDetectionCount = LastRawDetectionCount;
+                    Debug.Log(
+                        "M8_GROUP raw_detection_count=" + LastRawDetectionCount +
+                        " bci_eligible_detection_count=" + LastBciEligibleDetectionCount +
+                        " raw_detection_visual=hidden",
+                        this);
+                }
+                return;
+            }
 
             // Draw the bounding boxes
             for (var i = 0; i < eligibleDetections.Count; i++)
@@ -318,6 +363,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
             m_boxDrawn.Clear();
             m_recentValidDetection = null;
+        }
+
+        private void ClearRawDetectionVisuals()
+        {
+            foreach (BoundingBoxData box in m_boxDrawn)
+                ReturnToPool(box);
+            m_boxDrawn.Clear();
         }
 
         private void LogLocalization(string className, Vector2 bboxCenterModelPixels, Vector2 viewportPoint, Ray ray, Vector3? hitPoint)

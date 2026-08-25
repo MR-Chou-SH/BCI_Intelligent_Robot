@@ -103,6 +103,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         private void Update()
         {
+            bool batchOwnsMarkerInput = m_targetBatchController != null && m_targetBatchController.OwnsBatchInput;
             if (!m_isStarted)
             {
                 // Manage the Initial Ui Menu
@@ -114,17 +115,24 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             else
             {
                 // Press A button to spawn 3d markers
-                if (InputManager.IsButtonADownOrPinchStarted())
+                if (ShouldHandleLegacyMarkerInput(batchOwnsMarkerInput) &&
+                    InputManager.IsButtonADownOrPinchStarted())
                 {
                     SpawnCurrentDetectedObjects();
                 }
             }
 
             // Press B button to clean all markers
-            if (InputManager.IsButtonBDownOrMiddleFingerPinchStarted())
+            if (ShouldHandleLegacyMarkerInput(batchOwnsMarkerInput) &&
+                InputManager.IsButtonBDownOrMiddleFingerPinchStarted())
             {
                 CleanMarkers();
             }
+        }
+
+        public static bool ShouldHandleLegacyMarkerInput(bool batchOwnsMarkerInput)
+        {
+            return !batchOwnsMarkerInput;
         }
 
         private IEnumerator UpdateSpatialAnchor()
@@ -412,9 +420,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             {
                 m_targetBatchController = GetComponent<BciTargetBatchController>();
                 if (m_targetBatchController == null)
+                {
                     m_targetBatchController = gameObject.AddComponent<BciTargetBatchController>();
+                    Debug.Log("M8_GROUP controller_created owner=DetectionManager runtime=dynamic", this);
+                }
             }
-            m_targetBatchController.Initialize(m_ssvepBinding, m_selectionTransport);
+            m_targetBatchController.Initialize(m_ssvepBinding, m_selectionTransport, m_uiInference);
         }
 
         private bool TryGetWorldHit(

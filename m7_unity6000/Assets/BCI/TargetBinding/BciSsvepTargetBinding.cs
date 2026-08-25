@@ -6,6 +6,14 @@ using UnityEngine;
 
 namespace BCIIntelligentRobot.Vision
 {
+    public enum BciCandidateVisualState
+    {
+        Inactive,
+        Available,
+        Selected,
+        Submitted
+    }
+
     /// <summary>
     /// Binds at most three stable world anchors to the verified, frame-driven
     /// three-frequency SSVEP controller. It owns no detector or raycast logic.
@@ -17,12 +25,13 @@ namespace BCIIntelligentRobot.Vision
         private const string StimulusMaterialResourcePath = "BCI/SSVEP/SSVEP_Unlit";
         private const float TargetMarkerSizeMeters = 0.035f;
         private const float LeaderLineWidthMeters = 0.006f;
-        private const float CandidateIndicatorSizeMeters = 0.11f;
-        private const float CandidateIndicatorWidthMeters = 0.003f;
+        private const float CandidateIndicatorSizeMeters = 0.20f;
+        private const float CandidateIndicatorWidthMeters = 0.006f;
+        private const float CandidateIndicatorTowardCameraOffsetMeters = 0.012f;
         private static readonly Color DefaultAssociationColor = new Color(0.1f, 0.75f, 0.95f, 0.75f);
-        private static readonly Color GroupAvailableColor = new Color(0.15f, 0.95f, 0.25f, 0.9f);
-        private static readonly Color GroupSelectedColor = new Color(0.15f, 0.45f, 1f, 0.95f);
-        private static readonly Color GroupInactiveColor = new Color(0.55f, 0.55f, 0.55f, 0.65f);
+        private static readonly Color GroupAvailableColor = new Color(0.15f, 0.95f, 0.25f, 1f);
+        private static readonly Color GroupSelectedColor = new Color(0.15f, 0.45f, 1f, 1f);
+        private static readonly Color GroupInactiveColor = new Color(0.55f, 0.55f, 0.55f, 0.9f);
 
         private readonly BciTargetSlotAllocator m_slotAllocator = new BciTargetSlotAllocator();
         private readonly Dictionary<string, int> m_slotByTargetId = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -58,6 +67,7 @@ namespace BCIIntelligentRobot.Vision
         private Camera m_mainCamera;
         private Transform m_viewLockedHudRoot;
         private Material m_associationMaterial;
+        private Material m_candidateIndicatorMaterial;
         private float m_stimulusSizeMeters;
         private BciSsvepLayoutMode m_layoutMode = BciSsvepLayoutMode.WorldSpaceExperimental;
         private Vector3 m_hudLocalCenter = BciSsvepDisplayLayout.DefaultHudLocalCenter;
@@ -76,6 +86,27 @@ namespace BCIIntelligentRobot.Vision
         public bool IsSlotActiveCandidate(int slotIndex)
         {
             return m_stimulusController != null && m_stimulusController.IsSlotCandidateActive(slotIndex);
+        }
+
+        /// <summary>
+        /// Presentation-only state for an existing StableTarget candidate. It
+        /// never derives identity from raw YOLO detections.
+        /// </summary>
+        public BciCandidateVisualState GetCandidateVisualState(string targetId)
+        {
+            if (!m_batchGroupModeEnabled || string.IsNullOrWhiteSpace(targetId) ||
+                !m_hudCandidatesByTargetId.ContainsKey(targetId))
+                return BciCandidateVisualState.Inactive;
+
+            if (m_submittedTargetIds.Contains(targetId))
+                return BciCandidateVisualState.Submitted;
+
+            if (!HasActiveGroup || !m_slotByTargetId.TryGetValue(targetId, out int slotIndex))
+                return BciCandidateVisualState.Inactive;
+
+            return m_groupSlotSelected[slotIndex]
+                ? BciCandidateVisualState.Selected
+                : BciCandidateVisualState.Available;
         }
 
         public void ConfigureLayout(
@@ -299,6 +330,8 @@ namespace BCIIntelligentRobot.Vision
                 m_detectionManager.StableWorldAnchorUpdated -= OnStableWorldAnchorUpdated;
             if (m_associationMaterial != null)
                 Destroy(m_associationMaterial);
+            if (m_candidateIndicatorMaterial != null)
+                Destroy(m_candidateIndicatorMaterial);
             if (m_viewLockedHudRoot != null)
                 Destroy(m_viewLockedHudRoot.gameObject);
             foreach (LineRenderer indicator in m_candidateIndicatorsByTargetId.Values)
@@ -457,6 +490,12 @@ namespace BCIIntelligentRobot.Vision
 
             m_associationMaterial = new Material(shader);
             m_associationMaterial.color = new Color(0.1f, 0.75f, 0.95f, 0.75f);
+
+            Shader indicatorShader = Shader.Find("Sprites/Default");
+            if (indicatorShader == null)
+                indicatorShader = shader;
+            m_candidateIndicatorMaterial = new Material(indicatorShader);
+            m_candidateIndicatorMaterial.color = Color.white;
         }
 
         private LineRenderer CreateLeaderLine(int slotIndex)
@@ -723,22 +762,25 @@ namespace BCIIntelligentRobot.Vision
                 if (indicator == null)
                     continue;
 
-                bool isCurrentGroupTarget = m_slotByTargetId.ContainsKey(anchor.TargetId) && HasActiveGroup;
-                bool isSelected = isCurrentGroupTarget && m_groupSlotSelected[m_slotByTargetId[anchor.TargetId]];
-                bool isSubmitted = m_submittedTargetIds.Contains(anchor.TargetId);
-                Color color = isSubmitted || isSelected
-                    ? GroupSelectedColor
-                    : isCurrentGroupTarget ? GroupAvailableColor : GroupInactiveColor;
+                BciCandidateVisualState visualState = GetCandidateVisualState(anchor.TargetId);
+                Color color = GetCandidateVisualColor(visualState);
                 indicator.startColor = color;
                 indicator.endColor = color;
-                SetCandidateIndicatorRectangle(indicator, anchor.WorldPosition, right, up);
+                Vector3 center = anchor.WorldPosition;
+                if (m_mainCamera != null)
+                {
+                    Vector3 towardCamera = m_mainCamera.transform.position - center;
+                    if (towardCamera.sqrMagnitude > Mathf.Epsilon)
+                        center += towardCamera.normalized * CandidateIndicatorTowardCameraOffsetMeters;
+                }
+                SetCandidateIndicatorRectangle(indicator, center, right, up);
                 indicator.gameObject.SetActive(true);
 
                 if (m_candidateIndicatorLabelsByTargetId.TryGetValue(anchor.TargetId, out TextMesh label) && label != null)
                 {
-                    label.text = isSubmitted ? "✓" : string.Empty;
+                    label.text = visualState == BciCandidateVisualState.Submitted ? "✓" : string.Empty;
                     label.color = color;
-                    label.transform.position = anchor.WorldPosition + up * (CandidateIndicatorSizeMeters * 0.75f);
+                    label.transform.position = center + up * (CandidateIndicatorSizeMeters * 0.75f);
                     Vector3 direction = m_mainCamera != null
                         ? m_mainCamera.transform.position - label.transform.position
                         : Vector3.forward;
@@ -777,8 +819,8 @@ namespace BCIIntelligentRobot.Vision
             indicator.startWidth = CandidateIndicatorWidthMeters;
             indicator.endWidth = CandidateIndicatorWidthMeters;
             indicator.alignment = LineAlignment.View;
-            if (m_associationMaterial != null)
-                indicator.sharedMaterial = m_associationMaterial;
+            if (m_candidateIndicatorMaterial != null)
+                indicator.sharedMaterial = m_candidateIndicatorMaterial;
             m_candidateIndicatorsByTargetId.Add(targetId, indicator);
 
             var labelObject = new GameObject("SubmittedMarker");
@@ -800,6 +842,20 @@ namespace BCIIntelligentRobot.Vision
             indicator.SetPosition(2, center + right * half + up * half);
             indicator.SetPosition(3, center + right * -half + up * half);
             indicator.SetPosition(4, center + right * -half + up * -half);
+        }
+
+        private static Color GetCandidateVisualColor(BciCandidateVisualState state)
+        {
+            switch (state)
+            {
+                case BciCandidateVisualState.Available:
+                    return GroupAvailableColor;
+                case BciCandidateVisualState.Selected:
+                case BciCandidateVisualState.Submitted:
+                    return GroupSelectedColor;
+                default:
+                    return GroupInactiveColor;
+            }
         }
 
         private void HideCandidateIndicators()
