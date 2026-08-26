@@ -89,6 +89,11 @@ m7_unity6000/Assets/Resources/buildInfo.txt.meta
 *.rar
 *.7z
 *.msi
+*.apk
+*.aab
+*.zip
+*.tar
+*.gz
 
 # =========================
 # Secrets
@@ -106,6 +111,18 @@ m7_unity6000/Assets/Resources/buildInfo.txt.meta
 experiments/**/raw/
 experiments/**/cache/
 integration/synchronization/runtime_logs/
+
+# EEG recording/data exports (keep raw acquisition data outside Git)
+*.edf
+*.bdf
+*.set
+*.fdt
+*.xdf
+*.vhdr
+*.eeg
+*.vmrk
+*.npy
+*.npz
 
 # Keep templates/readmes
 !experiments/**/README.md
