@@ -84,6 +84,7 @@ namespace BCIIntelligentRobot.Vision
         private bool m_batchGroupModeEnabled;
         private string m_activeGroupId;
         private string m_lastFrozenGroupPresentationSignature;
+        private string m_lastFrozenGroupIdentityRelationSignature;
 
         public BciSsvepLayoutMode LayoutMode => m_layoutMode;
         public bool IsBatchGroupModeEnabled => m_batchGroupModeEnabled;
@@ -216,6 +217,7 @@ namespace BCIIntelligentRobot.Vision
 
             m_activeGroupId = groupId;
             m_lastFrozenGroupPresentationSignature = null;
+            m_lastFrozenGroupIdentityRelationSignature = null;
             m_loggedLostActiveGroupTargetIds.Clear();
             Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
             m_slotByTargetId.Clear();
@@ -730,6 +732,7 @@ namespace BCIIntelligentRobot.Vision
         {
             m_activeGroupId = null;
             m_lastFrozenGroupPresentationSignature = null;
+            m_lastFrozenGroupIdentityRelationSignature = null;
             m_loggedLostActiveGroupTargetIds.Clear();
             Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
             m_slotByTargetId.Clear();
@@ -799,6 +802,7 @@ namespace BCIIntelligentRobot.Vision
             }
 
             LogFrozenGroupPreserved(presentation.Count, frozenTargets);
+            LogFrozenGroupIdentityRelations();
             return presentation;
         }
 
@@ -835,6 +839,103 @@ namespace BCIIntelligentRobot.Vision
             Debug.Log("M8_GROUP frozen_group_preserved group_id=" + m_activeGroupId +
                 " frozen_target_count=" + frozenTargets.Count +
                 " presentation_candidate_count=" + presentationCandidateCount, this);
+        }
+
+        /// <summary>
+        /// Diagnostic-only identity evidence for the active group. It records
+        /// the nearest same-label live candidate only when its TargetId/state
+        /// relationship to a frozen slot changes, never once per frame.
+        /// </summary>
+        private void LogFrozenGroupIdentityRelations()
+        {
+            if (!HasActiveGroup)
+                return;
+
+            var lines = new List<string>(BciTargetSlotAllocator.SlotCount);
+            string signature = m_activeGroupId;
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+            {
+                if (!m_slotByTargetId.ContainsValue(slot))
+                    continue;
+
+                StableWorldAnchorSnapshot frozen = m_slotAnchors[slot];
+                bool hasNearest = TryGetNearestSameLabelCandidate(frozen, out StableWorldAnchorSnapshot nearest);
+                bool likelySamePhysical = hasNearest &&
+                    BciPhysicalTargetDeduplicator.AreLikelySamePhysicalObject(frozen, nearest);
+                signature += "|" + slot + ":" + frozen.TargetId + ":" + frozen.State + ":" +
+                    m_slotHasAnchor[slot] + ":" +
+                    (hasNearest ? nearest.TargetId + ":" + nearest.State + ":" + likelySamePhysical : "none");
+
+                if (!hasNearest)
+                {
+                    lines.Add("slot=" + slot + " frozen=" + DescribeIdentityCandidate(frozen) +
+                        " nearest_same_label=none");
+                    continue;
+                }
+
+                lines.Add("slot=" + slot + " frozen=" + DescribeIdentityCandidate(frozen) +
+                    " nearest_same_label=" + DescribeIdentityCandidate(nearest) +
+                    " world_distance_m=" + Vector3.Distance(frozen.WorldPosition, nearest.WorldPosition).ToString("F3") +
+                    " bbox_iou=" + CalculateBoundingBoxIoU(frozen.Bbox, nearest.Bbox).ToString("F3") +
+                    " likely_same_physical=" + likelySamePhysical +
+                    " source=stable_world_anchor_pool");
+            }
+
+            if (string.Equals(signature, m_lastFrozenGroupIdentityRelationSignature, StringComparison.Ordinal))
+                return;
+
+            m_lastFrozenGroupIdentityRelationSignature = signature;
+            for (int index = 0; index < lines.Count; index++)
+                Debug.Log("M8_GROUP frozen_identity_relation group_id=" + m_activeGroupId + " " + lines[index], this);
+        }
+
+        private bool TryGetNearestSameLabelCandidate(
+            StableWorldAnchorSnapshot frozen,
+            out StableWorldAnchorSnapshot nearest)
+        {
+            nearest = default(StableWorldAnchorSnapshot);
+            float nearestDistance = float.MaxValue;
+            bool found = false;
+            foreach (StableWorldAnchorSnapshot candidate in m_hudCandidatesByTargetId.Values)
+            {
+                if (string.Equals(candidate.TargetId, frozen.TargetId, StringComparison.Ordinal) ||
+                    !string.Equals(candidate.ClassName, frozen.ClassName, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                float distance = Vector3.Distance(frozen.WorldPosition, candidate.WorldPosition);
+                if (distance < nearestDistance ||
+                    (Mathf.Approximately(distance, nearestDistance) &&
+                     string.Compare(candidate.TargetId, nearest.TargetId, StringComparison.Ordinal) < 0))
+                {
+                    nearest = candidate;
+                    nearestDistance = distance;
+                    found = true;
+                }
+            }
+            return found;
+        }
+
+        private static string DescribeIdentityCandidate(StableWorldAnchorSnapshot candidate)
+        {
+            return "target_id=" + candidate.TargetId +
+                " label=" + candidate.ClassName +
+                " state=" + candidate.State +
+                " bbox=" + candidate.Bbox +
+                " world=" + candidate.WorldPosition.ToString("F3") +
+                " confidence=" + candidate.Confidence.ToString("F3") +
+                " maturity_s=" + Mathf.Max(0f, (float)(candidate.LastSeen - candidate.FirstSeen)).ToString("F3");
+        }
+
+        private static float CalculateBoundingBoxIoU(TargetBoundingBox first, TargetBoundingBox second)
+        {
+            if (!first.IsValid || !second.IsValid)
+                return 0f;
+
+            float intersectionWidth = Mathf.Max(0f, Mathf.Min(first.XMax, second.XMax) - Mathf.Max(first.XMin, second.XMin));
+            float intersectionHeight = Mathf.Max(0f, Mathf.Min(first.YMax, second.YMax) - Mathf.Max(first.YMin, second.YMin));
+            float intersection = intersectionWidth * intersectionHeight;
+            float union = first.Area + second.Area - intersection;
+            return union > Mathf.Epsilon ? intersection / union : 0f;
         }
 
         private void AddTargetIds(HashSet<string> destination, IEnumerable<string> source)
