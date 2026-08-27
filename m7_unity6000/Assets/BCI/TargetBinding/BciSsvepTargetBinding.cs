@@ -619,7 +619,7 @@ namespace BCIIntelligentRobot.Vision
             label.anchor = TextAnchor.MiddleCenter;
             label.alignment = TextAlignment.Center;
             label.characterSize = 0.25f;
-            label.fontSize = 48;
+            label.fontSize = 24;
             label.color = Color.cyan;
             return label;
         }
