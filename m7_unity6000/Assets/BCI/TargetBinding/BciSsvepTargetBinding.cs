@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BCIIntelligentRobot.Integration;
 using BCIIntelligentRobot.VRStimulus;
 using PassthroughCameraSamples.MultiObjectDetection;
 using UnityEngine;
@@ -89,6 +90,7 @@ namespace BCIIntelligentRobot.Vision
         public BciSsvepLayoutMode LayoutMode => m_layoutMode;
         public bool IsBatchGroupModeEnabled => m_batchGroupModeEnabled;
         public bool HasActiveGroup => !string.IsNullOrWhiteSpace(m_activeGroupId);
+        public bool IsSelectionLayoutFrozen => m_layoutFreezeGate.IsFrozen;
         public event Action<IReadOnlyList<StableWorldAnchorSnapshot>> HudCandidatesChanged;
 
         public bool IsSlotActiveCandidate(int slotIndex)
@@ -260,6 +262,44 @@ namespace BCIIntelligentRobot.Vision
             ApplySlotAssociationColor(slotIndex, selected ? GroupSelectedColor : GroupAvailableColor);
             UpdateSlotLabel(slotIndex, m_slotAnchors[slotIndex]);
             RefreshCandidateIndicators(BuildGroupPresentationCandidates(BuildOrderedHudCandidates()));
+            return true;
+        }
+
+        /// <summary>
+        /// Applies a coordinator-approved, active-group-local TargetId handover.
+        /// It never runs while an M8.3 selection snapshot owns the layout.
+        /// </summary>
+        public bool TryApplyGroupTargetHandover(
+            string groupId,
+            BciGroupTargetReassociationDecision decision)
+        {
+            if (!HasActiveGroup || !string.Equals(m_activeGroupId, groupId, StringComparison.Ordinal) ||
+                m_layoutFreezeGate.IsFrozen ||
+                decision.Outcome != BciGroupTargetReassociationOutcome.Accepted ||
+                decision.SlotIndex < 0 || decision.SlotIndex >= BciTargetSlotAllocator.SlotCount ||
+                decision.NewTarget.State != StableTargetState.Active ||
+                !m_slotByTargetId.TryGetValue(decision.OldTargetId, out int slot) ||
+                slot != decision.SlotIndex || m_slotHasAnchor[slot])
+                return false;
+
+            m_slotByTargetId.Remove(decision.OldTargetId);
+            m_slotByTargetId[decision.NewTarget.TargetId] = slot;
+            m_selectionTargets[slot] = new BciSelectionTarget(slot, decision.NewTarget);
+            m_slotAnchors[slot] = decision.NewTarget;
+            m_slotHasAnchor[slot] = true;
+            SetSlotCandidateActive(slot, !m_groupSlotSelected[slot]);
+            ApplySlotAssociationColor(slot, m_groupSlotSelected[slot] ? GroupSelectedColor : GroupAvailableColor);
+            UpdateSlotLabel(slot, decision.NewTarget);
+            SetSlotPresentationVisible(slot, true);
+            m_layoutDirty = true;
+            Debug.Log("M8_GROUP reassociation_accepted group_id=" + m_activeGroupId +
+                " slot=" + slot + " old_target_id=" + decision.OldTargetId +
+                " new_target_id=" + decision.NewTarget.TargetId +
+                " label=" + decision.NewTarget.ClassName +
+                " world_distance_m=" + decision.WorldDistanceMeters.ToString("F3") +
+                " bbox_iou=" + decision.BoundingBoxIoU.ToString("F3") +
+                " time_gap_s=" + decision.TimeGapSeconds.ToString("F3") +
+                " visual_state=" + (m_groupSlotSelected[slot] ? "blue" : "green"), this);
             return true;
         }
 

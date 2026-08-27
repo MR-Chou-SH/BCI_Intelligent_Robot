@@ -18,6 +18,7 @@ namespace BCIIntelligentRobot.Integration
         private DetectionManager m_detectionManager;
         private BciTargetGroupCoordinator m_groups;
         private string m_pendingSelectionId;
+        private string m_lastReassociationLogSignature;
         private bool m_initialized;
         private int m_lastCandidateCount = -1;
 
@@ -88,6 +89,7 @@ namespace BCIIntelligentRobot.Integration
         private void OnHudCandidatesChanged(System.Collections.Generic.IReadOnlyList<StableWorldAnchorSnapshot> candidates)
         {
             m_groups.UpdateCandidatePool(candidates);
+            TryReassociateActiveGroup();
             if (candidates.Count == m_lastCandidateCount)
                 return;
 
@@ -102,6 +104,7 @@ namespace BCIIntelligentRobot.Integration
 
         private void OnGroupActivated(BciActiveTargetGroup group)
         {
+            m_lastReassociationLogSignature = null;
             m_binding.ActivateGroup(group.GroupId, group.Targets);
             string mapping = string.Empty;
             for (int slot = 0; slot < group.Targets.Count; slot++)
@@ -189,10 +192,86 @@ namespace BCIIntelligentRobot.Integration
 
         private void OnBatchConfirmed(ConfirmedTargetBatch batch)
         {
+            m_lastReassociationLogSignature = null;
             m_binding.EndActiveGroup(batch.GroupId);
             m_binding.SetProcessedTargetIds(m_groups.ProcessedTargetIds, m_groups.SubmittedTargetIds);
             if (!m_transport.PublishConfirmedTargetBatch(batch))
                 Debug.LogWarning("M8_GROUP batch_publish_rejected batch_id=" + batch.BatchId, this);
+        }
+
+        private void TryReassociateActiveGroup()
+        {
+            if (!m_groups.HasActiveGroup)
+                return;
+
+            bool selectionFrozen = m_binding.IsSelectionLayoutFrozen ||
+                !string.IsNullOrWhiteSpace(m_pendingSelectionId);
+            System.Collections.Generic.IReadOnlyList<BciGroupTargetReassociationDecision> decisions =
+                m_groups.EvaluateActiveGroupReassociation(selectionFrozen);
+            for (int index = 0; index < decisions.Count; index++)
+            {
+                BciGroupTargetReassociationDecision decision = decisions[index];
+                if (decision.Outcome == BciGroupTargetReassociationOutcome.Accepted)
+                {
+                    LogReassociationCandidate(decision);
+                    BciActiveTargetGroup? group = m_groups.ActiveGroup;
+                    if (!group.HasValue ||
+                        !m_binding.TryApplyGroupTargetHandover(group.Value.GroupId, decision) ||
+                        !m_groups.TryCommitReassociation(decision))
+                    {
+                        Debug.LogWarning("M8_GROUP reassociation_rejected_ambiguous group_id=" +
+                            (group.HasValue ? group.Value.GroupId : "none") +
+                            " slot=" + decision.SlotIndex +
+                            " old_target_id=" + decision.OldTargetId +
+                            " new_target_id=" + decision.NewTarget.TargetId +
+                            " reason=atomic_commit_precondition_failed", this);
+                    }
+                    continue;
+                }
+
+                if (decision.Outcome == BciGroupTargetReassociationOutcome.RejectedAmbiguous)
+                    LogReassociationAmbiguous(decision);
+            }
+        }
+
+        private void LogReassociationCandidate(BciGroupTargetReassociationDecision decision)
+        {
+            string signature = "candidate|" + decision.SlotIndex + "|" + decision.OldTargetId + "|" +
+                decision.NewTarget.TargetId + "|" + decision.Outcome;
+            if (string.Equals(signature, m_lastReassociationLogSignature, StringComparison.Ordinal))
+                return;
+
+            m_lastReassociationLogSignature = signature;
+            Debug.Log("M8_GROUP reassociation_candidate slot=" + decision.SlotIndex +
+                " old_target_id=" + decision.OldTargetId +
+                " new_target_id=" + decision.NewTarget.TargetId +
+                " label=" + decision.NewTarget.ClassName +
+                " world_distance_m=" + decision.WorldDistanceMeters.ToString("F3") +
+                " bbox_iou=" + decision.BoundingBoxIoU.ToString("F3") +
+                " time_gap_s=" + decision.TimeGapSeconds.ToString("F3") +
+                " competing_candidate_count=" + decision.CompetingCandidateCount +
+                " competing_member_count=" + decision.CompetingMemberCount, this);
+        }
+
+        private void LogReassociationAmbiguous(BciGroupTargetReassociationDecision decision)
+        {
+            string signature = "ambiguous|" + decision.SlotIndex + "|" + decision.OldTargetId + "|" +
+                decision.NewTarget.TargetId + "|" + decision.CompetingCandidateCount + "|" +
+                decision.CompetingMemberCount + "|" + decision.Reason;
+            if (string.Equals(signature, m_lastReassociationLogSignature, StringComparison.Ordinal))
+                return;
+
+            m_lastReassociationLogSignature = signature;
+            Debug.LogWarning("M8_GROUP reassociation_rejected_ambiguous slot=" + decision.SlotIndex +
+                " old_target_id=" + decision.OldTargetId +
+                " new_target_id=" + decision.NewTarget.TargetId +
+                " label=" + decision.OldAnchor.ClassName +
+                " world_distance_m=" + decision.WorldDistanceMeters.ToString("F3") +
+                " bbox_iou=" + decision.BoundingBoxIoU.ToString("F3") +
+                " time_gap_s=" + decision.TimeGapSeconds.ToString("F3") +
+                " competing_candidate_count=" + decision.CompetingCandidateCount +
+                " competing_member_count=" + decision.CompetingMemberCount +
+                " reason=" + decision.Reason, this);
         }
 
         private void OnDestroy()

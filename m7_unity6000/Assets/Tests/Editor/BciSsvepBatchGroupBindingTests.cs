@@ -61,6 +61,68 @@ namespace BCIIntelligentRobot.Tests
             }
         }
 
+        [Test]
+        public void GroupHandover_PreservesBlueStateAndRejectsChangesDuringSelectionFreeze()
+        {
+            var cameraObject = new GameObject("M8HandoverCamera");
+            var managerObject = new GameObject("M8HandoverManager");
+            var parentObject = new GameObject("M8HandoverParent");
+            var bindingObject = new GameObject("M8HandoverBinding");
+            cameraObject.tag = "MainCamera";
+            cameraObject.AddComponent<Camera>();
+            var manager = managerObject.AddComponent<DetectionManager>();
+            var binding = bindingObject.AddComponent<BciSsvepTargetBinding>();
+
+            try
+            {
+                binding.ConfigureLayout(
+                    BciSsvepLayoutMode.ViewLockedHud,
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter,
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters,
+                    BciSsvepDisplayLayout.HudStimulusSizeMeters);
+                binding.Initialize(manager, parentObject.transform, BciSsvepDisplayLayout.ExperimentalStimulusSizeMeters);
+                Assert.That(binding.EnableBatchGroupMode(), Is.True);
+
+                StableWorldAnchorSnapshot oldLeft = Anchor("old-left", -1f);
+                StableWorldAnchorSnapshot[] group =
+                {
+                    oldLeft, Anchor("center", 0f), Anchor("right", 1f)
+                };
+                foreach (StableWorldAnchorSnapshot anchor in group)
+                    InvokeStableAnchor(binding, anchor);
+                Assert.That(binding.ActivateGroup("group-handover", group), Is.True);
+                Assert.That(binding.SetGroupSlotSelected("group-handover", 0, true), Is.True);
+
+                InvokeStableAnchor(binding, new StableWorldAnchorSnapshot(
+                    "old-left", "bottle", StableTargetState.Lost, oldLeft.WorldPosition,
+                    oldLeft.Confidence, oldLeft.Bbox, oldLeft.FirstSeen, oldLeft.LastSeen));
+                StableWorldAnchorSnapshot replacement = new StableWorldAnchorSnapshot(
+                    "new-left", "bottle", StableTargetState.Active, new Vector3(-0.988f, 0f, 2f),
+                    0.9f, new TargetBoundingBox(104f, 20f, 30f, 30f), 0d, 1d);
+                InvokeStableAnchor(binding, replacement);
+                BciGroupTargetReassociationDecision decision = new BciGroupTargetReassociationDecision(
+                    BciGroupTargetReassociationOutcome.Accepted, 0, oldLeft, replacement,
+                    0.012f, 0f, 0d, 1, 1, "test_unique");
+
+                binding.FreezeLayout("selection-1");
+                Assert.That(binding.TryApplyGroupTargetHandover("group-handover", decision), Is.False);
+                binding.ReleaseLayout("selection-1");
+                Assert.That(binding.TryApplyGroupTargetHandover("group-handover", decision), Is.True);
+                Assert.That(binding.GetCandidateVisualState("new-left"), Is.EqualTo(BciCandidateVisualState.Selected));
+                Assert.That(binding.GetCandidateVisualState("old-left"), Is.EqualTo(BciCandidateVisualState.Inactive));
+
+                Assert.That(binding.SetGroupSlotSelected("group-handover", 0, false), Is.True);
+                Assert.That(binding.CreateSelectionSnapshot().ResolveClassIndex(0).Target.TargetId, Is.EqualTo("new-left"));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(bindingObject);
+                UnityEngine.Object.DestroyImmediate(parentObject);
+                UnityEngine.Object.DestroyImmediate(managerObject);
+                UnityEngine.Object.DestroyImmediate(cameraObject);
+            }
+        }
+
         private static StableWorldAnchorSnapshot Anchor(string targetId, float x)
         {
             return new StableWorldAnchorSnapshot(

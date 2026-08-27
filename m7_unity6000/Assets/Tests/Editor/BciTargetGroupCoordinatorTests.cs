@@ -75,6 +75,52 @@ namespace BCIIntelligentRobot.Tests
             Assert.That(coordinator.CurrentSelections, Is.Empty);
         }
 
+        [Test]
+        public void Reassociation_UpdatesLogicalMemberButPreservesFrozenSelectedResult()
+        {
+            var coordinator = new BciTargetGroupCoordinator();
+            coordinator.UpdateCandidatePool(new[]
+            {
+                MatureAnchor("old", 0f, 100f),
+                MatureAnchor("center", 1f, 200f),
+                MatureAnchor("right", 2f, 300f)
+            });
+            Assert.That(coordinator.TryActivateNextGroup(), Is.True);
+            Assert.That(coordinator.TryAccept(Result("selection-old", 0, "old")), Is.True);
+
+            coordinator.UpdateCandidatePool(new[]
+            {
+                MatureAnchor("replacement", 0.012f, 104f),
+                MatureAnchor("center", 1f, 200f),
+                MatureAnchor("right", 2f, 300f)
+            });
+            IReadOnlyList<BciGroupTargetReassociationDecision> decisions =
+                coordinator.EvaluateActiveGroupReassociation(false);
+            Assert.That(decisions, Has.Count.EqualTo(1));
+            Assert.That(decisions[0].Outcome, Is.EqualTo(BciGroupTargetReassociationOutcome.Accepted));
+            Assert.That(coordinator.TryCommitReassociation(decisions[0]), Is.True);
+
+            Assert.That(coordinator.ActiveGroup.Value.Targets[0].TargetId, Is.EqualTo("replacement"));
+            Assert.That(coordinator.ActiveGroup.Value.Members[0].IsSelected, Is.True);
+            Assert.That(TargetIdsFromResults(coordinator.CurrentSelections), Is.EqualTo(new[] { "old" }));
+
+            Assert.That(coordinator.TryConfirmCurrentGroup(out ConfirmedTargetBatch batch), Is.True);
+            Assert.That(TargetIdsFromResults(batch.Selections), Is.EqualTo(new[] { "old" }),
+                "The immutable M8.3 result records the original accepted selection fact.");
+            Assert.That(coordinator.ProcessedTargetIds, Does.Contain("replacement"));
+            Assert.That(coordinator.SubmittedTargetIds, Does.Contain("replacement"));
+        }
+
+        [Test]
+        public void Reassociation_IsUnavailableAfterGroupSubmit()
+        {
+            var coordinator = NewActiveCoordinator();
+            Assert.That(coordinator.TryAccept(Result("selection-a", 0, "a")), Is.True);
+            Assert.That(coordinator.TryConfirmCurrentGroup(out ConfirmedTargetBatch _), Is.True);
+
+            Assert.That(coordinator.EvaluateActiveGroupReassociation(false), Is.Empty);
+        }
+
         private static BciTargetGroupCoordinator NewActiveCoordinator()
         {
             var coordinator = new BciTargetGroupCoordinator();
@@ -95,6 +141,19 @@ namespace BCIIntelligentRobot.Tests
                     new Vector3(index, 0f, 2f));
             }
             return values;
+        }
+
+        private static StableWorldAnchorSnapshot MatureAnchor(string targetId, float x, float bboxX)
+        {
+            return new StableWorldAnchorSnapshot(
+                targetId,
+                "bottle",
+                StableTargetState.Active,
+                new Vector3(x, 0f, 2f),
+                0.9f,
+                new TargetBoundingBox(bboxX, 20f, 30f, 100f),
+                0d,
+                1d);
         }
 
         private static BciTargetSelectionResult Result(string selectionId, int slot, string targetId)
