@@ -10,11 +10,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
     {
         [SerializeField] private Vector3 m_anglesSpeed = new(20.0f, 40.0f, 60.0f);
         [SerializeField] private Transform m_model;
+        [SerializeField] private Renderer m_rotatingCubeRenderer;
         [SerializeField] private TextMesh m_textModel;
         [SerializeField] private Transform m_textEntity;
 
         private Vector3 m_angles;
         private OVRCameraRig m_camera;
+        private bool m_rotatingCubeVisible = true;
 
         private void Awake()
         {
@@ -23,11 +25,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         private void LateUpdate()
         {
-            m_angles.x = AddAngle(m_angles.x, m_anglesSpeed.x * Time.deltaTime);
-            m_angles.y = AddAngle(m_angles.y, m_anglesSpeed.y * Time.deltaTime);
-            m_angles.z = AddAngle(m_angles.z, m_anglesSpeed.z * Time.deltaTime);
-
-            m_model.rotation = Quaternion.Euler(m_angles);
+            if (m_rotatingCubeVisible)
+            {
+                m_angles.x = AddAngle(m_angles.x, m_anglesSpeed.x * Time.deltaTime);
+                m_angles.y = AddAngle(m_angles.y, m_anglesSpeed.y * Time.deltaTime);
+                m_angles.z = AddAngle(m_angles.z, m_anglesSpeed.z * Time.deltaTime);
+                m_model.rotation = Quaternion.Euler(m_angles);
+            }
             m_textEntity.gameObject.transform.LookAt(m_camera.centerEyeAnchor);
         }
 
@@ -55,6 +59,17 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         public string GetYoloClassName()
         {
             return m_textModel.text;
+        }
+
+        /// <summary>
+        /// BCI presentation hides only the legacy rotating Cube renderer. The
+        /// marker root, center sphere, text, and StableTarget anchor remain.
+        /// </summary>
+        public void SetRotatingCubeVisible(bool visible)
+        {
+            m_rotatingCubeVisible = visible;
+            if (m_rotatingCubeRenderer != null)
+                m_rotatingCubeRenderer.enabled = visible;
         }
     }
 }

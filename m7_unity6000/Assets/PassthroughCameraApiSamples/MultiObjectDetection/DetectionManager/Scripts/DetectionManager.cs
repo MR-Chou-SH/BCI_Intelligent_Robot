@@ -135,6 +135,19 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             return !batchOwnsMarkerInput;
         }
 
+        /// <summary>
+        /// The BCI HUD keeps the official marker's center sphere as a stable
+        /// world reference, but hides its legacy rotating cube decoration.
+        /// </summary>
+        public void SetBciTargetPresentationActive(bool active)
+        {
+            foreach (StableWorldAnchorRecord anchor in m_stableWorldAnchors.Values)
+            {
+                if (anchor.Marker != null)
+                    anchor.Marker.SetRotatingCubeVisible(!active);
+            }
+        }
+
         private IEnumerator UpdateSpatialAnchor()
         {
             while (true)
@@ -478,6 +491,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 Quaternion.LookRotation(ray.direction),
                 m_uiInference.ContentParent);
             anchor.Marker.SetYoloClassName(target.ClassName);
+            if (m_targetBatchController != null && m_targetBatchController.OwnsBatchInput)
+                anchor.Marker.SetRotatingCubeVisible(false);
             LogStable(target, "created", worldPosition);
             PublishStableAnchor(anchor, StableTargetState.Active);
         }

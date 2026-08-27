@@ -25,9 +25,12 @@ namespace BCIIntelligentRobot.Vision
         private const string StimulusMaterialResourcePath = "BCI/SSVEP/SSVEP_Unlit";
         private const float TargetMarkerSizeMeters = 0.035f;
         private const float LeaderLineWidthMeters = 0.006f;
-        private const float CandidateIndicatorSizeMeters = 0.20f;
+        private const float CandidateIndicatorMaximumSizeMeters = 0.20f;
         private const float CandidateIndicatorWidthMeters = 0.006f;
         private const float CandidateIndicatorTowardCameraOffsetMeters = 0.012f;
+        private const float CandidateIndicatorMinimumAspectRatio = 0.35f;
+        private const float CandidateIndicatorMaximumAspectRatio = 2.85f;
+        private const float CandidateIndicatorAspectSmoothing = 0.35f;
         private static readonly Color DefaultAssociationColor = new Color(0.1f, 0.75f, 0.95f, 0.75f);
         private static readonly Color GroupAvailableColor = new Color(0.15f, 0.95f, 0.25f, 1f);
         private static readonly Color GroupSelectedColor = new Color(0.15f, 0.45f, 1f, 1f);
@@ -57,8 +60,11 @@ namespace BCIIntelligentRobot.Vision
             new Dictionary<string, LineRenderer>(StringComparer.Ordinal);
         private readonly Dictionary<string, TextMesh> m_candidateIndicatorLabelsByTargetId =
             new Dictionary<string, TextMesh>(StringComparer.Ordinal);
+        private readonly Dictionary<string, float> m_candidateIndicatorAspectRatiosByTargetId =
+            new Dictionary<string, float>(StringComparer.Ordinal);
         private readonly HashSet<string> m_processedTargetIds = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> m_submittedTargetIds = new HashSet<string>(StringComparer.Ordinal);
+        private readonly HashSet<string> m_loggedLostActiveGroupTargetIds = new HashSet<string>(StringComparer.Ordinal);
         private readonly bool[] m_groupSlotSelected = new bool[BciTargetSlotAllocator.SlotCount];
 
         private DetectionManager m_detectionManager;
@@ -77,6 +83,7 @@ namespace BCIIntelligentRobot.Vision
         private bool m_initialized;
         private bool m_batchGroupModeEnabled;
         private string m_activeGroupId;
+        private string m_lastFrozenGroupPresentationSignature;
 
         public BciSsvepLayoutMode LayoutMode => m_layoutMode;
         public bool IsBatchGroupModeEnabled => m_batchGroupModeEnabled;
@@ -208,6 +215,8 @@ namespace BCIIntelligentRobot.Vision
                 return false;
 
             m_activeGroupId = groupId;
+            m_lastFrozenGroupPresentationSignature = null;
+            m_loggedLostActiveGroupTargetIds.Clear();
             Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
             m_slotByTargetId.Clear();
             for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
@@ -233,7 +242,7 @@ namespace BCIIntelligentRobot.Vision
             }
             m_layoutDirty = true;
             RefreshLiveLayout();
-            RefreshCandidateIndicators(BuildOrderedHudCandidates());
+            RefreshCandidateIndicators(BuildGroupPresentationCandidates(BuildOrderedHudCandidates()));
             Debug.Log("M8_GROUP activated group_id=" + groupId + " targets=" + targets.Count, this);
             return true;
         }
@@ -248,7 +257,7 @@ namespace BCIIntelligentRobot.Vision
             SetSlotCandidateActive(slotIndex, !selected);
             ApplySlotAssociationColor(slotIndex, selected ? GroupSelectedColor : GroupAvailableColor);
             UpdateSlotLabel(slotIndex, m_slotAnchors[slotIndex]);
-            RefreshCandidateIndicators(BuildOrderedHudCandidates());
+            RefreshCandidateIndicators(BuildGroupPresentationCandidates(BuildOrderedHudCandidates()));
             return true;
         }
 
@@ -397,7 +406,10 @@ namespace BCIIntelligentRobot.Vision
             if (m_layoutMode == BciSsvepLayoutMode.ViewLockedHud)
             {
                 if (anchor.State == StableTargetState.Lost)
+                {
                     m_hudCandidatesByTargetId.Remove(anchor.TargetId);
+                    HandleActiveGroupTargetLost(anchor);
+                }
                 else
                     m_hudCandidatesByTargetId[anchor.TargetId] = anchor;
 
@@ -638,7 +650,7 @@ namespace BCIIntelligentRobot.Vision
             if (m_batchGroupModeEnabled)
             {
                 if (!m_layoutFreezeGate.IsFrozen)
-                    RefreshCandidateIndicators(ordered);
+                    RefreshCandidateIndicators(BuildGroupPresentationCandidates(ordered));
                 return;
             }
 
@@ -717,6 +729,8 @@ namespace BCIIntelligentRobot.Vision
         private void ClearActiveGroupPresentation()
         {
             m_activeGroupId = null;
+            m_lastFrozenGroupPresentationSignature = null;
+            m_loggedLostActiveGroupTargetIds.Clear();
             Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
             m_slotByTargetId.Clear();
             for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
@@ -728,6 +742,99 @@ namespace BCIIntelligentRobot.Vision
                 SetSlotPresentationVisible(slot, false);
             }
             m_layoutDirty = false;
+        }
+
+        /// <summary>
+        /// The active M8.4 group owns slot identity until submit/cancel. A
+        /// fresh detection can briefly create a competing StableTarget for the
+        /// same physical object, but it must not replace the frozen TargetId's
+        /// visual state while that original target remains retained.
+        /// </summary>
+        private IReadOnlyList<StableWorldAnchorSnapshot> BuildGroupPresentationCandidates(
+            IReadOnlyList<StableWorldAnchorSnapshot> orderedCandidates)
+        {
+            if (!HasActiveGroup)
+                return orderedCandidates;
+
+            var presentation = new List<StableWorldAnchorSnapshot>(orderedCandidates.Count);
+            var frozenTargets = new List<StableWorldAnchorSnapshot>(BciTargetSlotAllocator.SlotCount);
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+            {
+                if (!m_slotHasAnchor[slot])
+                    continue;
+
+                StableWorldAnchorSnapshot frozen = m_slotAnchors[slot];
+                if (!m_hudCandidatesByTargetId.TryGetValue(frozen.TargetId, out StableWorldAnchorSnapshot current) ||
+                    current.State == StableTargetState.Lost)
+                    continue;
+
+                // TargetId remains frozen, while current anchor metadata is
+                // available to a later selection snapshot and presentation.
+                m_slotAnchors[slot] = current;
+                m_selectionTargets[slot] = new BciSelectionTarget(slot, current);
+                frozenTargets.Add(current);
+                presentation.Add(current);
+            }
+
+            if (frozenTargets.Count > 0)
+                m_layoutDirty = true;
+
+            for (int index = 0; index < orderedCandidates.Count; index++)
+            {
+                StableWorldAnchorSnapshot candidate = orderedCandidates[index];
+                bool belongsToFrozenPhysicalTarget = false;
+                for (int frozenIndex = 0; frozenIndex < frozenTargets.Count; frozenIndex++)
+                {
+                    StableWorldAnchorSnapshot frozen = frozenTargets[frozenIndex];
+                    if (string.Equals(candidate.TargetId, frozen.TargetId, StringComparison.Ordinal) ||
+                        BciPhysicalTargetDeduplicator.AreLikelySamePhysicalObject(candidate, frozen))
+                    {
+                        belongsToFrozenPhysicalTarget = true;
+                        break;
+                    }
+                }
+
+                if (!belongsToFrozenPhysicalTarget)
+                    presentation.Add(candidate);
+            }
+
+            LogFrozenGroupPreserved(presentation.Count, frozenTargets);
+            return presentation;
+        }
+
+        private void HandleActiveGroupTargetLost(StableWorldAnchorSnapshot lostAnchor)
+        {
+            if (!HasActiveGroup || m_layoutFreezeGate.IsFrozen ||
+                !m_slotByTargetId.TryGetValue(lostAnchor.TargetId, out int slot))
+                return;
+
+            m_selectionTargets[slot] = new BciSelectionTarget(slot, lostAnchor);
+            m_slotAnchors[slot] = lostAnchor;
+            m_slotHasAnchor[slot] = false;
+            SetSlotCandidateActive(slot, false);
+            SetSlotPresentationVisible(slot, false);
+            if (m_loggedLostActiveGroupTargetIds.Add(lostAnchor.TargetId))
+            {
+                Debug.LogWarning("M8_GROUP frozen_group_target_lost group_id=" + m_activeGroupId +
+                    " slot=" + slot + " target_id=" + lostAnchor.TargetId +
+                    " reason=stable_target_lost", this);
+            }
+        }
+
+        private void LogFrozenGroupPreserved(
+            int presentationCandidateCount,
+            IReadOnlyList<StableWorldAnchorSnapshot> frozenTargets)
+        {
+            string signature = m_activeGroupId + "|" + presentationCandidateCount;
+            for (int index = 0; index < frozenTargets.Count; index++)
+                signature += "|" + frozenTargets[index].TargetId + ":" + frozenTargets[index].State;
+            if (string.Equals(signature, m_lastFrozenGroupPresentationSignature, StringComparison.Ordinal))
+                return;
+
+            m_lastFrozenGroupPresentationSignature = signature;
+            Debug.Log("M8_GROUP frozen_group_preserved group_id=" + m_activeGroupId +
+                " frozen_target_count=" + frozenTargets.Count +
+                " presentation_candidate_count=" + presentationCandidateCount, this);
         }
 
         private void AddTargetIds(HashSet<string> destination, IEnumerable<string> source)
@@ -773,14 +880,15 @@ namespace BCIIntelligentRobot.Vision
                     if (towardCamera.sqrMagnitude > Mathf.Epsilon)
                         center += towardCamera.normalized * CandidateIndicatorTowardCameraOffsetMeters;
                 }
-                SetCandidateIndicatorRectangle(indicator, center, right, up);
+                Vector2 size = GetCandidateIndicatorSize(anchor);
+                SetCandidateIndicatorRectangle(indicator, center, right, up, size);
                 indicator.gameObject.SetActive(true);
 
                 if (m_candidateIndicatorLabelsByTargetId.TryGetValue(anchor.TargetId, out TextMesh label) && label != null)
                 {
                     label.text = visualState == BciCandidateVisualState.Submitted ? "✓" : string.Empty;
                     label.color = color;
-                    label.transform.position = center + up * (CandidateIndicatorSizeMeters * 0.75f);
+                    label.transform.position = center + up * (size.y * 0.75f);
                     Vector3 direction = m_mainCamera != null
                         ? m_mainCamera.transform.position - label.transform.position
                         : Vector3.forward;
@@ -802,7 +910,33 @@ namespace BCIIntelligentRobot.Vision
                     Destroy(indicator.gameObject);
                 m_candidateIndicatorsByTargetId.Remove(targetId);
                 m_candidateIndicatorLabelsByTargetId.Remove(targetId);
+                m_candidateIndicatorAspectRatiosByTargetId.Remove(targetId);
             }
+        }
+
+        private Vector2 GetCandidateIndicatorSize(StableWorldAnchorSnapshot anchor)
+        {
+            float targetAspectRatio = 1f;
+            if (anchor.Bbox.IsValid)
+            {
+                targetAspectRatio = Mathf.Clamp(
+                    anchor.Bbox.Width / anchor.Bbox.Height,
+                    CandidateIndicatorMinimumAspectRatio,
+                    CandidateIndicatorMaximumAspectRatio);
+            }
+
+            if (m_candidateIndicatorAspectRatiosByTargetId.TryGetValue(anchor.TargetId, out float previousAspectRatio))
+            {
+                targetAspectRatio = Mathf.Lerp(
+                    previousAspectRatio,
+                    targetAspectRatio,
+                    CandidateIndicatorAspectSmoothing);
+            }
+            m_candidateIndicatorAspectRatiosByTargetId[anchor.TargetId] = targetAspectRatio;
+
+            return targetAspectRatio >= 1f
+                ? new Vector2(CandidateIndicatorMaximumSizeMeters, CandidateIndicatorMaximumSizeMeters / targetAspectRatio)
+                : new Vector2(CandidateIndicatorMaximumSizeMeters * targetAspectRatio, CandidateIndicatorMaximumSizeMeters);
         }
 
         private LineRenderer GetOrCreateCandidateIndicator(string targetId)
@@ -834,14 +968,20 @@ namespace BCIIntelligentRobot.Vision
             return indicator;
         }
 
-        private static void SetCandidateIndicatorRectangle(LineRenderer indicator, Vector3 center, Vector3 right, Vector3 up)
+        private static void SetCandidateIndicatorRectangle(
+            LineRenderer indicator,
+            Vector3 center,
+            Vector3 right,
+            Vector3 up,
+            Vector2 size)
         {
-            float half = CandidateIndicatorSizeMeters * 0.5f;
-            indicator.SetPosition(0, center + right * -half + up * -half);
-            indicator.SetPosition(1, center + right * half + up * -half);
-            indicator.SetPosition(2, center + right * half + up * half);
-            indicator.SetPosition(3, center + right * -half + up * half);
-            indicator.SetPosition(4, center + right * -half + up * -half);
+            float halfWidth = size.x * 0.5f;
+            float halfHeight = size.y * 0.5f;
+            indicator.SetPosition(0, center + right * -halfWidth + up * -halfHeight);
+            indicator.SetPosition(1, center + right * halfWidth + up * -halfHeight);
+            indicator.SetPosition(2, center + right * halfWidth + up * halfHeight);
+            indicator.SetPosition(3, center + right * -halfWidth + up * halfHeight);
+            indicator.SetPosition(4, center + right * -halfWidth + up * -halfHeight);
         }
 
         private static Color GetCandidateVisualColor(BciCandidateVisualState state)

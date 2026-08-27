@@ -131,6 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_anglesSpeed: {x: 20, y: 40, z: 60}
   m_model: {fileID: 215703207132315740}
+  m_rotatingCubeRenderer: {fileID: 2641403290358915803}
   m_textModel: {fileID: 861505484286536836}
   m_textEntity: {fileID: 5666364675243074881}
 --- !u!1 &5003248189872590893

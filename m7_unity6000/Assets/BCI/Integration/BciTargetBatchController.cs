@@ -15,6 +15,7 @@ namespace BCIIntelligentRobot.Integration
         private BciSsvepTargetBinding m_binding;
         private BciSelectionTransportClient m_transport;
         private SentisInferenceUiManager m_detectionVisuals;
+        private DetectionManager m_detectionManager;
         private BciTargetGroupCoordinator m_groups;
         private string m_pendingSelectionId;
         private bool m_initialized;
@@ -37,6 +38,7 @@ namespace BCIIntelligentRobot.Integration
             m_binding = binding;
             m_transport = transport;
             m_detectionVisuals = detectionVisuals;
+            m_detectionManager = GetComponent<DetectionManager>();
             m_groups = new BciTargetGroupCoordinator();
             m_binding.HudCandidatesChanged += OnHudCandidatesChanged;
             if (!m_binding.EnableBatchGroupMode())
@@ -61,6 +63,8 @@ namespace BCIIntelligentRobot.Integration
                 m_detectionVisuals.SetBciSelectionPresentationActive(true);
             else
                 Debug.LogWarning("M8_GROUP raw_detection_visual_not_managed reason=missing_SentisInferenceUiManager", this);
+            if (m_detectionManager != null)
+                m_detectionManager.SetBciTargetPresentationActive(true);
             Debug.Log("M8_GROUP controller_initialized input_owner=batch submit=right_A undo=right_B", this);
         }
 
@@ -205,6 +209,8 @@ namespace BCIIntelligentRobot.Integration
             m_groups.BatchConfirmed -= OnBatchConfirmed;
             if (m_detectionVisuals != null)
                 m_detectionVisuals.SetBciSelectionPresentationActive(false);
+            if (m_detectionManager != null)
+                m_detectionManager.SetBciTargetPresentationActive(false);
             m_binding.DisableBatchGroupMode();
         }
     }

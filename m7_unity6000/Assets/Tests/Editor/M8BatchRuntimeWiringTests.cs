@@ -116,7 +116,129 @@ namespace BCIIntelligentRobot.Tests
             }
         }
 
-        private static StableWorldAnchorSnapshot Anchor(string targetId, float x)
+        [Test]
+        public void CandidateRefresh_PreservesFrozenGroupIndicatorWhenLiveDuplicateWinsDeduplication()
+        {
+            var cameraObject = new GameObject("M8FrozenCandidateCamera");
+            var managerObject = new GameObject("M8FrozenCandidateManager");
+            var parentObject = new GameObject("M8FrozenCandidateParent");
+            var bindingObject = new GameObject("M8FrozenCandidateBinding");
+            cameraObject.tag = "MainCamera";
+            cameraObject.AddComponent<Camera>();
+            var manager = managerObject.AddComponent<DetectionManager>();
+            var binding = bindingObject.AddComponent<BciSsvepTargetBinding>();
+
+            try
+            {
+                binding.ConfigureLayout(
+                    BciSsvepLayoutMode.ViewLockedHud,
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter,
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters,
+                    BciSsvepDisplayLayout.HudStimulusSizeMeters);
+                binding.Initialize(manager, parentObject.transform, BciSsvepDisplayLayout.ExperimentalStimulusSizeMeters);
+                Assert.That(binding.EnableBatchGroupMode(), Is.True);
+
+                StableWorldAnchorSnapshot[] group =
+                {
+                    Anchor("frozen-left", -1f, 1d),
+                    Anchor("frozen-center", 0f, 1d),
+                    Anchor("frozen-right", 1f, 1d)
+                };
+                foreach (StableWorldAnchorSnapshot anchor in group)
+                    InvokeStableAnchor(binding, anchor);
+                Assert.That(binding.ActivateGroup("group-frozen", group), Is.True);
+
+                // This newer Active track is a physical duplicate of frozen-left.
+                // Without frozen-group precedence, normal deduplication selects it
+                // and destroys the green indicator owned by frozen-left.
+                InvokeStableAnchor(binding, Anchor("replacement-left", -1f, 2d));
+
+                LineRenderer frozenIndicator = GetCandidateIndicator(binding, "frozen-left");
+                Assert.That(frozenIndicator, Is.Not.Null);
+                Assert.That(frozenIndicator.gameObject.activeSelf, Is.True);
+                Assert.That(frozenIndicator.startColor.g, Is.GreaterThan(frozenIndicator.startColor.b));
+                Assert.That(GetCandidateIndicator(binding, "replacement-left"), Is.Null);
+                Assert.That(binding.GetCandidateVisualState("frozen-left"),
+                    Is.EqualTo(BciCandidateVisualState.Available));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(bindingObject);
+                UnityEngine.Object.DestroyImmediate(parentObject);
+                UnityEngine.Object.DestroyImmediate(managerObject);
+                UnityEngine.Object.DestroyImmediate(cameraObject);
+            }
+        }
+
+        [Test]
+        public void CandidateIndicator_UsesStableTargetBoundingBoxAspectRatio()
+        {
+            var cameraObject = new GameObject("M8BboxCamera");
+            var managerObject = new GameObject("M8BboxManager");
+            var parentObject = new GameObject("M8BboxParent");
+            var bindingObject = new GameObject("M8BboxBinding");
+            cameraObject.tag = "MainCamera";
+            cameraObject.AddComponent<Camera>();
+            var manager = managerObject.AddComponent<DetectionManager>();
+            var binding = bindingObject.AddComponent<BciSsvepTargetBinding>();
+
+            try
+            {
+                binding.ConfigureLayout(
+                    BciSsvepLayoutMode.ViewLockedHud,
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter,
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters,
+                    BciSsvepDisplayLayout.HudStimulusSizeMeters);
+                binding.Initialize(manager, parentObject.transform, BciSsvepDisplayLayout.ExperimentalStimulusSizeMeters);
+                Assert.That(binding.EnableBatchGroupMode(), Is.True);
+
+                InvokeStableAnchor(binding, new StableWorldAnchorSnapshot(
+                    "tall-bottle", "bottle", StableTargetState.Active, new Vector3(0f, 0f, 2f),
+                    0.9f, new TargetBoundingBox(100f, 20f, 30f, 120f), 0d, 1d));
+
+                LineRenderer indicator = GetCandidateIndicator(binding, "tall-bottle");
+                Assert.That(indicator, Is.Not.Null);
+                float width = Vector3.Distance(indicator.GetPosition(0), indicator.GetPosition(1));
+                float height = Vector3.Distance(indicator.GetPosition(1), indicator.GetPosition(2));
+                Assert.That(height, Is.GreaterThan(width * 3f));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(bindingObject);
+                UnityEngine.Object.DestroyImmediate(parentObject);
+                UnityEngine.Object.DestroyImmediate(managerObject);
+                UnityEngine.Object.DestroyImmediate(cameraObject);
+            }
+        }
+
+        [Test]
+        public void LegacyMarker_BciPresentationHidesOnlyTheRotatingCubeRenderer()
+        {
+            var markerObject = new GameObject("M8LegacyMarker");
+            GameObject cubeObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cubeObject.transform.SetParent(markerObject.transform, false);
+            var marker = markerObject.AddComponent<DetectionSpawnMarkerAnim>();
+
+            try
+            {
+                FieldInfo field = typeof(DetectionSpawnMarkerAnim).GetField(
+                    "m_rotatingCubeRenderer",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                field.SetValue(marker, cubeObject.GetComponent<Renderer>());
+
+                marker.SetRotatingCubeVisible(false);
+
+                Assert.That(markerObject.activeSelf, Is.True);
+                Assert.That(marker, Is.Not.Null);
+                Assert.That(cubeObject.GetComponent<Renderer>().enabled, Is.False);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(markerObject);
+            }
+        }
+
+        private static StableWorldAnchorSnapshot Anchor(string targetId, float x, double lastSeen = 1d)
         {
             return new StableWorldAnchorSnapshot(
                 targetId,
@@ -126,7 +248,16 @@ namespace BCIIntelligentRobot.Tests
                 0.9f,
                 new TargetBoundingBox(x * 10f + 100f, 20f, 30f, 30f),
                 0d,
-                1d);
+                lastSeen);
+        }
+
+        private static LineRenderer GetCandidateIndicator(BciSsvepTargetBinding binding, string targetId)
+        {
+            FieldInfo field = typeof(BciSsvepTargetBinding).GetField(
+                "m_candidateIndicatorsByTargetId",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            var indicators = (System.Collections.Generic.Dictionary<string, LineRenderer>)field.GetValue(binding);
+            return indicators.TryGetValue(targetId, out LineRenderer indicator) ? indicator : null;
         }
 
         private static void InvokeStableAnchor(BciSsvepTargetBinding binding, StableWorldAnchorSnapshot anchor)
