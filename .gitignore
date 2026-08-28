@@ -127,3 +127,6 @@ integration/synchronization/runtime_logs/
 # Keep templates/readmes
 !experiments/**/README.md
 !experiments/**/.gitkeep
+
+robot_arm/outputs/
+robot_arm/MUJOCO_LOG.TXT
