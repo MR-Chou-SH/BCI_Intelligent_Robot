@@ -86,7 +86,6 @@ namespace BCIIntelligentRobot.Vision
         private string m_activeGroupId;
         private string m_lastFrozenGroupPresentationSignature;
         private string m_lastFrozenGroupIdentityRelationSignature;
-        private string m_lastCandidateDiagnosticSignature;
 
         public BciSsvepLayoutMode LayoutMode => m_layoutMode;
         public bool IsBatchGroupModeEnabled => m_batchGroupModeEnabled;
@@ -1054,86 +1053,6 @@ namespace BCIIntelligentRobot.Vision
                 m_candidateIndicatorLabelsByTargetId.Remove(targetId);
                 m_candidateIndicatorAspectRatiosByTargetId.Remove(targetId);
             }
-            LogCandidatePresentationState(candidates);
-        }
-
-        private void LogCandidatePresentationState(IReadOnlyList<StableWorldAnchorSnapshot> candidates)
-        {
-            int greenCount = 0;
-            int grayCount = 0;
-            int blueCount = 0;
-            int submittedCount = 0;
-            var descriptors = new List<string>(candidates.Count);
-            for (int index = 0; index < candidates.Count; index++)
-            {
-                StableWorldAnchorSnapshot candidate = candidates[index];
-                BciCandidateVisualState visualState = GetCandidateVisualState(candidate.TargetId);
-                switch (visualState)
-                {
-                    case BciCandidateVisualState.Available:
-                        greenCount++;
-                        break;
-                    case BciCandidateVisualState.Selected:
-                        blueCount++;
-                        break;
-                    case BciCandidateVisualState.Submitted:
-                        blueCount++;
-                        submittedCount++;
-                        break;
-                    default:
-                        grayCount++;
-                        break;
-                }
-                descriptors.Add(candidate.TargetId + ":" + candidate.ClassName + ":" + candidate.State + ":" + visualState);
-            }
-
-            int frozenTargetCount = 0;
-            var slots = new string[BciTargetSlotAllocator.SlotCount];
-            for (int slot = 0; slot < slots.Length; slot++)
-            {
-                if (m_slotHasAnchor[slot])
-                {
-                    frozenTargetCount++;
-                    slots[slot] = m_slotAnchors[slot].TargetId;
-                }
-                else
-                {
-                    slots[slot] = "none";
-                }
-            }
-
-            string signature = (m_activeGroupId ?? "none") + "|" + frozenTargetCount + "|" +
-                string.Join(",", slots) + "|" + string.Join(",", descriptors) + "|" +
-                DescribeTargetIds(m_processedTargetIds) + "|" + DescribeTargetIds(m_submittedTargetIds);
-            if (string.Equals(signature, m_lastCandidateDiagnosticSignature, StringComparison.Ordinal))
-                return;
-
-            m_lastCandidateDiagnosticSignature = signature;
-            Debug.Log("M8_CANDIDATE presentation group_id=" + (m_activeGroupId ?? "none") +
-                " frozen_target_count=" + frozenTargetCount +
-                " indicator_count=" + candidates.Count +
-                " green_indicator_count=" + greenCount +
-                " gray_indicator_count=" + grayCount +
-                " blue_indicator_count=" + blueCount +
-                " submitted_indicator_count=" + submittedCount +
-                " slot0_target_id=" + slots[0] +
-                " slot1_target_id=" + slots[1] +
-                " slot2_target_id=" + slots[2] +
-                " processed_target_ids=" + DescribeTargetIds(m_processedTargetIds) +
-                " submitted_target_ids=" + DescribeTargetIds(m_submittedTargetIds) +
-                " candidates=" + string.Join(",", descriptors), this);
-        }
-
-        private static string DescribeTargetIds(IEnumerable<string> targetIds)
-        {
-            var values = new List<string>();
-            foreach (string targetId in targetIds)
-            {
-                if (!string.IsNullOrWhiteSpace(targetId))
-                    values.Add(targetId);
-            }
-            values.Sort(StringComparer.Ordinal);
-            return values.Count == 0 ? "none" : string.Join(",", values);
         }
 
         private Vector2 GetCandidateIndicatorSize(StableWorldAnchorSnapshot anchor)

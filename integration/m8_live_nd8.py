@@ -465,7 +465,7 @@ class M8LiveNd8Session:
         self._save_manifest()
         self._event("preflight_passed", selectedChannels=self._selected_channels)
 
-    def _run_trial(self, coordinator, trial, measurement_number, before_selection_open=None):
+    def _run_trial(self, coordinator, trial, measurement_number):
         print(trial["operatorPrompt"], flush=True)
         preparation_seconds = m8_preparation_seconds_for_measurement(measurement_number)
         self._event("trial_preparation_started", trialId=trial["trialId"], selectionId=trial["selectionId"],
@@ -483,8 +483,6 @@ class M8LiveNd8Session:
             if measurement_number == 1:
                 self._emit_cue("countdown_tick", 5)
             self.countdown(preparation_seconds)
-        if before_selection_open is not None:
-            before_selection_open()
         failure = self._ensure_packet_liveness()
         if failure:
             raise M8LiveNd8PreflightError(failure)
@@ -530,7 +528,6 @@ class M8LiveNd8Session:
             self._record_trial(completed, "failed", status)
             raise M8LiveNd8PreflightError("terminal M8 result: {}".format(status))
         self._record_trial(completed, "accepted", None)
-        return completed
 
     def _record_trial(self, completed, status, failure_reason):
         trial = completed["trial"]
@@ -604,7 +601,7 @@ class M8LiveNd8Session:
                 print("M8.2b listener={} port={}; preflight passed; planned_trials={}".format(
                     self.args.host, transport.port, len(self.plan["trials"])), flush=True)
                 for measurement_number, trial in enumerate(self.plan["trials"], 1):
-                    completed = self._run_trial(
+                    self._run_trial(
                         coordinator,
                         trial,
                         measurement_number,
