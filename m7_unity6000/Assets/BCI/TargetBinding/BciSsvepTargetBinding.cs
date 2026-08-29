@@ -1100,6 +1100,7 @@ namespace BCIIntelligentRobot.Vision
 
             var labelObject = new GameObject("SubmittedMarker");
             labelObject.transform.SetParent(indicatorObject.transform, false);
+            labelObject.transform.localScale = new Vector3(-1f, 1f, 1f);
             var label = labelObject.AddComponent<TextMesh>();
             label.anchor = TextAnchor.MiddleCenter;
             label.alignment = TextAlignment.Center;
