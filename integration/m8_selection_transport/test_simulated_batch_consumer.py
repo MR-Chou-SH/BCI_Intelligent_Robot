@@ -38,6 +38,21 @@ class SimulatedBatchConsumerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             consumer.validate_batch_message(wrong)
 
+    def test_duplicate_batch_is_accepted_downstream_once_but_acked_each_time(self):
+        receiver = consumer.BatchIdempotentConsumer()
+
+        first = receiver.accept(valid_message())
+        duplicate = receiver.accept(valid_message())
+
+        self.assertTrue(first.downstream_accepted)
+        self.assertFalse(duplicate.downstream_accepted)
+        self.assertEqual(["m8-batch-0001"], receiver.accepted_batch_ids)
+        self.assertEqual(
+            {"protocolVersion": 1, "messageType": "batch_ack", "batchId": "m8-batch-0001"},
+            first.ack,
+        )
+        self.assertEqual(first.ack, duplicate.ack)
+
 
 if __name__ == "__main__":
     unittest.main()

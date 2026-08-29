@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -90,11 +89,14 @@ namespace BCIIntelligentRobot.Tests
                 Assert.That(transport.PublishConfirmedTargetBatch(batch), Is.False);
 
                 FieldInfo field = typeof(BciSelectionTransportClient).GetField(
-                    "m_outgoingLines", BindingFlags.Instance | BindingFlags.NonPublic);
-                var queue = (ConcurrentQueue<string>)field.GetValue(transport);
-                Assert.That(queue.TryDequeue(out string line), Is.True);
+                    "m_pendingBatchDelivery", BindingFlags.Instance | BindingFlags.NonPublic);
+                var pendingDelivery = (BciPendingBatchDelivery)field.GetValue(transport);
+                IReadOnlyList<string> lines = pendingDelivery.GetUnsentLinesForConnection(1);
+                Assert.That(lines, Has.Count.EqualTo(1));
+                string line = lines[0];
                 BciSelectionTransportMessage message = JsonUtility.FromJson<BciSelectionTransportMessage>(line);
                 Assert.That(message.messageType, Is.EqualTo("target_batch_confirmed"));
+                Assert.That(message.batchId, Is.EqualTo("batch-1"));
                 Assert.That(message.confirmedBatch.batchId, Is.EqualTo("batch-1"));
                 Assert.That(new[]
                 {

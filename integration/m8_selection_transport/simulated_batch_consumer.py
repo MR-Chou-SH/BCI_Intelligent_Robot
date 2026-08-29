@@ -1,12 +1,16 @@
-"""Minimal stdlib-only PC consumer for Quest M8.4 confirmed batches."""
+"""Minimal stdlib-only PC consumer for Quest M8.4/M8.5 confirmed batches."""
 import argparse
+from dataclasses import dataclass
 import json
 import socket
 import time
 
 
+PROTOCOL_VERSION = 1
+
+
 def validate_batch_message(payload):
-    if payload.get("protocolVersion") != 1:
+    if payload.get("protocolVersion") != PROTOCOL_VERSION:
         raise ValueError("protocolVersion must be 1")
     if payload.get("messageType") != "target_batch_confirmed":
         raise ValueError("messageType must be target_batch_confirmed")
@@ -24,7 +28,48 @@ def validate_batch_message(payload):
     return batch
 
 
-def receive_batch(connection, timeout_seconds):
+def batch_ack(batch_id):
+    return {
+        "protocolVersion": PROTOCOL_VERSION,
+        "messageType": "batch_ack",
+        "batchId": batch_id,
+    }
+
+
+@dataclass(frozen=True)
+class BatchConsumerReceipt:
+    payload: dict
+    batch: dict
+    downstream_accepted: bool
+    ack: dict
+
+
+class BatchIdempotentConsumer:
+    """PC boundary: accept each batchId downstream once, ACK every valid delivery."""
+    def __init__(self):
+        self._accepted_batch_ids = []
+        self._seen_batch_ids = set()
+
+    @property
+    def accepted_batch_ids(self):
+        return list(self._accepted_batch_ids)
+
+    def accept(self, payload):
+        batch = validate_batch_message(payload)
+        batch_id = batch["batchId"]
+        downstream_accepted = batch_id not in self._seen_batch_ids
+        if downstream_accepted:
+            self._seen_batch_ids.add(batch_id)
+            self._accepted_batch_ids.append(batch_id)
+        return BatchConsumerReceipt(payload, batch, downstream_accepted, batch_ack(batch_id))
+
+
+def send_line(connection, payload):
+    connection.sendall((json.dumps(payload, separators=(",", ":")) + "\n").encode("utf-8"))
+
+
+def receive_batch(connection, timeout_seconds, receiver=None):
+    receiver = receiver or BatchIdempotentConsumer()
     connection.settimeout(timeout_seconds)
     buffered = b""
     deadline = time.monotonic() + timeout_seconds
@@ -39,7 +84,9 @@ def receive_batch(connection, timeout_seconds):
                 continue
             payload = json.loads(line.decode("utf-8"))
             if payload.get("messageType") == "target_batch_confirmed":
-                return payload, validate_batch_message(payload)
+                receipt = receiver.accept(payload)
+                send_line(connection, receipt.ack)
+                return receipt
     raise TimeoutError("timed out waiting for target_batch_confirmed")
 
 
@@ -60,7 +107,8 @@ def main():
         connection, address = listener.accept()
         with connection:
             print("Quest connected from {}:{}".format(address[0], address[1]))
-            payload, batch = receive_batch(connection, args.timeout_seconds)
+            receipt = receive_batch(connection, args.timeout_seconds)
+            payload, batch = receipt.payload, receipt.batch
             if args.expect_batch_id and batch["batchId"] != args.expect_batch_id:
                 raise SystemExit("unexpected batchId: {}".format(batch["batchId"]))
             print(json.dumps(payload, ensure_ascii=False, sort_keys=True))

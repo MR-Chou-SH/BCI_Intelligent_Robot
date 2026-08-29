@@ -1,10 +1,10 @@
 # Project Status
 
-Last updated: 2026-08-25
+Last updated: 2026-08-29
 
 ## Overall Phase
 
-M8.4 — Multi-Target Selection UX & Batch Confirmation — Implemented / awaiting Quest UX re-acceptance
+M8.5 — Reliable Batch Delivery — Implemented / awaiting simulated reliability acceptance
 
 ## M7 Active Unity Application
 
@@ -24,11 +24,17 @@ M7 acceptance boundary:
 
 ## Active Milestone
 
+### M8.5 — Reliable Batch Delivery
+
+Status: Implemented / awaiting simulated reliability acceptance
+
+M8.5 keeps the existing newline-delimited JSON connection on TCP 11001 and leaves `ConfirmedTargetBatch` plus every M8.3 frozen selection fact unchanged. A submitted Quest batch stays process-lifetime pending until a matching PC `batch_ack` (`protocolVersion`, `messageType`, `batchId`) arrives. On a TCP reconnect, each still-pending batch is resent in original publish order. The PC consumer accepts a legal `batchId` downstream once per process but returns `batch_ack` for every duplicate delivery, allowing Quest retry to stop without duplicate downstream execution. Pending state is deliberately in-memory only: a Quest app process restart before ACK does not recover it. No robot command, database, message queue, or EEG change is added. Simulated reliability acceptance is still required.
+
 ### M8.4 — Multi-Target Selection UX & Batch Confirmation
 
-Status: Implemented / awaiting Quest UX re-acceptance
+Status: Completed / PASS
 
-M8.4 preserves the immutable single-target M8.3 contract and adds a Quest-owned outer group lifecycle for ViewLockedHud. The existing full HUD candidate pool remains deduplicated and camera-right ordered; a current group freezes up to three anchors to slot `0/1/2`, while remaining candidates receive gray indicators. A result accepted through M8.3 adds its frozen fact once to the current batch, changes that group target to blue/static (its slot no longer flickers or resolves), and keeps remaining slot identities/frequencies unchanged. Right-controller A submits one non-empty immutable `ConfirmedTargetBatch`; right-controller B undoes the most recent current-group membership. In batch mode the raw Meta detection-box presentation is hidden, so only StableTarget-backed BCI indicators own gray/green/blue/`✓` semantics; the old marker A/B commands yield to batch input. Submit aborts a pending local selection first, so delayed PC EEG decisions are stale. The batch is sent as one `target_batch_confirmed` newline-JSON message over the existing Quest→PC connection; no robot command is defined. Submitted targets remain blue with `✓`; unselected group targets are processed/skipped and the next remaining group is activated. Quest re-acceptance is required.
+M8.4 preserves the immutable single-target M8.3 contract and adds a Quest-owned outer group lifecycle for ViewLockedHud. The existing full HUD candidate pool remains deduplicated and camera-right ordered; a current group freezes up to three anchors to slot `0/1/2`, while remaining candidates receive gray indicators. A result accepted through M8.3 adds its frozen fact once to the current batch, changes that group target to blue/static (its slot no longer flickers or resolves), and keeps remaining slot identities/frequencies unchanged. Right-controller A submits one non-empty immutable `ConfirmedTargetBatch`; right-controller B undoes the most recent current-group membership. In batch mode the raw Meta detection-box presentation is hidden, so only StableTarget-backed BCI indicators own gray/green/blue/`✓` semantics; the old marker A/B commands yield to batch input. Submit aborts a pending local selection first, so delayed PC EEG decisions are stale. The batch is sent as one `target_batch_confirmed` newline-JSON message over the existing Quest→PC connection; no robot command is defined. Submitted targets remain blue with `✓`; unselected group targets are processed/skipped and the next remaining group is activated. Quest acceptance passed: two selected targets produced exactly one ordered `target_batch_confirmed`, then the group advanced normally.
 
 ## Completed Milestone
 

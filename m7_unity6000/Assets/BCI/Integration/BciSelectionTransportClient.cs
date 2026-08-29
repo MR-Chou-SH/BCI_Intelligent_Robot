@@ -27,6 +27,7 @@ namespace BCIIntelligentRobot.Integration
         public string resolvedTargetId;
         public string resolvedClassName;
         public string questUtc;
+        public string batchId;
         public ConfirmedTargetBatchPayload confirmedBatch;
     }
 
@@ -39,6 +40,7 @@ namespace BCIIntelligentRobot.Integration
         private readonly ConcurrentQueue<string> m_diagnostics = new ConcurrentQueue<string>();
         private readonly AutoResetEvent m_workAvailable = new AutoResetEvent(false);
         private readonly BciSelectionCoordinator m_coordinator = new BciSelectionCoordinator();
+        private readonly BciPendingBatchDelivery m_pendingBatchDelivery = new BciPendingBatchDelivery();
         private readonly HashSet<string> m_publishedBatchIds = new HashSet<string>(StringComparer.Ordinal);
 
         private Thread m_worker;
@@ -47,6 +49,7 @@ namespace BCIIntelligentRobot.Integration
         private string m_serverHost;
         private int m_serverPort;
         private string m_retryLine;
+        private long m_nextConnectionId;
 
         /// <summary>
         /// Downstream boundary for a resolved target. Subscribers receive only
@@ -110,14 +113,17 @@ namespace BCIIntelligentRobot.Integration
 
             var message = new BciSelectionTransportMessage
             {
+                protocolVersion = BciSelectionTransportMessage.ProtocolVersion,
                 messageType = "target_batch_confirmed",
+                batchId = batch.BatchId,
                 confirmedBatch = ConfirmedTargetBatchPayload.From(batch),
                 questUtc = DateTime.UtcNow.ToString("O")
             };
-            m_outgoingLines.Enqueue(JsonUtility.ToJson(message) + "\n");
+            if (!m_pendingBatchDelivery.Queue(batch.BatchId, JsonUtility.ToJson(message) + "\n"))
+                return false;
             m_workAvailable.Set();
             Debug.Log(
-                "M8_TARGET_BATCH_CONFIRMED batch_id=" + batch.BatchId +
+                "M8_BATCH pending batch_id=" + batch.BatchId +
                 " group_id=" + batch.GroupId +
                 " group_index=" + batch.GroupIndex +
                 " selection_count=" + batch.Selections.Count +
@@ -175,6 +181,13 @@ namespace BCIIntelligentRobot.Integration
                     SelectionTerminated?.Invoke(message.selectionId);
                 }
                 SendResult(message, result.Rejection, result.Target);
+            }
+            else if (message.messageType == "batch_ack")
+            {
+                bool acknowledged = m_pendingBatchDelivery.Acknowledge(message.batchId);
+                Debug.Log("M8_BATCH ack batch_id=" + (message.batchId ?? "") +
+                    " accepted=" + acknowledged +
+                    " pending_count=" + m_pendingBatchDelivery.PendingCount, this);
             }
             else
             {
@@ -239,7 +252,7 @@ namespace BCIIntelligentRobot.Integration
                             stream.ReadTimeout = 100;
                             stream.WriteTimeout = 500;
                             m_diagnostics.Enqueue("M8_SELECTION connection_opened " + m_serverHost + ":" + m_serverPort);
-                            ConnectedLoop(client, stream);
+                            ConnectedLoop(client, stream, Interlocked.Increment(ref m_nextConnectionId));
                         }
                     }
                 }
@@ -252,7 +265,7 @@ namespace BCIIntelligentRobot.Integration
             }
         }
 
-        private void ConnectedLoop(TcpClient client, NetworkStream stream)
+        private void ConnectedLoop(TcpClient client, NetworkStream stream, long connectionId)
         {
             var receiveBuffer = new byte[4096];
             var textBuffer = new StringBuilder();
@@ -270,6 +283,13 @@ namespace BCIIntelligentRobot.Integration
                         Interlocked.CompareExchange(ref m_retryLine, line, null);
                         throw;
                     }
+                }
+
+                IReadOnlyList<string> pendingBatchLines = m_pendingBatchDelivery.GetUnsentLinesForConnection(connectionId);
+                for (int index = 0; index < pendingBatchLines.Count; index++)
+                {
+                    byte[] bytes = Encoding.UTF8.GetBytes(pendingBatchLines[index]);
+                    stream.Write(bytes, 0, bytes.Length);
                 }
 
                 try
