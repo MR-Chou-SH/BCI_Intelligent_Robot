@@ -78,8 +78,8 @@ def main(argv=None):
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--preflight-timeout-seconds", default=150.0, type=float)
     parser.add_argument("--packet-stall-seconds", default=2.0, type=float)
-    parser.add_argument("--max-trials", default=3, type=int, choices=(1, 3),
-                        help="default frozen three-trial protocol; explicit 1 enables final single-trial orchestration")
+    parser.add_argument("--max-trials", default=3, type=int, choices=(1, 2, 3),
+                        help="default frozen three-trial protocol; 1 or 2 enables a shortened demonstration")
     parser.add_argument("--batch-consumer-timeout-seconds", default=45.0, type=float,
                         help="single-trial only: wait on released TCP 11001 for the confirmed batch")
     parser.set_defaults(preparation_seconds=13.0, trial_window_seconds=4.0)
@@ -93,9 +93,9 @@ def main(argv=None):
         if args.dry_run and args.preflight_only:
             parser.error("--dry-run and --preflight-only are mutually exclusive")
         exit_code, session_root = run_live_nd8(args)
-        if (exit_code == 0 and args.max_trials == 1 and not args.dry_run and not args.preflight_only):
-            print("M8 final single trial complete; TCP {} released; waiting for confirmed batch on {}:{}".format(
-                args.port, args.host, args.port), flush=True)
+        if (exit_code == 0 and args.max_trials in (1, 2) and not args.dry_run and not args.preflight_only):
+            print("M8 final {}-trial run complete; TCP {} released; waiting for confirmed batch on {}:{}".format(
+                args.max_trials, args.port, args.host, args.port), flush=True)
             try:
                 receipt = consume_one_batch(args.host, args.port, args.batch_consumer_timeout_seconds)
             except (OSError, RuntimeError, TimeoutError, ValueError, json.JSONDecodeError) as error:

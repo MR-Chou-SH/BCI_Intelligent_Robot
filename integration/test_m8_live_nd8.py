@@ -77,6 +77,9 @@ class M8LiveNd8Tests(unittest.TestCase):
         self.assertEqual([0, 1, 2], [
             item["expectedClassIndex"] for item in limit_m8_live_trial_plan(trials, 3)
         ])
+        self.assertEqual([0, 1], [
+            item["expectedClassIndex"] for item in limit_m8_live_trial_plan(trials, 2)
+        ])
 
     def test_audible_preparation_cues_do_not_change_fixed_trial_mapping(self):
         cues = []
@@ -224,7 +227,20 @@ class M8LiveNd8Tests(unittest.TestCase):
             self.assertEqual(1, manifest["plannedTrialCount"])
             self.assertEqual([0], manifest["trialOrder"])
 
-    def test_successful_single_trial_hands_released_port_to_batch_consumer_and_records_ack(self):
+    def test_live_nd8_cli_two_trial_dry_run_keeps_the_first_two_frozen_trials(self):
+        with tempfile.TemporaryDirectory() as directory:
+            exit_code = cli_main([
+                "--mode", "live-nd8", "--dry-run", "--max-trials", "2", "--com", "COM11", "--data-root", directory,
+            ])
+            manifests = list(Path(directory).glob("*/manifest.json"))
+
+            self.assertEqual(0, exit_code)
+            self.assertEqual(1, len(manifests))
+            manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
+            self.assertEqual(2, manifest["plannedTrialCount"])
+            self.assertEqual([0, 1], manifest["trialOrder"])
+
+    def test_successful_limited_live_run_hands_released_port_to_batch_consumer_and_records_ack(self):
         receipt = SimpleNamespace(
             payload={"messageType": "target_batch_confirmed"},
             batch={"batchId": "m8-batch-final", "selections": [{"targetId": "target-42", "slotIndex": 0}]},
@@ -238,7 +254,7 @@ class M8LiveNd8Tests(unittest.TestCase):
             with patch.object(selection_cli, "run_live_nd8", return_value=(0, root)), \
                     patch.object(selection_cli, "consume_one_batch", return_value=receipt) as consume:
                 exit_code = selection_cli.main([
-                    "--mode", "live-nd8", "--max-trials", "1", "--com", "COM11", "--data-root", directory,
+                    "--mode", "live-nd8", "--max-trials", "2", "--com", "COM11", "--data-root", directory,
                 ])
 
             self.assertEqual(0, exit_code)

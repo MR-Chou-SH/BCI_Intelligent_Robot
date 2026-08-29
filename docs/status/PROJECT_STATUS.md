@@ -4,7 +4,7 @@ Last updated: 2026-08-29
 
 ## Overall Phase
 
-M8 final one-trial closed-loop acceptance — Prepared / awaiting predeclared Quest + ND8 execution
+M8 final closed-loop demonstration orchestration — Prepared / awaiting predeclared Quest + ND8 execution
 
 ## M7 Active Unity Application
 
@@ -24,11 +24,11 @@ M7 acceptance boundary:
 
 ## Active Milestone
 
-### M8 Final One-Trial Closed-Loop Acceptance
+### M8 Final Demonstration Orchestration
 
 Status: Prepared
 
-The formal live entry point now accepts `--max-trials 1` while retaining the original default three-trial plan. The single-trial plan is the unchanged first slot/class/frequency (`0` / `0` / `7.2 Hz`) and executes the existing approximately 13-second audible preparation and unchanged 4-second observation/decoder path. After the trial's accepted Quest selection terminal event, the live listener is closed so TCP `11001` is released; the same PC CLI then starts the existing batch consumer on that port and waits for the existing user-confirmed `target_batch_confirmed` / `batch_ack` exchange. No Quest Start UI, input state, A-button meaning, or pinch behavior is added or changed: the already-present `Press A or Pinch to Start` interaction remains the only start UI/logic. The consumer writes the received batch and ACK evidence into the new session directory. This is prepared software only; no additional real ND8 trial has been run by this change.
+The formal live entry point accepts `--max-trials 1`, `2`, or `3`, retaining the original default three-trial plan. The two-trial demonstration uses the unchanged first two frozen slots/classes (`0` / `0` / `7.2 Hz`, then `1` / `1` / `9 Hz`), so Quest can retain two Blue selections before one A Submit. Every selected trial executes the existing approximately 13-second audible preparation and unchanged 4-second observation/decoder path. The live listener remains active through all planned trials; only after the final accepted terminal event does it close and release TCP `11001`, after which the same PC CLI starts the existing batch consumer and waits for `target_batch_confirmed` / `batch_ack`. No Quest Start UI, input state, A-button meaning, or pinch behavior is added or changed: the already-present `Press A or Pinch to Start` interaction remains the only start UI/logic. The consumer writes the received batch and ACK evidence into the new session directory. This is prepared software only; no additional real ND8 trial has been run by this change.
 
 ### M8.5 — Reliable Batch Delivery
 
