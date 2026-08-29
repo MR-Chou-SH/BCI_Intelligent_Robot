@@ -7,12 +7,15 @@ from unittest.mock import patch
 
 from integration.m8_live_nd8 import (
     M8LiveNd8Session,
+    M8SelectionAttemptLedger,
     M8LiveTrialCoordinator,
     M8WindowsAudibleCue,
+    build_m8_rearm_trial,
     build_m8_live_trial_plan,
     build_m8_free_trial_plan,
     create_m8_live_dry_run,
     limit_m8_live_trial_plan,
+    m8_preparation_seconds_for_measurement,
     run_m8_preparation_countdown,
     validate_vendor_cpython39_runtime,
 )
@@ -102,7 +105,28 @@ class M8LiveNd8Tests(unittest.TestCase):
             item["expectedClassIndex"] for item in limit_m8_live_trial_plan(trials, 2)
         ])
 
-    def test_audible_preparation_cues_do_not_change_fixed_trial_mapping(self):
+    def test_first_measurement_uses_ten_seconds_with_ten_and_five_second_cues(self):
+        cues = []
+        sleeps = []
+
+        class RecordingCue:
+            def preparation_started(self):
+                cues.append("preparation")
+
+            def countdown_tick(self, remaining):
+                cues.append("countdown-{}".format(remaining))
+
+        run_m8_preparation_countdown(
+            m8_preparation_seconds_for_measurement(1), RecordingCue(),
+            sleep=sleeps.append, output=lambda *args, **kwargs: None,
+        )
+
+        self.assertEqual(10, m8_preparation_seconds_for_measurement(1))
+        self.assertEqual(["preparation", "countdown-5"], cues)
+        self.assertEqual([1.0] * 10, sleeps)
+        self.assertEqual([0, 1, 2], [item["expectedClassIndex"] for item in build_m8_live_trial_plan("m8-session")])
+
+    def test_subsequent_measurement_uses_five_seconds_with_one_cue(self):
         cues = []
 
         class RecordingCue:
@@ -112,10 +136,44 @@ class M8LiveNd8Tests(unittest.TestCase):
             def countdown_tick(self, remaining):
                 cues.append("countdown-{}".format(remaining))
 
-        run_m8_preparation_countdown(13, RecordingCue(), sleep=lambda _: None, output=lambda *args, **kwargs: None)
+        run_m8_preparation_countdown(
+            m8_preparation_seconds_for_measurement(2), RecordingCue(),
+            sleep=lambda _: None, output=lambda *args, **kwargs: None,
+        )
 
-        self.assertEqual(["preparation", "countdown-3", "countdown-2", "countdown-1"], cues)
-        self.assertEqual([0, 1, 2], [item["expectedClassIndex"] for item in build_m8_live_trial_plan("m8-session")])
+        self.assertEqual(5, m8_preparation_seconds_for_measurement(2))
+        self.assertEqual(["preparation"], cues)
+
+    def test_undo_releases_one_active_selection_for_one_rearmed_measurement(self):
+        ledger = M8SelectionAttemptLedger(2)
+        ledger.record_accepted("selection-slot-1")
+        ledger.record_accepted("selection-slot-0")
+
+        self.assertFalse(ledger.needs_measurement)
+        self.assertTrue(ledger.apply_undo({"selectionId": "selection-slot-0", "resolvedSlot": 0}))
+        self.assertTrue(ledger.needs_measurement)
+        self.assertEqual(1, ledger.active_selection_count)
+        self.assertFalse(ledger.apply_undo({"selectionId": "unknown", "resolvedSlot": 2}))
+
+        ledger.record_accepted("selection-slot-2-rearmed")
+        self.assertFalse(ledger.needs_measurement)
+        self.assertEqual({"selection-slot-1", "selection-slot-2-rearmed"}, ledger.active_selection_ids)
+
+    def test_undo_rearm_keeps_fixed_or_free_plan_semantics_without_reusing_ids(self):
+        fixed = build_m8_live_trial_plan("m8-rearm")[1]
+        free = build_m8_free_trial_plan("m8-rearm", 2)[1]
+
+        fixed_rearm = build_m8_rearm_trial(fixed, 1)
+        free_rearm = build_m8_rearm_trial(free, 1)
+
+        self.assertEqual(1, fixed_rearm["slot"])
+        self.assertEqual(1, fixed_rearm["expectedClassIndex"])
+        self.assertIn("repeat slot 1 / 9.0 Hz", fixed_rearm["operatorPrompt"])
+        self.assertIsNone(free_rearm["slot"])
+        self.assertIsNone(free_rearm["expectedClassIndex"])
+        self.assertIn("any available green slot", free_rearm["operatorPrompt"])
+        self.assertNotEqual(fixed["selectionId"], fixed_rearm["selectionId"])
+        self.assertNotEqual(free["trialId"], free_rearm["trialId"])
 
     def test_audible_cue_failure_is_a_warning_not_a_business_failure(self):
         cue = M8WindowsAudibleCue(beep=lambda frequency, duration: (_ for _ in ()).throw(OSError("speaker")))
@@ -318,7 +376,7 @@ class M8LiveNd8Tests(unittest.TestCase):
                 data_root=Path(directory), session_prefix="m8_2b-live", dry_run=False, com="COM11",
                 preflight_timeout_seconds=1.0, packet_stall_seconds=2.0, host="127.0.0.1", port=11001,
                 accept_timeout_seconds=1.0, ack_timeout_seconds=1.0, preflight_only=False,
-                preparation_seconds=13.0, trial_window_seconds=4.0,
+                preparation_seconds=10.0, trial_window_seconds=4.0,
             )
             runner = M8LiveNd8Session(
                 args,

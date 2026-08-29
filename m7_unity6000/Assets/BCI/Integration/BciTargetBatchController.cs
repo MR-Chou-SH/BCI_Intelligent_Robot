@@ -164,6 +164,8 @@ namespace BCIIntelligentRobot.Integration
             Debug.Log("M8_GROUP selection_undone selection_id=" + undone.SelectionId +
                 " slot=" + undone.SlotIndex + " target_id=" + undone.TargetId +
                 " selected_count=" + m_groups.CurrentSelections.Count, this);
+            if (!m_transport.PublishSelectionUndo(undone))
+                Debug.LogWarning("M8_GROUP selection_undo_publish_rejected selection_id=" + undone.SelectionId, this);
             return true;
         }
 

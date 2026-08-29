@@ -45,6 +45,9 @@ M8_LIVE_TRIAL_SPECS = (
     (2, 2, 12.0, "target_right"),
 )
 M6_PREFLIGHT_SAMPLES = 60000
+M8_FIRST_MEASUREMENT_PREPARATION_SECONDS = 10
+M8_SUBSEQUENT_MEASUREMENT_PREPARATION_SECONDS = 5
+M8_UNDO_REARM_GRACE_SECONDS = 5.0
 M8_LIVE_EVIDENCE_FILES = (
     "raw-eeg.jsonl",
     "packet-metadata.jsonl",
@@ -101,8 +104,14 @@ class M8WindowsAudibleCue:
         }
 
 
+def m8_preparation_seconds_for_measurement(measurement_number):
+    """Return the frozen operator preparation duration for one session measurement."""
+    return (M8_FIRST_MEASUREMENT_PREPARATION_SECONDS if int(measurement_number) == 1
+            else M8_SUBSEQUENT_MEASUREMENT_PREPARATION_SECONDS)
+
+
 def run_m8_preparation_countdown(seconds, cue, sleep=time.sleep, output=print, on_cue_failure=None):
-    """Keep the existing countdown while adding non-blocking business-level cue handling."""
+    """Emit the 10 s first-measurement or 5 s later-measurement preparation cues."""
     seconds = int(seconds)
 
     def emit(method, *args):
@@ -119,11 +128,47 @@ def run_m8_preparation_countdown(seconds, cue, sleep=time.sleep, output=print, o
         return
     emit("preparation_started")
     for remaining in range(seconds, 0, -1):
-        if remaining in {seconds, 10, 5, 3, 2, 1}:
+        if remaining in {seconds, 5}:
             output("Preparation countdown: {} s remaining".format(remaining), flush=True)
-        if remaining in {3, 2, 1}:
+        if seconds > M8_SUBSEQUENT_MEASUREMENT_PREPARATION_SECONDS and remaining == 5:
             emit("countdown_tick", remaining)
         sleep(1.0)
+
+
+class M8SelectionAttemptLedger:
+    """Bounded live-session selection capacity with an explicit Quest Undo release."""
+    def __init__(self, maximum_active_selections):
+        self.maximum_active_selections = int(maximum_active_selections)
+        if self.maximum_active_selections < 1:
+            raise ValueError("maximum_active_selections must be positive")
+        self._active_selection_ids = set()
+
+    @property
+    def active_selection_ids(self):
+        return set(self._active_selection_ids)
+
+    @property
+    def active_selection_count(self):
+        return len(self._active_selection_ids)
+
+    @property
+    def needs_measurement(self):
+        return self.active_selection_count < self.maximum_active_selections
+
+    def record_accepted(self, selection_id):
+        if not selection_id or selection_id in self._active_selection_ids:
+            return False
+        if not self.needs_measurement:
+            return False
+        self._active_selection_ids.add(selection_id)
+        return True
+
+    def apply_undo(self, undo_event):
+        selection_id = undo_event.get("selectionId") if isinstance(undo_event, dict) else None
+        if not selection_id or selection_id not in self._active_selection_ids:
+            return False
+        self._active_selection_ids.remove(selection_id)
+        return True
 
 
 class M8LiveNd8PreflightError(RuntimeError):
@@ -200,6 +245,27 @@ def build_m8_free_trial_plan(session_id, max_trials=3):
         })
         free_trials.append(free_trial)
     return free_trials
+
+
+def build_m8_rearm_trial(source_trial, rearm_number):
+    """Create one new, traceable measurement after Quest undoes an accepted selection."""
+    if not isinstance(source_trial, dict) or not source_trial.get("sessionId"):
+        raise ValueError("source_trial with sessionId is required")
+    rearm_number = int(rearm_number)
+    if rearm_number < 1:
+        raise ValueError("rearm_number must be positive")
+    trial = dict(source_trial)
+    suffix = "-rearm-{:03d}".format(rearm_number)
+    trial["trialId"] = source_trial["trialId"] + suffix
+    trial["selectionId"] = source_trial["selectionId"] + suffix
+    trial["rearmOfTrialId"] = source_trial["trialId"]
+    trial["rearmOfSelectionId"] = source_trial["selectionId"]
+    if source_trial.get("expectedClassIndex") is None:
+        trial["operatorPrompt"] = "Re-arm: choose any available green slot (0/1/2)"
+    else:
+        trial["operatorPrompt"] = "Re-arm: repeat slot {} / {} Hz".format(
+            source_trial["slot"], source_trial["frequencyHz"])
+    return trial
 
 
 def limit_m8_live_trial_plan(trials, max_trials):
@@ -457,20 +523,26 @@ class M8LiveNd8Session:
         self._save_manifest()
         self._event("preflight_passed", selectedChannels=self._selected_channels)
 
-    def _run_trial(self, coordinator, trial):
+    def _run_trial(self, coordinator, trial, measurement_number, before_selection_open=None):
         print(trial["operatorPrompt"], flush=True)
+        preparation_seconds = m8_preparation_seconds_for_measurement(measurement_number)
         self._event("trial_preparation_started", trialId=trial["trialId"], selectionId=trial["selectionId"],
-                    expectedClassIndex=trial["expectedClassIndex"], slot=trial["slot"], frequencyHz=trial["frequencyHz"])
+                    expectedClassIndex=trial["expectedClassIndex"], slot=trial["slot"], frequencyHz=trial["frequencyHz"],
+                    measurementNumber=measurement_number, preparationSeconds=preparation_seconds)
         if self.countdown is None:
             run_m8_preparation_countdown(
-                self.args.preparation_seconds,
+                preparation_seconds,
                 self.cue,
                 sleep=self.sleep,
                 on_cue_failure=self._record_cue_warning,
             )
         else:
             self._emit_cue("preparation_started")
-            self.countdown(self.args.preparation_seconds)
+            if measurement_number == 1:
+                self._emit_cue("countdown_tick", 5)
+            self.countdown(preparation_seconds)
+        if before_selection_open is not None:
+            before_selection_open()
         failure = self._ensure_packet_liveness()
         if failure:
             raise M8LiveNd8PreflightError(failure)
@@ -516,6 +588,34 @@ class M8LiveNd8Session:
             self._record_trial(completed, "failed", status)
             raise M8LiveNd8PreflightError("terminal M8 result: {}".format(status))
         self._record_trial(completed, "accepted", None)
+        return completed
+
+    def _drain_selection_undos(self, transport, pending_trials):
+        for undo_event in transport.drain_selection_undo_events():
+            undone_selection_id = undo_event.get("selectionId")
+            source_trial = self._accepted_trials.get(undone_selection_id)
+            if source_trial is None or not self._attempt_ledger.apply_undo(undo_event):
+                self._event("selection_undo_ignored", selectionId=undone_selection_id,
+                            resolvedSlot=undo_event.get("resolvedSlot"), reason="not_active_in_live_session")
+                continue
+            rearm_number = self._rearm_counts.get(undone_selection_id, 0) + 1
+            self._rearm_counts[undone_selection_id] = rearm_number
+            rearm_trial = build_m8_rearm_trial(source_trial, rearm_number)
+            pending_trials.append(rearm_trial)
+            self._event("selection_undo_rearmed", selectionId=undone_selection_id,
+                        resolvedSlot=undo_event.get("resolvedSlot"), rearmTrialId=rearm_trial["trialId"],
+                        rearmSelectionId=rearm_trial["selectionId"],
+                        activeSelectionCount=self._attempt_ledger.active_selection_count)
+            print("M8 selection undo re-armed trial={}".format(rearm_trial["trialId"]), flush=True)
+
+    def _wait_for_selection_undo(self, transport, pending_trials):
+        deadline = self.monotonic() + M8_UNDO_REARM_GRACE_SECONDS
+        while self.monotonic() < deadline:
+            self._drain_selection_undos(transport, pending_trials)
+            if pending_trials:
+                return True
+            self.sleep(0.05)
+        return False
 
     def _record_trial(self, completed, status, failure_reason):
         trial = completed["trial"]
@@ -588,8 +688,28 @@ class M8LiveNd8Session:
                 coordinator = M8LiveTrialCoordinator(M8LiveTrialBridge(self._controller, orchestrator))
                 print("M8.2b listener={} port={}; preflight passed; planned_trials={}".format(
                     self.args.host, transport.port, len(self.plan["trials"])), flush=True)
-                for trial in self.plan["trials"]:
-                    self._run_trial(coordinator, trial)
+                pending_trials = list(self.plan["trials"])
+                self._attempt_ledger = M8SelectionAttemptLedger(len(self.plan["trials"]))
+                self._accepted_trials = {}
+                self._rearm_counts = {}
+                measurement_number = 0
+                while pending_trials or not self._attempt_ledger.needs_measurement:
+                    self._drain_selection_undos(transport, pending_trials)
+                    if not pending_trials:
+                        if not self._attempt_ledger.needs_measurement and self._wait_for_selection_undo(transport, pending_trials):
+                            continue
+                        break
+                    trial = pending_trials.pop(0)
+                    measurement_number += 1
+                    completed = self._run_trial(
+                        coordinator,
+                        trial,
+                        measurement_number,
+                        before_selection_open=lambda: self._drain_selection_undos(transport, pending_trials),
+                    )
+                    self._attempt_ledger.record_accepted(trial["selectionId"])
+                    self._accepted_trials[trial["selectionId"]] = dict(trial)
+                    self._drain_selection_undos(transport, pending_trials)
             status = "completed"
             return 0, self.root
         except (M8LiveNd8PreflightError, RuntimeError, OSError, ValueError) as error:

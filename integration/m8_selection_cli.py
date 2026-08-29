@@ -84,7 +84,7 @@ def main(argv=None):
                         help="default frozen three-trial protocol; 1 or 2 enables a shortened demonstration")
     parser.add_argument("--batch-consumer-timeout-seconds", default=45.0, type=float,
                         help="single-trial only: wait on released TCP 11001 for the confirmed batch")
-    parser.set_defaults(preparation_seconds=13.0, trial_window_seconds=4.0)
+    parser.set_defaults(preparation_seconds=10.0, trial_window_seconds=4.0)
     args = parser.parse_args(argv)
 
     if args.mode == "live-nd8":

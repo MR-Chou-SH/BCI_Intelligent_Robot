@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -103,6 +104,33 @@ namespace BCIIntelligentRobot.Tests
                     message.confirmedBatch.selections[0].targetId,
                     message.confirmedBatch.selections[1].targetId
                 }, Is.EqualTo(new[] { "target-c", "target-a" }));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(transportObject);
+            }
+        }
+
+        [Test]
+        public void Undo_QueuesTheAcceptedSelectionIdentityForPcRearm()
+        {
+            GameObject transportObject = new GameObject("BciSelectionUndoTransportTests");
+            BciSelectionTransportClient transport = transportObject.AddComponent<BciSelectionTransportClient>();
+
+            try
+            {
+                Assert.That(transport.PublishSelectionUndo(Result("selection-slot-1", 1, "target-1")), Is.True);
+
+                FieldInfo field = typeof(BciSelectionTransportClient).GetField(
+                    "m_outgoingLines", BindingFlags.Instance | BindingFlags.NonPublic);
+                var lines = (ConcurrentQueue<string>)field.GetValue(transport);
+                Assert.That(lines.TryDequeue(out string line), Is.True);
+                BciSelectionTransportMessage message = JsonUtility.FromJson<BciSelectionTransportMessage>(line);
+                Assert.That(message.protocolVersion, Is.EqualTo(BciSelectionTransportMessage.ProtocolVersion));
+                Assert.That(message.messageType, Is.EqualTo("selection_undo"));
+                Assert.That(message.selectionId, Is.EqualTo("selection-slot-1"));
+                Assert.That(message.resolvedSlot, Is.EqualTo(1));
+                Assert.That(message.resolvedTargetId, Is.EqualTo("target-1"));
             }
             finally
             {

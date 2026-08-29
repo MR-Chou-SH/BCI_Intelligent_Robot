@@ -41,6 +41,28 @@ namespace BCIIntelligentRobot.Tests
         }
 
         [Test]
+        public void Undo_RestoresOnlyTheLastSlotForAnotherAcceptedSelection()
+        {
+            var coordinator = NewActiveCoordinator();
+
+            Assert.That(coordinator.TryAccept(Result("selection-b", 1, "b")), Is.True);
+            Assert.That(coordinator.TryUndoLastSelection(out BciTargetSelectionResult undone), Is.True);
+            Assert.That(undone.SlotIndex, Is.EqualTo(1));
+            Assert.That(coordinator.CurrentSelections, Is.Empty);
+            Assert.That(coordinator.TryAccept(Result("selection-b-rearmed", 1, "b")), Is.True,
+                "The undone slot must accept a fresh immutable result.");
+
+            Assert.That(coordinator.TryAccept(Result("selection-a", 0, "a")), Is.True);
+            Assert.That(coordinator.TryUndoLastSelection(out BciTargetSelectionResult secondUndone), Is.True);
+            Assert.That(secondUndone.SlotIndex, Is.EqualTo(0));
+            Assert.That(coordinator.TryAccept(Result("selection-b-duplicate", 1, "b")), Is.False,
+                "The still-selected slot must remain unavailable.");
+            Assert.That(coordinator.TryAccept(Result("selection-c", 2, "c")), Is.True,
+                "A different free slot remains eligible after Undo.");
+            Assert.That(TargetIdsFromResults(coordinator.CurrentSelections), Is.EqualTo(new[] { "b", "c" }));
+        }
+
+        [Test]
         public void EmptySubmitIsNoop_WhileConfirmedBatchPreservesSelectionOrderAndStartsNextGroup()
         {
             var coordinator = NewActiveCoordinator();

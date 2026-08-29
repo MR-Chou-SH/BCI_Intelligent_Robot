@@ -227,6 +227,41 @@ class M8SelectionOrchestrationTests(unittest.TestCase):
 
 
 class QuestSelectionTcpServerTests(unittest.TestCase):
+    def test_quest_undo_event_is_queued_while_waiting_for_a_selection_ack(self):
+        transport = QuestSelectionTcpServer("127.0.0.1", 0, accept_timeout_seconds=1.0, ack_timeout_seconds=1.0)
+        transport.start()
+
+        def quest_client():
+            with socket.create_connection(("127.0.0.1", transport.port), timeout=1.0) as client:
+                stream = client.makefile("rwb")
+                request = json.loads(stream.readline().decode("utf-8"))
+                self.assertEqual("selection_open", request["messageType"])
+                stream.write((json.dumps({
+                    "protocolVersion": 1,
+                    "messageType": "selection_undo",
+                    "selectionId": "selection-prior",
+                    "resolvedSlot": 1,
+                    "resolvedTargetId": "target-prior",
+                }) + "\n").encode("utf-8"))
+                stream.write((json.dumps(accepted_ack(request["selectionId"])) + "\n").encode("utf-8"))
+                stream.flush()
+
+        worker = threading.Thread(target=quest_client)
+        worker.start()
+        try:
+            self.assertTrue(transport.open_selection("selection-next")["accepted"])
+            worker.join(1.0)
+            self.assertFalse(worker.is_alive())
+            self.assertEqual([{
+                "protocolVersion": 1,
+                "messageType": "selection_undo",
+                "selectionId": "selection-prior",
+                "resolvedSlot": 1,
+                "resolvedTargetId": "target-prior",
+            }], transport.drain_selection_undo_events())
+        finally:
+            transport.close()
+
     def test_open_and_final_decision_use_newline_json_and_return_the_quest_ack(self):
         transport = QuestSelectionTcpServer("127.0.0.1", 0, accept_timeout_seconds=1.0, ack_timeout_seconds=1.0)
         transport.start()

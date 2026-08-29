@@ -132,6 +132,32 @@ namespace BCIIntelligentRobot.Integration
             return true;
         }
 
+        /// <summary>
+        /// Notify the active PC live-selection orchestration that a locally
+        /// accepted selection was undone. This is an M8 interaction event only;
+        /// it does not alter the immutable accepted selection result.
+        /// </summary>
+        public bool PublishSelectionUndo(BciTargetSelectionResult undone)
+        {
+            if (string.IsNullOrWhiteSpace(undone.SelectionId))
+                return false;
+
+            var message = new BciSelectionTransportMessage
+            {
+                protocolVersion = BciSelectionTransportMessage.ProtocolVersion,
+                messageType = "selection_undo",
+                selectionId = undone.SelectionId,
+                resolvedSlot = undone.SlotIndex,
+                resolvedTargetId = undone.TargetId,
+                questUtc = DateTime.UtcNow.ToString("O")
+            };
+            m_outgoingLines.Enqueue(JsonUtility.ToJson(message) + "\n");
+            m_workAvailable.Set();
+            Debug.Log("M8_SELECTION selection_undo selection_id=" + undone.SelectionId +
+                " slot=" + undone.SlotIndex + " target_id=" + undone.TargetId, this);
+            return true;
+        }
+
         private void Update()
         {
             while (m_diagnostics.TryDequeue(out string diagnostic))
