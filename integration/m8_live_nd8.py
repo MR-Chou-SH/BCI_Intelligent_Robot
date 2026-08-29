@@ -185,6 +185,23 @@ def build_m8_live_trial_plan(session_id):
     return trials
 
 
+def build_m8_free_trial_plan(session_id, max_trials=3):
+    """Build a plan with no expected class; each final decoder class is user-selected."""
+    trials = limit_m8_live_trial_plan(build_m8_live_trial_plan(session_id), max_trials)
+    free_trials = []
+    for trial in trials:
+        free_trial = dict(trial)
+        free_trial.update({
+            "slot": None,
+            "expectedClassIndex": None,
+            "expectedLabel": None,
+            "frequencyHz": None,
+            "operatorPrompt": "Trial {}: choose any available green slot (0/1/2)".format(trial["trialIndex"]),
+        })
+        free_trials.append(free_trial)
+    return free_trials
+
+
 def limit_m8_live_trial_plan(trials, max_trials):
     """Select an explicit prefix without altering the frozen trial definitions."""
     max_trials = int(max_trials)
@@ -201,12 +218,19 @@ def _write_json(path, value):
     Path(path).write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def _create_session(data_root, session_prefix, dry_run=False, max_trials=3):
+def _create_session(data_root, session_prefix, dry_run=False, max_trials=3, selection_plan="fixed"):
+    if selection_plan not in ("fixed", "free"):
+        raise ValueError("selection_plan must be fixed or free")
     session_id = _new_session_id(session_prefix)
     root = Path(data_root) / session_id
     root.mkdir(parents=True, exist_ok=False)
-    trials = limit_m8_live_trial_plan(build_m8_live_trial_plan(session_id), max_trials)
-    plan_mode = "m8_final_single_trial" if len(trials) == 1 else "m8_2b_engineering_smoke"
+    if selection_plan == "free":
+        trials = build_m8_free_trial_plan(session_id, max_trials)
+    else:
+        trials = limit_m8_live_trial_plan(build_m8_live_trial_plan(session_id), max_trials)
+    plan_mode = "m8_free_selection" if selection_plan == "free" else (
+        "m8_final_single_trial" if len(trials) == 1 else "m8_2b_engineering_smoke"
+    )
     plan = {"sessionId": session_id, "planMode": plan_mode, "trials": trials}
     manifest = {
         "recordType": "m8_2b_live_nd8_session",
@@ -215,8 +239,10 @@ def _create_session(data_root, session_prefix, dry_run=False, max_trials=3):
         "mode": "m8_2b_live_nd8",
         "status": "prepared",
         "gitCommit": _git_commit(),
+        "selectionPlan": selection_plan,
         "plannedTrialCount": len(trials),
         "trialOrder": [item["expectedClassIndex"] for item in trials],
+        "plannedTrialIndices": [item["trialIndex"] for item in trials],
         "decoder": "numpy_fbcca",
         "frequenciesHz": [7.2, 9.0, 12.0],
         "guardSeconds": 0.5,
@@ -225,7 +251,7 @@ def _create_session(data_root, session_prefix, dry_run=False, max_trials=3):
         "stabilizer": "2-Consecutive",
         "sampleRateHz": 1000,
         "groundTruthLeakage": False,
-        "expectedClassUse": "post_hoc_evidence_only",
+        "expectedClassUse": "post_hoc_evidence_only" if selection_plan == "fixed" else "not_applicable_free_selection",
         "nd8Started": False,
         "rawEegFile": "raw-eeg.jsonl",
         "packetMetadataFile": "packet-metadata.jsonl",
@@ -242,9 +268,10 @@ def _create_session(data_root, session_prefix, dry_run=False, max_trials=3):
     return root, manifest, plan
 
 
-def create_m8_live_dry_run(data_root, session_prefix="m8_2b-live", max_trials=3):
+def create_m8_live_dry_run(data_root, session_prefix="m8_2b-live", max_trials=3, selection_plan="fixed"):
     """Create a unique, evidence-shaped no-hardware dry-run session for CI/preflight review."""
-    root, manifest, _ = _create_session(data_root, session_prefix, dry_run=True, max_trials=max_trials)
+    root, manifest, _ = _create_session(
+        data_root, session_prefix, dry_run=True, max_trials=max_trials, selection_plan=selection_plan)
     manifest.update({"status": "dry_run_passed", "dryRunReason": "no_vendor_runtime_or_nd8_access_requested"})
     _write_json(root / "manifest.json", manifest)
     return root
@@ -522,6 +549,7 @@ class M8LiveNd8Session:
             self.args.session_prefix,
             dry_run=bool(self.args.dry_run),
             max_trials=getattr(self.args, "max_trials", 3),
+            selection_plan=getattr(self.args, "selection_plan", "fixed"),
         )
         self.session_id = self.manifest["sessionId"]
         self.session_events = AppendOnlyJsonl(self.root / "m8-session-events.jsonl")

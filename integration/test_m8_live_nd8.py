@@ -10,6 +10,7 @@ from integration.m8_live_nd8 import (
     M8LiveTrialCoordinator,
     M8WindowsAudibleCue,
     build_m8_live_trial_plan,
+    build_m8_free_trial_plan,
     create_m8_live_dry_run,
     limit_m8_live_trial_plan,
     run_m8_preparation_countdown,
@@ -68,6 +69,26 @@ class FakeLiveController:
 
 
 class M8LiveNd8Tests(unittest.TestCase):
+    def test_free_selection_plan_has_no_preselected_class_or_slot(self):
+        trials = build_m8_free_trial_plan("m8-free", 2)
+
+        self.assertEqual(2, len(trials))
+        self.assertEqual([None, None], [item["expectedClassIndex"] for item in trials])
+        self.assertEqual([None, None], [item["slot"] for item in trials])
+        self.assertEqual([None, None], [item["frequencyHz"] for item in trials])
+        self.assertTrue(all("any available" in item["operatorPrompt"] for item in trials))
+
+    def test_free_selection_dry_run_records_free_plan_without_expected_order(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = create_m8_live_dry_run(Path(directory), "m8-free", max_trials=2, selection_plan="free")
+            manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+            plan = json.loads((root / "m8-trial-plan.json").read_text(encoding="utf-8"))
+
+            self.assertEqual("m8_free_selection", plan["planMode"])
+            self.assertEqual("free", manifest["selectionPlan"])
+            self.assertEqual(2, manifest["plannedTrialCount"])
+            self.assertEqual([None, None], manifest["trialOrder"])
+
     def test_explicit_single_trial_limit_keeps_only_the_first_frozen_trial(self):
         trials = build_m8_live_trial_plan("m8-single")
 
@@ -263,6 +284,32 @@ class M8LiveNd8Tests(unittest.TestCase):
             manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
             self.assertTrue(evidence["downstreamAccepted"])
             self.assertEqual("m8-batch-final", manifest["finalBatchDelivery"]["batchId"])
+
+    def test_successful_free_run_also_hands_port_to_batch_consumer_after_final_trial(self):
+        receipt = SimpleNamespace(
+            payload={"messageType": "target_batch_confirmed"},
+            batch={"batchId": "m8-free-batch", "selections": [
+                {"targetId": "target-42", "slotIndex": 1},
+                {"targetId": "target-07", "slotIndex": 2},
+            ]},
+            downstream_accepted=True,
+            ack={"messageType": "batch_ack", "batchId": "m8-free-batch"},
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "session"
+            root.mkdir()
+            (root / "manifest.json").write_text("{}\n", encoding="utf-8")
+            with patch.object(selection_cli, "run_live_nd8", return_value=(0, root)), \
+                    patch.object(selection_cli, "consume_one_batch", return_value=receipt) as consume:
+                exit_code = selection_cli.main([
+                    "--mode", "live-nd8", "--selection-plan", "free", "--max-trials", "3",
+                    "--com", "COM11", "--data-root", directory,
+                ])
+
+            self.assertEqual(0, exit_code)
+            consume.assert_called_once_with("0.0.0.0", 11001, 45.0)
+            self.assertEqual("m8-free-batch", json.loads(
+                (root / "m8-final-batch-delivery.json").read_text(encoding="utf-8"))["batch"]["batchId"])
 
     def test_live_nd8_runtime_failure_records_session_without_constructing_adapter(self):
         with tempfile.TemporaryDirectory() as directory:

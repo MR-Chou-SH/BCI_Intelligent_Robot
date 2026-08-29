@@ -4,7 +4,7 @@ Last updated: 2026-08-29
 
 ## Overall Phase
 
-M8 final closed-loop demonstration orchestration — Prepared / awaiting predeclared Quest + ND8 execution
+M8 free-selection orchestration — Prepared / awaiting predeclared Quest + ND8 execution
 
 ## M7 Active Unity Application
 
@@ -29,6 +29,12 @@ M7 acceptance boundary:
 Status: Prepared
 
 The formal live entry point accepts `--max-trials 1`, `2`, or `3`, retaining the original default three-trial plan. The two-trial demonstration uses the unchanged first two frozen slots/classes (`0` / `0` / `7.2 Hz`, then `1` / `1` / `9 Hz`), so Quest can retain two Blue selections before one A Submit. Every selected trial executes the existing approximately 13-second audible preparation and unchanged 4-second observation/decoder path. The live listener remains active through all planned trials; only after the final accepted terminal event does it close and release TCP `11001`, after which the same PC CLI starts the existing batch consumer and waits for `target_batch_confirmed` / `batch_ack`. No Quest Start UI, input state, A-button meaning, or pinch behavior is added or changed: the already-present `Press A or Pinch to Start` interaction remains the only start UI/logic. The consumer writes the received batch and ACK evidence into the new session directory. This is prepared software only; no additional real ND8 trial has been run by this change.
+
+### M8 Free-Selection Orchestration
+
+Status: Prepared
+
+The explicit `--selection-plan free` entry removes only the PC plan's post-hoc expected-class ordering. Each trial still uses the same three simultaneous Quest slots and the unchanged M6 final decision output; the final canonical class `0/1/2` is sent to Quest, whose frozen snapshot remains authoritative for slot/TargetId resolution. Free plans support `--max-trials 1`, `2`, or `3`; accepted selections therefore remain in actual decision order and can accumulate in one M8.4 batch. A selected slot is already masked by the Quest group binding in the next snapshot, so a repeat is rejected as `TargetInvalid` without creating another batch membership. Fixed mode remains the default and preserves `0 → 1 → 2`. No decoder, EEG parameter, Unity UI/input, transport protocol, or M8.4 batch semantics changed.
 
 ### M8.5 — Reliable Batch Delivery
 

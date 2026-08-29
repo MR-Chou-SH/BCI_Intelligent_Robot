@@ -69,6 +69,28 @@ class FakeLiveController:
 
 
 class M8SelectionOrchestrationTests(unittest.TestCase):
+    def test_free_selection_forwards_any_class_in_actual_selection_order(self):
+        for number, labels in enumerate((
+            ("target_center", "target_left"),
+            ("target_right", "target_center"),
+        )):
+            transport = FakeQuestTransport()
+            orchestrator = M8SelectionOrchestrator(transport)
+            for index, label in enumerate(labels):
+                selection_id = "free-{}-selection-{}".format(number, index)
+                trial_id = "free-{}-trial-{}".format(number, index)
+                self.assertTrue(orchestrator.open_selection(selection_id, trial_id))
+                result = orchestrator.submit_final_decision({
+                    "trialId": trial_id,
+                    "decisionMade": True,
+                    "finalDecisionLabel": label,
+                    "stabilizer": "2-Consecutive",
+                })
+                self.assertEqual("quest_accepted", result["status"])
+
+            expected_indices = [1, 0] if number == 0 else [2, 1]
+            self.assertEqual(expected_indices, [item[1] for item in transport.decisions])
+
     def test_final_m6_labels_submit_the_canonical_slot_indices_once(self):
         transport = FakeQuestTransport()
         orchestrator = M8SelectionOrchestrator(transport)
