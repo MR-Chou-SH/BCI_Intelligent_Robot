@@ -29,6 +29,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private readonly List<DetectionSpawnMarkerAnim> m_spawnedEntities = new();
         private readonly Dictionary<string, StableWorldAnchorRecord> m_stableWorldAnchors = new();
         private readonly Dictionary<string, float> m_lastStableLogTime = new();
+        private string m_lastM8CandidateDiagnosticSignature;
         private BciSsvepTargetBinding m_ssvepBinding;
         [Header("M8 PC selection transport")]
         [SerializeField] private string m_selectionServerHost = "127.0.0.1";
@@ -403,6 +404,54 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                     PublishStableAnchor(anchor, StableTargetState.Active);
                 }
             }
+            LogM8CandidateDiagnostics(stableTargets);
+        }
+
+        private void LogM8CandidateDiagnostics(IReadOnlyList<StableTargetSnapshot> stableTargets)
+        {
+            int activeCount = 0;
+            int temporarilyMissingCount = 0;
+            int lostCount = 0;
+            var targets = new List<string>(stableTargets.Count);
+            for (int index = 0; index < stableTargets.Count; index++)
+            {
+                StableTargetSnapshot target = stableTargets[index];
+                switch (target.State)
+                {
+                    case StableTargetState.Active:
+                        activeCount++;
+                        break;
+                    case StableTargetState.TemporarilyMissing:
+                        temporarilyMissingCount++;
+                        break;
+                    case StableTargetState.Lost:
+                        lostCount++;
+                        break;
+                }
+                targets.Add(target.TargetId + ":" + target.ClassName + ":" + target.State);
+            }
+
+            int anchoredCount = 0;
+            foreach (StableWorldAnchorRecord anchor in m_stableWorldAnchors.Values)
+            {
+                if (anchor.HasAnchor)
+                    anchoredCount++;
+            }
+            string signature = m_uiInference.LastRawDetectionCount + "|" + activeCount + "|" +
+                temporarilyMissingCount + "|" + lostCount + "|" + anchoredCount + "|" + string.Join(",", targets);
+            if (string.Equals(signature, m_lastM8CandidateDiagnosticSignature, StringComparison.Ordinal))
+                return;
+
+            m_lastM8CandidateDiagnosticSignature = signature;
+            Debug.Log("M8_CANDIDATE stable_target_state raw_yolo_detection_count=" +
+                m_uiInference.LastRawDetectionCount +
+                " stable_target_count=" + stableTargets.Count +
+                " active_stable_target_count=" + activeCount +
+                " temporarily_missing_stable_target_count=" + temporarilyMissingCount +
+                " lost_stable_target_count=" + lostCount +
+                " stable_world_anchor_record_count=" + m_stableWorldAnchors.Count +
+                " anchored_world_target_count=" + anchoredCount +
+                " stable_targets=" + string.Join(",", targets), this);
         }
 
         private void EnsureSsvepBinding()

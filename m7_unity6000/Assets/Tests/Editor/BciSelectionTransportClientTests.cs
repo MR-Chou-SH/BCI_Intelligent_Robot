@@ -111,33 +111,6 @@ namespace BCIIntelligentRobot.Tests
             }
         }
 
-        [Test]
-        public void Undo_QueuesTheAcceptedSelectionIdentityForPcRearm()
-        {
-            GameObject transportObject = new GameObject("BciSelectionUndoTransportTests");
-            BciSelectionTransportClient transport = transportObject.AddComponent<BciSelectionTransportClient>();
-
-            try
-            {
-                Assert.That(transport.PublishSelectionUndo(Result("selection-slot-1", 1, "target-1")), Is.True);
-
-                FieldInfo field = typeof(BciSelectionTransportClient).GetField(
-                    "m_outgoingLines", BindingFlags.Instance | BindingFlags.NonPublic);
-                var lines = (ConcurrentQueue<string>)field.GetValue(transport);
-                Assert.That(lines.TryDequeue(out string line), Is.True);
-                BciSelectionTransportMessage message = JsonUtility.FromJson<BciSelectionTransportMessage>(line);
-                Assert.That(message.protocolVersion, Is.EqualTo(BciSelectionTransportMessage.ProtocolVersion));
-                Assert.That(message.messageType, Is.EqualTo("selection_undo"));
-                Assert.That(message.selectionId, Is.EqualTo("selection-slot-1"));
-                Assert.That(message.resolvedSlot, Is.EqualTo(1));
-                Assert.That(message.resolvedTargetId, Is.EqualTo("target-1"));
-            }
-            finally
-            {
-                UnityEngine.Object.DestroyImmediate(transportObject);
-            }
-        }
-
         [UnityTest]
         public IEnumerator SelectionAckThenRemoteEof_ReconnectsToTheNextServerConnection()
         {

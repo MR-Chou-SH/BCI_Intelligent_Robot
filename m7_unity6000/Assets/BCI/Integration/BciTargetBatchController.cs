@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BCIIntelligentRobot.Vision;
 using PassthroughCameraSamples.MultiObjectDetection;
 using UnityEngine;
@@ -20,7 +21,8 @@ namespace BCIIntelligentRobot.Integration
         private string m_pendingSelectionId;
         private string m_lastReassociationLogSignature;
         private bool m_initialized;
-        private int m_lastCandidateCount = -1;
+        private StableWorldAnchorSnapshot[] m_latestCandidates = new StableWorldAnchorSnapshot[0];
+        private string m_lastCandidateDiagnosticSignature;
 
         public bool OwnsBatchInput => m_initialized && m_binding != null && m_binding.IsBatchGroupModeEnabled;
 
@@ -88,18 +90,10 @@ namespace BCIIntelligentRobot.Integration
 
         private void OnHudCandidatesChanged(System.Collections.Generic.IReadOnlyList<StableWorldAnchorSnapshot> candidates)
         {
+            m_latestCandidates = CopyCandidates(candidates);
             m_groups.UpdateCandidatePool(candidates);
             TryReassociateActiveGroup();
-            if (candidates.Count == m_lastCandidateCount)
-                return;
-
-            m_lastCandidateCount = candidates.Count;
-            int rawCount = m_detectionVisuals != null ? m_detectionVisuals.LastRawDetectionCount : -1;
-            Debug.Log(
-                "M8_GROUP bci_stable_candidate_count=" + candidates.Count +
-                " raw_detection_count=" + rawCount +
-                (candidates.Count == 0 ? " reason=no_active_stable_world_anchor" : string.Empty),
-                this);
+            LogCandidateGroupState("candidate_pool_changed");
         }
 
         private void OnGroupActivated(BciActiveTargetGroup group)
@@ -117,6 +111,7 @@ namespace BCIIntelligentRobot.Integration
                 "M8_GROUP group_activated group_id=" + group.GroupId +
                 " group_index=" + group.GroupIndex + " " + mapping,
                 this);
+            LogCandidateGroupState("group_activated");
         }
 
         private void OnTargetSelected(BciTargetSelectionResult result)
@@ -127,6 +122,7 @@ namespace BCIIntelligentRobot.Integration
                     " selection_id=" + result.SelectionId + " slot=" + result.SlotIndex +
                     " target_id=" + result.TargetId +
                     " selected_count=" + m_groups.CurrentSelections.Count, this);
+                LogCandidateGroupState("selection_added");
             }
             else
             {
@@ -140,18 +136,21 @@ namespace BCIIntelligentRobot.Integration
             BciActiveTargetGroup? group = m_groups.ActiveGroup;
             if (group.HasValue)
                 m_binding.SetGroupSlotSelected(group.Value.GroupId, slotIndex, selected);
+            LogCandidateGroupState(selected ? "slot_selected" : "slot_restored");
         }
 
         private void OnSelectionOpened(string selectionId)
         {
             if (m_groups.HasActiveGroup)
                 m_pendingSelectionId = selectionId;
+            LogCandidateGroupState("selection_opened");
         }
 
         private void OnSelectionTerminated(string selectionId)
         {
             if (string.Equals(m_pendingSelectionId, selectionId, StringComparison.Ordinal))
                 m_pendingSelectionId = null;
+            LogCandidateGroupState("selection_terminated");
         }
 
         public bool UndoLastSelection()
@@ -164,8 +163,7 @@ namespace BCIIntelligentRobot.Integration
             Debug.Log("M8_GROUP selection_undone selection_id=" + undone.SelectionId +
                 " slot=" + undone.SlotIndex + " target_id=" + undone.TargetId +
                 " selected_count=" + m_groups.CurrentSelections.Count, this);
-            if (!m_transport.PublishSelectionUndo(undone))
-                Debug.LogWarning("M8_GROUP selection_undo_publish_rejected selection_id=" + undone.SelectionId, this);
+            LogCandidateGroupState("selection_undone");
             return true;
         }
 
@@ -199,6 +197,95 @@ namespace BCIIntelligentRobot.Integration
             m_binding.SetProcessedTargetIds(m_groups.ProcessedTargetIds, m_groups.SubmittedTargetIds);
             if (!m_transport.PublishConfirmedTargetBatch(batch))
                 Debug.LogWarning("M8_GROUP batch_publish_rejected batch_id=" + batch.BatchId, this);
+            LogCandidateGroupState("group_submitted");
+        }
+
+        private static StableWorldAnchorSnapshot[] CopyCandidates(
+            System.Collections.Generic.IReadOnlyList<StableWorldAnchorSnapshot> candidates)
+        {
+            if (candidates == null || candidates.Count == 0)
+                return new StableWorldAnchorSnapshot[0];
+            var copy = new StableWorldAnchorSnapshot[candidates.Count];
+            for (int index = 0; index < candidates.Count; index++)
+                copy[index] = candidates[index];
+            return copy;
+        }
+
+        private void LogCandidateGroupState(string reason)
+        {
+            if (m_groups == null)
+                return;
+
+            int activeCandidateCount = 0;
+            var candidates = new List<string>(m_latestCandidates.Length);
+            for (int index = 0; index < m_latestCandidates.Length; index++)
+            {
+                StableWorldAnchorSnapshot candidate = m_latestCandidates[index];
+                if (candidate.State == StableTargetState.Active)
+                    activeCandidateCount++;
+                candidates.Add(candidate.TargetId + ":" + candidate.ClassName + ":" + candidate.State);
+            }
+
+            BciActiveTargetGroup? group = m_groups.ActiveGroup;
+            string groupId = group.HasValue ? group.Value.GroupId : "none";
+            int groupIndex = group.HasValue ? group.Value.GroupIndex : 0;
+            int frozenTargetCount = group.HasValue ? group.Value.Targets.Count : 0;
+            var slots = new string[BciTargetSlotAllocator.SlotCount];
+            for (int slot = 0; slot < slots.Length; slot++)
+            {
+                slots[slot] = group.HasValue && slot < group.Value.Targets.Count
+                    ? group.Value.Targets[slot].TargetId
+                    : "none";
+            }
+
+            string selected = DescribeTargetIds(m_groups.CurrentSelections);
+            string processed = DescribeTargetIds(m_groups.ProcessedTargetIds);
+            string submitted = DescribeTargetIds(m_groups.SubmittedTargetIds);
+            int rawCount = m_detectionVisuals != null ? m_detectionVisuals.LastRawDetectionCount : -1;
+            string signature = rawCount + "|" + groupId + "|" + groupIndex + "|" + frozenTargetCount + "|" +
+                string.Join(",", candidates) + "|" + selected + "|" + processed + "|" + submitted + "|" +
+                string.Join(",", slots);
+            if (string.Equals(signature, m_lastCandidateDiagnosticSignature, StringComparison.Ordinal))
+                return;
+
+            m_lastCandidateDiagnosticSignature = signature;
+            Debug.Log("M8_CANDIDATE group_state reason=" + reason +
+                " raw_yolo_detection_count=" + rawCount +
+                " hud_candidate_count=" + m_latestCandidates.Length +
+                " bci_eligible_active_count=" + activeCandidateCount +
+                " group_id=" + groupId +
+                " group_index=" + groupIndex +
+                " frozen_target_count=" + frozenTargetCount +
+                " slot0_target_id=" + slots[0] +
+                " slot1_target_id=" + slots[1] +
+                " slot2_target_id=" + slots[2] +
+                " selected_target_ids=" + selected +
+                " processed_target_ids=" + processed +
+                " submitted_target_ids=" + submitted +
+                " candidates=" + string.Join(",", candidates), this);
+        }
+
+        private static string DescribeTargetIds(IEnumerable<BciTargetSelectionResult> results)
+        {
+            var targetIds = new List<string>();
+            foreach (BciTargetSelectionResult result in results)
+            {
+                if (!string.IsNullOrWhiteSpace(result.TargetId))
+                    targetIds.Add(result.TargetId);
+            }
+            return DescribeTargetIds(targetIds);
+        }
+
+        private static string DescribeTargetIds(IEnumerable<string> targetIds)
+        {
+            var values = new List<string>();
+            foreach (string targetId in targetIds)
+            {
+                if (!string.IsNullOrWhiteSpace(targetId))
+                    values.Add(targetId);
+            }
+            values.Sort(StringComparer.Ordinal);
+            return values.Count == 0 ? "none" : string.Join(",", values);
         }
 
         private void TryReassociateActiveGroup()

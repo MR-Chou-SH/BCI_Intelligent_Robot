@@ -64,7 +64,6 @@ class QuestSelectionTcpServer:
         self._listener = None
         self._connection = None
         self._buffer = b""
-        self._selection_undo_events = []
 
     def start(self):
         if self._listener is not None:
@@ -112,27 +111,6 @@ class QuestSelectionTcpServer:
     def abort_selection(self, selection_id):
         return self._request({"messageType": "selection_abort", "selectionId": selection_id}, selection_id)
 
-    def drain_selection_undo_events(self):
-        """Return Quest-originated Undo events without treating them as a selection ACK."""
-        if self._connection is not None:
-            connection = self._connection
-            previous_timeout = connection.gettimeout()
-            connection.setblocking(False)
-            try:
-                while True:
-                    try:
-                        self._queue_quest_event(self._read_json_line(connection))
-                    except (BlockingIOError, socket.timeout):
-                        break
-                    except QuestSelectionTransportError:
-                        self._drop_connection()
-                        break
-            finally:
-                if self._connection is connection:
-                    connection.settimeout(previous_timeout)
-        events, self._selection_undo_events = self._selection_undo_events, []
-        return events
-
     def _request(self, payload, selection_id):
         connection = self._ensure_connection()
         message = {
@@ -143,7 +121,7 @@ class QuestSelectionTcpServer:
         }
         try:
             connection.sendall((json.dumps(message, separators=(",", ":")) + "\n").encode("utf-8"))
-            return self._read_selection_ack(connection, selection_id)
+            return normalize_selection_ack(self._read_json_line(connection), selection_id)
         except (OSError, ValueError, json.JSONDecodeError, QuestSelectionTransportError) as error:
             self._drop_connection()
             if isinstance(error, QuestSelectionTransportError):
@@ -169,24 +147,6 @@ class QuestSelectionTcpServer:
             self._buffer += data
         line, self._buffer = self._buffer.split(b"\n", 1)
         return json.loads(line.rstrip(b"\r").decode("utf-8"))
-
-    def _read_selection_ack(self, connection, selection_id):
-        while True:
-            payload = self._read_json_line(connection)
-            if payload.get("messageType") == "selection_undo":
-                self._queue_quest_event(payload)
-                continue
-            return normalize_selection_ack(payload, selection_id)
-
-    def _queue_quest_event(self, payload):
-        if not isinstance(payload, dict) or payload.get("protocolVersion") != PROTOCOL_VERSION:
-            raise QuestSelectionTransportError("Quest control event protocol version mismatch")
-        if payload.get("messageType") != "selection_undo":
-            raise QuestSelectionTransportError("unexpected Quest control message")
-        selection_id = payload.get("selectionId")
-        if not isinstance(selection_id, str) or not selection_id:
-            raise QuestSelectionTransportError("Quest selection_undo missing selectionId")
-        self._selection_undo_events.append(dict(payload))
 
     def _drop_connection(self):
         if self._connection is not None:
