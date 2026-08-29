@@ -46,8 +46,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_cameraAccess: {fileID: 0}
   m_spawnMarker: {fileID: 0}
-  m_placeSound: {fileID: 0}
   m_uiInference: {fileID: 0}
+  m_environmentRaycast: {fileID: 0}
   OnObjectsIdentified:
     m_PersistentCalls:
       m_Calls:
@@ -63,3 +63,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  m_selectionServerPort: 11001
+  m_ssvepLayoutMode: 1
+  m_ssvepStimulusSizeMeters: 0.32
+  m_ssvepHudLocalCenter: {x: 0, y: 0.18, z: 0.85}
+  m_ssvepHudHorizontalSpacingMeters: 0.32
+  m_ssvepHudStimulusSizeMeters: 0.2

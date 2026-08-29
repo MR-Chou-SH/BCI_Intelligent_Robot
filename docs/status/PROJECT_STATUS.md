@@ -4,7 +4,13 @@ Last updated: 2026-08-29
 
 ## Overall Phase
 
-M8 free-selection orchestration — Prepared / awaiting predeclared Quest + ND8 execution
+M8 — Completed / PASS WITH WARNINGS
+
+M8 closeout boundary (2026-08-29): Quest StableTarget/group presentation, Gray/Green/Blue/submitted-✓ UX, fixed and free selection orchestration, M8.3 immutable selection results, M8.4 confirmed batches, PC batch consumer/ACK, and the real-ND8 engineering closed loop have been exercised. The accepted output boundary is `ConfirmedTargetBatch`; downstream M9 work must not re-query live EEG class, SSVEP frequency, HUD slot state, or StableTarget binding.
+
+Known limitations retained at closeout: large head motion can cause StableTarget identity churn; B local Undo restores Quest visuals but does not automatically re-arm the live EEG orchestration; M8.5 pending batches are process-memory only and are not recovered after app restart; high-frequency SSVEP can appear visually gray through temporal fusion/passthrough context; physical optical and hardware-exact timing remain unverified; real EEG evidence is engineering closed-loop evidence, not a generalized accuracy claim.
+
+M9 input contract: each frozen selection in `ConfirmedTargetBatch` carries at least `selectionId`, `targetId`, `semanticLabel`, frozen world position, selection order, and provenance. M9 consumes this batch only and does not modify M8 internals.
 
 ## M7 Active Unity Application
 
@@ -26,19 +32,19 @@ M7 acceptance boundary:
 
 ### M8 Final Demonstration Orchestration
 
-Status: Prepared
+Status: Completed / PASS
 
-The formal live entry point accepts `--max-trials 1`, `2`, or `3`, retaining the original default three-trial plan. The two-trial demonstration uses the unchanged first two frozen slots/classes (`0` / `0` / `7.2 Hz`, then `1` / `1` / `9 Hz`), so Quest can retain two Blue selections before one A Submit. Every selected trial executes the existing approximately 13-second audible preparation and unchanged 4-second observation/decoder path. The live listener remains active through all planned trials; only after the final accepted terminal event does it close and release TCP `11001`, after which the same PC CLI starts the existing batch consumer and waits for `target_batch_confirmed` / `batch_ack`. No Quest Start UI, input state, A-button meaning, or pinch behavior is added or changed: the already-present `Press A or Pinch to Start` interaction remains the only start UI/logic. The consumer writes the received batch and ACK evidence into the new session directory. This is prepared software only; no additional real ND8 trial has been run by this change.
+The formal live entry point accepts `--max-trials 1`, `2`, or `3`, retaining the original default three-trial plan. The two-trial demonstration uses the unchanged first two frozen slots/classes (`0` / `0` / `7.2 Hz`, then `1` / `1` / `9 Hz`), so Quest can retain two Blue selections before one A Submit. Every selected trial preserves the established audible preparation and observation/decoder path. The live listener remains active through all planned trials; only after the final accepted terminal event does it close and release TCP `11001`, after which the same PC CLI starts the existing batch consumer and waits for `target_batch_confirmed` / `batch_ack`. No Quest Start UI, input state, A-button meaning, or pinch behavior is added or changed: the already-present `Press A or Pinch to Start` interaction remains the only start UI/logic. The consumer writes the received batch and ACK evidence into the session directory.
 
 ### M8 Free-Selection Orchestration
 
-Status: Prepared
+Status: Completed / PASS WITH WARNINGS
 
 The explicit `--selection-plan free` entry removes only the PC plan's post-hoc expected-class ordering. Each trial still uses the same three simultaneous Quest slots and the unchanged M6 final decision output; the final canonical class `0/1/2` is sent to Quest, whose frozen snapshot remains authoritative for slot/TargetId resolution. Free plans support `--max-trials 1`, `2`, or `3`; accepted selections therefore remain in actual decision order and can accumulate in one M8.4 batch. A selected slot is already masked by the Quest group binding in the next snapshot, so a repeat is rejected as `TargetInvalid` without creating another batch membership. Fixed mode remains the default and preserves `0 → 1 → 2`. No decoder, EEG parameter, Unity UI/input, transport protocol, or M8.4 batch semantics changed.
 
 ### M8.5 — Reliable Batch Delivery
 
-Status: Implemented / awaiting simulated reliability acceptance
+Status: Completed / PASS WITH WARNING
 
 M8.5 keeps the existing newline-delimited JSON connection on TCP 11001 and leaves `ConfirmedTargetBatch` plus every M8.3 frozen selection fact unchanged. A submitted Quest batch stays process-lifetime pending until a matching PC `batch_ack` (`protocolVersion`, `messageType`, `batchId`) arrives. On a TCP reconnect, each still-pending batch is resent in original publish order. The PC consumer accepts a legal `batchId` downstream once per process but returns `batch_ack` for every duplicate delivery, allowing Quest retry to stop without duplicate downstream execution. Pending state is deliberately in-memory only: a Quest app process restart before ACK does not recover it. No robot command, database, message queue, or EEG change is added. Simulated reliability acceptance is still required.
 
