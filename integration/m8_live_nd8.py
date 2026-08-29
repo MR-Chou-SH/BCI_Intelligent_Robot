@@ -185,6 +185,14 @@ def build_m8_live_trial_plan(session_id):
     return trials
 
 
+def limit_m8_live_trial_plan(trials, max_trials):
+    """Select an explicit prefix without altering the frozen trial definitions."""
+    max_trials = int(max_trials)
+    if max_trials < 1 or max_trials > len(trials):
+        raise ValueError("max_trials must be between 1 and {}".format(len(trials)))
+    return list(trials[:max_trials])
+
+
 def _new_session_id(prefix):
     return "{}-{}-{}".format(prefix, datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"), uuid.uuid4().hex[:8])
 
@@ -193,11 +201,13 @@ def _write_json(path, value):
     Path(path).write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def _create_session(data_root, session_prefix, dry_run=False):
+def _create_session(data_root, session_prefix, dry_run=False, max_trials=3):
     session_id = _new_session_id(session_prefix)
     root = Path(data_root) / session_id
     root.mkdir(parents=True, exist_ok=False)
-    plan = {"sessionId": session_id, "planMode": "m8_2b_engineering_smoke", "trials": build_m8_live_trial_plan(session_id)}
+    trials = limit_m8_live_trial_plan(build_m8_live_trial_plan(session_id), max_trials)
+    plan_mode = "m8_final_single_trial" if len(trials) == 1 else "m8_2b_engineering_smoke"
+    plan = {"sessionId": session_id, "planMode": plan_mode, "trials": trials}
     manifest = {
         "recordType": "m8_2b_live_nd8_session",
         "sessionId": session_id,
@@ -205,8 +215,8 @@ def _create_session(data_root, session_prefix, dry_run=False):
         "mode": "m8_2b_live_nd8",
         "status": "prepared",
         "gitCommit": _git_commit(),
-        "plannedTrialCount": 3,
-        "trialOrder": [0, 1, 2],
+        "plannedTrialCount": len(trials),
+        "trialOrder": [item["expectedClassIndex"] for item in trials],
         "decoder": "numpy_fbcca",
         "frequenciesHz": [7.2, 9.0, 12.0],
         "guardSeconds": 0.5,
@@ -232,9 +242,9 @@ def _create_session(data_root, session_prefix, dry_run=False):
     return root, manifest, plan
 
 
-def create_m8_live_dry_run(data_root, session_prefix="m8_2b-live"):
+def create_m8_live_dry_run(data_root, session_prefix="m8_2b-live", max_trials=3):
     """Create a unique, evidence-shaped no-hardware dry-run session for CI/preflight review."""
-    root, manifest, _ = _create_session(data_root, session_prefix, dry_run=True)
+    root, manifest, _ = _create_session(data_root, session_prefix, dry_run=True, max_trials=max_trials)
     manifest.update({"status": "dry_run_passed", "dryRunReason": "no_vendor_runtime_or_nd8_access_requested"})
     _write_json(root / "manifest.json", manifest)
     return root
@@ -278,7 +288,7 @@ class M8LiveTrialCoordinator:
 
 
 class M8LiveNd8Session:
-    """One external-CPython command for M8.2b preflight and its fixed three trials."""
+    """One external-CPython command for frozen M8.2b live-ND8 trial plans."""
     def __init__(self, args, adapter_factory=Nd8SerialAdapter, transport_factory=QuestSelectionTcpServer,
                  controller_factory=LiveOnlineController, runtime_validator=validate_vendor_cpython39_runtime,
                  countdown=None, sleep=time.sleep, monotonic=time.monotonic, cue=None):
@@ -507,8 +517,12 @@ class M8LiveNd8Session:
         })
 
     def run(self):
-        self.root, self.manifest, self.plan = _create_session(self.args.data_root, self.args.session_prefix,
-                                                               dry_run=bool(self.args.dry_run))
+        self.root, self.manifest, self.plan = _create_session(
+            self.args.data_root,
+            self.args.session_prefix,
+            dry_run=bool(self.args.dry_run),
+            max_trials=getattr(self.args, "max_trials", 3),
+        )
         self.session_id = self.manifest["sessionId"]
         self.session_events = AppendOnlyJsonl(self.root / "m8-session-events.jsonl")
         self.trial_results = AppendOnlyJsonl(self.root / "m8-trial-results.jsonl")
@@ -544,8 +558,8 @@ class M8LiveNd8Session:
                     lambda record: self.orchestration_log.append({"m8SessionId": self.session_id, **record}),
                 )
                 coordinator = M8LiveTrialCoordinator(M8LiveTrialBridge(self._controller, orchestrator))
-                print("M8.2b listener={} port={}; preflight passed; fixed trials=3".format(
-                    self.args.host, transport.port), flush=True)
+                print("M8.2b listener={} port={}; preflight passed; planned_trials={}".format(
+                    self.args.host, transport.port, len(self.plan["trials"])), flush=True)
                 for trial in self.plan["trials"]:
                     self._run_trial(coordinator, trial)
             status = "completed"

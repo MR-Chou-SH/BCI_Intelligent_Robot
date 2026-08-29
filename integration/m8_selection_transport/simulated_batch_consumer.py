@@ -90,6 +90,18 @@ def receive_batch(connection, timeout_seconds, receiver=None):
     raise TimeoutError("timed out waiting for target_batch_confirmed")
 
 
+def consume_one_batch(host="0.0.0.0", port=11001, timeout_seconds=30.0, receiver=None):
+    """Bind the released M8 port, receive one batch, and return its matching ACK receipt."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
+        listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        listener.bind((host, port))
+        listener.listen(1)
+        listener.settimeout(timeout_seconds)
+        connection, _ = listener.accept()
+        with connection:
+            return receive_batch(connection, timeout_seconds, receiver=receiver)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Receive one Quest M8.4 target_batch_confirmed message.")
     parser.add_argument("--host", default="0.0.0.0")
@@ -98,20 +110,12 @@ def main():
     parser.add_argument("--expect-batch-id")
     args = parser.parse_args()
 
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listener:
-        listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        listener.bind((args.host, args.port))
-        listener.listen(1)
-        listener.settimeout(args.timeout_seconds)
-        print("Waiting for Quest TCP client on {}:{} ...".format(args.host, args.port))
-        connection, address = listener.accept()
-        with connection:
-            print("Quest connected from {}:{}".format(address[0], address[1]))
-            receipt = receive_batch(connection, args.timeout_seconds)
-            payload, batch = receipt.payload, receipt.batch
-            if args.expect_batch_id and batch["batchId"] != args.expect_batch_id:
-                raise SystemExit("unexpected batchId: {}".format(batch["batchId"]))
-            print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    print("Waiting for Quest TCP client on {}:{} ...".format(args.host, args.port))
+    receipt = consume_one_batch(args.host, args.port, args.timeout_seconds)
+    payload, batch = receipt.payload, receipt.batch
+    if args.expect_batch_id and batch["batchId"] != args.expect_batch_id:
+        raise SystemExit("unexpected batchId: {}".format(batch["batchId"]))
+    print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
 
 
 if __name__ == "__main__":

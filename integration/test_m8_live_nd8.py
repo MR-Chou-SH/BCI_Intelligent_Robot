@@ -3,6 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from integration.m8_live_nd8 import (
     M8LiveNd8Session,
@@ -10,9 +11,11 @@ from integration.m8_live_nd8 import (
     M8WindowsAudibleCue,
     build_m8_live_trial_plan,
     create_m8_live_dry_run,
+    limit_m8_live_trial_plan,
     run_m8_preparation_countdown,
     validate_vendor_cpython39_runtime,
 )
+import integration.m8_selection_cli as selection_cli
 from integration.m8_selection_cli import main as cli_main
 from integration.m8_selection_orchestration import M8LiveTrialBridge, M8SelectionOrchestrator
 
@@ -65,6 +68,16 @@ class FakeLiveController:
 
 
 class M8LiveNd8Tests(unittest.TestCase):
+    def test_explicit_single_trial_limit_keeps_only_the_first_frozen_trial(self):
+        trials = build_m8_live_trial_plan("m8-single")
+
+        self.assertEqual(["m8-single-trial-001"], [
+            item["trialId"] for item in limit_m8_live_trial_plan(trials, 1)
+        ])
+        self.assertEqual([0, 1, 2], [
+            item["expectedClassIndex"] for item in limit_m8_live_trial_plan(trials, 3)
+        ])
+
     def test_audible_preparation_cues_do_not_change_fixed_trial_mapping(self):
         cues = []
 
@@ -160,6 +173,17 @@ class M8LiveNd8Tests(unittest.TestCase):
             second = create_m8_live_dry_run(root, "m8_2b-live")
             self.assertNotEqual(session, second)
 
+    def test_single_trial_dry_run_records_one_planned_selection_only(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = create_m8_live_dry_run(Path(directory), "m8-final", max_trials=1)
+            manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+            plan = json.loads((root / "m8-trial-plan.json").read_text(encoding="utf-8"))
+
+            self.assertEqual(1, manifest["plannedTrialCount"])
+            self.assertEqual([0], manifest["trialOrder"])
+            self.assertEqual(1, len(plan["trials"]))
+            self.assertTrue(plan["trials"][0]["selectionId"].endswith("-selection-001"))
+
     def test_wrong_python_or_missing_vendor_import_fails_before_hardware(self):
         with self.assertRaisesRegex(RuntimeError, "CPython 3.9"):
             validate_vendor_cpython39_runtime(
@@ -186,6 +210,43 @@ class M8LiveNd8Tests(unittest.TestCase):
             self.assertEqual(0, exit_code)
             self.assertEqual(1, len(manifests))
             self.assertEqual("dry_run_passed", json.loads(manifests[0].read_text(encoding="utf-8"))["status"])
+
+    def test_live_nd8_cli_single_trial_dry_run_is_one_trial_without_batch_listener(self):
+        with tempfile.TemporaryDirectory() as directory:
+            exit_code = cli_main([
+                "--mode", "live-nd8", "--dry-run", "--max-trials", "1", "--com", "COM11", "--data-root", directory,
+            ])
+            manifests = list(Path(directory).glob("*/manifest.json"))
+
+            self.assertEqual(0, exit_code)
+            self.assertEqual(1, len(manifests))
+            manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
+            self.assertEqual(1, manifest["plannedTrialCount"])
+            self.assertEqual([0], manifest["trialOrder"])
+
+    def test_successful_single_trial_hands_released_port_to_batch_consumer_and_records_ack(self):
+        receipt = SimpleNamespace(
+            payload={"messageType": "target_batch_confirmed"},
+            batch={"batchId": "m8-batch-final", "selections": [{"targetId": "target-42", "slotIndex": 0}]},
+            downstream_accepted=True,
+            ack={"messageType": "batch_ack", "batchId": "m8-batch-final"},
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "session"
+            root.mkdir()
+            (root / "manifest.json").write_text("{}\n", encoding="utf-8")
+            with patch.object(selection_cli, "run_live_nd8", return_value=(0, root)), \
+                    patch.object(selection_cli, "consume_one_batch", return_value=receipt) as consume:
+                exit_code = selection_cli.main([
+                    "--mode", "live-nd8", "--max-trials", "1", "--com", "COM11", "--data-root", directory,
+                ])
+
+            self.assertEqual(0, exit_code)
+            consume.assert_called_once_with("0.0.0.0", 11001, 45.0)
+            evidence = json.loads((root / "m8-final-batch-delivery.json").read_text(encoding="utf-8"))
+            manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+            self.assertTrue(evidence["downstreamAccepted"])
+            self.assertEqual("m8-batch-final", manifest["finalBatchDelivery"]["batchId"])
 
     def test_live_nd8_runtime_failure_records_session_without_constructing_adapter(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -10,6 +10,7 @@ if __package__ in (None, ""):
 from eeg.sample_association.jsonl import AppendOnlyJsonl
 from integration.m8_live_nd8 import run_live_nd8
 from integration.m8_selection_orchestration import M8SelectionOrchestrator, QuestSelectionTcpServer
+from integration.m8_selection_transport.simulated_batch_consumer import consume_one_batch
 
 
 def _load_replay_records(path):
@@ -28,6 +29,33 @@ def _run_records(orchestrator, records, selection_id_prefix):
             continue
         results.append(orchestrator.submit_final_decision(decision))
     return results
+
+
+def _record_final_batch_delivery(session_root, receipt):
+    """Preserve one final single-trial batch receipt beside its live-ND8 evidence."""
+    record = {
+        "recordType": "m8_final_single_trial_batch_delivery",
+        "status": "acknowledged",
+        "payload": receipt.payload,
+        "batch": receipt.batch,
+        "downstreamAccepted": receipt.downstream_accepted,
+        "ack": receipt.ack,
+    }
+    root = Path(session_root)
+    (root / "m8-final-batch-delivery.json").write_text(
+        json.dumps(record, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    manifest_path = root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["finalBatchDelivery"] = {
+        "status": "acknowledged",
+        "batchId": receipt.batch["batchId"],
+        "downstreamAccepted": receipt.downstream_accepted,
+        "ackBatchId": receipt.ack["batchId"],
+    }
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return record
 
 
 def main(argv=None):
@@ -50,6 +78,10 @@ def main(argv=None):
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--preflight-timeout-seconds", default=150.0, type=float)
     parser.add_argument("--packet-stall-seconds", default=2.0, type=float)
+    parser.add_argument("--max-trials", default=3, type=int, choices=(1, 3),
+                        help="default frozen three-trial protocol; explicit 1 enables final single-trial orchestration")
+    parser.add_argument("--batch-consumer-timeout-seconds", default=45.0, type=float,
+                        help="single-trial only: wait on released TCP 11001 for the confirmed batch")
     parser.set_defaults(preparation_seconds=13.0, trial_window_seconds=4.0)
     args = parser.parse_args(argv)
 
@@ -60,7 +92,17 @@ def main(argv=None):
             parser.error("live-nd8 requires the verified --com COM11 configuration")
         if args.dry_run and args.preflight_only:
             parser.error("--dry-run and --preflight-only are mutually exclusive")
-        exit_code, _ = run_live_nd8(args)
+        exit_code, session_root = run_live_nd8(args)
+        if (exit_code == 0 and args.max_trials == 1 and not args.dry_run and not args.preflight_only):
+            print("M8 final single trial complete; TCP {} released; waiting for confirmed batch on {}:{}".format(
+                args.port, args.host, args.port), flush=True)
+            try:
+                receipt = consume_one_batch(args.host, args.port, args.batch_consumer_timeout_seconds)
+            except (OSError, RuntimeError, TimeoutError, ValueError, json.JSONDecodeError) as error:
+                print("M8 final batch consumer failed closed: {}".format(error), flush=True)
+                return 2
+            record = _record_final_batch_delivery(session_root, receipt)
+            print(json.dumps(record, ensure_ascii=False, sort_keys=True), flush=True)
         return exit_code
     if args.dry_run or args.preflight_only or args.com or args.data_root:
         parser.error("live-nd8-only arguments require --mode live-nd8")

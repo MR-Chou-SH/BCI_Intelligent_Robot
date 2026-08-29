@@ -1,4 +1,8 @@
 import importlib.util
+import json
+import socket
+import threading
+import time
 import unittest
 
 
@@ -24,6 +28,35 @@ def valid_message():
 
 
 class SimulatedBatchConsumerTests(unittest.TestCase):
+    def test_consume_one_batch_binds_the_existing_port_and_returns_matching_ack(self):
+        reservation = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        reservation.bind(("127.0.0.1", 0))
+        port = reservation.getsockname()[1]
+        reservation.close()
+        receipts = []
+        worker = threading.Thread(
+            target=lambda: receipts.append(consumer.consume_one_batch("127.0.0.1", port, 1.0))
+        )
+        worker.start()
+
+        deadline = time.monotonic() + 1.0
+        while True:
+            try:
+                connection = socket.create_connection(("127.0.0.1", port), timeout=0.1)
+                break
+            except OSError:
+                if time.monotonic() >= deadline:
+                    self.fail("batch consumer did not bind the released selection port")
+                time.sleep(0.01)
+        with connection:
+            connection.sendall((json.dumps(valid_message()) + "\n").encode("utf-8"))
+            ack = json.loads(connection.recv(4096).decode("utf-8"))
+
+        worker.join(1.0)
+        self.assertFalse(worker.is_alive())
+        self.assertEqual("m8-batch-0001", ack["batchId"])
+        self.assertTrue(receipts[0].downstream_accepted)
+
     def test_validates_ordered_nonempty_batch(self):
         batch = consumer.validate_batch_message(valid_message())
         self.assertEqual(["target-a", "target-c"], [item["targetId"] for item in batch["selections"]])
