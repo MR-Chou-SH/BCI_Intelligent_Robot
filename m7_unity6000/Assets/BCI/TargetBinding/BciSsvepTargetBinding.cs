@@ -1103,7 +1103,7 @@ namespace BCIIntelligentRobot.Vision
             var label = labelObject.AddComponent<TextMesh>();
             label.anchor = TextAnchor.MiddleCenter;
             label.alignment = TextAlignment.Center;
-            label.characterSize = 0.06f;
+            label.characterSize = 0.02f;
             label.fontSize = 64;
             m_candidateIndicatorLabelsByTargetId.Add(targetId, label);
             return indicator;
