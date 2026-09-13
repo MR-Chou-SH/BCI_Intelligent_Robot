@@ -1,21 +1,23 @@
 # Project Status
 
-Last updated: 2026-08-29
+Last updated: 2026-09-14
 
 ## Overall Phase
 
-M8 — Completed / PASS WITH WARNINGS
+M1–M8 — Completed engineering capabilities; documented warnings and evidence boundaries remain part of the record.
 
-M8 closeout boundary (2026-08-29): Quest StableTarget/group presentation, Gray/Green/Blue/submitted-✓ UX, fixed and free selection orchestration, M8.3 immutable selection results, M8.4 confirmed batches, PC batch consumer/ACK, and the real-ND8 engineering closed loop have been exercised. The accepted output boundary is `ConfirmedTargetBatch`; downstream M9 work must not re-query live EEG class, SSVEP frequency, HUD slot state, or StableTarget binding.
+The next milestone is M9 — Virtual Manipulation Baseline. The current benchmark uses a controlled virtual tabletop and logical block IDs; the detailed M9–M15 direction is in docs/roadmap/context-aware-bci-shared-autonomy.md.
 
-Known limitations retained at closeout: large head motion can cause StableTarget identity churn; B local Undo restores Quest visuals but does not automatically re-arm the live EEG orchestration; M8.5 pending batches are process-memory only and are not recovered after app restart; high-frequency SSVEP can appear visually gray through temporal fusion/passthrough context; physical optical and hardware-exact timing remain unverified; real EEG evidence is engineering closed-loop evidence, not a generalized accuracy claim.
+The real-world Passthrough / Quest Camera / YOLO / StableTarget / EnvironmentRaycast route is a completed capability and future extension. It is preserved, but is not the current research benchmark and should not be revalidated by default.
 
-M9 input contract: each frozen selection in `ConfirmedTargetBatch` carries at least `selectionId`, `targetId`, `semanticLabel`, frozen world position, selection order, and provenance. M9 consumes this batch only and does not modify M8 internals.
+M1–M8 limitations remain attached to their historical evidence: large head motion can cause StableTarget identity churn; local Undo does not automatically re-arm live EEG orchestration; M8.5 pending batches are process-memory only; high-frequency SSVEP can appear visually gray; physical optical and hardware-exact timing remain unverified; real EEG evidence is engineering evidence, not generalized accuracy.
 
-## M7 Active Unity Application
+Historical M8.5 records include a simulated reliability-acceptance note. It is retained as evidence context, not as the current milestone or an instruction to resume M8.5. Reopen it only through an explicit project decision.
+
+## Completed M7 Capability / Future Extension
 
 - `vr_stimulus/` remains the Unity 6000.5.8f1 M1–M6 legacy project. Its frame-driven SSVEP, trigger and communication code remains the source for selective future reuse.
-- `m7_unity6000/` is the Unity 6000.0.66f2 M7+ active Unity application. It is a tracked, non-nested-Git import of Meta `Unity-PassthroughCameraApiSamples` upstream commit `9105be64da8690b41154baf5629cb82dc2dbe4a7`, with MRUK / Meta Core 85.0.0.
+- `m7_unity6000/` is the Unity 6000.0.66f2 M7+ application baseline. It is a tracked, non-nested-Git import of Meta `Unity-PassthroughCameraApiSamples` upstream commit `9105be64da8690b41154baf5629cb82dc2dbe4a7`, with MRUK / Meta Core 85.0.0.
 - M7.5 official localization is `Completed / PASS` on Quest 3: `MultiObjectDetection → PassthroughCameraAccess.ViewportPointToRay → EnvironmentRaycastManager.Raycast → world marker`.
 - M7 visual binding is now `Completed / PASS` on Quest 3: eligible detection → StableTarget → stable world anchor → at most three frame-driven SSVEP slots. Slot 0/1/2 use 7.2/9/12 Hz from shared frame origin with `framesPerHalfCycle = 5/4/3`.
 - M7.4 self-developed RGB→Environment Depth UV remains preserved by historical checkpoint and is not the active route.
@@ -28,25 +30,37 @@ M7 acceptance boundary:
 - Known non-blockers are approximately 1–2 seconds of stale target retention when a static target moves quickly, and black stimuli appearing subjectively lighter than the legacy M6 scene. Neither is changed in this closeout.
 - EEG transport and robot control remain outside this completed M7 boundary. M8.1 has now completed Quest 3 transport acceptance; M8.2a adds only PC-side M6 final-decision orchestration over the existing Quest transport and does not start ND8 hardware or robot control.
 
-## Active Milestone
+## Next Milestone
+
+### M9 — Virtual Manipulation Baseline
+
+Status: Planned
+
+Build a controlled virtual tabletop manipulation baseline: Quest 3 presents virtual blocks and SSVEP interaction; PC performs EEG decoding and maps the selected block to a stable logical block ID; MuJoCo runs the Franka FR3 + UMI gripper simulation and returns execution feedback.
+
+Use logical IDs such as `block_red_01`, `block_green_01`, and `block_blue_01` across Quest selection and MuJoCo objects. Reuse the baseline on `feature/add-robotArm-simulation`; integrate it only in a separately scoped task that explicitly authorizes branch access.
+
+M9 excludes VLM/LLM, context AI, reinforcement learning, and dynamic stopping. Do not reopen M1–M8 acceptance work as part of M9 by default.
+
+## Historical M8 Milestone Record
+
+### M8.5 — Reliable Batch Delivery
+
+Historical status: Completed / PASS WITH WARNING; retain the recorded limitations below.
+
+M8.5 keeps the existing newline-delimited JSON connection on TCP 11001 and leaves `ConfirmedTargetBatch` plus every M8.3 frozen selection fact unchanged. A submitted Quest batch stays process-lifetime pending until a matching PC `batch_ack` (`protocolVersion`, `messageType`, `batchId`) arrives. On a TCP reconnect, each still-pending batch is resent in original publish order. The PC consumer accepts a legal `batchId` downstream once per process but returns `batch_ack` for every duplicate delivery, allowing Quest retry to stop without duplicate downstream execution. Pending state is deliberately in-memory only: a Quest app process restart before ACK does not recover it. No robot command, database, message queue, or EEG change is added. The prior closeout note retained simulated reliability acceptance as an open evidence item; this note is historical and is not the current project gate.
 
 ### M8 Final Demonstration Orchestration
 
 Status: Completed / PASS
 
-The formal live entry point accepts `--max-trials 1`, `2`, or `3`, retaining the original default three-trial plan. The two-trial demonstration uses the unchanged first two frozen slots/classes (`0` / `0` / `7.2 Hz`, then `1` / `1` / `9 Hz`), so Quest can retain two Blue selections before one A Submit. Every selected trial preserves the established audible preparation and observation/decoder path. The live listener remains active through all planned trials; only after the final accepted terminal event does it close and release TCP `11001`, after which the same PC CLI starts the existing batch consumer and waits for `target_batch_confirmed` / `batch_ack`. No Quest Start UI, input state, A-button meaning, or pinch behavior is added or changed: the already-present `Press A or Pinch to Start` interaction remains the only start UI/logic. The consumer writes the received batch and ACK evidence into the session directory.
+The formal live entry point accepts `--max-trials 1`, `2`, or `3`, retaining the original default three-trial plan. After the final accepted terminal event, the PC CLI releases TCP `11001`, starts the existing batch consumer, and waits for `target_batch_confirmed` / `batch_ack`. This is historical M8 behavior; M9 must consume the frozen selection boundary rather than reopen M8 internals.
 
 ### M8 Free-Selection Orchestration
 
 Status: Completed / PASS WITH WARNINGS
 
-The explicit `--selection-plan free` entry removes only the PC plan's post-hoc expected-class ordering. Each trial still uses the same three simultaneous Quest slots and the unchanged M6 final decision output; the final canonical class `0/1/2` is sent to Quest, whose frozen snapshot remains authoritative for slot/TargetId resolution. Free plans support `--max-trials 1`, `2`, or `3`; accepted selections therefore remain in actual decision order and can accumulate in one M8.4 batch. A selected slot is already masked by the Quest group binding in the next snapshot, so a repeat is rejected as `TargetInvalid` without creating another batch membership. Fixed mode remains the default and preserves `0 → 1 → 2`. No decoder, EEG parameter, Unity UI/input, transport protocol, or M8.4 batch semantics changed.
-
-### M8.5 — Reliable Batch Delivery
-
-Status: Completed / PASS WITH WARNING
-
-M8.5 keeps the existing newline-delimited JSON connection on TCP 11001 and leaves `ConfirmedTargetBatch` plus every M8.3 frozen selection fact unchanged. A submitted Quest batch stays process-lifetime pending until a matching PC `batch_ack` (`protocolVersion`, `messageType`, `batchId`) arrives. On a TCP reconnect, each still-pending batch is resent in original publish order. The PC consumer accepts a legal `batchId` downstream once per process but returns `batch_ack` for every duplicate delivery, allowing Quest retry to stop without duplicate downstream execution. Pending state is deliberately in-memory only: a Quest app process restart before ACK does not recover it. No robot command, database, message queue, or EEG change is added. Simulated reliability acceptance is still required.
+The free-selection plan removed the PC plan's post-hoc expected-class ordering while retaining Quest's frozen snapshot as the authority for slot/TargetId resolution. The accepted user intent boundary remains the frozen selection/batch result.
 
 ### M8.4 — Multi-Target Selection UX & Batch Confirmation
 
@@ -129,37 +143,9 @@ Goal:
 - Local Git repository initialized
 - Legacy reference materials organized
 
-## Not Started
+## Historical M0 Startup Backlog (Superseded)
 
-### VR Stimulus
-
-- Unity Quest project
-- Quest deployment
-- Passthrough
-- fixed square
-- flicker timing
-- three-target stimulation
-- EEG synchronization
-
-### Vision
-
-Not started.
-
-### EEG
-
-Reference implementation analyzed.
-
-Formal EEG module not yet created.
-
-### Robot Arm
-
-Not started.
-
-Hardware/control interface details still need to be documented.
-
-### Integration
-
-Not started.
+The startup checklist has been superseded by the M1–M8 completion records below. Its old “not started” labels are not current status.
 
 ## Completed Milestone
 

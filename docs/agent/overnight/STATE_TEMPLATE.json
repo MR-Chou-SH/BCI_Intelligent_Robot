@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "runId": null,
+  "status": "NOT_STARTED",
+  "startedAtUtc": null,
+  "updatedAtUtc": null,
+  "planPath": null,
+  "repository": {
+    "absolutePath": null,
+    "gitRoot": null,
+    "branch": null,
+    "head": null,
+    "upstream": null,
+    "workingTreeClean": null,
+    "preExistingChanges": []
+  },
+  "currentStepId": null,
+  "completedStepIds": [],
+  "lastGreenVerification": {
+    "stepId": null,
+    "command": null,
+    "exitCode": null,
+    "sourceHead": null,
+    "inputIdentity": null,
+    "recordedAtUtc": null
+  },
+  "checkpoint": {
+    "kind": null,
+    "reference": null,
+    "branch": null,
+    "head": null,
+    "workingTreeState": null,
+    "recordedAtUtc": null
+  },
+  "changedPaths": [],
+  "lastWorklogSequence": 0,
+  "blocker": null,
+  "resumeInstruction": "Revalidate repository path, branch, HEAD, and working-tree state before resuming. Never reset or clean to match this template."
+}

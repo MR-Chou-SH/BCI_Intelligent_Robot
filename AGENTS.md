@@ -110,12 +110,7 @@ Responsible for:
 
 ### Robot arm
 
-Responsible for:
-
-- robot communication
-- predefined actions/trajectories
-- execution status
-- safety handling
+For the M9 virtual manipulation baseline, reuse the Franka FR3 + UMI gripper + MuJoCo baseline on the existing branch feature/add-robotArm-simulation. This repository owns the BCI-to-task/command interface, integration, execution status/feedback, and end-to-end experiments; do not rebuild the simulator, IK, trajectories, or low-level controller by default. Do not switch to, merge, or modify that branch unless a task explicitly authorizes the integration.
 
 ### Integration
 
@@ -160,11 +155,7 @@ Existing Neurodance / Drone2.1 code is a reference implementation, not automatic
 
 ## 8. Git Rules
 
-Current stable branch:
-
-`main`
-
-Do not commit directly to `main` for substantial new features once feature development begins.
+Never infer the working baseline from a branch name or older documentation. Before Git mutations, inspect the repository root, current branch, HEAD, upstream, and working-tree state. Preserve the current branch unless the task explicitly asks for a branch change. Do not switch, merge, rebase, reset, clean, or push without explicit task authorization.
 
 For isolated feature work, prefer branches such as:
 
@@ -256,18 +247,16 @@ For hardware/XR/EEG tasks, explicitly distinguish:
 
 ---
 
-## 11. Current Priority
+## 11. Project Phase and Source of Truth
 
-M1 through M6 are completed with their documented warnings and evidence boundaries preserved.
+M1–M8 are completed engineering capabilities with their documented warnings and evidence boundaries preserved. The real-world Passthrough / Quest Camera / YOLO / StableTarget / EnvironmentRaycast route remains available as a completed capability and future extension; it is not the current research benchmark.
 
-The current engineering milestone is:
+The current research direction and M9–M15 sequence are recorded in docs/roadmap/context-aware-bci-shared-autonomy.md. PROJECT_STATUS.md is the source of truth for which milestone is current. Do not copy a milestone snapshot into this file or resume an older M8/M8.5 task based on historical status text.
 
-M8 — SSVEP Slot / EEG Class / TargetId Integration.
+For M9, EEG supplies the next logical block selection. Quest, PC, and MuJoCo responsibilities and the logical block-ID boundary are defined in the roadmap. Reuse the existing Franka FR3 + UMI + MuJoCo baseline rather than rebuilding low-level robot capabilities.
 
-The current task is:
+## 12. Long-Running / Overnight Work
 
-Develop M7+ Unity work only in `m7_unity6000/`, the Unity 6000.0.66f2 official Passthrough Camera API sample baseline. M8.2b real Quest + ND8 engineering validation is completed/PASS WITH WARNINGS and the ViewLockedHud baseline is frozen; M8.3 and M8.4 are Completed/PASS. M8.5 reliable batch delivery is implemented and awaiting simulated reliability acceptance: Quest retains each confirmed batch in memory until PC `batch_ack`, retries it after reconnect, and the PC consumer must deduplicate by `batchId` while acknowledging duplicates. This protection lasts only for the live Quest app process; it is not durable delivery. Quest remains the authority for frozen class/index → TargetId facts, downstream consumers must not re-query live binding, and future robot work must consume only a user-confirmed batch. Do not repeat the M7.5 Passthrough/Camera API/YOLO/raycast baseline, revive M7.4 RGB→Environment Depth UV, start unscoped real ND8/Quest EEG experiments, or start robot control.
+For an explicitly long-running or overnight task, follow docs/agent/overnight/POLICY.md and use its plan, run-state, worklog, and handoff formats. The policy requires a repository/branch/HEAD/working-tree baseline, machine-verifiable success criteria, checkpoints, bounded retries, and explicit blocker states.
 
-For future robot work, prefer integration with the labmate-provided MuJoCo simulation / low-level control system. This repository owns the BCI target-selection output, robot command/task interface, integration, execution status/feedback, and end-to-end experiments; it does not need to rebuild the complete simulator or low-level controller from scratch.
-
-Do not prematurely implement real ND8 online integration, robot control, or scene understanding while the M8 software selection boundary is being established.
+Do not push, reset, clean, delete user data, or operate real Quest, ND8, or a physical robot unless that specific plan explicitly authorizes the action. Preserve GPT/user-frozen research direction; use local engineering judgment for routine implementation details and escalate architecture, research-goal, or frozen-interface changes.

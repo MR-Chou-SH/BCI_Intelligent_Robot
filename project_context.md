@@ -2,13 +2,15 @@
 
 ## 1. 项目概述
 
-本项目旨在开发一个结合以下技术的脑机接口智能机器人系统：
+本项目当前研究主线为 Context-aware BCI Shared Autonomy，近期使用完全可控的虚拟 sequential manipulation benchmark。系统结合：
 
 - Meta Quest 3 VR/MR
 - SSVEP脑电
 - 视觉识别
 - 场景理解与智能决策
 - 机械臂控制
+
+M1–M8 已形成可复用的工程能力基线，保留其 warnings 与证据边界。现实场景的 Passthrough / Quest Camera / YOLO / StableTarget 路线定位为已完成能力与未来扩展，不是当前主要科研 benchmark。
 
 项目核心思想不是使用脑电连续遥控机械臂。
 
@@ -24,7 +26,7 @@
 
 > 执行最终动作。
 
-最终系统希望形成：
+长期愿景希望形成：
 
 `视觉感知 → VR刺激 → EEG选择 → 场景理解 → 任务规划 → 机械臂执行`
 
@@ -32,7 +34,11 @@
 
 ---
 
-## 2. 最终愿景
+## 2. 长期愿景与当前研究主题
+
+研究主题是 Context-aware BCI Shared Autonomy：EEG 提供低带宽、直接来自用户的 intent evidence；AI 根据 task context、history 与 scene state 推断意图；AI 越确定，用户操作越少，AI 越不确定，决策权越多交还用户。
+
+近期先通过可控的虚拟积木 sequential manipulation benchmark 建立实验基础。现实厨房等场景示例属于未来扩展：
 
 例如现实场景中存在：
 
@@ -75,9 +81,9 @@ EEG系统判断用户选择了哪个目标。
 
 ## 3. 当前开发阶段
 
-项目已完成 M1–M5 的 Quest/SSVEP/同步工作、M6 的 ND8 decoder / diagnostic-live 验证（均保留其 warnings 与证据边界），并已完成 M7 视觉目标到 SSVEP target binding。M7+ 的唯一 active Unity application 为仓库内 `m7_unity6000/`（Unity 6000.0.66f2）；`vr_stimulus/` 是 Unity 6000.5.8f1 的 M1–M6 legacy 工程，不再作为 M7 默认入口。
+M1–M8 是已完成的工程能力，所有历史 warnings 和证据边界继续保留。下一阶段为 M9 — Virtual Manipulation Baseline；当前状态与验收边界以 `docs/status/PROJECT_STATUS.md` 为准，M9–M15 方向见 `docs/roadmap/context-aware-bci-shared-autonomy.md`。
 
-M7.5 已在 Quest 3 真机验证 Meta 官方链路：`MultiObjectDetection → PassthroughCameraAccess.ViewportPointToRay → EnvironmentRaycastManager.Raycast → world marker`。M7.6 已在同一正式工程中完成 `eligible detection → StableTarget → stable world anchor → at most three SSVEP slots` 的 Quest 3 真机验收。M7.4 自研 RGB→Environment Depth UV 路线保留在历史 checkpoint 中但继续暂停；不重复实现 PCA、YOLO 或 raycast 基线。
+`m7_unity6000/` 是 Unity 6000.0.66f2 工程；`vr_stimulus/` 是 Unity 6000.5.8f1 的 M1–M6 legacy 工程。`reference/` 是只读参考资料。已验收的现实场景 Passthrough、Camera、YOLO、StableTarget、EnvironmentRaycast 和 SSVEP binding 保留为完成能力与未来扩展，不作为当前主要 benchmark；M7.4 RGB→Environment Depth UV 路线仍为历史暂停方案。
 
 已经完成：
 
@@ -97,12 +103,7 @@ M7.5 已在 Quest 3 真机验证 Meta 官方链路：`MultiObjectDetection → P
 - 已完成单个世界坐标固定、帧驱动黑白SSVEP目标及软件侧时序诊断；Quest runtime为72 Hz，`framesPerHalfCycle = 3`，推导软件频率为12 Hz。
 - 已完成三目标共享frame origin的帧驱动SSVEP基线；Quest runtime为72 Hz，N为`5/4/3`，推导软件频率为`7.2/9/12 Hz`，30秒软件侧时序验证PASS。
 
-当前尚未完成：
-
-- formal prospective cross-session validation；
-- pseudo-online replay infrastructure and later real-time classification readiness；
-- M8.4 multi-target group / confirmed batch 的 Quest UX acceptance 与后续机器人接口定义；
-- 机械臂正式集成。
+M9 的职责边界是 Quest 负责虚拟桌面、积木、SSVEP 与用户交互；PC 负责 EEG 解码、logical block ID 映射及后续任务/共享自主逻辑；MuJoCo 负责 Franka FR3 + UMI gripper dynamics、IK、trajectory、Pick/Place 和执行反馈。
 
 GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配置为准。
 
@@ -110,30 +111,30 @@ GitHub远程仓库地址已经确定；实际连接状态以本地Git remote配�
 
 ## 4. 当前工程里程碑与长期第一功能目标
 
-当前 active 工程里程碑是：
+当前下一里程碑是：
 
-> M8.4 — Multi-Target Selection UX & Batch Confirmation（Implemented / awaiting Quest UX acceptance）
+> M9 — Virtual Manipulation Baseline（Planned）
 
 M6 的历史证据、冻结 decoder 配置和 warnings 仍保留；本轮不因 Unity 工程入口切换而重做或重新解释 M1–M6 实验。
 
 M1、M2、M3、M4和M5均已完成。M5在真实 Quest 3 + ND8 session 中验证了 software stimulus event、Quest-PC clock mapping、ND8 stable post-sync packet 和 software-derived sample estimate 的端到端关联；物理光学时序、硬件 sample anchor 和 hardware-exact EEG timing 仍待验证。
 
-长期第一功能目标是：
+M9 的实验目标是：
 
-> 在Meta Quest 3中，在三个指定三维坐标显示三个具有指定刺激频率的黑白闪烁方块。
+> 在可控虚拟桌面上，通过 EEG 选择下一块积木，以统一 logical block ID 连接 Quest 选择、PC task logic 与 MuJoCo Pick / Place。
 
 M6.4 closeout evidence summary:
 
-- Session A：30/30 QC-valid，是当前最完整的正式 baseline session；
+- Session A：30/30 QC-valid，是 M6 阶段最完整的正式 baseline session；
 - Session B1：29/30 QC-valid（10/9/10）；trial 011 因固定 5 秒 clock-sync freshness gate 无效；
 - Session B2：原始 formal status 为 `incomplete`，但 association bug 修复后的只读 replay 为 30/30（10/10/10），仅属 post-hoc exploratory replay evidence；
 - 固定 CH2/3/4/5/7、1000 Hz、0.5 s onset guard、demean-only、7.2/9/12 Hz、3 harmonics 的 exploratory results 显示明显 session effect，不能写成 generalized 或 online accuracy。
 
 M6.5a 使用同一冻结配置建立了 `historical packet → rolling buffer → event → eligibility → window → decoder → prediction` 的 replay-only pseudo-online pipeline。其 0.5 s guard + 1.5 s window 的 first decision 在 A/B1/B2 固定 QC-valid trials 上逐 trial 复现了对应 offline prediction；这验证软件 extraction semantics，不等于真实 online、端到端 latency 或泛化验证。
 
-M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 First、2-Consecutive、3-Consecutive 三个预声明策略。当前仅形成 exploratory engineering candidate，不进行 threshold/step tuning；真实 ND8 online 仍需另行授权与验证。
+历史 M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 First、2-Consecutive、3-Consecutive 三个预声明策略。它属于 exploratory engineering evidence；真实 ND8 online evidence 与其边界见 status / development logs。
 
-现阶段：
+M7–M8 已完成能力回顾（历史记录，非当前优先级）：
 
 - M7.5 官方 2D detection 到 world marker 已 Quest 3 PASS；
 - M7.6 eligible detection → StableTarget → stable world anchor → 三槽位 SSVEP binding 已 Quest 3 PASS；
@@ -143,12 +144,10 @@ M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 Fir
 - M8.1/M8.2a 已完成 Quest snapshot transport 与 PC final-decision orchestration；Quest 始终以冻结 snapshot 将 class 0/1/2 解析为 slot 0/1/2 与 TargetId，duplicate/unknown、EOF/reconnect、no-decision/abort 均已验证；
 - M8.2b 已完成 real Quest + ND8 engineering validation 并冻结 ViewLockedHud baseline：camera-local `(-0.32, 0.18, 0.85)/(0, 0.18, 0.85)/(0.32, 0.18, 0.85)` m、`0.20 m` Quad、left-to-right assignment、duplicate suppression、leader line/marker、selection freeze；结果是 `Completed / PASS WITH WARNINGS`，不是 accuracy/latency/causal claim；
 - M8.3 将 accepted frozen class → slot → TargetId + stable-world position 发布为一次性 downstream selection result；下游不得重新查询 live binding，也不开始机械臂控制；
-- M8.4 在 M8.3 immutable result 上增加 group-level freeze、最多三目标的连续选择/Undo、controller Submit 与 `ConfirmedTargetBatch`；Quest 通过既有 newline JSON transport 向 PC 发布 batch，当前仅等待 simulated-EEG Quest UX acceptance；
-- 不接入机械臂；
-- 不在本轮改动 M6 pseudo-online / decoder 证据；
-- 三个刺激的历史 frame-driven 参数仍是后续复用来源。
+- M8.4 在 M8.3 immutable result 上增加 group-level freeze、最多三目标的连续选择/Undo、controller Submit 与 `ConfirmedTargetBatch`；Quest 通过既有 newline JSON transport 向 PC 发布 batch。旧 closeout 中的模拟验收说明保留为历史证据边界，不代表当前 milestone；
+- M8 的 confirmed batch 是既有选择能力基线；M9 将以 logical block ID 定义新的 robot task/command interface。
 
-完成刺激模块后再逐步：
+以下 M1–M7 顺序为历史开发建议，已被 M9–M15 roadmap 取代：
 
 1. 接入刺激同步；
 2. 与ND8 EEG采集建立联动；
@@ -181,7 +180,7 @@ M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 Fir
 
 ### 5.1.1 `m7_unity6000`
 
-这是 Unity 6000.0.66f2 的 M7+ active Unity application，来源于 Meta `Unity-PassthroughCameraApiSamples` upstream commit `9105be64da8690b41154baf5629cb82dc2dbe4a7`，使用 MRUK / Meta Core 85.0.0。它包含已通过 Quest 3 真机验证的 Passthrough、Camera API、官方 MultiObjectDetection 与 2D→world localization 基线。后续视觉→SSVEP→EEG→robot 的 Unity 侧集成优先在此进行；具体来源、本地 M7.5 修改和许可证见 `m7_unity6000/BCI_M7_PROVENANCE.md`。
+这是 Unity 6000.0.66f2 的 M7+ application，来源于 Meta `Unity-PassthroughCameraApiSamples` upstream commit `9105be64da8690b41154baf5629cb82dc2dbe4a7`，使用 MRUK / Meta Core 85.0.0。它包含已验收的 Passthrough、Camera API、官方 MultiObjectDetection 与 2D→world localization 能力；当前 M9 使用虚拟桌面 benchmark，现实场景能力作为未来扩展。来源、本地 M7.5 修改和许可证见 `m7_unity6000/BCI_M7_PROVENANCE.md`。
 
 ### 5.2 `vision`
 
@@ -199,7 +198,7 @@ M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 Fir
 - 其他轻量目标检测模型
 - Unity端推理或PC端推理
 
-具体技术路线尚未最终确定。
+该模块属于现实场景未来扩展；M9 的虚拟积木 benchmark 不依赖 scene understanding。
 
 ### 5.3 `eeg`
 
@@ -224,21 +223,23 @@ M6.5b 在该 pipeline 上以固定 0.2 s step 生成连续预测，并比较 Fir
 - 机械臂状态
 - 安全处理
 
-MuJoCo 机械臂仿真与底层控制系统允许复用同门正在开发的系统；本项目不需从零重建。`robot_arm/` 主要定义/适配 BCI→robot command/task interface、执行状态与安全反馈，并与 integration 完成端到端实验。
+M9 优先复用 `feature/add-robotArm-simulation` 的 Franka FR3 + UMI gripper + MuJoCo baseline，包含几何抓取、数值 IK、分段轨迹和 Pick/Lift/Place。不得默认重建 simulator 或低层 controller。该分支是后续正式复用来源；切换、合并、修改必须由独立任务授权。`robot_arm/` 在本项目中负责 BCI selection 到 task/command interface 的适配、integration、执行状态/反馈和端到端实验。
 
 ### 5.5 `integration`
 
-负责模块之间的数据和事件连接，例如：
+当前 M9 的模块连接为：
 
-`Vision detected object`
+`Quest SSVEP selection`
 →
-`VR assigns SSVEP target`
+`logical block ID`
 →
-`EEG returns selected class`
+`PC task / command interface`
 →
-`Task selected`
+`MuJoCo Franka FR3 Pick / Place`
 →
-`Robot executes`
+`execution status / feedback`
+
+现实场景的 Vision → SSVEP binding 保留为已完成能力和未来扩展。
 
 ### 5.6 文献与研究支持
 
@@ -470,49 +471,9 @@ Meta Quest 3
 
 ---
 
-## 12. 第一阶段开发路线
+## 12. 历史初期路线
 
-### Milestone 0
-
-项目初始化：
-
-- 目录
-- Git
-- GitHub
-- Markdown项目管理
-- reference整理
-
-### Milestone 1
-
-Unity空项目成功运行到Quest 3。
-
-### Milestone 2
-
-实现Passthrough，并显示一个固定虚拟方块。
-
-### Milestone 3
-
-实现单个指定频率SSVEP闪烁方块。
-
-### Milestone 4
-
-实现三个指定位置、不同频率刺激目标。
-
-### Milestone 5
-
-增加刺激时间、日志和EEG同步接口。
-
-### Milestone 6
-
-接入ND8 EEG并跑通在线分类。
-
-### Milestone 7
-
-开发视觉识别并自动给真实物体绑定刺激目标。
-
-### 后续
-
-机械臂、场景理解和智能任务规划。
+M0–M8 capability history is retained in PROJECT_STATUS.md and development logs. This initial M0–M7 sequence is complete and superseded. The current M9–M15 roadmap is in docs/roadmap/context-aware-bci-shared-autonomy.md.
 
 ---
 
@@ -553,12 +514,6 @@ Codex主要负责“在仓库里执行”。
 
 ---
 
-## 14. 当前最高优先级
+## 14. 当前状态来源
 
-M1–M6 已完成并保留 warnings，M7 视觉→SSVEP binding 已 Completed / PASS，M8.2b 已 Completed / PASS WITH WARNINGS。当前最高优先级为：
-
-> M8.3 — frozen `EEG class → slot → TargetId + world snapshot` downstream selection result
-
-以 `m7_unity6000/` 为唯一 active Unity application；下一阶段只验收该 result 的 Quest event/log，并在后续单独定义机器人消费接口。不得重做已 PASS 的 Passthrough、Camera API、YOLO、official raycast、StableTarget 或 frame-driven SSVEP baseline；不得在接口尚未单独设计前开始机械臂集成。`vr_stimulus/` 仅作为 M1–M6 的代码与实验证据来源。
-
-M6.0–M6.7 已完成并保留 warnings。M6.7 的 `stress_online` session `m6_7-formal-20260820T160940Z-0ef360f6` 在非理想精神/注意力状态下，以冻结 CH2/CH4/CH7（3/5 engineering admission）完成 30 trials、10/10/10 randomized、30/30 technical-valid、30/30 decisions、30/30 post-hoc correct，logical decision 为 2.2 s。该结果是 non-ideal-condition engineering stress evidence，不是 primary formal online accuracy；不能宣称 three-channel equivalence、cross-subject/generalized performance 或 physical end-to-end latency。两次真实 ND8 disconnect 导致的 incomplete preflight 必须保留；随后 120 s ND8-only stability check PASS（594 packets、593 continuous、1 startup anomaly、无 callback/runtime error）。当前冻结 decoder 已足以支持下一阶段 BCI decision → robot command interface 集成，但该集成属于下一 milestone，M6 closeout 不开始 M7 编码。M5/M6 的证据边界继续保留：`hardwareTimingVerified=false`、`physicalOpticalTimingVerified=false`，ND8 hardware sample anchor 与 hardware-exact timing 未验证，sample index 仅为 `software-derived estimate`，且名义刺激频率未获独立 optical measurement。当前 workspace 使用 NumPy 2.2.6 与 SciPy 1.14.1，但仓库尚无正式 requirements/pyproject dependency declaration，属于可复现性 warning。
+当前 milestone、状态和验收边界以 docs/status/PROJECT_STATUS.md 为准；研究方向和 M9–M15 顺序以 docs/roadmap/context-aware-bci-shared-autonomy.md 为准。M1–M8 的历史 EEG/Quest evidence、warnings 与未验证项继续由对应 status 和 development logs 承载，不在这里重复维护。

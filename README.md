@@ -1,44 +1,39 @@
 # BCI Intelligent Robot
 
-基于 Meta Quest 3、SSVEP脑电、视觉识别、场景理解和机械臂的智能脑机接口科研项目。
+研究 Context-aware BCI Shared Autonomy：EEG 提供用户的低带宽 intent evidence，任务 context 逐步支持更高的机器人自主性。
 
 ## Project Goal
 
-系统最终希望实现：
+当前近期 benchmark 使用可控的虚拟桌面与 sequential block manipulation：
 
-用户通过VR/MR观察真实环境，系统识别候选物体并生成SSVEP视觉刺激；用户通过EEG选择目标，系统结合场景上下文推断任务，并控制机械臂执行。
+Quest 3 负责虚拟积木、SSVEP 与交互；PC 负责 EEG 解码和 task logic；MuJoCo 负责 Franka FR3 + UMI gripper 仿真和执行反馈。
 
 总体流程：
 
-`Vision → XR/SSVEP Stimulus → EEG Target Selection → Scene Understanding / Task Reasoning → Robot Execution`
+`Quest SSVEP → EEG block selection → logical block ID → PC task logic → MuJoCo Pick / Place`
+
+Passthrough、Quest Camera、YOLO、StableTarget 和现实场景 SSVEP binding 是 M1–M8 已完成能力与未来扩展，不是当前主要 benchmark。
 
 ## Current Stage
 
-M0 至 M6 已完成并保留各自 warnings 与证据边界；M7 视觉→SSVEP binding 已完成 Quest 3 真机验收：
+M1–M8 工程能力已完成，历史 warnings 和 evidence boundaries 保留。下一阶段是 **M9 — Virtual Manipulation Baseline**；详细当前状态见 [PROJECT_STATUS.md](C:/Users/zsh21/Desktop/BCI_Intelligent_Robot/docs/status/PROJECT_STATUS.md)，研究路线见 [M9–M15 roadmap](C:/Users/zsh21/Desktop/BCI_Intelligent_Robot/docs/roadmap/context-aware-bci-shared-autonomy.md)。
 
-`M7 — Vision-guided SSVEP Target Binding: Completed / PASS`
+M9 的 logical block ID 示例为 `block_red_01`、`block_green_01`、`block_blue_01`。MuJoCo 低层仿真优先复用 `feature/add-robotArm-simulation`；本项目承担 BCI selection、task/command interface、integration、execution status/feedback 和端到端实验。M9 不做 VLM、LLM、Context AI、RL 或 Dynamic Stopping。
 
-M6.1b 的 Session A 是当前最完整的正式 dataset（30/30 QC-valid）。M6.2–M6.7 已完成固定 decoder、replay/live-source 验证与 stress engineering evidence；其 warnings、硬件/光学 timing 边界和未验证项均保留，不因 M7 收口而重新解释。
-
-当前不开始 EEG selection 集成。软件 sample association、硬件 sample anchor、硬件/光学 timing 与名义刺激频率的光学验证仍是证据边界。
-
-EEG 在系统中承担离散 target / intention selection，不承担机械臂关节或位置的连续控制。机械臂 MuJoCo 仿真与底层控制将复用同门系统；本项目负责 BCI→robot command/task interface、integration、execution status/feedback 与端到端实验。
-
-M7 视觉→SSVEP binding 已完成：`m7_unity6000/` 是 Unity 6000.0.66f2 的唯一 active Unity application，基于已在 Quest 3 真机通过的 Meta Passthrough Camera API sample。M7.5 官方检测中心点经 PCA、world ray 和 EnvironmentRaycast 定位至 world marker；M7.6 已将 eligible detection、StableTarget、stable world anchor 与最多三个 frame-driven SSVEP slot 在 Quest 3 真机闭环验证。
-
-`vr_stimulus/` 保留为 Unity 6000.5.8f1 的 M1–M6 历史工程与可复用 SSVEP / trigger 实现。视觉、scene understanding 与 robot integration 的新集成均从 `m7_unity6000/` 开始。
+`m7_unity6000/` 是 Unity 6000.0.66f2 工程；`vr_stimulus/` 是 Unity 6000.5.8f1 的 M1–M6 legacy 工程和可复用代码来源。
 
 ## Main Directories
 
 - `vr_stimulus/` — M1–M6 legacy Unity project（Unity 6000.5.8f1）与已验证 SSVEP / trigger 代码来源
 - `m7_unity6000/` — M7+ active Unity project（Unity 6000.0.66f2；Meta 官方 PCA sample 基线）
-- `vision/` — 视觉识别与空间定位
+- `vision/` — 现实场景视觉能力与未来扩展
 - `eeg/` — ND8采集、预处理和SSVEP分类
-- `robot_arm/` — 机械臂控制
+- `robot_arm/` — 本项目的 BCI-to-task/command 适配和反馈集成
 - `integration/` — 模块集成
 - `experiments/` — 实验记录与结果
 - `reference/` — 只读参考资料
 - `docs/` — 项目文档、决策、文献和开发记录
+- `docs/agent/overnight/` — long-running agent policy 与运行模板
 
 ## AI Development Workflow
 
@@ -52,6 +47,7 @@ Codex在开始任务前应阅读：
 1. `AGENTS.md`
 2. `project_context.md`
 3. `docs/status/PROJECT_STATUS.md`
+4. `docs/roadmap/context-aware-bci-shared-autonomy.md`（涉及研究方向时）
 
 ## Development Principles
 
@@ -72,4 +68,5 @@ Codex在开始任务前应阅读：
 - [x] M5 — Stimulus timing and EEG synchronization
 - [x] M6 — ND8 EEG decoding and validation（Completed / PASS WITH WARNINGS；证据边界保留）
 - [x] M7 — Vision-guided SSVEP Target Binding（Quest 3 PASS；slot 0/1/2 = 7.2/9/12 Hz，`5/4/3` frame-driven）
-- [ ] Next — `SSVEP slot ↔ EEG class ↔ real-world TargetId` integration
+- [x] M8 — SSVEP slot / EEG class / TargetId selection and confirmed batch capability（warnings and evidence boundaries preserved）
+- [ ] Next — M9 Virtual Manipulation Baseline
