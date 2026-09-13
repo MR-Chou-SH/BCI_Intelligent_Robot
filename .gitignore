@@ -68,6 +68,7 @@ desktop.ini
 *.log
 *.tmp
 *.bak
+docs/agent/overnight/runs/
 
 # M7 official-sample generated Unity files (upstream also ignores these)
 m7_unity6000/Packages/packages-lock.json

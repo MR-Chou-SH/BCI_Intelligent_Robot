@@ -14,6 +14,11 @@
 
 ## Verification evidence
 
+- Last green verification (profile / time / source HEAD / summary path):
+- Last verification overall result:
+- FAIL / BLOCKED checks:
+- Verification logs and summary paths:
+
 | Command / validation | Exit/result | Source or input identity | Evidence path |
 |---|---|---|---|
 |  |  |  |  |

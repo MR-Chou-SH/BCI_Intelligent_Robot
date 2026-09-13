@@ -17,11 +17,18 @@
   "currentStepId": null,
   "completedStepIds": [],
   "lastGreenVerification": {
+    "profile": null,
     "stepId": null,
     "command": null,
     "exitCode": null,
+    "summaryPath": null,
     "sourceHead": null,
     "inputIdentity": null,
+    "sourceWorkingTree": {
+      "clean": null,
+      "status": null,
+      "gitDiffCheckExitCode": null
+    },
     "recordedAtUtc": null
   },
   "checkpoint": {

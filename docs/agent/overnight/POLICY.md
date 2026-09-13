@@ -22,6 +22,10 @@ Every run must state one objective, allowed paths and actions, exclusions, a bou
 
 Prefer software tasks that can complete the loop: implement → automatically verify → repair → reverify. Use the verified local runtime and named inputs from the plan. Do not install or upgrade dependencies as an implicit workaround.
 
+The repository's v1 default software profile is `software-default-v1`, invoked with `scripts/agent/verify.ps1`. Record the exact command, selected profile, and output directory in the run plan. The verifier emits a machine-readable `summary.json` plus per-check stdout/stderr logs; when used for an overnight run, pass that run's `docs/agent/overnight/runs/<run-id>/verification` directory with `-OutputDirectory`. The verifier creates a unique invocation subdirectory and never overwrites earlier results. Exit code `0` means all enabled checks passed; `1` means at least one failed; `2` means none failed but at least one is blocked. Disabled candidates are listed as `NOT_ENABLED` and do not count as green. A dirty working tree is reported as state, not treated as a failed check; `git diff --check` and unmerged Git paths are gates.
+
+After a verification, append a `VERIFICATION_COMPLETED` worklog event with its profile, exact command, overall status, exit code, summary path, source HEAD, and working-tree/diff state. Do not copy full test stdout into JSONL. Update `lastGreenVerification` only when the full enabled profile passes; retain failed or blocked summary paths in the worklog and handoff.
+
 After each stable atomic result, append a worklog event and update the state snapshot with the completed step, changed paths, exact verification command, exit code, and last green verification. A green result applies only to the exact code and inputs recorded with it.
 
 Retry a failure only when the next attempt tests a specific new hypothesis or uses new evidence. The plan must bound attempts and time. If retries add no evidence, record BLOCKED and stop that item. Continue independent plan steps only when doing so cannot depend on or overwrite the blocked work.

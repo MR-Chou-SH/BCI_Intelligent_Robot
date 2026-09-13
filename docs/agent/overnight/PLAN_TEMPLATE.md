@@ -41,6 +41,11 @@ If any baseline field changes unexpectedly, stop and record BLOCKED.
 
 ## Steps and verification
 
+- Allowed verification profile:
+- Verification command:
+- Verification output directory:
+- Overall success criteria (profile result and required checks):
+
 | Step | Atomic result | Exact validation command | Expected result | Attempts / timeout | State |
 |---|---|---|---|---|---|
 | 1 |  |  |  |  | NOT STARTED |
