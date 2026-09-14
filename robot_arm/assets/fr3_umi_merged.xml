@@ -1,0 +1,266 @@
+<mujoco model="fr3">
+  <compiler angle="radian" meshdir="meshes" texturedir="meshes"/>
+
+  <option integrator="implicitfast" impratio="10" cone="elliptic" noslip_iterations="2"><flag multiccd="enable"/></option>
+
+  <size nkey="1"/>
+
+  <default>
+    <default class="fr3">
+      <joint armature="0.195" damping="0.21" frictionloss="1.137"/>
+      <site size="0.001 0.005 0.005" group="4" rgba="0.5 0.5 0.5 0.3"/>
+      <general biastype="affine" biasprm="0 -1"/>
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="collision">
+        <geom type="mesh" group="3"/>
+      </default>
+    </default>
+    <default class="umi_main">
+      <default class="umi_umi_gripper">
+        <joint armature="0.1" frictionloss="0.1"/>
+        <general biastype="affine" gainprm="1000" biasprm="0 -1000"/>
+        <default class="umi_screw">
+          <geom size="0.0035 0.0035 0.01" type="cylinder" contype="0" conaffinity="0" material="black"/>
+        </default>
+        <default class="umi_gripper_slide">
+          <joint type="slide" range="-1.2 1.2" damping="0.1"/>
+          <general ctrlrange="-1.2 1.2" gainprm="100" biasprm="0 -100 1"/>
+        </default>
+        <default class="umi_gripper_hinge">
+          <joint range="-31.415 31.415" damping="10.1"/>
+          <general ctrlrange="-3.1415 3.1415" gainprm="10" biasprm="0 -10 0.1"/>
+        </default>
+        <default class="umi_finger_slide">
+          <joint type="slide" stiffness="100" range="0 0.05" damping="10.1"/>
+        </default>
+        <default class="umi_finger_actuator">
+          <general ctrlrange="0 0.05"/>
+        </default>
+        <default class="umi_gripper_actuator">
+          <general ctrlrange="-1.2 1.2" gainprm="100" biasprm="0 -100 1"/>
+        </default>
+        <default class="umi_gripper_rot_actuator">
+          <general ctrlrange="-3.1415 3.1415" gainprm="10" biasprm="0 -10 0.1"/>
+        </default>
+        <default class="umi_visual">
+          <geom type="mesh" contype="0" conaffinity="0" group="2" density="0"/>
+        </default>
+        <default class="umi_collision">
+          <geom type="mesh" group="3"/>
+        </default>
+        <default class="umi_marker">
+          <geom size="0.009 0.009 1e-05" type="box" contype="0" conaffinity="0" material="white"/>
+        </default>
+        <default class="umi_finger_holder_geom">
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" material="white"/>
+        </default>
+      </default>
+    </default>
+  </default>
+
+  <asset>
+    <texture type="2d" colorspace="linear" name="umi_right_aruco_sticker" file="right_aruco_sticker.png"/>
+    <texture type="2d" colorspace="linear" name="umi_left_aruco_sticker" file="left_aruco_sticker.png"/>
+    <material name="black" rgba="0.2 0.2 0.2 1"/>
+    <material name="white"/>
+    <material name="red" rgba="1 0.072272 0.039546 1"/>
+    <material name="gray" rgba="0.863156 0.863156 0.863157 1"/>
+    <material name="button_green" rgba="0.102241 0.571125 0.102242 1"/>
+    <material name="button_red" rgba="0.520996 0.008023 0.013702 1"/>
+    <material name="button_blue" rgba="0.024157 0.445201 0.737911 1"/>
+    <material name="umi_Right_Aruco_Base_Sticker" texture="umi_right_aruco_sticker"/>
+    <material name="umi_Left_Aruco_Base_Sticker" texture="umi_left_aruco_sticker"/>
+    <material name="umi_mirror" texrepeat="5 5" reflectance="1" rgba="0 0 0 1"/>
+    <material name="umi_white"/>
+    <material name="umi_gray" rgba="0.15 0.15 0.15 1"/>
+    <material name="umi_light_gray" rgba="0.6 0.6 0.6 1"/>
+    <material name="umi_orange" rgba="0.92 0.68 0.24 1"/>
+    <material name="umi_black" rgba="0 0 0 1"/>
+    <mesh name="link0_0" content_type="model/obj" file="link0_0.obj"/>
+    <mesh name="link0_1" content_type="model/obj" file="link0_1.obj"/>
+    <mesh name="link0_2" content_type="model/obj" file="link0_2.obj"/>
+    <mesh name="link0_3" content_type="model/obj" file="link0_3.obj"/>
+    <mesh name="link0_4" content_type="model/obj" file="link0_4.obj"/>
+    <mesh name="link0_5" content_type="model/obj" file="link0_5.obj"/>
+    <mesh name="link0_6" content_type="model/obj" file="link0_6.obj"/>
+    <mesh name="link1" content_type="model/obj" file="link1.obj"/>
+    <mesh name="link2" content_type="model/obj" file="link2.obj"/>
+    <mesh name="link3_0" content_type="model/obj" file="link3_0.obj"/>
+    <mesh name="link3_1" content_type="model/obj" file="link3_1.obj"/>
+    <mesh name="link4_0" content_type="model/obj" file="link4_0.obj"/>
+    <mesh name="link4_1" content_type="model/obj" file="link4_1.obj"/>
+    <mesh name="link5_0" content_type="model/obj" file="link5_0.obj"/>
+    <mesh name="link5_1" content_type="model/obj" file="link5_1.obj"/>
+    <mesh name="link5_2" content_type="model/obj" file="link5_2.obj"/>
+    <mesh name="link6_0" content_type="model/obj" file="link6_0.obj"/>
+    <mesh name="link6_1" content_type="model/obj" file="link6_1.obj"/>
+    <mesh name="link6_2" content_type="model/obj" file="link6_2.obj"/>
+    <mesh name="link6_3" content_type="model/obj" file="link6_3.obj"/>
+    <mesh name="link6_4" content_type="model/obj" file="link6_4.obj"/>
+    <mesh name="link6_5" content_type="model/obj" file="link6_5.obj"/>
+    <mesh name="link6_6" content_type="model/obj" file="link6_6.obj"/>
+    <mesh name="link6_7" content_type="model/obj" file="link6_7.obj"/>
+    <mesh name="link7_0" content_type="model/obj" file="link7_0.obj"/>
+    <mesh name="link7_1" content_type="model/obj" file="link7_1.obj"/>
+    <mesh name="link7_2" content_type="model/obj" file="link7_2.obj"/>
+    <mesh name="link7_3" content_type="model/obj" file="link7_3.obj"/>
+    <mesh name="link0_coll" content_type="model/stl" file="link0.stl"/>
+    <mesh name="link1_coll" content_type="model/stl" file="link1.stl"/>
+    <mesh name="link2_coll" content_type="model/stl" file="link2.stl"/>
+    <mesh name="link3_coll" content_type="model/stl" file="link3.stl"/>
+    <mesh name="link4_coll" content_type="model/stl" file="link4.stl"/>
+    <mesh name="link5_coll" content_type="model/stl" file="link5.stl"/>
+    <mesh name="link6_coll" content_type="model/stl" file="link6.stl"/>
+    <mesh name="link7_coll" content_type="model/stl" file="link7.stl"/>
+    <mesh name="umi_base_link" content_type="model/stl" file="base_link.stl" scale="0.55 0.55 0.55"/>
+    <mesh name="umi_left_finger_holder" content_type="model/stl" file="left_finger_holder.stl"/>
+    <mesh name="umi_left_finger" content_type="model/stl" file="left_finger.stl"/>
+    <mesh name="umi_right_finger_holder" content_type="model/stl" file="right_finger_holder.stl"/>
+    <mesh name="umi_right_finger" content_type="model/stl" file="right_finger.stl"/>
+    <mesh name="umi_gopro" content_type="model/stl" file="gopro.stl" scale="0.55 0.55 0.55"/>
+  </asset>
+
+  <worldbody>
+    <body name="base" childclass="fr3">
+      <body name="fr3_link0">
+        <geom class="visual" material="black" mesh="link0_0"/>
+        <geom class="visual" material="white" mesh="link0_1"/>
+        <geom class="visual" material="white" mesh="link0_2"/>
+        <geom class="visual" material="white" mesh="link0_3"/>
+        <geom class="visual" material="white" mesh="link0_4"/>
+        <geom class="visual" material="red" mesh="link0_5"/>
+        <geom class="visual" material="black" mesh="link0_6"/>
+        <geom name="fr3_link0_collision" class="collision" mesh="link0_coll"/>
+        <body name="fr3_link1" pos="0 0 0.333">
+          <inertial pos="4.128e-07 -0.0181251 -0.0386036" quat="0.998098 -0.0605364 0.00380499 0.0110109" mass="2.92747" diaginertia="0.0239286 0.0227246 0.00610634"/>
+          <joint name="fr3_joint1" range="-2.7437 2.7437" actuatorfrcrange="-87 87"/>
+          <geom name="fr3_link1_collision" class="collision" mesh="link1_coll"/>
+          <geom class="visual" material="white" mesh="link1"/>
+          <body name="fr3_link2" quat="0.707107 -0.707107 0 0">
+            <inertial pos="0.00318289 -0.0743222 0.00881461" quat="0.502599 0.584437 -0.465998 0.434366" mass="2.93554" diaginertia="0.0629567 0.0411924 0.0246371"/>
+            <joint name="fr3_joint2" range="-1.7837 1.7837" actuatorfrcrange="-87 87"/>
+            <geom class="visual" material="white" mesh="link2"/>
+            <geom name="fr3_link2_collision" class="collision" mesh="link2_coll"/>
+            <body name="fr3_link3" pos="0 -0.316 0" quat="0.707107 0.707107 0 0">
+              <inertial pos="0.0407016 -0.00482006 -0.0289731" quat="0.921025 -0.244161 0.155272 0.260745" mass="2.2449" diaginertia="0.0267409 0.0189869 0.0171587"/>
+              <joint name="fr3_joint3" range="-2.9007 2.9007" actuatorfrcrange="-87 87"/>
+              <geom class="visual" material="white" mesh="link3_0"/>
+              <geom class="visual" material="black" mesh="link3_1"/>
+              <geom name="fr3_link3_collision" class="collision" mesh="link3_coll"/>
+              <body name="fr3_link4" pos="0.0825 0 0" quat="0.707107 0.707107 0 0">
+                <inertial pos="-0.0459101 0.0630493 -0.00851879" quat="0.438018 0.803311 0.00937812 0.403414" mass="2.6156" diaginertia="0.05139 0.0372717 0.0160047"/>
+                <joint name="fr3_joint4" range="-3.0421 -0.1518" actuatorfrcrange="-87 87"/>
+                <geom class="visual" material="white" mesh="link4_0"/>
+                <geom class="visual" material="black" mesh="link4_1"/>
+                <geom name="fr3_link4_collision" class="collision" mesh="link4_coll"/>
+                <body name="fr3_link5" pos="-0.0825 0.384 0" quat="0.707107 -0.707107 0 0">
+                  <inertial pos="-0.00160396 0.0292536 -0.0972966" quat="0.919031 0.125604 0.0751531 -0.366003" mass="2.32712" diaginertia="0.0579335 0.0449144 0.0130634"/>
+                  <joint name="fr3_joint5" range="-2.8065 2.8065" actuatorfrcrange="-12 12" armature="0.074" frictionloss="0.763"/>
+                  <geom class="visual" material="white" mesh="link5_0"/>
+                  <geom class="visual" material="white" mesh="link5_1"/>
+                  <geom class="visual" material="black" mesh="link5_2"/>
+                  <geom name="fr3_link5_collision" class="collision" mesh="link5_coll"/>
+                  <body name="fr3_link6" quat="0.707107 0.707107 0 0">
+                    <inertial pos="0.0597131 -0.0410295 -0.0101693" quat="0.621301 0.552665 0.510011 0.220081" mass="1.81704" diaginertia="0.0175039 0.0161123 0.00193529"/>
+                    <joint name="fr3_joint6" range="0.5445 4.5169" actuatorfrcrange="-12 12" armature="0.074" frictionloss="0.44"/>
+                    <geom class="visual" material="button_green" mesh="link6_0"/>
+                    <geom class="visual" material="white" mesh="link6_1"/>
+                    <geom class="visual" material="white" mesh="link6_2"/>
+                    <geom class="visual" material="gray" mesh="link6_3"/>
+                    <geom class="visual" material="button_red" mesh="link6_4"/>
+                    <geom class="visual" material="white" mesh="link6_5"/>
+                    <geom class="visual" material="black" mesh="link6_6"/>
+                    <geom class="visual" material="button_blue" mesh="link6_7"/>
+                    <geom name="fr3_link6_collision" class="collision" mesh="link6_coll"/>
+                    <body name="fr3_link7" pos="0.088 0 0" quat="0.707107 0.707107 0 0">
+                      <inertial pos="0.00452258 0.00862619 -0.0161633" quat="0.727579 0.0978688 -0.24906 0.63168" mass="0.627143" diaginertia="0.000223836 0.000223642 5.64132e-07"/>
+                      <joint name="fr3_joint7" range="-3.0159 3.0159" actuatorfrcrange="-12 12" armature="0.074" frictionloss="0.248"/>
+                      <geom class="visual" material="black" mesh="link7_0"/>
+                      <geom class="visual" material="white" mesh="link7_1"/>
+                      <geom class="visual" material="white" mesh="link7_2"/>
+                      <geom class="visual" material="black" mesh="link7_3"/>
+                      <geom name="fr3_link7_collision" class="collision" mesh="link7_coll"/>
+                      <site name="attachment_site" pos="0 0 0.107"/>
+                      <body name="umi_umi_gripper_base" pos="0 0 0.107">
+                        <geom name="umi_linear_guide_rail" class="umi_visual" size="0.044 0.00165 0.0022" pos="0 -0.010325 0.041525" type="box" material="umi_light_gray"/>
+                        <geom name="umi_left_mirror" class="umi_visual" size="0.0165 0.010285 5.5e-05" pos="-0.03795 -0.040575 0.029425" quat="0.828106 0 0.560572 0" type="box" material="umi_mirror"/>
+                        <geom name="umi_right_mirror" class="umi_visual" size="0.0165 0.010285 5.5e-05" pos="0.03795 -0.040575 0.029425" quat="0.828106 0 -0.560572 0" type="box" material="umi_mirror"/>
+                        <geom class="umi_visual" pos="0 -0.009225 0.007425" quat="1 0 0 0" material="umi_white" mesh="umi_base_link"/>
+                        <geom class="umi_collision" pos="0 -0.009225 0.007425" quat="1 0 0 0" mesh="umi_base_link"/>
+                        <geom name="umi_left_center_base_screw" class="umi_screw" size="0.001925 0.001925" pos="-0.0418 -0.019125 0.027225" quat="-0.707107 0.707107 0 0" material="umi_black"/>
+                        <geom name="umi_right_center_base_screw" class="umi_screw" size="0.001925 0.001925" pos="0.0418 -0.019125 0.027225" quat="-0.707107 0.707107 0 0" material="umi_black"/>
+                        <geom name="umi_left_back_base_screw" class="umi_screw" size="0.001925 0.001925" pos="-0.007535 -0.019125 -0.002475" quat="-0.707107 0.707107 0 0" material="umi_black"/>
+                        <geom name="umi_right_back_base_screw" class="umi_screw" size="0.001925 0.001925" pos="0.007535 -0.019125 -0.002475" quat="-0.707107 0.707107 0 0" material="umi_black"/>
+                        <geom class="umi_visual" pos="0.0108075 -0.0525375 -0.00286" quat="0 0 -0.707107 0.707107" material="umi_gray" mesh="umi_gopro"/>
+                        <geom class="umi_collision" pos="0.0108075 -0.0525375 -0.00286" quat="0 0 -0.707107 0.707107" mesh="umi_gopro"/>
+                        <camera name="umi_gripper_gopro" quat="0 1 0 0" pos="0 -0.092 0.04" fovy="155"/>
+                        <body name="umi_left_finger_holder" quat="0.707107 0.707107 0 0">
+                          <inertial pos="-0.0613355 0.104073 -0.0013157" quat="0.49913 0.411547 -0.543302 0.53509" mass="0.080081" diaginertia="0.000104597 0.000102992 1.90532e-05"/>
+                          <joint name="umi_left_finger_joint" class="umi_finger_slide" stiffness="0" axis="1 0 0"/>
+                          <geom name="umi_left_screw_back_outside" class="umi_screw" pos="-0.0515 0.07 0.012" material="umi_black"/>
+                          <geom name="umi_left_screw_back_inside" class="umi_screw" pos="-0.0615 0.07 0.012" material="umi_black"/>
+                          <geom name="umi_left_screw_middle_outside" class="umi_screw" pos="-0.0768 0.0835 0.012" material="umi_black"/>
+                          <geom name="umi_left_screw_middle_inside" class="umi_screw" pos="-0.047 0.0835 0.012" material="umi_black"/>
+                          <geom name="umi_left_screw_front" class="umi_screw" pos="-0.0764 0.119 0.012" material="umi_black"/>
+                          <geom name="umi_left_rail_block" class="umi_visual" size="0.009 0.012 0.004" pos="-0.051 0.063 0.006" type="box" material="umi_gray"/>
+                          <geom name="umi_left_marker" class="umi_marker" pos="-0.062 0.088 0.0164" mass="0" material="umi_Left_Aruco_Base_Sticker"/>
+                          <geom class="umi_visual" material="umi_white" mesh="umi_left_finger_holder"/>
+                          <geom class="umi_collision" mesh="umi_left_finger_holder"/>
+                          <geom class="umi_visual" pos="-0.041722 0.0779 -0.0159" quat="0 0 -0.707107 0.707107" material="umi_orange" mesh="umi_left_finger"/>
+                          <geom class="umi_collision" pos="-0.041722 0.0779 -0.0159" quat="0 0 -0.707107 0.707107" mesh="umi_left_finger"/>
+                        </body>
+                        <body name="umi_right_finger_holder" quat="0.707107 0.707107 0 0">
+                          <inertial pos="0.0613353 0.104073 -0.00131574" quat="0.535092 0.543308 -0.41154 0.499127" mass="0.080081" diaginertia="0.000104597 0.000102992 1.90532e-05"/>
+                          <joint name="umi_right_finger_joint" class="umi_finger_slide" stiffness="0" axis="-1 0 0"/>
+                          <geom name="umi_right_screw_back_outside" class="umi_screw" pos="0.0515 0.07 0.012" material="umi_black"/>
+                          <geom name="umi_right_screw_back_inside" class="umi_screw" pos="0.0615 0.07 0.012" material="umi_black"/>
+                          <geom name="umi_right_screw_middle_outside" class="umi_screw" pos="0.0764 0.0835 0.012" material="umi_black"/>
+                          <geom name="umi_right_screw_middle_inside" class="umi_screw" pos="0.047 0.0835 0.012" material="umi_black"/>
+                          <geom name="umi_right_screw_front" class="umi_screw" pos="0.0764 0.119 0.012" material="umi_black"/>
+                          <geom name="umi_right_rail_block" class="umi_visual" size="0.009 0.012 0.004" pos="0.051 0.063 0.006" type="box" material="umi_gray"/>
+                          <geom name="umi_right_marker" class="umi_marker" pos="0.062 0.088 0.0164" mass="0" material="umi_Right_Aruco_Base_Sticker"/>
+                          <geom class="umi_visual" material="umi_white" mesh="umi_right_finger_holder"/>
+                          <geom class="umi_collision" mesh="umi_right_finger_holder"/>
+                          <geom class="umi_visual" pos="0.041722 0.0779 0.0099" quat="0.707107 0.707107 0 0" material="umi_orange" mesh="umi_right_finger"/>
+                          <geom class="umi_collision" pos="0.041722 0.0779 0.0099" quat="0.707107 0.707107 0 0" mesh="umi_right_finger"/>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude body1="fr3_link0" body2="fr3_link1"/>
+  </contact>
+
+  <tendon>
+    <fixed name="umi_split">
+      <joint joint="umi_right_finger_joint" coef="0.5"/>
+      <joint joint="umi_left_finger_joint" coef="0.5"/>
+    </fixed>
+  </tendon>
+
+  <actuator>
+    <general name="fr3_joint1" class="fr3" joint="fr3_joint1" ctrlrange="-2.7437 2.7437" gainprm="4500" biasprm="0 -4500 -450"/>
+    <general name="fr3_joint2" class="fr3" joint="fr3_joint2" ctrlrange="-1.7837 1.7837" gainprm="4500" biasprm="0 -4500 -450"/>
+    <general name="fr3_joint3" class="fr3" joint="fr3_joint3" ctrlrange="-2.9007 2.9007" gainprm="3500" biasprm="0 -3500 -350"/>
+    <general name="fr3_joint4" class="fr3" joint="fr3_joint4" ctrlrange="-3.0421 -0.1518" gainprm="3500" biasprm="0 -3500 -350"/>
+    <general name="fr3_joint5" class="fr3" joint="fr3_joint5" ctrlrange="-2.8065 2.8065" gainprm="2000" biasprm="0 -2000 -200"/>
+    <general name="fr3_joint6" class="fr3" joint="fr3_joint6" ctrlrange="0.5445 4.5169" gainprm="2000" biasprm="0 -2000 -200"/>
+    <general name="fr3_joint7" class="fr3" joint="fr3_joint7" ctrlrange="-3.0159 3.0159" gainprm="2000" biasprm="0 -2000 -200"/>
+    <general name="umi_fingers_actuator" class="umi_finger_actuator" tendon="umi_split"/>
+  </actuator>
+
+  <keyframe>
+    <key name="home" qpos="0 0 0 -1.57079 0 1.57079 -0.7853 0 0" ctrl="0 0 0 -1.57079 0 1.57079 -0.7853 0"/>
+  </keyframe>
+</mujoco>

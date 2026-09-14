@@ -34,11 +34,13 @@ M7 acceptance boundary:
 
 ### M9 — Virtual Manipulation Baseline
 
-Status: Planned
+Status: In Progress — exact FR3/UMI baseline is integrated behind the logical-ID adapter; the first headless MuJoCo Pick/Place smoke returned `place_ok` in an isolated project-local environment.
+
+The first formal M9 run is on `feature/m9-virtual-manipulation`. The read-only snapshot `a42a0876350f6c94747ce93fa640807b14b18bfd` was inspected and its minimum runtime subset was copied into `robot_arm/`, with every source file and all 44 XML-referenced mesh blobs verified against that commit. `integration/m9_mujoco_execution.py` resolves logical IDs using the baseline's MuJoCo BODY type and calls its existing `GripperGraspPlanner.run_headless()`; it returns structured request/selection provenance, timestamps, baseline result and failure reason without exposing `obj_N` or MuJoCo IDs to the caller. Unit tests exercise this wrapper through an injected fake runtime; separately, the real no-file headless smoke has run with CPython 3.12.14, MuJoCo 3.12.0 and NumPy 2.5.3, returning `place_ok` for `block_sim_01`. The tested dependency set is recorded in `robot_arm/requirements-m9-smoke.txt`; the project-local `.venv/` is ignored and the configured Python 3.9.13 verifier environment remains unchanged. This smoke starts from a synthetic confirmed selection and verifies the software path only; Quest/EEG/hardware were not accessed.
 
 Build a controlled virtual tabletop manipulation baseline: Quest 3 presents virtual blocks and SSVEP interaction; PC performs EEG decoding and maps the selected block to a stable logical block ID; MuJoCo runs the Franka FR3 + UMI gripper simulation and returns execution feedback.
 
-Use logical IDs such as `block_red_01`, `block_green_01`, and `block_blue_01` across Quest selection and MuJoCo objects. Reuse the baseline on `feature/add-robotArm-simulation`; integrate it only in a separately scoped task that explicitly authorizes branch access.
+Use stable logical IDs between Quest selection and MuJoCo objects. The imported baseline scene has four generic, non-color-coded objects, so its default table uses neutral simulation IDs `block_sim_01`–`block_sim_04` mapped explicitly to `obj_0`–`obj_3`. The caller must map confirmed Quest TargetIds to the chosen logical IDs; the mapping does not assert a visual color or task meaning. Reuse the snapshot on `feature/add-robotArm-simulation` without checking out, merging, or modifying that branch.
 
 M9 excludes VLM/LLM, context AI, reinforcement learning, and dynamic stopping. Do not reopen M1–M8 acceptance work as part of M9 by default.
 

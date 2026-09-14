@@ -22,14 +22,16 @@ M9 的 logical block ID 示例为 `block_red_01`、`block_green_01`、`block_blu
 
 `m7_unity6000/` 是 Unity 6000.0.66f2 工程；`vr_stimulus/` 是 Unity 6000.5.8f1 的 M1–M6 legacy 工程和可复用代码来源。
 
+M9 当前复用 FR3 + UMI + MuJoCo 快照 `a42a0876350f6c94747ce93fa640807b14b18bfd`：`robot_arm/` 保存运行所需的原始规划器、预编译模型和被引用网格，`integration/m9_mujoco_execution.py` 实现 logical ID 到场景对象的绑定及 headless 调用。运行环境要求和场景映射说明见 [robot_arm/README.md](C:/Users/zsh21/Desktop/BCI_Intelligent_Robot/robot_arm/README.md)。真实 headless smoke 已在隔离的 CPython 3.12.14 + MuJoCo 3.12.0 环境中返回 `place_ok`；默认 CPython 3.9 verifier 环境保持未安装 MuJoCo。
+
 ## Main Directories
 
 - `vr_stimulus/` — M1–M6 legacy Unity project（Unity 6000.5.8f1）与已验证 SSVEP / trigger 代码来源
 - `m7_unity6000/` — M7+ active Unity project（Unity 6000.0.66f2；Meta 官方 PCA sample 基线）
 - `vision/` — 现实场景视觉能力与未来扩展
 - `eeg/` — ND8采集、预处理和SSVEP分类
-- `robot_arm/` — 本项目的 BCI-to-task/command 适配和反馈集成
-- `integration/` — 模块集成
+- `robot_arm/` — 复用的 FR3/UMI 仿真基线最小运行子集；不含重复 vendor 模型源
+- `integration/` — confirmed selection、logical ID scene binding、机器人 adapter 与执行结果
 - `experiments/` — 实验记录与结果
 - `reference/` — 只读参考资料
 - `docs/` — 项目文档、决策、文献和开发记录

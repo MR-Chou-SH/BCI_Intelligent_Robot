@@ -266,6 +266,16 @@ $pythonChecks = @(
         arguments = @('-B', '-m', 'unittest', 'integration.test_m9_robot_adapter', '-v')
     },
     [pscustomobject]@{
+        id = 'm9-mujoco-execution-contract'
+        name = 'M9 logical scene binding and structured execution result contract'
+        arguments = @('-B', '-m', 'unittest', 'integration.test_m9_mujoco_execution', '-v')
+    },
+    [pscustomobject]@{
+        id = 'm9-mujoco-smoke-cli'
+        name = 'M9 optional headless smoke command interface'
+        arguments = @('-B', '-m', 'integration.m9_mujoco_smoke', '--help')
+    },
+    [pscustomobject]@{
         id = 'm8-live-nd8-unit'
         name = 'M8 live-nd8 dry-run and mocked unit tests'
         arguments = @('-B', '-m', 'unittest', 'integration.test_m8_live_nd8', '-v')
