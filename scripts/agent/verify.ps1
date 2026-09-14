@@ -261,6 +261,11 @@ $pythonChecks = @(
         arguments = @('-B', '-m', 'unittest', 'integration.test_m8_selection_orchestration', '-v')
     },
     [pscustomobject]@{
+        id = 'm9-robot-adapter-contract'
+        name = 'M9 logical object and robot adapter contract'
+        arguments = @('-B', '-m', 'unittest', 'integration.test_m9_robot_adapter', '-v')
+    },
+    [pscustomobject]@{
         id = 'm8-live-nd8-unit'
         name = 'M8 live-nd8 dry-run and mocked unit tests'
         arguments = @('-B', '-m', 'unittest', 'integration.test_m8_live_nd8', '-v')
