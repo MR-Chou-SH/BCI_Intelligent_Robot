@@ -271,6 +271,11 @@ $pythonChecks = @(
         arguments = @('-B', '-m', 'unittest', 'integration.test_m9_mujoco_execution', '-v')
     },
     [pscustomobject]@{
+        id = 'm9-virtual-block-contract'
+        name = 'M9 Unity virtual block identity and explicit logical mapping'
+        arguments = @('-B', '-m', 'unittest', 'integration.test_m9_virtual_block_contract', '-v')
+    },
+    [pscustomobject]@{
         id = 'm9-mujoco-smoke-cli'
         name = 'M9 optional headless smoke command interface'
         arguments = @('-B', '-m', 'integration.m9_mujoco_smoke', '--help')

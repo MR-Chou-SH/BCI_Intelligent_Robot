@@ -48,12 +48,15 @@ namespace BCIIntelligentRobot.Tests
             var parentObject = new GameObject("BciHudParent");
             var bindingObject = new GameObject("BciHudBinding");
             cameraObject.tag = "MainCamera";
-            cameraObject.AddComponent<Camera>();
+            Camera fixtureCamera = cameraObject.AddComponent<Camera>();
             var binding = bindingObject.AddComponent<BciSsvepTargetBinding>();
             var manager = managerObject.AddComponent<DetectionManager>();
 
             try
             {
+                // The active M9 scene can already contain several MainCamera
+                // tags; bind this isolated test to its own camera explicitly.
+                SetMainCamera(binding, fixtureCamera);
                 binding.ConfigureLayout(
                     BciSsvepLayoutMode.ViewLockedHud,
                     BciSsvepDisplayLayout.DefaultHudLocalCenter,
@@ -396,6 +399,14 @@ namespace BCIIntelligentRobot.Tests
                 "LateUpdate",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             method.Invoke(binding, null);
+        }
+
+        private static void SetMainCamera(BciSsvepTargetBinding binding, Camera camera)
+        {
+            FieldInfo field = typeof(BciSsvepTargetBinding).GetField(
+                "m_mainCamera",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            field.SetValue(binding, camera);
         }
     }
 }

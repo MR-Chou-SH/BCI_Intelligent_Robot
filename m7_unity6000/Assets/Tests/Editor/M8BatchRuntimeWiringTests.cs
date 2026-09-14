@@ -200,7 +200,10 @@ namespace BCIIntelligentRobot.Tests
                 Assert.That(indicator, Is.Not.Null);
                 float width = Vector3.Distance(indicator.GetPosition(0), indicator.GetPosition(1));
                 float height = Vector3.Distance(indicator.GetPosition(1), indicator.GetPosition(2));
-                Assert.That(height, Is.GreaterThan(width * 3f));
+                // The runtime clamps tall boxes to a 0.35 width/height ratio,
+                // so their height/width ratio is capped at about 2.857.
+                Assert.That(height, Is.GreaterThan(width * 2.8f));
+                Assert.That(height, Is.LessThanOrEqualTo(width * 3f));
             }
             finally
             {

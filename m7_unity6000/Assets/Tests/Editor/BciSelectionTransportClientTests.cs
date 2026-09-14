@@ -17,6 +17,9 @@ namespace BCIIntelligentRobot.Tests
 {
     public class BciSelectionTransportClientTests
     {
+        private static readonly MethodInfo TransportUpdateMethod = typeof(BciSelectionTransportClient).GetMethod(
+            "Update", BindingFlags.Instance | BindingFlags.NonPublic);
+
         [TestCase(SocketError.TimedOut)]
         [TestCase(SocketError.WouldBlock)]
         public void IdleReadSocketErrors_DoNotBreakConnectedLoop(SocketError socketError)
@@ -131,22 +134,34 @@ namespace BCIIntelligentRobot.Tests
                 using (TcpClient firstConnection = firstAccept.Result)
                 {
                     NetworkStream stream = firstConnection.GetStream();
-                    stream.ReadTimeout = 100;
+                    // The fake server initiates selection_open, then reads the response asynchronously.
                     SendLine(stream, "{\"protocolVersion\":1,\"messageType\":\"selection_open\",\"selectionId\":\"transport-eof-ack\"}");
 
-                    string ack = null;
-                    var textBuffer = new StringBuilder();
+                    Task<LineReadResult> ackReadTask = ReadLineAsync(stream);
                     DateTime ackDeadline = DateTime.UtcNow.AddSeconds(2);
-                    while (ack == null && DateTime.UtcNow < ackDeadline)
+                    while (!ackReadTask.IsCompleted && DateTime.UtcNow < ackDeadline)
                     {
-                        ack = ReadLineIfAvailable(stream, textBuffer);
+                        // EditMode does not drive this MonoBehaviour's Update automatically.
+                        PumpEditModeTransportUpdate(transport);
+                        // Keep the Unity main thread available while socket IO and the transport worker progress.
                         yield return null;
                     }
 
-                    Assert.That(ack, Does.Contain("\"messageType\":\"selection_ack\""));
-                    Assert.That(ack, Does.Contain("\"accepted\":true"));
+                    Assert.That(ackReadTask.IsCompleted, Is.True,
+                        "Timed out waiting for a complete selection_ack line while pumping the transport Update loop.");
+                    LineReadResult ackResult = ackReadTask.GetAwaiter().GetResult();
+                    Assert.That(ackResult, Is.Not.Null, "The async ACK reader must return a result.");
+                    Assert.That(ackResult.Error, Is.Null, "Reading the ACK failed: " + ackResult.Error);
+                    Assert.That(ackResult.RemoteEof, Is.False,
+                        "The transport closed the connection before returning a complete selection_ack line. " +
+                        "Partial response: " + ackResult.PartialData);
+                    string ack = ackResult.Line;
+                    Assert.That(ack, Is.Not.Null, "The server read completed without a complete ACK line.");
+                    StringAssert.Contains("\"messageType\":\"selection_ack\"", ack);
+                    StringAssert.Contains("\"accepted\":true", ack);
                 }
 
+                // Disposing firstConnection above creates remote EOF at the transport, after the ACK is read.
                 Task<TcpClient> secondAccept = listener.AcceptTcpClientAsync();
                 yield return WaitForTask(secondAccept, 2000);
                 Assert.That(secondAccept.IsCompleted, Is.True,
@@ -174,23 +189,58 @@ namespace BCIIntelligentRobot.Tests
             stream.Write(bytes, 0, bytes.Length);
         }
 
-        private static string ReadLineIfAvailable(NetworkStream stream, StringBuilder buffer)
+        private static void PumpEditModeTransportUpdate(BciSelectionTransportClient transport)
         {
-            if (!stream.DataAvailable)
-                return null;
+            if (Application.isPlaying)
+                return;
 
+            Assert.That(TransportUpdateMethod, Is.Not.Null,
+                "The transport main-thread Update method must remain available to the EditMode integration test.");
+            TransportUpdateMethod.Invoke(transport, null);
+        }
+
+        private static async Task<LineReadResult> ReadLineAsync(NetworkStream stream)
+        {
             byte[] bytes = new byte[4096];
-            int count = stream.Read(bytes, 0, bytes.Length);
-            if (count == 0)
-                return null;
-            buffer.Append(Encoding.UTF8.GetString(bytes, 0, count));
-            string all = buffer.ToString();
-            int newline = all.IndexOf('\n');
-            if (newline < 0)
-                return null;
-            string line = all.Substring(0, newline).TrimEnd('\r');
-            buffer.Remove(0, newline + 1);
-            return line;
+            var buffer = new StringBuilder();
+            try
+            {
+                while (true)
+                {
+                    int count = await stream.ReadAsync(bytes, 0, bytes.Length).ConfigureAwait(false);
+                    if (count == 0)
+                        return new LineReadResult(null, true, buffer.ToString(), null);
+
+                    buffer.Append(Encoding.UTF8.GetString(bytes, 0, count));
+                    string all = buffer.ToString();
+                    int newline = all.IndexOf('\n');
+                    if (newline < 0)
+                        continue;
+
+                    string line = all.Substring(0, newline).TrimEnd('\r');
+                    return new LineReadResult(line, false, null, null);
+                }
+            }
+            catch (Exception exception)
+            {
+                return new LineReadResult(null, false, buffer.ToString(), exception);
+            }
+        }
+
+        private sealed class LineReadResult
+        {
+            public LineReadResult(string line, bool remoteEof, string partialData, Exception error)
+            {
+                Line = line;
+                RemoteEof = remoteEof;
+                PartialData = partialData;
+                Error = error;
+            }
+
+            public string Line { get; }
+            public bool RemoteEof { get; }
+            public string PartialData { get; }
+            public Exception Error { get; }
         }
 
         private static BciTargetSelectionResult Result(string selectionId, int slotIndex, string targetId)

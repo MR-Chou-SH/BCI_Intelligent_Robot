@@ -5,6 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 1
+    path: Assets/PassthroughCameraApiSamples/MultiObjectDetection/M9VirtualManipulation.unity
+    guid: 2a1e1c591cf14dd4aa9d7a992a44d0bd
   - enabled: 0
     path: Assets/PassthroughCameraApiSamples/StartScene/StartScene.unity
     guid: 69e1b31c45bac42f88f75017ee404de1

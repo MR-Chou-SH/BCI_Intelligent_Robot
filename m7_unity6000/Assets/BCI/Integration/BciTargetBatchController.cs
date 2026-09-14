@@ -62,7 +62,7 @@ namespace BCIIntelligentRobot.Integration
             m_initialized = true;
             if (m_detectionVisuals != null)
                 m_detectionVisuals.SetBciSelectionPresentationActive(true);
-            else
+            else if (!m_binding.IsVirtualTargetSourceActive)
                 Debug.LogWarning("M8_GROUP raw_detection_visual_not_managed reason=missing_SentisInferenceUiManager", this);
             if (m_detectionManager != null)
                 m_detectionManager.SetBciTargetPresentationActive(true);

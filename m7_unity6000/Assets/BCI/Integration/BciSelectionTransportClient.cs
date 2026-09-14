@@ -252,7 +252,7 @@ namespace BCIIntelligentRobot.Integration
                             stream.ReadTimeout = 100;
                             stream.WriteTimeout = 500;
                             m_diagnostics.Enqueue("M8_SELECTION connection_opened " + m_serverHost + ":" + m_serverPort);
-                            ConnectedLoop(client, stream, Interlocked.Increment(ref m_nextConnectionId));
+                            ConnectedLoop(stream, Interlocked.Increment(ref m_nextConnectionId));
                         }
                     }
                 }
@@ -265,11 +265,13 @@ namespace BCIIntelligentRobot.Integration
             }
         }
 
-        private void ConnectedLoop(TcpClient client, NetworkStream stream, long connectionId)
+        private void ConnectedLoop(NetworkStream stream, long connectionId)
         {
             var receiveBuffer = new byte[4096];
             var textBuffer = new StringBuilder();
-            while (!m_stopRequested && client.Connected)
+            // Read is authoritative for EOF and socket errors. TcpClient.Connected can
+            // report false after a transient timed read even while this stream is usable.
+            while (!m_stopRequested)
             {
                 while (true)
                 {

@@ -96,7 +96,7 @@ namespace BCIIntelligentRobot.Tests
             });
             IReadOnlyList<BciGroupTargetReassociationDecision> decisions =
                 coordinator.EvaluateActiveGroupReassociation(false);
-            Assert.That(decisions, Has.Count.EqualTo(1));
+            Assert.That(decisions.Count, Is.EqualTo(1));
             Assert.That(decisions[0].Outcome, Is.EqualTo(BciGroupTargetReassociationOutcome.Accepted));
             Assert.That(coordinator.TryCommitReassociation(decisions[0]), Is.True);
 

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "tableSizeMeters": { "x": 0.96, "y": 0.05, "z": 0.56 },
+  "blockSizeMeters": { "x": 0.085, "y": 0.085, "z": 0.085 },
+  "slots": [
+    { "slotIndex": 0, "nominalFrequencyHz": 7.2, "framesPerHalfCycle": 5 },
+    { "slotIndex": 1, "nominalFrequencyHz": 9.0, "framesPerHalfCycle": 4 },
+    { "slotIndex": 2, "nominalFrequencyHz": 12.0, "framesPerHalfCycle": 3 }
+  ],
+  "blocks": [
+    {
+      "targetId": "m9-vblock-red-01",
+      "semanticLabel": "red_block",
+      "logicalBlockId": "block_sim_01",
+      "sourceKind": "virtual_block",
+      "localPositionMeters": { "x": -0.32, "y": 0.0425, "z": 0.0 },
+      "color": { "r": 0.82, "g": 0.12, "b": 0.12, "a": 1.0 },
+      "active": true,
+      "selectable": true,
+      "slotEligible": true
+    },
+    {
+      "targetId": "m9-vblock-green-01",
+      "semanticLabel": "green_block",
+      "logicalBlockId": "block_sim_02",
+      "sourceKind": "virtual_block",
+      "localPositionMeters": { "x": -0.105, "y": 0.0425, "z": 0.0 },
+      "color": { "r": 0.12, "g": 0.68, "b": 0.20, "a": 1.0 },
+      "active": true,
+      "selectable": true,
+      "slotEligible": true
+    },
+    {
+      "targetId": "m9-vblock-blue-01",
+      "semanticLabel": "blue_block",
+      "logicalBlockId": "block_sim_03",
+      "sourceKind": "virtual_block",
+      "localPositionMeters": { "x": 0.105, "y": 0.0425, "z": 0.0 },
+      "color": { "r": 0.12, "g": 0.31, "b": 0.86, "a": 1.0 },
+      "active": true,
+      "selectable": true,
+      "slotEligible": true
+    },
+    {
+      "targetId": "m9-vblock-yellow-01",
+      "semanticLabel": "yellow_block",
+      "logicalBlockId": "block_sim_04",
+      "sourceKind": "virtual_block",
+      "localPositionMeters": { "x": 0.32, "y": 0.0425, "z": 0.0 },
+      "color": { "r": 0.95, "g": 0.70, "b": 0.10, "a": 1.0 },
+      "active": true,
+      "selectable": true,
+      "slotEligible": true
+    }
+  ]
+}

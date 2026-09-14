@@ -82,6 +82,7 @@ namespace BCIIntelligentRobot.Vision
         private float m_hudStimulusSizeMeters = BciSsvepDisplayLayout.HudStimulusSizeMeters;
         private bool m_layoutDirty;
         private bool m_initialized;
+        private bool m_usesVirtualTargetSource;
         private bool m_batchGroupModeEnabled;
         private string m_activeGroupId;
         private string m_lastFrozenGroupPresentationSignature;
@@ -91,6 +92,7 @@ namespace BCIIntelligentRobot.Vision
         public bool IsBatchGroupModeEnabled => m_batchGroupModeEnabled;
         public bool HasActiveGroup => !string.IsNullOrWhiteSpace(m_activeGroupId);
         public bool IsSelectionLayoutFrozen => m_layoutFreezeGate.IsFrozen;
+        public bool IsVirtualTargetSourceActive => m_usesVirtualTargetSource;
         public event Action<IReadOnlyList<StableWorldAnchorSnapshot>> HudCandidatesChanged;
 
         public bool IsSlotActiveCandidate(int slotIndex)
@@ -150,13 +152,64 @@ namespace BCIIntelligentRobot.Vision
             }
 
             m_detectionManager = detectionManager;
+            InitializeSlots(contentParent, stimulusSizeMeters);
+            m_detectionManager.StableWorldAnchorUpdated += OnStableWorldAnchorUpdated;
+            Debug.Log("M7_BCI_SLOT binding initialized slots=3 frames_per_half_cycle=5,4,3 stimulus_size_m=" +
+                m_stimulusSizeMeters.ToString("0.##"), this);
+        }
+
+        /// <summary>
+        /// Initializes the unchanged three-slot presentation for a controlled
+        /// virtual scene. This is a separate input path; it does not create or
+        /// emulate a DetectionManager stable-world-anchor event.
+        /// </summary>
+        public bool InitializeVirtualTargets(Transform contentParent, float stimulusSizeMeters)
+        {
+            if (m_initialized || contentParent == null || m_layoutMode != BciSsvepLayoutMode.ViewLockedHud)
+                return false;
+
+            m_usesVirtualTargetSource = true;
+            InitializeSlots(contentParent, stimulusSizeMeters);
+            Debug.Log("M9_VIRTUAL binding initialized source=virtual_block_registry slots=3 frames_per_half_cycle=5,4,3", this);
+            return true;
+        }
+
+        /// <summary>
+        /// Replaces the virtual source's active candidate set with explicit
+        /// stable snapshots. IDs must be unique; identity is never derived from
+        /// GameObject or presentation order.
+        /// </summary>
+        public bool SetVirtualTargetCandidates(IReadOnlyList<StableWorldAnchorSnapshot> candidates)
+        {
+            if (!m_initialized || !m_usesVirtualTargetSource || candidates == null)
+                return false;
+
+            var replacement = new Dictionary<string, StableWorldAnchorSnapshot>(StringComparer.Ordinal);
+            for (int index = 0; index < candidates.Count; index++)
+            {
+                StableWorldAnchorSnapshot candidate = candidates[index];
+                if (candidate.State != StableTargetState.Active ||
+                    string.IsNullOrWhiteSpace(candidate.TargetId) ||
+                    replacement.ContainsKey(candidate.TargetId))
+                    return false;
+                replacement.Add(candidate.TargetId, candidate);
+            }
+
+            m_hudCandidatesByTargetId.Clear();
+            foreach (KeyValuePair<string, StableWorldAnchorSnapshot> candidate in replacement)
+                m_hudCandidatesByTargetId.Add(candidate.Key, candidate.Value);
+
+            RefreshHudAssignments(true);
+            Debug.Log("M9_VIRTUAL candidates_updated count=" + replacement.Count, this);
+            return true;
+        }
+
+        private void InitializeSlots(Transform contentParent, float stimulusSizeMeters)
+        {
             m_contentParent = contentParent;
             m_stimulusSizeMeters = Mathf.Max(0.1f, stimulusSizeMeters);
             CreateStimulusSlots();
-            m_detectionManager.StableWorldAnchorUpdated += OnStableWorldAnchorUpdated;
             m_initialized = true;
-            Debug.Log("M7_BCI_SLOT binding initialized slots=3 frames_per_half_cycle=5,4,3 stimulus_size_m=" +
-                m_stimulusSizeMeters.ToString("0.##"), this);
         }
 
         public BciSelectionSnapshot CreateSelectionSnapshot()
@@ -380,15 +433,15 @@ namespace BCIIntelligentRobot.Vision
             if (m_detectionManager != null)
                 m_detectionManager.StableWorldAnchorUpdated -= OnStableWorldAnchorUpdated;
             if (m_associationMaterial != null)
-                Destroy(m_associationMaterial);
+                DestroyUnityObject(m_associationMaterial);
             if (m_candidateIndicatorMaterial != null)
-                Destroy(m_candidateIndicatorMaterial);
+                DestroyUnityObject(m_candidateIndicatorMaterial);
             if (m_viewLockedHudRoot != null)
-                Destroy(m_viewLockedHudRoot.gameObject);
+                DestroyUnityObject(m_viewLockedHudRoot.gameObject);
             foreach (LineRenderer indicator in m_candidateIndicatorsByTargetId.Values)
             {
                 if (indicator != null)
-                    Destroy(indicator.gameObject);
+                    DestroyUnityObject(indicator.gameObject);
             }
         }
 
@@ -583,7 +636,7 @@ namespace BCIIntelligentRobot.Vision
                 markerRenderer.sharedMaterial = m_associationMaterial;
             Collider markerCollider = marker.GetComponent<Collider>();
             if (markerCollider != null)
-                Destroy(markerCollider);
+                DestroyUnityObject(markerCollider);
             m_slotTargetLabels[slotIndex] = CreateMarkerLabel(marker.transform, slotIndex);
             marker.SetActive(false);
             return marker;
@@ -1048,7 +1101,7 @@ namespace BCIIntelligentRobot.Vision
             {
                 string targetId = staleIds[index];
                 if (m_candidateIndicatorsByTargetId.TryGetValue(targetId, out LineRenderer indicator) && indicator != null)
-                    Destroy(indicator.gameObject);
+                    DestroyUnityObject(indicator.gameObject);
                 m_candidateIndicatorsByTargetId.Remove(targetId);
                 m_candidateIndicatorLabelsByTargetId.Remove(targetId);
                 m_candidateIndicatorAspectRatiosByTargetId.Remove(targetId);
@@ -1138,6 +1191,17 @@ namespace BCIIntelligentRobot.Vision
                 default:
                     return GroupInactiveColor;
             }
+        }
+
+        private static void DestroyUnityObject(UnityEngine.Object target)
+        {
+            if (target == null)
+                return;
+
+            if (Application.isPlaying)
+                UnityEngine.Object.Destroy(target);
+            else
+                UnityEngine.Object.DestroyImmediate(target);
         }
 
         private void HideCandidateIndicators()

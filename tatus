@@ -1,0 +1,21 @@
+warning: in the working copy of 'docs/status/PROJECT_STATUS.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'm7_unity6000/Assets/BCI/Integration/BciSelectionTransportClient.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'm7_unity6000/Assets/BCI/Integration/BciTargetBatchController.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'm7_unity6000/Assets/BCI/TargetBinding/BciSsvepTargetBinding.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'm7_unity6000/Assets/Tests/Editor/BciSelectionTransportClientTests.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'm7_unity6000/Assets/Tests/Editor/BciSsvepDisplayLayoutTests.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'm7_unity6000/Assets/Tests/Editor/BciTargetGroupCoordinatorTests.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'm7_unity6000/Assets/Tests/Editor/M8BatchRuntimeWiringTests.cs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'm7_unity6000/ProjectSettings/EditorBuildSettings.asset', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/agent/verify.ps1', LF will be replaced by CRLF the next time Git touches it
+ docs/status/PROJECT_STATUS.md                      |  2 [32m+[m
+ .../BCI/Integration/BciSelectionTransportClient.cs |  8 [32m+[m[31m-[m
+ .../BCI/Integration/BciTargetBatchController.cs    |  2 [32m+[m[31m-[m
+ .../BCI/TargetBinding/BciSsvepTargetBinding.cs     | 82 [32m++++++++++++++++[m[31m---[m
+ .../Editor/BciSelectionTransportClientTests.cs     | 92 [32m+++++++++++++++++[m[31m-----[m
+ .../Tests/Editor/BciSsvepDisplayLayoutTests.cs     | 13 [32m++[m[31m-[m
+ .../Tests/Editor/BciTargetGroupCoordinatorTests.cs |  2 [32m+[m[31m-[m
+ .../Tests/Editor/M8BatchRuntimeWiringTests.cs      |  5 [32m+[m[31m-[m
+ .../ProjectSettings/EditorBuildSettings.asset      |  3 [32m+[m
+ scripts/agent/verify.ps1                           |  5 [32m++[m
+ 10 files changed, 177 insertions(+), 37 deletions(-)
