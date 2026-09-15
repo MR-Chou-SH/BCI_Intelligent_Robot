@@ -38,7 +38,7 @@ Status after the user-frozen 2026-09-15 campaign: **M11 CONTEXT-ONLY NEXT-TARGET
 
 Compare EEG-only, context-only, and context-plus-EEG selection.
 
-The user-frozen M12 contract reuses the M11 `ContextPrior`, the existing three-class M6/M8 SSVEP seam and explicit slot/TargetId/logical-ID mapping. It treats the existing FBCCA score vector as finite nonnegative `EEGEvidenceScore`, projects the global context prior onto the three active candidates, applies fixed `lambda = 0.5` softening toward uniform, prepares scores with `epsilon = 1e-12`, and normalizes the product as fused evidence. Context may bias but cannot veto an active candidate. M12 is software/replay-only; no FBCCA rewrite, SSVEP redesign, dynamic stopping, Quest, ND8, real EEG or robot execution is in scope.
+Status after the user-frozen 2026-09-15 campaign: **M12 CONTEXT × EEG FUSION BASELINE = SOFTWARE / REPLAY PASS**. The contract reuses the M11 `ContextPrior`, the existing three-class M6/M8 SSVEP seam and explicit slot/TargetId/logical-ID mapping. It treats the existing FBCCA score vector as finite nonnegative `EEGEvidenceScore`, projects the global context prior onto the three active candidates, applies fixed `lambda = 0.5` softening toward uniform, prepares scores with `epsilon = 1e-12`, and normalizes the product as fused evidence. Context may bias but cannot veto an active candidate. The replay acceptance covers uniform/agreement/conflict/override/ambiguity/projection/mass-zero/invalid evidence/determinism and boundary checks. M12 is software/replay-only; no FBCCA rewrite, SSVEP redesign, dynamic stopping, Quest, ND8, real EEG or robot execution is in scope. Stop before M13.
 
 ### M13 — Dynamic Stopping
 
