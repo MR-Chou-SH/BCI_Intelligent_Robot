@@ -1,6 +1,6 @@
 # Assumption-Jump Campaign Status
 
-Last updated: 2026-09-15 (UTC)
+Last updated: 2026-09-16 (UTC)
 
 This ledger separates evidence status from development assumptions. `ASSUMED_PASS`
 is a planning label for software composition only; it is never a substitute for
@@ -13,6 +13,10 @@ real human EEG evidence or a performance claim.
 | M14 full sequential shared-autonomy closed loop | `SOFTWARE / MUJOCO / REPLAY PASS` | `CONFIRMED` | Synthetic EEG/context trajectories drive the existing M8/M9/MuJoCo seams; M10 commits only after `place_ok`. |
 | M15 comparative benchmark and ablation framework | `SOFTWARE / REPLAY PASS` | `CONFIRMED` | Paired A/B/C conditions and descriptive historical replay; no tuning or statistical claim. |
 | M16 experiment/dataset/reproducibility infrastructure | `SOFTWARE READY` | `CONFIRMED` | Manifest, deterministic schedule, stable session layout, resume-safe dry run, analyzer/report composition. |
+| M17 fork diagnostics | `SOFTWARE READY` | `CONFIRMED` | Transparent deterministic diagnostics over synthetic/replay/session-shaped trajectories; no direction selected. |
+| M18 candidate research sandboxes | `SOFTWARE READY / NON-PRODUCTION` | `CONFIRMED` | Offline calibration, sensitivity, uncertainty, adaptation and correction preparation; production defaults unchanged. |
+| M19 experiment-to-report pipeline | `SOFTWARE PASS` | `CONFIRMED` | Idempotent QC, benchmark, diagnostic, sandbox and table package with explicit empty human-data state. |
+| M20 release/recovery hardening | `READY` | `CONFIRMED` | Environment audit, canonical commands, M16/M19 resume checks and one-command synthetic dry run. |
 | M13 real Quest + ND8 human acceptance | `PENDING` | `NOT ATTEMPTED` here | Requires user-operated Quest, ND8 electrodes and physiological EEG. |
 | Sequential human shared-autonomy research result | `PENDING` | `NOT ATTEMPTED` | No accuracy, latency, early-stop benefit, cognitive-load or generalized performance claim is made. |
 

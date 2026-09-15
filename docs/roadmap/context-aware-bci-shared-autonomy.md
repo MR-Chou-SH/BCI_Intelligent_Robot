@@ -85,6 +85,21 @@ reuses the existing M13.5 analyzer/acceptance plus M15 benchmark. The dry run
 passes without Quest, ND8, COM11, human EEG or physical robot. The final human
 protocol remains intentionally unfrozen.
 
+### M17–M20 — Fork-Parallel Preparation Tooling
+
+Status after the 2026-09-16 fork-parallel campaign: **M17 FORK DIAGNOSTICS = SOFTWARE READY; M18 CANDIDATE SANDBOXES = SOFTWARE READY / NON-PRODUCTION; M19 EXPERIMENT-TO-REPORT PIPELINE = SOFTWARE PASS; M20 RELEASE / RECOVERY HARDENING = READY.** This is preparation infrastructure, not a selected post-M13 research method.
+
+`integration/m17_fork_diagnostics.py` classifies observed synthetic/replay
+patterns with transparent deterministic rules and reports candidate directions
+without selecting one. `integration/m18_research_sandboxes.py` provides
+offline-only calibration, sparse context-weight/stopping sensitivity,
+uncertainty, adaptation and correction contracts; production defaults remain
+frozen. `integration/m19_experiment_report.py` composes M16 artifacts into an
+idempotent report package and preserves an explicit empty real-human state.
+`integration/m20_release_readiness.py` audits imports/dependencies, recovery,
+canonical commands and a one-command synthetic dry run. M13 real-human EEG and
+the next formal research direction remain pending.
+
 ## Scope and change control
 
 Use `docs/status/PROJECT_STATUS.md` for the current milestone and its acceptance state. This roadmap records the user-approved research sequence; do not reopen M1–M8 acceptance work or change the sequence without an explicit GPT/user decision.
