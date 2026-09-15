@@ -1,6 +1,23 @@
 # M10 — Deterministic Sequential Task Benchmark
 
-Status: **M10.1 FORMAL SOFTWARE BENCHMARK = PASS / M10 OVERALL NOT COMPLETE**.
+Status: **M10 Sequential Task Benchmark = COMPLETE / SOFTWARE + MUJOCO SIMULATION PASS**.
+
+## M10.2 sequential MuJoCo composition
+
+`integration/m10_mujoco_sequential_e2e.py` composes one confirmed/frozen selection at a time through the existing M9 boundary:
+
+`confirmed selection → TargetId → logical block ID → M10 preflight → existing M9 dispatcher → FR3/UMI MuJoCo result → M10 commit`
+
+The preflight rejects a wrong-order logical ID before the dispatcher is called. A valid step is committed only after the M9 execution result is successful; a backend or adapter failure leaves the M10 state unchanged. The orchestration layer does not change M9 public interfaces, the M10.1 state machine, the M9 scene binding, or the reused low-level planner/controller.
+
+The Stage A software gate passed on 2026-09-15:
+
+- House, Tower, and Bridge each completed their four frozen steps with four M9 dispatches and four `place_ok` MuJoCo outcomes.
+- The representative House `block_sim_01 → block_sim_03` wrong-order case retained the accepted prefix, rejected before dispatch, and recorded zero robot executions for the rejected target.
+- Public evidence contained no `obj_N` simulator-internal names.
+- The focused M10.2 tests passed 3/3; the M10.1/M9 targeted regression passed 35/35.
+
+Evidence: `docs/agent/overnight/runs/m10-2-to-m11-campaign-20260915T092723Z/evidence/m10-2-sequential.jsonl` and `verification/m10-2-summary.json`.
 
 ## Purpose and boundary
 
@@ -58,4 +75,4 @@ The first three commands emit deterministic JSON progression ending in `episodeO
 
 `TaskContext.remainingLogicalBlockIds` and `TaskContext.validNextLogicalBlockIds` are authoritative evaluator/oracle fields for M10. They are not legal future M11 predictor inputs. M11 must not use these answer-bearing fields to fabricate prediction results.
 
-M10.1 does not establish human task comprehension, task recognition, intent inference, context prediction, EEG/context fusion, dynamic stopping, robot execution, or experimental performance. M11 may study context-aware intent prediction as a separately authorized milestone. M12+ work remains out of scope. No Unity, Quest, EEG, hardware, or physical-robot acceptance is claimed here.
+M10.1 and M10.2 do not establish human task comprehension, task recognition, intent inference, context prediction, EEG/context fusion, dynamic stopping, or experimental performance. M10.2 is a software + MuJoCo simulation composition only; it does not claim Quest, EEG/ND8, physical robot, or real-world benefit acceptance. M11 may study context-aware intent prediction as a separately authorized milestone. M12+ work remains out of scope until its fusion contract is frozen.
