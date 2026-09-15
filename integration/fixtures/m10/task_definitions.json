@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "logicalBlockIds": [
+    "block_sim_01",
+    "block_sim_02",
+    "block_sim_03",
+    "block_sim_04"
+  ],
+  "tasks": [
+    {
+      "taskId": "house",
+      "taskName": "House",
+      "orderedLogicalBlockIds": [
+        "block_sim_01",
+        "block_sim_02",
+        "block_sim_03",
+        "block_sim_04"
+      ]
+    },
+    {
+      "taskId": "tower",
+      "taskName": "Tower",
+      "orderedLogicalBlockIds": [
+        "block_sim_01",
+        "block_sim_03",
+        "block_sim_02",
+        "block_sim_04"
+      ]
+    },
+    {
+      "taskId": "bridge",
+      "taskName": "Bridge",
+      "orderedLogicalBlockIds": [
+        "block_sim_01",
+        "block_sim_02",
+        "block_sim_04",
+        "block_sim_03"
+      ]
+    }
+  ],
+  "episodes": {
+    "validFull": [
+      {
+        "episodeId": "house-full",
+        "taskId": "house",
+        "logicalBlockIds": ["block_sim_01", "block_sim_02", "block_sim_03", "block_sim_04"],
+        "expectedStatus": "completed",
+        "expectedEpisodeOutcome": "completed"
+      },
+      {
+        "episodeId": "tower-full",
+        "taskId": "tower",
+        "logicalBlockIds": ["block_sim_01", "block_sim_03", "block_sim_02", "block_sim_04"],
+        "expectedStatus": "completed",
+        "expectedEpisodeOutcome": "completed"
+      },
+      {
+        "episodeId": "bridge-full",
+        "taskId": "bridge",
+        "logicalBlockIds": ["block_sim_01", "block_sim_02", "block_sim_04", "block_sim_03"],
+        "expectedStatus": "completed",
+        "expectedEpisodeOutcome": "completed"
+      }
+    ],
+    "validPartial": [
+      {
+        "episodeId": "house-partial-first-two",
+        "taskId": "house",
+        "logicalBlockIds": ["block_sim_01", "block_sim_02"],
+        "expectedStatus": "in_progress",
+        "expectedEpisodeOutcome": "valid_incomplete",
+        "expectedCurrentStep": 2
+      }
+    ],
+    "invalidTransitions": [
+      {
+        "episodeId": "house-wrong-order-after-red",
+        "taskId": "house",
+        "acceptedPrefix": ["block_sim_01"],
+        "logicalBlockId": "block_sim_03",
+        "expectedReasonCode": "wrong_order",
+        "expectedStatus": "invalid",
+        "expectedEpisodeOutcome": "invalid"
+      },
+      {
+        "episodeId": "house-unknown-logical-id",
+        "taskId": "house",
+        "acceptedPrefix": [],
+        "logicalBlockId": "block_sim_99",
+        "expectedReasonCode": "unknown_logical_block_id",
+        "expectedStatus": "invalid",
+        "expectedEpisodeOutcome": "invalid"
+      },
+      {
+        "episodeId": "house-transition-after-completion",
+        "taskId": "house",
+        "acceptedPrefix": ["block_sim_01", "block_sim_02", "block_sim_03", "block_sim_04"],
+        "logicalBlockId": "block_sim_01",
+        "expectedReasonCode": "task_already_completed",
+        "expectedStatus": "completed",
+        "expectedEpisodeOutcome": "completed"
+      }
+    ]
+  }
+}
