@@ -19,7 +19,7 @@ from integration.m11_context_prediction import ContextPrior
 from integration.m12_context_eeg_fusion import fuse_fbcca_score_vector
 from integration.m13_5_logging import M135SessionLogger
 from integration.m13_5_runtime import M13_5_POLICY, build_default_active_candidates, mapping_public
-from integration.m13_dynamic_stopping import DynamicStoppingInputError, DynamicStoppingPolicy, DynamicStoppingSnapshot
+from integration.m13_dynamic_stopping import DynamicStoppingInputError, DynamicStoppingPolicy, DynamicStoppingSnapshot, WINDOW_GRID_SECONDS
 from integration.m13_m8_selection_integration import dynamic_stopping_decision_to_m8_final_decision
 
 
@@ -180,7 +180,8 @@ class M135LiveOnlineController:
                 state["invalidReason"] = "continuity_failure"
                 return []
             jobs = []
-            while state["nextStop"] <= state["startSample"] + 4000 and self.buffer.stop_sample >= state["nextStop"]:
+            formal_horizon_samples = int(max(WINDOW_GRID_SECONDS) * self.config.input_sampling_rate_hz)
+            while state["nextStop"] <= state["startSample"] + formal_horizon_samples and self.buffer.stop_sample >= state["nextStop"]:
                 jobs.append((state["nextStop"] - self.config.analysis_sample_count, state["nextStop"], packet, state["generation"]))
                 state["nextStop"] += 200
         emitted = []

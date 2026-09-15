@@ -355,6 +355,7 @@ class M8LiveNd8Session:
                 "m13RuntimeMode": "active",
                 "m13SessionLog": "m13.5-session.jsonl",
                 "m13SourceType": "real_nd8_floating_electrodes_no_human_eeg",
+                "liveController": "M135LiveOnlineController",
             })
             self._save_manifest()
             return controller
@@ -535,6 +536,9 @@ class M8LiveNd8Session:
         self._emit_cue("trial_ended")
         m8_result = completed["m8Selection"]
         status = m8_result.get("status")
+        if status == "quest_rejected" and getattr(self.args, "m13_mode", "baseline") == "active":
+            self._record_trial(completed, "quest_rejected", status)
+            return
         if status not in ("quest_accepted", "no_decision"):
             self._record_trial(completed, "failed", status)
             raise M8LiveNd8PreflightError("terminal M8 result: {}".format(status))
