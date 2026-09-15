@@ -107,8 +107,8 @@ def main():
     parser.add_argument("--duration-seconds", type=float, default=15.0)
     parser.add_argument("--sampling-rate", type=float, default=1000.0)
     args = parser.parse_args()
-    if not 10.0 <= args.duration_seconds <= 120.0:
-        parser.error("duration must remain between 10 and 120 seconds for this validation")
+    if not 10.0 <= args.duration_seconds <= 300.0:
+        parser.error("duration must remain between 10 and 300 seconds for this validation")
     if args.sampling_rate != 1000.0:
         parser.error("this validation permits only the confirmed 1000 Hz rate")
     print(run_validation(args.com, args.data_root, args.duration_seconds, args.sampling_rate))
