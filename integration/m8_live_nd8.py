@@ -37,6 +37,7 @@ from integration.m8_selection_orchestration import (
     M8SelectionOrchestrator,
     QuestSelectionTcpServer,
 )
+from integration.m13_5_live_controller import M135LiveOnlineController
 
 
 M8_LIVE_TRIAL_SPECS = (
@@ -317,12 +318,12 @@ class M8LiveTrialCoordinator:
 class M8LiveNd8Session:
     """One external-CPython command for frozen M8.2b live-ND8 trial plans."""
     def __init__(self, args, adapter_factory=Nd8SerialAdapter, transport_factory=QuestSelectionTcpServer,
-                 controller_factory=LiveOnlineController, runtime_validator=validate_vendor_cpython39_runtime,
+                 controller_factory=None, runtime_validator=validate_vendor_cpython39_runtime,
                  countdown=None, sleep=time.sleep, monotonic=time.monotonic, cue=None):
         self.args = args
         self.adapter_factory = adapter_factory
         self.transport_factory = transport_factory
-        self.controller_factory = controller_factory
+        self.controller_factory = controller_factory or self._default_controller_factory
         self.runtime_validator = runtime_validator
         self.countdown = countdown
         self.sleep = sleep
@@ -338,6 +339,26 @@ class M8LiveNd8Session:
         self._runtime_failure = None
         self._selected_channels = []
         self._controller = None
+
+    def _default_controller_factory(self, backend, selected_channels, prediction_log, decision_log):
+        if getattr(self.args, "m13_mode", "baseline") == "active":
+            controller = M135LiveOnlineController(
+                backend,
+                selected_channels,
+                prediction_log,
+                decision_log,
+                session_root=self.root,
+                session_id=self.session_id,
+                software_commit=_git_commit(),
+            )
+            self.manifest.update({
+                "m13RuntimeMode": "active",
+                "m13SessionLog": "m13.5-session.jsonl",
+                "m13SourceType": "real_nd8_floating_electrodes_no_human_eeg",
+            })
+            self._save_manifest()
+            return controller
+        return LiveOnlineController(backend, selected_channels, prediction_log, decision_log)
 
     def _record_cue_warning(self, message):
         self._cue_warnings.append(message)
@@ -507,15 +528,17 @@ class M8LiveNd8Session:
                 self._record_trial(aborted, "aborted", failure)
                 self._emit_cue("trial_ended")
                 raise M8LiveNd8PreflightError(failure)
+            if bool(getattr(self._controller, "decision_ready", False)):
+                break
             self.sleep(0.025)
         completed = coordinator.finish_trial()
         self._emit_cue("trial_ended")
         m8_result = completed["m8Selection"]
         status = m8_result.get("status")
-        if status != "quest_accepted":
+        if status not in ("quest_accepted", "no_decision"):
             self._record_trial(completed, "failed", status)
             raise M8LiveNd8PreflightError("terminal M8 result: {}".format(status))
-        self._record_trial(completed, "accepted", None)
+        self._record_trial(completed, "accepted" if status == "quest_accepted" else "no_decision", None)
 
     def _record_trial(self, completed, status, failure_reason):
         trial = completed["trial"]
@@ -552,6 +575,7 @@ class M8LiveNd8Session:
             selection_plan=getattr(self.args, "selection_plan", "fixed"),
         )
         self.session_id = self.manifest["sessionId"]
+        self.manifest["m13RuntimeMode"] = getattr(self.args, "m13_mode", "baseline")
         self.session_events = AppendOnlyJsonl(self.root / "m8-session-events.jsonl")
         self.trial_results = AppendOnlyJsonl(self.root / "m8-trial-results.jsonl")
         self.orchestration_log = AppendOnlyJsonl(self.root / "m8-orchestration.jsonl")
@@ -598,6 +622,10 @@ class M8LiveNd8Session:
             print("M8.2b live-nd8 failed closed: {}".format(failure), flush=True)
             return 2, self.root
         finally:
+            if self._controller is not None:
+                close_session = getattr(self._controller, "close_session", None)
+                if callable(close_session):
+                    close_session(status, failure)
             if self.adapter is not None:
                 if self.adapter.state.value == "streaming":
                     self.adapter.stop()

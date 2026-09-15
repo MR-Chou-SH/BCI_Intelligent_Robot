@@ -80,6 +80,8 @@ def main(argv=None):
     parser.add_argument("--packet-stall-seconds", default=2.0, type=float)
     parser.add_argument("--selection-plan", default="fixed", choices=("fixed", "free"),
                         help="fixed is the verified slot order; free forwards each decoder class without an expected class")
+    parser.add_argument("--m13-mode", default="baseline", choices=("baseline", "active"),
+                        help="live-nd8 only: preserve baseline by default or explicitly opt in to active M13")
     parser.add_argument("--max-trials", default=3, type=int, choices=(1, 2, 3),
                         help="default frozen three-trial protocol; 1 or 2 enables a shortened demonstration")
     parser.add_argument("--batch-consumer-timeout-seconds", default=45.0, type=float,
@@ -107,7 +109,7 @@ def main(argv=None):
             record = _record_final_batch_delivery(session_root, receipt)
             print(json.dumps(record, ensure_ascii=False, sort_keys=True), flush=True)
         return exit_code
-    if (args.dry_run or args.preflight_only or args.com or args.data_root or
+    if (args.dry_run or args.preflight_only or args.com or args.data_root or args.m13_mode != "baseline" or
             args.selection_plan != "fixed" or args.max_trials != 3):
         parser.error("live-nd8-only arguments require --mode live-nd8")
     if args.event_log is None or not args.selection_id_prefix:

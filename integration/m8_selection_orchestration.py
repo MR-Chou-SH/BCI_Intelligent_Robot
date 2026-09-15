@@ -301,7 +301,10 @@ class M8LiveTrialBridge:
         trial_id = association.get("trialId")
         if not self.selection_orchestrator.open_selection(selection_id, trial_id):
             return False
-        if self.live_controller.start_trial(association):
+        controller_association = dict(association)
+        if getattr(self.live_controller, "accepts_selection_id", False):
+            controller_association["selectionId"] = selection_id
+        if self.live_controller.start_trial(controller_association):
             return True
         self.selection_orchestrator.abort_trial(trial_id, "m6_trial_start_rejected")
         return False
@@ -312,9 +315,17 @@ class M8LiveTrialBridge:
             return None
         combined = dict(result)
         combined["m8Selection"] = self.selection_orchestrator.submit_final_decision(result)
+        recorder = getattr(self.live_controller, "record_final_submission", None)
+        if callable(recorder):
+            recorder(dict(combined["m8Selection"], m13Decision=result.get("m13Decision"),
+                          m13SelectedTargetId=result.get("m13SelectedTargetId"),
+                          m13SelectedLogicalBlockId=result.get("m13SelectedLogicalBlockId")))
         return combined
 
     def abort_trial(self, trial_id, reason):
         selection = self.selection_orchestrator.abort_trial(trial_id, reason)
         decoder_result = self.live_controller.stop_trial(reason)
+        recorder = getattr(self.live_controller, "record_final_submission", None)
+        if callable(recorder):
+            recorder(selection)
         return {"decoderResult": decoder_result, "m8Selection": selection}
