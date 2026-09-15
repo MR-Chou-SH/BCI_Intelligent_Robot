@@ -32,9 +32,13 @@ Define reproducible House / Tower / Bridge tasks and record the task graph, hist
 
 Study `P(Task | History)` and `P(NextTarget | Context)` using the sequential benchmark.
 
+Status at the 2026-09-15 M10 closeout: **M11 NOT STARTED / SPECIFICATION GATE BLOCKED**. The authoritative roadmap names the research questions but does not yet freeze the observable predictor input, whether task identity is visible, the prediction target/output schema, probability or confidence semantics, ground-truth labeling protocol, baseline hypothesis, or machine-verifiable acceptance criteria. M10 `remainingLogicalBlockIds` and `validNextLogicalBlockIds` are evaluator/oracle truth and are explicitly prohibited as M11 predictor inputs. Do not implement M11 until those choices are frozen by GPT/user direction.
+
 ### M12 — Context Prior × EEG Evidence
 
 Compare EEG-only, context-only, and context-plus-EEG selection.
+
+M12 is not entered by default. Before implementation, the authoritative contract must freeze the M11 output, EEG evidence input, fusion rule/math, calibration and normalization, output semantics, offline/replay acceptance, and whether dynamic stopping is in scope. The current roadmap does not define those details.
 
 ### M13 — Dynamic Stopping
 
