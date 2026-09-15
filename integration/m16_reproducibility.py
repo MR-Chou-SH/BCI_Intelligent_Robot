@@ -136,11 +136,6 @@ def run_dry_run(output_dir, session_id=M16_SESSION_ID):
 
     m15_dir = root / "m15"
     m15_summary, m15_trials = run_benchmark()
-    m15_checks = {
-        "status": "PASS" if m15_summary["status"] == "PASS" or True else "FAIL",
-        "trialCount": len(m15_trials),
-        "pairedInputFingerprint": m15_summary["pairedInputFingerprint"],
-    }
     # Let the existing M15 writer own its output formats; it writes deterministic files.
     if not (m15_dir / "m15-summary.json").exists():
         write_outputs(m15_dir)
