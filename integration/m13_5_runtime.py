@@ -8,6 +8,7 @@ it does not decode EEG or alter the frozen M13 policy.
 from dataclasses import dataclass
 import math
 import subprocess
+from typing import Optional
 
 from eeg.decoder.pseudo_online import stabilize
 from integration.m13_dynamic_stopping import (
@@ -90,9 +91,9 @@ class RuntimeTrialResult:
     trial_id: str
     selection_id: str
     runtime_mode: str
-    baseline_decision: DynamicStoppingDecision | None
-    m13_decision: DynamicStoppingDecision | None
-    submission: dict | None
+    baseline_decision: Optional[DynamicStoppingDecision]
+    m13_decision: Optional[DynamicStoppingDecision]
+    submission: Optional[dict]
     closed: bool
 
     def to_public_dict(self):
