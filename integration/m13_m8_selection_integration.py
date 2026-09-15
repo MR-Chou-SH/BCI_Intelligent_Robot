@@ -23,6 +23,7 @@ def dynamic_stopping_decision_to_m8_final_decision(decision, trial_id, session_i
         "finalDecisionLabel": None,
         "decisionPredictionIndex": decision.stop_window,
         "decisionRelativeTimeSeconds": decision.effective_acquisition_seconds,
+        "reason": decision.stop_reason,
         "m13StopReason": decision.stop_reason,
         "m13SelectedLogicalBlockId": decision.selected_logical_block_id,
         "m13SelectedTargetId": decision.selected_target_id,
