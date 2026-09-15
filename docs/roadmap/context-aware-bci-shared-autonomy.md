@@ -52,9 +52,38 @@ The 10-case synthetic trajectory acceptance, deterministic evidence output, thin
 
 Study reduction of the number of EEG interactions required to complete a task.
 
+Status after the assumption-jump software campaign: **M14 FULL SEQUENTIAL SHARED-AUTONOMY CLOSED LOOP = SOFTWARE / MUJOCO / REPLAY PASS; REAL HUMAN SEQUENTIAL BCI PENDING**.
+
+`integration/m14_sequential_closed_loop.py` composes observable-history M11
+context, M12 fusion, M13 dynamic stopping, the frozen M8 final-decision seam,
+the existing M9 TargetId/logical-ID dispatcher and the existing FR3/UMI MuJoCo
+adapter. House, Tower and Bridge each complete four synthetic-evidence steps;
+M10 advances only after a successful MuJoCo `place_ok`. No-decision, wrong-target,
+robot-failure and duplicate-final-decision cases fail closed. This is software,
+simulation and replay evidence, not a human sequential experiment.
+
 ### M15 — Experimental Evaluation / Paper
 
 Consolidate benchmark protocol, comparisons, results, limitations, and publication materials.
+
+Status after the same campaign: **M15 COMPARATIVE BENCHMARK & ABLATION FRAMEWORK = SOFTWARE / REPLAY PASS**.
+
+`integration/m15_comparative_benchmark.py` provides paired EEG-only,
+context+EEG full-window and context+EEG+M13 dynamic-stop conditions over the
+same deterministic inputs, with machine-readable JSON/JSONL/CSV descriptive
+metrics. The registered M6.5b historical fixture can be replayed read-only with
+the existing synthetic context overlay. No parameter tuning, significance or
+human-performance claim is produced.
+
+### M16 — Experiment, Dataset & Reproducibility Infrastructure
+
+Status after the same campaign: **M16 EXPERIMENT / DATASET / REPRODUCIBILITY INFRASTRUCTURE = SOFTWARE READY; REAL HUMAN DATASET PENDING**.
+
+`integration/m16_reproducibility.py` creates a pseudonymous session manifest,
+seeded development schedule, stable dataset layout, resume-safe checkpoint and
+reuses the existing M13.5 analyzer/acceptance plus M15 benchmark. The dry run
+passes without Quest, ND8, COM11, human EEG or physical robot. The final human
+protocol remains intentionally unfrozen.
 
 ## Scope and change control
 
