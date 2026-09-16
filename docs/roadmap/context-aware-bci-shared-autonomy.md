@@ -100,6 +100,29 @@ idempotent report package and preserves an explicit empty real-human state.
 canonical commands and a one-command synthetic dry run. M13 real-human EEG and
 the next formal research direction remain pending.
 
+### M13.6 — MuJoCo ↔ Quest Real-Time Visualization Sync
+
+Status after the 2026-09-16 software campaign: **M13.6 MUJOCO ↔ QUEST VISUAL
+SYNC = SOFTWARE READY; REAL QUEST VISUAL ACCEPTANCE PENDING**.
+
+`integration/m13_6_visual_sync.py` publishes the MuJoCo authoritative world as
+an independent UDP latest-state-wins stream on port `11002`; the existing M8
+selection/control TCP path on `11001` is unchanged. The stream carries the
+seven FR3 joint values, UMI finger state, robot base pose and all four logical
+block poses using the existing `block_sim_01..04` mapping. The Quest receiver
+validates protocol/version/sequence/identity, interpolates the latest valid
+state on the Unity main thread, and updates the existing M9 visual rig and
+logical block targets. Public telemetry never exposes MuJoCo `obj_N` names.
+
+The M13.6 protocol, coordinate transform, stale/duplicate rejection, static
+Quest contract and real MuJoCo Pick/Lift/Place stream tests pass in the project
+Python 3.12 environment. A four-block continuous MuJoCo stream completed all
+four `place_ok` operations with monotonic sequence numbers. Unity source and
+runtime auto-installation are statically verified; Unity build/device
+verification and visual alignment still require a later user-operated Quest
+session. This milestone does not use ND8, EEG, COM11 or the physical robot and
+does not modify M11–M13.
+
 ## Scope and change control
 
 Use `docs/status/PROJECT_STATUS.md` for the current milestone and its acceptance state. This roadmap records the user-approved research sequence; do not reopen M1–M8 acceptance work or change the sequence without an explicit GPT/user decision.
