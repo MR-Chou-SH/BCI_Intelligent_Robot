@@ -99,6 +99,13 @@ namespace BCIIntelligentRobot.Tests
                 Assert.That(binding.GetCandidateVisualState("left"), Is.EqualTo(BciCandidateVisualState.Available));
                 Assert.That(binding.GetCandidateVisualState("other"), Is.EqualTo(BciCandidateVisualState.Inactive));
 
+                Assert.That(binding.SetExecutionPresentationHidden(true, "test_execution"), Is.True);
+                Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.False);
+                InvokeLifecycle(binding, "LateUpdate");
+                Assert.That(GetCandidateIndicator(binding, "center").gameObject.activeSelf, Is.False);
+                Assert.That(binding.SetExecutionPresentationHidden(false, "test_selection_open"), Is.True);
+                Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.True);
+
                 Assert.That(binding.SetGroupSlotSelected("group-1", 0, true), Is.True);
                 Assert.That(binding.GetCandidateVisualState("left"), Is.EqualTo(BciCandidateVisualState.Selected));
 
@@ -106,6 +113,20 @@ namespace BCIIntelligentRobot.Tests
                 binding.SetProcessedTargetIds(new[] { "left", "center", "right" }, new[] { "left" });
                 Assert.That(binding.GetCandidateVisualState("left"), Is.EqualTo(BciCandidateVisualState.Submitted));
                 Assert.That(binding.GetCandidateVisualState("center"), Is.EqualTo(BciCandidateVisualState.Inactive));
+                Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.False);
+                Assert.That(GetCandidateIndicator(binding, "center").gameObject.activeSelf, Is.False);
+
+                // LateUpdate must not resurrect selection presentation while
+                // the controller is executing the accepted batch.
+                InvokeLifecycle(binding, "LateUpdate");
+                Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.False);
+                Assert.That(GetCandidateIndicator(binding, "center").gameObject.activeSelf, Is.False);
+
+                // A new selection group is the lifecycle event that restores
+                // the presentation objects.
+                Assert.That(binding.ActivateGroup("group-2", group), Is.True);
+                Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.True);
+                Assert.That(GetCandidateIndicator(binding, "center").gameObject.activeSelf, Is.True);
             }
             finally
             {
@@ -277,6 +298,14 @@ namespace BCIIntelligentRobot.Tests
                 methodName,
                 BindingFlags.Instance | BindingFlags.NonPublic);
             method.Invoke(controller, null);
+        }
+
+        private static void InvokeLifecycle(BciSsvepTargetBinding binding, string methodName)
+        {
+            MethodInfo method = typeof(BciSsvepTargetBinding).GetMethod(
+                methodName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            method.Invoke(binding, null);
         }
     }
 }

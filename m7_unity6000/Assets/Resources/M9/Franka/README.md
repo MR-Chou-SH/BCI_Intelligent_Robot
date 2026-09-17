@@ -1,0 +1,11 @@
+# M9 Franka FR3 + UMI Unity visual assets
+
+These meshes reuse the fixed MuJoCo baseline snapshot `a42a0876350f6c94747ce93fa640807b14b18bfd`, specifically the 28 visual FR3 OBJ meshes and six UMI visual meshes referenced by `robot_arm/assets/fr3_umi_merged.xml`. The eight FR3 collision STL meshes are intentionally excluded.
+
+The FR3 OBJ geometry is copied with missing `mtllib`/`usemtl` directives removed. The UMI visual STLs are converted to OBJ with triangle normals by `scripts/tools/export_m9_franka_unity_meshes.py`. Unity loads these models through its built-in OBJ importer. Unity's importer mirrors the source OBJ X vertex axis when converting the right-handed asset into Unity mesh space, so `M9FrankaVisualFactory` applies one inverse `(-1, 1, 1)` scale on each dedicated geometry frame. The M9 factory mirrors MJCF link transforms, color assignments, and the 0.55 scale on `umi_base_link` and `umi_gopro`; imported roots remain identity. Each MJCF geom transform is applied on a dedicated geometry-frame GameObject, leaving the imported model root's transform intact. The complete robot is scaled by 0.7 on `FrankaRoot`; link and joint scales remain unchanged. It uses a fixed, baseline-FK-derived near-table presentation pose so the UMI fingers sit just above the blocks; this differs from the MuJoCo default folded keyframe and is not runtime IK. The named `fr3_joint1`–`fr3_joint7` and UMI finger-joint transforms remain under `FrankaRoot`.
+
+`M9WorkspaceRoot` provides symmetric `LeftRobotAnchor` and `RightRobotAnchor` transforms. The current visual is parented to the left anchor at local position `(-0.24, 0.006, 0.25)` m; the right anchor is reserved and empty. These anchors are scene layout only and do not represent a second arm execution chain.
+
+This is a visual-only Unity representation. Robot renderers do not cast or receive shadows, and the robot contains no colliders, IK, physics controller, or MuJoCo transport. `M9FrankaVisualRig.TrySetJointValue` is the named transform interface reserved for a later MuJoCo pose mirror; it does not send commands to the robot backend.
+
+The corresponding Apache-2.0 Franka and MIT UMI license texts are included in `Licenses/` next to `Meshes/`.

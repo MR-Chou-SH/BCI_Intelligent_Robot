@@ -10,6 +10,8 @@ class M136VisualReadinessTests(unittest.TestCase):
         self.assertEqual(report["status"], "PASS", report)
         self.assertEqual(report["stream"]["selectionTcpPort"], 11001)
         self.assertEqual(report["stream"]["udpPort"], 11002)
+        self.assertEqual(report["stream"]["tcpPort"], 11002)
+        self.assertEqual(report["stream"]["transportModes"], ["auto", "udp", "tcp"])
         self.assertFalse(report["hardware"]["questOperated"])
         self.assertNotIn("obj_", json.dumps(report, sort_keys=True))
 

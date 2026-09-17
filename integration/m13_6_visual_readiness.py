@@ -36,6 +36,17 @@ def _port_available(port):
         sock.close()
 
 
+def _tcp_port_available(port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.bind(("127.0.0.1", int(port)))
+        return True
+    except OSError:
+        return False
+    finally:
+        sock.close()
+
+
 def readiness_report():
     receiver_source = RECEIVER_PATH.read_text(encoding="utf-8") if RECEIVER_PATH.exists() else ""
     installer_source = INSTALLER_PATH.read_text(encoding="utf-8") if INSTALLER_PATH.exists() else ""
@@ -44,7 +55,8 @@ def readiness_report():
     mapping_ids = set(DEFAULT_M9_SCENE_BINDINGS)
     checks = [
         _check("protocol_version", M13_6_PROTOCOL_VERSION == 1 and M13_6_MESSAGE_TYPE == "m13_6_robot_world_state", "M13.6 protocol v1 is defined"),
-        _check("independent_udp_port", M13_6_UDP_PORT == 11002 and _port_available(M13_6_UDP_PORT), "UDP 11002 is available for the visual stream; TCP 11001 remains control-only"),
+        _check("independent_udp_port", M13_6_UDP_PORT == 11002 and _port_available(M13_6_UDP_PORT), "UDP 11002 is available for the preferred visual stream; TCP 11001 remains control-only"),
+        _check("independent_tcp_port", M13_6_UDP_PORT == 11002 and _tcp_port_available(M13_6_UDP_PORT), "TCP 11002 is available for the visual compatibility stream; it is separate from TCP 11001 control"),
         _check("frozen_mapping", mapping_ids == {"block_sim_01", "block_sim_02", "block_sim_03", "block_sim_04"} and catalog_ids == mapping_ids, "logical block mapping and Quest catalog contain the same four logical IDs"),
         _check("unity_receiver_files", RECEIVER_PATH.is_file() and INSTALLER_PATH.is_file(), "Quest receiver and runtime installer files exist"),
         _check("unity_main_thread_update", "private void Update()" in receiver_source and "ApplyInterpolatedFrame" in receiver_source, "Transform writes are driven from Unity Update"),
@@ -59,7 +71,7 @@ def readiness_report():
         "schemaVersion": 1,
         "recordType": "m13_6_visual_sync_readiness",
         "status": "PASS" if not hard_failures else "BLOCKED",
-        "stream": {"protocolVersion": M13_6_PROTOCOL_VERSION, "messageType": M13_6_MESSAGE_TYPE, "udpPort": M13_6_UDP_PORT, "mappingVersion": M13_6_MAPPING_VERSION, "targetRateHz": "30-60", "selectionTcpPort": 11001},
+        "stream": {"protocolVersion": M13_6_PROTOCOL_VERSION, "messageType": M13_6_MESSAGE_TYPE, "udpPort": M13_6_UDP_PORT, "tcpPort": M13_6_UDP_PORT, "transportModes": ["auto", "udp", "tcp"], "mappingVersion": M13_6_MAPPING_VERSION, "targetRateHz": "30-60", "selectionTcpPort": 11001},
         "checks": checks,
         "hardware": {"questOperated": False, "nd8Operated": False, "com11Opened": False, "newEegCollected": False, "physicalRobotOperated": False},
         "limitations": ["Quest Unity compile/build and visual observation are not claimed", "UDP availability is a local PC bind check only", "table and block visual assets are not geometrically identical to the MuJoCo scene and require Quest observation/calibration"],

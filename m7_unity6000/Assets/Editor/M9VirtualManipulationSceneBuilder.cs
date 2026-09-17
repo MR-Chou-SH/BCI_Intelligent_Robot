@@ -21,6 +21,7 @@ namespace BCIIntelligentRobot.Editor
             "Assets/PassthroughCameraApiSamples/MultiObjectDetection/M9VirtualManipulation.unity";
         private const string DetectionRootName = "DetectionManagerPrefab";
         private const string BootstrapRootName = "M9VirtualManipulationBootstrap";
+        private static readonly Color VirtualBackgroundColor = new Color(0.055f, 0.075f, 0.105f, 1f);
 
         [MenuItem("Tools/M9/Build Virtual Manipulation Scene")]
         public static void GenerateOrUpdate()
@@ -37,10 +38,14 @@ namespace BCIIntelligentRobot.Editor
             if (detector == null || detector.gameObject.name != DetectionRootName)
                 throw new InvalidOperationException("Expected the copied scene to contain its DetectionManagerPrefab root.");
             detector.gameObject.SetActive(false);
+            SetRootActive(scene, "[BuildingBlock] Passthrough", false);
             SetRootActive(scene, "DetectionUiMenuPrefab", false);
             SetRootActive(scene, "SentisInferenceManagerPrefab", false);
             SetRootActive(scene, "PassthroughCameraAccessPrefab", false);
             SetRootActive(scene, "EnvironmentRaycastPrefab", false);
+            SetRootActive(scene, "ReturnToStartScene", false);
+            DisableInsightPassthrough(scene);
+            ConfigureVirtualCameras(scene);
 
             GameObject bootstrapRoot = FindRoot(scene, BootstrapRootName);
             if (bootstrapRoot == null)
@@ -97,6 +102,50 @@ namespace BCIIntelligentRobot.Editor
             if (root == null)
                 throw new InvalidOperationException("Expected copied scene root was not found: " + rootName);
             root.SetActive(active);
+        }
+
+        private static void DisableInsightPassthrough(Scene scene)
+        {
+            bool foundProperty = false;
+            GameObject[] roots = scene.GetRootGameObjects();
+            for (int rootIndex = 0; rootIndex < roots.Length; rootIndex++)
+            {
+                Component[] components = roots[rootIndex].GetComponentsInChildren<Component>(true);
+                for (int componentIndex = 0; componentIndex < components.Length; componentIndex++)
+                {
+                    Component component = components[componentIndex];
+                    if (component == null)
+                        continue;
+
+                    var serialized = new SerializedObject(component);
+                    SerializedProperty passthrough = serialized.FindProperty("isInsightPassthroughEnabled");
+                    if (passthrough == null || passthrough.propertyType != SerializedPropertyType.Boolean)
+                        continue;
+
+                    passthrough.boolValue = false;
+                    serialized.ApplyModifiedPropertiesWithoutUndo();
+                    foundProperty = true;
+                }
+            }
+
+            if (!foundProperty)
+                throw new InvalidOperationException("Could not find the M9 scene's OVRManager passthrough setting.");
+        }
+
+        private static void ConfigureVirtualCameras(Scene scene)
+        {
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color(0.58f, 0.61f, 0.66f, 1f);
+            GameObject[] roots = scene.GetRootGameObjects();
+            for (int rootIndex = 0; rootIndex < roots.Length; rootIndex++)
+            {
+                Camera[] cameras = roots[rootIndex].GetComponentsInChildren<Camera>(true);
+                for (int cameraIndex = 0; cameraIndex < cameras.Length; cameraIndex++)
+                {
+                    cameras[cameraIndex].clearFlags = CameraClearFlags.SolidColor;
+                    cameras[cameraIndex].backgroundColor = VirtualBackgroundColor;
+                }
+            }
         }
     }
 }

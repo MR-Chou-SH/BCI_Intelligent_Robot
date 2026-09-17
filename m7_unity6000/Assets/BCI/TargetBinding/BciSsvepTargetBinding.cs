@@ -22,6 +22,13 @@ namespace BCIIntelligentRobot.Vision
     [DisallowMultipleComponent]
     public sealed class BciSsvepTargetBinding : MonoBehaviour
     {
+        private enum PresentationLifecycleState
+        {
+            NoActiveGroup,
+            SelectionOpen,
+            RobotExecution
+        }
+
         private static readonly float[] NominalFrequenciesHz = { 7.2f, 9f, 12f };
         private const string StimulusMaterialResourcePath = "BCI/SSVEP/SSVEP_Unlit";
         private const float TargetMarkerSizeMeters = 0.035f;
@@ -32,6 +39,11 @@ namespace BCIIntelligentRobot.Vision
         private const float CandidateIndicatorMinimumAspectRatio = 0.35f;
         private const float CandidateIndicatorMaximumAspectRatio = 2.85f;
         private const float CandidateIndicatorAspectSmoothing = 0.35f;
+        // Keep exactly one final face correction for the actual Quad/TextMesh
+        // front conventions. The look-at basis below is intentionally reversed
+        // from the old presentation path; do not stack another 180-degree turn.
+        private static readonly Quaternion FinalPresentationFaceCorrection =
+            Quaternion.AngleAxis(180f, Vector3.up);
         private static readonly Color DefaultAssociationColor = new Color(0.1f, 0.75f, 0.95f, 0.75f);
         private static readonly Color GroupAvailableColor = new Color(0.15f, 0.95f, 0.25f, 1f);
         private static readonly Color GroupSelectedColor = new Color(0.15f, 0.45f, 1f, 1f);
@@ -85,6 +97,7 @@ namespace BCIIntelligentRobot.Vision
         private bool m_usesVirtualTargetSource;
         private bool m_batchGroupModeEnabled;
         private string m_activeGroupId;
+        private PresentationLifecycleState m_presentationState = PresentationLifecycleState.NoActiveGroup;
         private string m_lastFrozenGroupPresentationSignature;
         private string m_lastFrozenGroupIdentityRelationSignature;
 
@@ -254,12 +267,49 @@ namespace BCIIntelligentRobot.Vision
                 return;
 
             m_batchGroupModeEnabled = false;
+            m_presentationState = PresentationLifecycleState.NoActiveGroup;
             m_activeGroupId = null;
             m_processedTargetIds.Clear();
             m_submittedTargetIds.Clear();
             Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
             HideCandidateIndicators();
             RefreshHudAssignments(true);
+        }
+
+        /// <summary>
+        /// Presentation-only bridge for the independent M13.6 visual demo.
+        /// It shares the M8 binding's hide/show gate without changing the
+        /// active target group or its frozen identity.
+        /// </summary>
+        public bool SetExecutionPresentationHidden(bool hidden, string reason)
+        {
+            if (!m_initialized || !m_batchGroupModeEnabled)
+                return false;
+
+            PresentationLifecycleState nextState = hidden
+                ? PresentationLifecycleState.RobotExecution
+                : (HasActiveGroup
+                    ? PresentationLifecycleState.SelectionOpen
+                    : PresentationLifecycleState.NoActiveGroup);
+            if (m_presentationState == nextState)
+                return true;
+
+            m_presentationState = nextState;
+            if (nextState == PresentationLifecycleState.SelectionOpen && HasActiveGroup &&
+                !m_layoutFreezeGate.IsFrozen)
+            {
+                RefreshLiveLayout();
+                RefreshCandidateIndicators(BuildGroupPresentationCandidates(BuildOrderedHudCandidates()));
+            }
+            else
+            {
+                HideSelectionPresentation();
+            }
+
+            Debug.Log("M8_PRESENTATION state=" + nextState +
+                " reason=" + (string.IsNullOrWhiteSpace(reason) ? "unspecified" : reason) +
+                " active_group=" + (HasActiveGroup ? m_activeGroupId : "none"), this);
+            return true;
         }
 
         /// <summary>Applies one already ordered, frozen group to slots 0/1/2.</summary>
@@ -297,9 +347,13 @@ namespace BCIIntelligentRobot.Vision
                     SetSlotCandidateActive(slot, false);
                 }
             }
+            bool wasPresentationSuppressed = m_presentationState != PresentationLifecycleState.SelectionOpen;
+            m_presentationState = PresentationLifecycleState.SelectionOpen;
             m_layoutDirty = true;
             RefreshLiveLayout();
             RefreshCandidateIndicators(BuildGroupPresentationCandidates(BuildOrderedHudCandidates()));
+            if (wasPresentationSuppressed)
+                Debug.Log("M8_PRESENTATION state=SelectionOpen reason=group_activated active_group=" + groupId, this);
             Debug.Log("M8_GROUP activated group_id=" + groupId + " targets=" + targets.Count, this);
             return true;
         }
@@ -363,7 +417,8 @@ namespace BCIIntelligentRobot.Vision
                 return false;
 
             ClearActiveGroupPresentation();
-            RefreshCandidateIndicators(BuildOrderedHudCandidates());
+            HideCandidateIndicators();
+            Debug.Log("M8_PRESENTATION state=NoActiveGroup reason=group_ended active_group=none", this);
             Debug.Log("M8_GROUP ended group_id=" + groupId, this);
             return true;
         }
@@ -376,7 +431,10 @@ namespace BCIIntelligentRobot.Vision
             m_submittedTargetIds.Clear();
             AddTargetIds(m_processedTargetIds, processedTargetIds);
             AddTargetIds(m_submittedTargetIds, submittedTargetIds);
-            RefreshCandidateIndicators(BuildOrderedHudCandidates());
+            if (HasActiveGroup)
+                RefreshCandidateIndicators(BuildOrderedHudCandidates());
+            else
+                HideCandidateIndicators();
         }
 
         /// <summary>
@@ -482,16 +540,19 @@ namespace BCIIntelligentRobot.Vision
                     // Quest orientation is the opposite of the camera-facing
                     // direction used by TextMesh, so face the Quad with -Z
                     // toward the HMD and keep labels explicitly camera-facing.
-                    slotObject.transform.rotation = Quaternion.LookRotation(-cameraDirection.normalized);
+                    slotObject.transform.rotation =
+                        Quaternion.LookRotation(cameraDirection.normalized) * FinalPresentationFaceCorrection;
                     if (m_slotLabels[slot] != null)
-                        m_slotLabels[slot].transform.rotation = Quaternion.LookRotation(cameraDirection.normalized);
+                        m_slotLabels[slot].transform.rotation =
+                            Quaternion.LookRotation(-cameraDirection.normalized) * FinalPresentationFaceCorrection;
                 }
 
                 if (m_slotTargetLabels[slot] != null && m_slotTargetMarkers[slot] != null)
                 {
                     Vector3 markerDirection = m_mainCamera.transform.position - m_slotTargetMarkers[slot].transform.position;
                     if (markerDirection.sqrMagnitude > Mathf.Epsilon)
-                        m_slotTargetLabels[slot].transform.rotation = Quaternion.LookRotation(markerDirection.normalized);
+                        m_slotTargetLabels[slot].transform.rotation =
+                            Quaternion.LookRotation(-markerDirection.normalized) * FinalPresentationFaceCorrection;
                 }
             }
         }
@@ -744,6 +805,12 @@ namespace BCIIntelligentRobot.Vision
 
             if (m_batchGroupModeEnabled)
             {
+                if (!HasActiveGroup || m_presentationState != PresentationLifecycleState.SelectionOpen)
+                {
+                    HideCandidateIndicators();
+                    return;
+                }
+
                 if (!m_layoutFreezeGate.IsFrozen)
                     RefreshCandidateIndicators(BuildGroupPresentationCandidates(ordered));
                 return;
@@ -823,6 +890,7 @@ namespace BCIIntelligentRobot.Vision
 
         private void ClearActiveGroupPresentation()
         {
+            m_presentationState = PresentationLifecycleState.NoActiveGroup;
             m_activeGroupId = null;
             m_lastFrozenGroupPresentationSignature = null;
             m_lastFrozenGroupIdentityRelationSignature = null;
@@ -1044,8 +1112,11 @@ namespace BCIIntelligentRobot.Vision
 
         private void RefreshCandidateIndicators(IReadOnlyList<StableWorldAnchorSnapshot> candidates)
         {
-            if (!m_batchGroupModeEnabled)
+            if (!m_batchGroupModeEnabled || m_presentationState != PresentationLifecycleState.SelectionOpen)
+            {
+                HideCandidateIndicators();
                 return;
+            }
 
             if (m_mainCamera == null)
                 m_mainCamera = Camera.main;
@@ -1211,6 +1282,13 @@ namespace BCIIntelligentRobot.Vision
                 if (indicator != null)
                     indicator.gameObject.SetActive(false);
             }
+        }
+
+        private void HideSelectionPresentation()
+        {
+            HideCandidateIndicators();
+            for (int slot = 0; slot < m_slotObjects.Length; slot++)
+                SetSlotPresentationVisible(slot, false);
         }
 
         private void ApplySlotAssociationColor(int slotIndex, Color color)
@@ -1381,6 +1459,9 @@ namespace BCIIntelligentRobot.Vision
         {
             if (slotIndex < 0 || slotIndex >= m_slotObjects.Length)
                 return;
+
+            if (m_batchGroupModeEnabled && m_presentationState != PresentationLifecycleState.SelectionOpen)
+                visible = false;
 
             if (m_stimulusController != null)
                 m_stimulusController.SetSlotVisible(slotIndex, visible);

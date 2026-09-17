@@ -24,6 +24,13 @@ namespace BCIIntelligentRobot.Integration
 
         public bool OwnsBatchInput => m_initialized && m_binding != null && m_binding.IsBatchGroupModeEnabled;
 
+        public bool SetM13_6ExecutionPresentation(bool execution, string reason)
+        {
+            if (!m_initialized || m_binding == null)
+                return false;
+            return m_binding.SetExecutionPresentationHidden(execution, reason);
+        }
+
         public void Initialize(
             BciSsvepTargetBinding binding,
             BciSelectionTransportClient transport,
@@ -144,6 +151,7 @@ namespace BCIIntelligentRobot.Integration
 
         private void OnSelectionOpened(string selectionId)
         {
+            m_binding.SetExecutionPresentationHidden(false, "m8_selection_open");
             if (m_groups.HasActiveGroup)
                 m_pendingSelectionId = selectionId;
         }
