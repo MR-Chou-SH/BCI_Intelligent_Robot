@@ -1,0 +1,285 @@
+{
+  "alignedFusion": {
+    "activeCandidates": [
+      {
+        "logicalBlockId": "block_assist_button_04",
+        "nominalFrequencyHz": 7.2,
+        "slotIndex": 0,
+        "targetId": "assist_button_switch"
+      },
+      {
+        "logicalBlockId": "block_assist_charger_05",
+        "nominalFrequencyHz": 9.0,
+        "slotIndex": 1,
+        "targetId": "assist_wireless_charger"
+      },
+      {
+        "logicalBlockId": "block_assist_user_zone_06",
+        "nominalFrequencyHz": 12.0,
+        "slotIndex": 2,
+        "targetId": "assist_user_zone"
+      }
+    ],
+    "contextAcceleratesRankingPass": true,
+    "fusion": {
+      "contextPreferredClass": "block_assist_charger_05",
+      "contextPreferredLogicalBlockIds": [
+        "block_assist_charger_05"
+      ],
+      "contextStrength": 0.4545454545454546,
+      "eegConfidence": 0.45,
+      "eegMargin": 0.15000000000000002,
+      "entries": [
+        {
+          "contextPriorActive": 0.2727272727272727,
+          "contextPriorGlobal": 0.15,
+          "contextPriorSoft": 0.303030303030303,
+          "eegEvidenceScore": 0.3,
+          "logicalBlockId": "block_assist_button_04",
+          "nominalFrequencyHz": 7.2,
+          "normalizedFusedEvidence": 0.24489795918367346,
+          "preparedEegEvidenceScore": 0.3,
+          "slotIndex": 0,
+          "targetId": "assist_button_switch"
+        },
+        {
+          "contextPriorActive": 0.7272727272727273,
+          "contextPriorGlobal": 0.4,
+          "contextPriorSoft": 0.5303030303030303,
+          "eegEvidenceScore": 0.45,
+          "logicalBlockId": "block_assist_charger_05",
+          "nominalFrequencyHz": 9.0,
+          "normalizedFusedEvidence": 0.6428571428571429,
+          "preparedEegEvidenceScore": 0.45,
+          "slotIndex": 1,
+          "targetId": "assist_wireless_charger"
+        },
+        {
+          "contextPriorActive": 0.0,
+          "contextPriorGlobal": 0.0,
+          "contextPriorSoft": 0.16666666666666666,
+          "eegEvidenceScore": 0.25,
+          "logicalBlockId": "block_assist_user_zone_06",
+          "nominalFrequencyHz": 12.0,
+          "normalizedFusedEvidence": 0.11224489795918369,
+          "preparedEegEvidenceScore": 0.25,
+          "slotIndex": 2,
+          "targetId": "assist_user_zone"
+        }
+      ],
+      "finalPrediction": "block_assist_charger_05",
+      "fusionMode": "context_assisted",
+      "isStrongEeg": false,
+      "overrideReason": null,
+      "rawEegPrediction": "block_assist_charger_05",
+      "rawEegTopLogicalBlockIds": [
+        "block_assist_charger_05"
+      ],
+      "tie": false,
+      "topLogicalBlockIds": [
+        "block_assist_charger_05"
+      ],
+      "topTargetIds": [
+        "assist_wireless_charger"
+      ]
+    },
+    "rawSyntheticEegScores": {
+      "block_assist_button_04": 0.3,
+      "block_assist_charger_05": 0.45,
+      "block_assist_user_zone_06": 0.25
+    }
+  },
+  "neutralFusion": {
+    "contextPreferredClass": null,
+    "contextPreferredLogicalBlockIds": [
+      "block_assist_button_04",
+      "block_assist_charger_05",
+      "block_assist_user_zone_06"
+    ],
+    "contextStrength": 0.0,
+    "eegConfidence": 0.3333333333333333,
+    "eegMargin": 0.0,
+    "entries": [
+      {
+        "contextPriorActive": 0.3333333333333333,
+        "contextPriorGlobal": 0.3333333333333333,
+        "contextPriorSoft": 0.3333333333333333,
+        "eegEvidenceScore": 1.0,
+        "logicalBlockId": "block_assist_button_04",
+        "nominalFrequencyHz": 7.2,
+        "normalizedFusedEvidence": 0.3333333333333333,
+        "preparedEegEvidenceScore": 1.0,
+        "slotIndex": 0,
+        "targetId": "assist_button_switch"
+      },
+      {
+        "contextPriorActive": 0.3333333333333333,
+        "contextPriorGlobal": 0.3333333333333333,
+        "contextPriorSoft": 0.3333333333333333,
+        "eegEvidenceScore": 1.0,
+        "logicalBlockId": "block_assist_charger_05",
+        "nominalFrequencyHz": 9.0,
+        "normalizedFusedEvidence": 0.3333333333333333,
+        "preparedEegEvidenceScore": 1.0,
+        "slotIndex": 1,
+        "targetId": "assist_wireless_charger"
+      },
+      {
+        "contextPriorActive": 0.3333333333333333,
+        "contextPriorGlobal": 0.3333333333333333,
+        "contextPriorSoft": 0.3333333333333333,
+        "eegEvidenceScore": 1.0,
+        "logicalBlockId": "block_assist_user_zone_06",
+        "nominalFrequencyHz": 12.0,
+        "normalizedFusedEvidence": 0.3333333333333333,
+        "preparedEegEvidenceScore": 1.0,
+        "slotIndex": 2,
+        "targetId": "assist_user_zone"
+      }
+    ],
+    "finalPrediction": null,
+    "fusionMode": "context_neutral",
+    "isStrongEeg": false,
+    "overrideReason": null,
+    "rawEegPrediction": null,
+    "rawEegTopLogicalBlockIds": [
+      "block_assist_button_04",
+      "block_assist_charger_05",
+      "block_assist_user_zone_06"
+    ],
+    "tie": true,
+    "topLogicalBlockIds": [
+      "block_assist_button_04",
+      "block_assist_charger_05",
+      "block_assist_user_zone_06"
+    ],
+    "topTargetIds": [
+      "assist_button_switch",
+      "assist_wireless_charger",
+      "assist_user_zone"
+    ]
+  },
+  "phoneAffordancePrior": {
+    "interpretation": "rule-based normalized semantic affordance weights; not calibrated probabilities",
+    "requiredOrderPass": true,
+    "vector": [
+      {
+        "probability": 0.4,
+        "targetId": "assist_wireless_charger"
+      },
+      {
+        "probability": 0.3,
+        "targetId": "assist_storage_box"
+      },
+      {
+        "probability": 0.15,
+        "targetId": "assist_medicine_box"
+      },
+      {
+        "probability": 0.15,
+        "targetId": "assist_button_switch"
+      }
+    ]
+  },
+  "sourceHistoryLogicalIds": [
+    "block_assist_phone_03"
+  ],
+  "status": "PASS",
+  "strongEegConflict": {
+    "activeCandidates": [
+      {
+        "logicalBlockId": "block_assist_medicine_01",
+        "nominalFrequencyHz": 7.2,
+        "slotIndex": 0,
+        "targetId": "assist_medicine_box"
+      },
+      {
+        "logicalBlockId": "block_assist_storage_02",
+        "nominalFrequencyHz": 9.0,
+        "slotIndex": 1,
+        "targetId": "assist_storage_box"
+      },
+      {
+        "logicalBlockId": "block_assist_phone_03",
+        "nominalFrequencyHz": 12.0,
+        "slotIndex": 2,
+        "targetId": "assist_phone"
+      }
+    ],
+    "contextPriorLogical": {
+      "block_assist_button_04": 0.15,
+      "block_assist_charger_05": 0.4,
+      "block_assist_medicine_01": 0.15,
+      "block_assist_storage_02": 0.3
+    },
+    "contextTopLogicalBlockId": "block_assist_charger_05",
+    "fusion": {
+      "contextPreferredClass": "block_assist_storage_02",
+      "contextPreferredLogicalBlockIds": [
+        "block_assist_storage_02"
+      ],
+      "contextStrength": 0.33333333333333337,
+      "eegConfidence": 0.9,
+      "eegMargin": 0.8200000000000001,
+      "entries": [
+        {
+          "contextPriorActive": 0.33333333333333337,
+          "contextPriorGlobal": 0.15,
+          "contextPriorSoft": 0.33333333333333337,
+          "eegEvidenceScore": 0.9,
+          "logicalBlockId": "block_assist_medicine_01",
+          "nominalFrequencyHz": 7.2,
+          "normalizedFusedEvidence": 0.9,
+          "preparedEegEvidenceScore": 0.9,
+          "slotIndex": 0,
+          "targetId": "assist_medicine_box"
+        },
+        {
+          "contextPriorActive": 0.6666666666666667,
+          "contextPriorGlobal": 0.3,
+          "contextPriorSoft": 0.5,
+          "eegEvidenceScore": 0.08,
+          "logicalBlockId": "block_assist_storage_02",
+          "nominalFrequencyHz": 9.0,
+          "normalizedFusedEvidence": 0.08,
+          "preparedEegEvidenceScore": 0.08,
+          "slotIndex": 1,
+          "targetId": "assist_storage_box"
+        },
+        {
+          "contextPriorActive": 0.0,
+          "contextPriorGlobal": 0.0,
+          "contextPriorSoft": 0.16666666666666666,
+          "eegEvidenceScore": 0.02,
+          "logicalBlockId": "block_assist_phone_03",
+          "nominalFrequencyHz": 12.0,
+          "normalizedFusedEvidence": 0.02,
+          "preparedEegEvidenceScore": 0.02,
+          "slotIndex": 2,
+          "targetId": "assist_phone"
+        }
+      ],
+      "finalPrediction": "block_assist_medicine_01",
+      "fusionMode": "eeg_strong_override",
+      "isStrongEeg": true,
+      "overrideReason": "unique_raw_eeg_top_margin_gte_0.20",
+      "rawEegPrediction": "block_assist_medicine_01",
+      "rawEegTopLogicalBlockIds": [
+        "block_assist_medicine_01"
+      ],
+      "tie": false,
+      "topLogicalBlockIds": [
+        "block_assist_medicine_01"
+      ],
+      "topTargetIds": [
+        "assist_medicine_box"
+      ]
+    },
+    "overridePass": true,
+    "rawSyntheticEegScores": {
+      "block_assist_medicine_01": 0.9,
+      "block_assist_phone_03": 0.02,
+      "block_assist_storage_02": 0.08
+    }
+  }
+}

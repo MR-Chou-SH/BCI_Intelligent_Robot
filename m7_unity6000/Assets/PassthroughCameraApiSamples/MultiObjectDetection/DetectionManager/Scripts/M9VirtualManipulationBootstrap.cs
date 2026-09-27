@@ -48,6 +48,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
         [SerializeField] private string m_selectionServerHost = "192.168.43.168";
         [SerializeField, Min(1)] private int m_selectionServerPort = 11001;
+        [SerializeField] private BciSelectionInteractionMode m_selectionInteractionMode = BciSelectionInteractionMode.LegacyGrouped;
+        [SerializeField] private bool m_useM20AssistiveDeskProfile = false;
         [SerializeField] private Vector3 m_hudLocalCenter = new Vector3(0f, 0.18f, 0.85f);
         [SerializeField, Min(0f)] private float m_hudHorizontalSpacingMeters = 0.32f;
         [SerializeField, Min(0.1f)] private float m_hudStimulusSizeMeters = 0.20f;
@@ -182,10 +184,42 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             if (m_initialized)
                 return true;
 
+            if (m_selectionInteractionMode == BciSelectionInteractionMode.ResearchAcquisitionV1)
+            {
+                DisableM9SampleNavigation();
+                ConfigureVirtualBackground(viewCamera);
+                BciSelectionTransportClient researchTransport = GetComponent<BciSelectionTransportClient>();
+                if (researchTransport == null)
+                    researchTransport = gameObject.AddComponent<BciSelectionTransportClient>();
+                researchTransport.InitializeResearchOnly(m_selectionServerHost, m_selectionServerPort);
+
+                BciM19ResearchAcquisitionController researchController =
+                    GetComponent<BciM19ResearchAcquisitionController>();
+                if (researchController == null)
+                    researchController = gameObject.AddComponent<BciM19ResearchAcquisitionController>();
+                researchController.Initialize(researchTransport);
+                m_initialized = researchController.IsInitialized;
+                if (!m_initialized)
+                    Debug.LogError("M19_RESEARCH initialization_failed", this);
+                else
+                    Debug.Log("M19_RESEARCH mode_ready fixed_slots=YELLOW_7.2,BLUE_9,GREEN_12 " +
+                        "selection_queue=false m9_dispatch=false", this);
+                return m_initialized;
+            }
+
             M9VirtualBlockCatalogData catalog;
+            M20AssistiveDeskSceneSpec m20SceneSpec = null;
             try
             {
-                catalog = M9VirtualBlockCatalog.LoadFromResources();
+                if (m_useM20AssistiveDeskProfile)
+                {
+                    m20SceneSpec = M20AssistiveDeskUnityScene.LoadFromResources();
+                    catalog = M20AssistiveDeskUnityScene.CreatePagedQueueCatalog(m20SceneSpec);
+                }
+                else
+                {
+                    catalog = M9VirtualBlockCatalog.LoadFromResources();
+                }
             }
             catch (System.Exception error)
             {
@@ -196,7 +230,26 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             DisableM9SampleNavigation();
             ConfigureVirtualBackground(viewCamera);
             CreateWorkspace(catalog, headPosition, headForward);
-            List<StableWorldAnchorSnapshot> candidates = CreateBlocks(catalog);
+            List<StableWorldAnchorSnapshot> candidates;
+            if (m20SceneSpec != null)
+            {
+                List<GameObject> targetRoots;
+                M20AssistiveDeskArticulationController articulationController;
+                candidates = M20AssistiveDeskUnityScene.CreateTargets(
+                    m20SceneSpec,
+                    m_blocksRoot,
+                    gameObject,
+                    SetRendererColor,
+                    out targetRoots,
+                    out articulationController);
+                m_createdTargets.AddRange(targetRoots);
+                Debug.Log("M20_ASSISTIVE articulation_ready editor_context_menu_available=" +
+                    articulationController.IsInitialized, this);
+            }
+            else
+            {
+                candidates = CreateBlocks(catalog);
+            }
             if (candidates.Count < 3)
             {
                 Debug.LogError("M9_VIRTUAL scene_invalid selectable_candidate_count=" + candidates.Count, this);
@@ -222,10 +275,25 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 transport = gameObject.AddComponent<BciSelectionTransportClient>();
             transport.Initialize(binding, m_selectionServerHost, m_selectionServerPort);
 
-            BciTargetBatchController batchController = GetComponent<BciTargetBatchController>();
-            if (batchController == null)
-                batchController = gameObject.AddComponent<BciTargetBatchController>();
-            batchController.Initialize(binding, transport);
+            if (m_selectionInteractionMode == BciSelectionInteractionMode.PagedQueueV1)
+            {
+                BciPagedTargetQueueController pagedController = GetComponent<BciPagedTargetQueueController>();
+                if (pagedController == null)
+                    pagedController = gameObject.AddComponent<BciPagedTargetQueueController>();
+                pagedController.Initialize(binding, transport, catalog, useCatalogCandidateOrder: m20SceneSpec != null);
+
+                BciTargetBatchController presentationBridge = GetComponent<BciTargetBatchController>();
+                if (presentationBridge == null)
+                    presentationBridge = gameObject.AddComponent<BciTargetBatchController>();
+                presentationBridge.InitializePresentationBridge(binding);
+            }
+            else
+            {
+                BciTargetBatchController batchController = GetComponent<BciTargetBatchController>();
+                if (batchController == null)
+                    batchController = gameObject.AddComponent<BciTargetBatchController>();
+                batchController.Initialize(binding, transport);
+            }
 
             if (!binding.SetVirtualTargetCandidates(candidates))
             {
@@ -270,7 +338,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 Debug.LogError("M9_VIRTUAL franka_visual_initialization_failed", this);
             else
                 M9FrankaVisualFactory.LogTransformDiagnostics(robot.transform);
-            CreateFloorInstructionText();
+            if (!m_useM20AssistiveDeskProfile)
+                CreateFloorInstructionText();
             CreateVirtualKeyLight();
         }
 
@@ -438,7 +507,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 GameObject block = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 block.name = "M9_VirtualBlock_" + definition.targetId;
                 block.transform.SetParent(m_blocksRoot, false);
-                block.transform.localPosition = definition.localPositionMeters;
+                block.transform.localPosition = CanonicalM13_6StartupBlockPosition(definition.localPositionMeters);
                 block.transform.localScale = M13_6VisualBlockSize;
 
                 M9VirtualBlockTarget identity = block.AddComponent<M9VirtualBlockTarget>();
@@ -450,6 +519,21 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             }
 
             return candidates;
+        }
+
+        public static Vector3 M13_6StartupBlockVisualSize => M13_6VisualBlockSize;
+
+        public static Vector3 CanonicalM13_6StartupBlockPosition(Vector3 catalogLocalPosition)
+        {
+            // The M13.6 runtime cube is 56 mm tall and rests on the same
+            // table-frame origin used by MuJoCo telemetry. Keep the frozen
+            // catalog's horizontal anchors, but start its visual center at
+            // half the canonical runtime size so the first telemetry frame
+            // does not move it vertically.
+            return new Vector3(
+                catalogLocalPosition.x,
+                M13_6VisualBlockSize.y * 0.5f,
+                catalogLocalPosition.z);
         }
 
         private void SetRendererColor(Renderer renderer, Color color)

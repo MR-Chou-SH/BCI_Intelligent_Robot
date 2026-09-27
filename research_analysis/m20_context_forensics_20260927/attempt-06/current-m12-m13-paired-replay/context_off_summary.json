@@ -1,0 +1,45 @@
+{
+  "branch": "off",
+  "n_total": 89,
+  "n_correct": 89,
+  "accuracy": 1.0,
+  "early_stop_count": 0,
+  "early_stop_rate": 0.0,
+  "fallback_count": 89,
+  "fallback_rate": 1.0,
+  "wrong_early_stop_count": 0,
+  "mean_decision_time": 4.0,
+  "median_decision_time": 4.0,
+  "p90_decision_time": 4.0,
+  "mean_saved_time_vs_4s": 0.0,
+  "median_saved_time": 0.0,
+  "decision_reasons": {
+    "full_window_fallback": 89
+  },
+  "per_frequency": {
+    "7.2": {
+      "n": 30,
+      "n_correct": 30,
+      "accuracy": 1.0,
+      "early_stop_count": 0,
+      "mean_decision_time": 4.0,
+      "mean_saved_time": 0.0
+    },
+    "9": {
+      "n": 29,
+      "n_correct": 29,
+      "accuracy": 1.0,
+      "early_stop_count": 0,
+      "mean_decision_time": 4.0,
+      "mean_saved_time": 0.0
+    },
+    "12": {
+      "n": 30,
+      "n_correct": 30,
+      "accuracy": 1.0,
+      "early_stop_count": 0,
+      "mean_decision_time": 4.0,
+      "mean_saved_time": 0.0
+    }
+  }
+}

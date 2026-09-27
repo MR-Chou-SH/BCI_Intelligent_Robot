@@ -129,6 +129,29 @@ namespace BCIIntelligentRobot.Tests
             Assert.That(received, Is.Empty);
         }
 
+        [Test]
+        public void AuthoritativeSnapshotIdentityMismatchIsTerminallyRejected()
+        {
+            var coordinator = new BciSelectionCoordinator();
+            BciSelectionSnapshot snapshot = new BciSelectionSnapshot(
+                "python-snapshot-7",
+                7,
+                new[]
+                {
+                    new BciSelectionTarget(0, "target-0", "cup", StableTargetState.Active),
+                    new BciSelectionTarget(1, "target-1", "bottle", StableTargetState.Active),
+                    new BciSelectionTarget(2, "target-2", "book", StableTargetState.Active),
+                });
+
+            Assert.That(coordinator.Open("selection-authority", snapshot).IsAccepted, Is.True);
+            Assert.That(
+                coordinator.Resolve("selection-authority", 1, "stale-snapshot", 6).Rejection,
+                Is.EqualTo(BciSelectionTransportRejection.TargetInvalid));
+            Assert.That(
+                coordinator.Resolve("selection-authority", 1, "python-snapshot-7", 7).Rejection,
+                Is.EqualTo(BciSelectionTransportRejection.DuplicateDecision));
+        }
+
         private static BciSelectionSnapshot Snapshot(string slot0, string slot1, string slot2)
         {
             return new BciSelectionSnapshot(new[]

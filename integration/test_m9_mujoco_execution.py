@@ -1,6 +1,10 @@
 """Pure-software tests for M9 scene binding and execution feedback."""
 
 import unittest
+import copy
+from dataclasses import replace
+
+import numpy as np
 
 from integration import m9_robot_adapter as contract
 from integration.m9_mujoco_execution import (
@@ -93,6 +97,9 @@ class FakeMujocoRuntime(FakeMujocoApi):
     class mjtObj:
         mjOBJ_BODY = 1
 
+    class mjtJoint:
+        mjJNT_FREE = 0
+
     @classmethod
     def mj_resetData(cls, model, data):
         cls.resets.append((model, data))
@@ -130,6 +137,57 @@ class FakeBaselinePlanner:
             "grabbed": True,
             "in_box": self.place,
         }
+
+
+class ContinuousFakePlanner(FakeBaselinePlanner):
+    calls = []
+
+    def __init__(self, model, data, obj, place=False, start_arm_q=None, **_kwargs):
+        self.start_arm_q = None if start_arm_q is None else np.asarray(start_arm_q).copy()
+        self.model = model
+        self.data = data
+        self.obj = obj
+        self.place = place
+        self.run_options = None
+        self.__class__.calls.append(self)
+        current = np.asarray(data.qpos[:7], dtype=float)
+        if self.start_arm_q is None:
+            data.qpos[:7] = current + 1.0
+        else:
+            data.qpos[:7] = self.start_arm_q + 1.0
+
+
+class FakeMutableSceneModel(dict):
+    def __init__(self):
+        super().__init__({"obj_0": 4, "obj_1": 7, "obj_2": 8, "obj_3": 9})
+        # Match the writable NumPy views exposed by real MuJoCo model arrays.
+        self.actuator_forcerange = np.array([[-100.0, 100.0] for _ in range(8)])
+        self.geom_friction = np.array(
+            [[0.7 + index / 10.0, 0.1, 0.01] for index in range(5)]
+        )
+
+
+class ModelMutatingPlanner(FakeBaselinePlanner):
+    constructor_snapshots = []
+    fail_next = False
+
+    def __init__(self, model, data, obj, place=False):
+        self.__class__.constructor_snapshots.append(
+            (
+                obj,
+                copy.deepcopy(model.actuator_forcerange),
+                copy.deepcopy(model.geom_friction),
+            )
+        )
+        for actuator_index in range(7):
+            model.actuator_forcerange[actuator_index] *= 3.0
+        model.actuator_forcerange[7] = [-200.0, 200.0]
+        for friction in model.geom_friction:
+            friction[0] = 2.0
+        if self.__class__.fail_next:
+            self.__class__.fail_next = False
+            raise RuntimeError("injected planner construction failure")
+        super().__init__(model, data, obj, place=place)
 
 
 class M9MujocoExecutionTests(unittest.TestCase):
@@ -243,6 +301,147 @@ class M9MujocoExecutionTests(unittest.TestCase):
 
         self.assertEqual([], FakeMujocoRuntime.resets)
         self.assertEqual([], FakeBaselinePlanner.calls)
+
+    def test_repeated_requests_restore_model_parameters_and_recover_after_failure(self):
+        FakeMujocoRuntime.calls = []
+        FakeMujocoRuntime.resets = []
+        FakeMujocoRuntime.forwards = []
+        FakeBaselinePlanner.calls = []
+        ModelMutatingPlanner.constructor_snapshots = []
+        ModelMutatingPlanner.fail_next = True
+        model = FakeMutableSceneModel()
+        data = object()
+        baseline_actuator_forcerange = copy.deepcopy(model.actuator_forcerange)
+        baseline_geom_friction = copy.deepcopy(model.geom_friction)
+        adapter = create_fr3_umi_mujoco_adapter(
+            scene_bindings=SceneBindingRegistry(DEFAULT_M9_SCENE_BINDINGS),
+            mujoco_module=FakeMujocoRuntime,
+            scene_builder=lambda: (model, data),
+            planner_class=ModelMutatingPlanner,
+        )
+
+        results = [
+            adapter.execute(_request(logical_id, RobotOperation.PICK_AND_PLACE))
+            for logical_id in (
+                "block_sim_01",
+                "block_sim_02",
+                "block_sim_03",
+                "block_sim_04",
+            )
+        ]
+
+        self.assertEqual("backend_execution_error", results[0].failure_code)
+        self.assertTrue(all(result.success for result in results[1:]))
+        self.assertEqual(4, len(ModelMutatingPlanner.constructor_snapshots))
+        self.assertEqual(3, len(ModelMutatingPlanner.calls))
+        for _object_name, actuator_values, friction_values in ModelMutatingPlanner.constructor_snapshots:
+            np.testing.assert_array_equal(baseline_actuator_forcerange, actuator_values)
+            np.testing.assert_array_equal(baseline_geom_friction, friction_values)
+        np.testing.assert_array_equal(baseline_actuator_forcerange, model.actuator_forcerange)
+        np.testing.assert_array_equal(baseline_geom_friction, model.geom_friction)
+        self.assertEqual(4, len(FakeMujocoRuntime.resets))
+        # One initial scene forward plus one forward after each data reset.
+        self.assertEqual(5, len(FakeMujocoRuntime.forwards))
+
+    def test_persistent_context_chains_arm_state_without_per_request_teleport(self):
+        ContinuousFakePlanner.calls = []
+        ContinuousFakePlanner.result_override = None
+        model = FakeMutableSceneModel()
+        model.jnt_type = np.array([], dtype=int)
+        model.jnt_qposadr = np.array([], dtype=int)
+        model.jnt_dofadr = np.array([], dtype=int)
+        model.njnt = 0
+
+        class PersistentData:
+            qpos = np.zeros(9, dtype=float)
+            qvel = np.zeros(8, dtype=float)
+            ctrl = np.zeros(8, dtype=float)
+            act = np.zeros(8, dtype=float)
+            xpos = np.zeros((10, 3), dtype=float)
+
+        data = PersistentData()
+        data.qpos[:7] = np.arange(7, dtype=float)
+        FakeMujocoRuntime.resets = []
+        FakeMujocoRuntime.forwards = []
+        adapter = create_fr3_umi_mujoco_adapter(
+            scene_bindings=SceneBindingRegistry(DEFAULT_M9_SCENE_BINDINGS),
+            mujoco_module=FakeMujocoRuntime,
+            scene_builder=lambda: (model, data),
+            planner_class=ContinuousFakePlanner,
+            persistent_world=True,
+            placement_targets=((0.0, 0.0, 0.2),) * 4,
+        )
+
+        outcomes = []
+        for build_slot in range(3):
+            request = _request("block_sim_01", RobotOperation.PICK_AND_PLACE)
+            request = RobotExecutionRequest(
+                request.request_id,
+                replace(request.selection, build_slot_index=build_slot),
+                request.operation,
+            )
+            outcomes.append(adapter.execute(request))
+
+        self.assertTrue(all(item.success for item in outcomes), outcomes)
+        self.assertEqual(3, len(ContinuousFakePlanner.calls))
+        self.assertIsNone(ContinuousFakePlanner.calls[0].start_arm_q)
+        np.testing.assert_array_equal(
+            np.arange(7, dtype=float) + 1.0,
+            ContinuousFakePlanner.calls[1].start_arm_q,
+        )
+        np.testing.assert_array_equal(
+            np.arange(7, dtype=float) + 2.0,
+            ContinuousFakePlanner.calls[2].start_arm_q,
+        )
+        self.assertEqual([], FakeMujocoRuntime.resets)
+        evidence = adapter.world_state_evidence()
+        self.assertEqual(1, evidence["persistentStateResetCount"])
+        self.assertTrue(evidence["continuousRobotMotion"])
+        self.assertEqual(2, len(evidence["interActionTransitions"]))
+        self.assertTrue(all(not item["teleport"] for item in evidence["interActionTransitions"]))
+
+    def test_persistent_context_supports_one_two_three_action_boundaries(self):
+        for action_count in (1, 2, 3):
+            ContinuousFakePlanner.calls = []
+            ContinuousFakePlanner.result_override = None
+            model = FakeMutableSceneModel()
+            model.jnt_type = np.array([], dtype=int)
+            model.jnt_qposadr = np.array([], dtype=int)
+            model.jnt_dofadr = np.array([], dtype=int)
+            model.njnt = 0
+
+            class PersistentData:
+                qpos = np.zeros(9, dtype=float)
+                qvel = np.zeros(8, dtype=float)
+                ctrl = np.zeros(8, dtype=float)
+                act = np.zeros(8, dtype=float)
+                xpos = np.zeros((10, 3), dtype=float)
+
+            data = PersistentData()
+            adapter = create_fr3_umi_mujoco_adapter(
+                scene_bindings=SceneBindingRegistry(DEFAULT_M9_SCENE_BINDINGS),
+                mujoco_module=FakeMujocoRuntime,
+                scene_builder=lambda: (model, data),
+                planner_class=ContinuousFakePlanner,
+                persistent_world=True,
+                placement_targets=((0.0, 0.0, 0.2),) * 4,
+            )
+            outcomes = []
+            for build_slot in range(action_count):
+                request = _request("block_sim_01", RobotOperation.PICK_AND_PLACE)
+                request = RobotExecutionRequest(
+                    request.request_id,
+                    replace(request.selection, build_slot_index=build_slot),
+                    request.operation,
+                )
+                outcomes.append(adapter.execute(request))
+
+            self.assertTrue(all(item.success for item in outcomes))
+            self.assertEqual(action_count, len(ContinuousFakePlanner.calls))
+            evidence = adapter.world_state_evidence()
+            self.assertEqual(action_count - 1, len(evidence["interActionTransitions"]))
+            self.assertEqual(1, evidence["persistentStateResetCount"])
+            self.assertTrue(all(not item["teleport"] for item in evidence["interActionTransitions"]))
 
     def test_confirmed_selection_becomes_identified_operation_with_provenance(self):
         ids = iter(("request-1",))

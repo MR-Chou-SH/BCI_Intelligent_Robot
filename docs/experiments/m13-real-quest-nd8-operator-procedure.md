@@ -30,7 +30,15 @@ From the repository root, using the existing environment and without installing 
 
 The checker only imports modules, validates required files/mappings, checks that TCP 11001 can be locally bound and released, and imports the ND8 adapter without instantiating it. It must report `overallStatus=PASS`. It does not open COM11, connect Quest or collect EEG.
 
-Before a live run, the user explicitly starts the existing approved Quest/ND8 path and the M13 opt-in runner. The M13 mode must be explicit; the normal M6/M8 baseline remains the default. Record the run ID and software commit in the session manifest.
+Before a live run, the user explicitly starts the existing approved Quest/ND8 path and the M13 runner in `active` mode. Direct `active` is the formal first M13 acceptance mode; `baseline` and `shadow` remain opt-in diagnostic modes and are not mandatory preconditions. Record the run ID, schedule seed and software commit in the session manifest.
+
+Prepare the balanced independent classifier schedule without opening hardware:
+
+```powershell
+.venv\Scripts\python.exe -B -m integration.m13_real_acceptance_schedule --trials-per-class 3 --seed 136 --output <session>\m13-schedule.json
+```
+
+The classifier-acceptance session has 6–9 independent trials (2–3 per class), with a fresh selection/trial identity and the three active candidates restored at every trial. This is intentionally different from the M14 sequential-task demo: classifier acceptance resets candidates and does not preserve completed-task state; sequential demo preserves task progression and must not be used as the first accuracy table.
 
 ## Minimum live acceptance observations
 
@@ -43,6 +51,14 @@ For at least one controlled engineering trial, the log parser should show:
 5. one final class only when `decisionMade=true`;
 6. Quest frozen selection ACK for the accepted final decision;
 7. no duplicate final decision event.
+
+After the session, the dedicated descriptive report joins the schedule to the M13.5 JSONL and reports correct/incorrect/no-decision, class-wise accuracy and confusion counts, raw-vs-fused agreement, context helped/hurt cases, early/fallback counts, duration and Quest/MuJoCo outcome fields when present:
+
+```powershell
+.venv\Scripts\python.exe -B -m integration.m13_real_acceptance_report --schedule <session>\m13-schedule.json --input <session>\m13-real-classifier-acceptance\m13.5-session.jsonl --summary-path <session>\m13-report.json --text-path <session>\m13-report.txt
+```
+
+The report is descriptive only; it does not create human EEG records or impose a new accuracy threshold.
 
 The expected stop time is an algorithmic software window time. Do not call it physical display latency, hardware EEG latency or end-to-end latency without separate timing evidence.
 

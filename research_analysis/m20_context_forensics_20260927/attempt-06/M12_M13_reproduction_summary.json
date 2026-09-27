@@ -1,0 +1,190 @@
+{
+  "status": "PASS",
+  "priorArtifact": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\artifacts\\m15_stage2_paired_context_20260921T054628Z\\paired_trial_results.csv",
+  "newReplayDirectory": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\research_analysis\\m20_context_forensics_20260927\\attempt-06\\current-m12-m13-paired-replay",
+  "comparedTrials": 89,
+  "mismatchCount": 0,
+  "replaySummary": {
+    "n_total": 89,
+    "context_earlier_count": 3,
+    "context_earlier_mean_seconds": 1.2,
+    "off_fallback_to_on_early_count": 3,
+    "off_early_to_on_earlier_count": 0,
+    "context_delayed_count": 0,
+    "final_class_changed_count": 1,
+    "accuracy_helped_count": 0,
+    "accuracy_harmed_count": 1,
+    "paired_mean_latency_delta_off_minus_on": 0.040449438202247195,
+    "paired_median_latency_delta_off_minus_on": 0.0,
+    "helped_trials_mean_advance_seconds": null,
+    "delta_by_frequency": {
+      "7.2": {
+        "n": 30,
+        "mean_delta_seconds": 0.12000000000000001,
+        "earlier_count": 3
+      },
+      "9": {
+        "n": 29,
+        "mean_delta_seconds": 0.0,
+        "earlier_count": 0
+      },
+      "12": {
+        "n": 30,
+        "mean_delta_seconds": 0.0,
+        "earlier_count": 0
+      }
+    },
+    "effect_type_counts": {
+      "TYPE_1_TRUE_LATENCY_HELP": 3,
+      "TYPE_2_NO_EFFECT": 85,
+      "TYPE_4_DECISION_HARM": 1
+    }
+  },
+  "contextOff": {
+    "branch": "off",
+    "n_total": 89,
+    "n_correct": 89,
+    "accuracy": 1.0,
+    "early_stop_count": 0,
+    "early_stop_rate": 0.0,
+    "fallback_count": 89,
+    "fallback_rate": 1.0,
+    "wrong_early_stop_count": 0,
+    "mean_decision_time": 4.0,
+    "median_decision_time": 4.0,
+    "p90_decision_time": 4.0,
+    "mean_saved_time_vs_4s": 0.0,
+    "median_saved_time": 0.0,
+    "decision_reasons": {
+      "full_window_fallback": 89
+    },
+    "per_frequency": {
+      "7.2": {
+        "n": 30,
+        "n_correct": 30,
+        "accuracy": 1.0,
+        "early_stop_count": 0,
+        "mean_decision_time": 4.0,
+        "mean_saved_time": 0.0
+      },
+      "9": {
+        "n": 29,
+        "n_correct": 29,
+        "accuracy": 1.0,
+        "early_stop_count": 0,
+        "mean_decision_time": 4.0,
+        "mean_saved_time": 0.0
+      },
+      "12": {
+        "n": 30,
+        "n_correct": 30,
+        "accuracy": 1.0,
+        "early_stop_count": 0,
+        "mean_decision_time": 4.0,
+        "mean_saved_time": 0.0
+      }
+    }
+  },
+  "contextOn": {
+    "branch": "on",
+    "n_total": 89,
+    "n_correct": 88,
+    "accuracy": 0.9887640449438202,
+    "early_stop_count": 3,
+    "early_stop_rate": 0.033707865168539325,
+    "fallback_count": 86,
+    "fallback_rate": 0.9662921348314607,
+    "wrong_early_stop_count": 0,
+    "mean_decision_time": 3.9595505617977524,
+    "median_decision_time": 4.0,
+    "p90_decision_time": 4.0,
+    "mean_saved_time_vs_4s": 0.040449438202247195,
+    "median_saved_time": 0.0,
+    "decision_reasons": {
+      "early_stable_fused_evidence": 3,
+      "full_window_fallback": 86
+    },
+    "per_frequency": {
+      "7.2": {
+        "n": 30,
+        "n_correct": 30,
+        "accuracy": 1.0,
+        "early_stop_count": 3,
+        "mean_decision_time": 3.8800000000000003,
+        "mean_saved_time": 0.12000000000000001
+      },
+      "9": {
+        "n": 29,
+        "n_correct": 29,
+        "accuracy": 1.0,
+        "early_stop_count": 0,
+        "mean_decision_time": 4.0,
+        "mean_saved_time": 0.0
+      },
+      "12": {
+        "n": 30,
+        "n_correct": 29,
+        "accuracy": 0.9666666666666667,
+        "early_stop_count": 0,
+        "mean_decision_time": 4.0,
+        "mean_saved_time": 0.0
+      }
+    }
+  },
+  "formal88": {
+    "N": 88,
+    "off": {
+      "N": 88,
+      "correct": 88,
+      "accuracy": 1.0,
+      "wrong_early_stops": 0,
+      "mean_effective_eeg_evidence_time_s": 3.5,
+      "median_effective_eeg_evidence_time_s": 3.5,
+      "P90_effective_eeg_evidence_time_s": 3.5,
+      "latest_effective_eeg_evidence_time_s": 3.5,
+      "T_at_95_s": 3.5,
+      "T_at_99_s": 3.5,
+      "T_at_100_s": 3.5,
+      "accelerated_fraction": 0.0,
+      "mean_acceleration_when_early_s": null,
+      "context_assisted_trial_count": 0,
+      "context_accelerated_trial_count": 0,
+      "context_accelerated_fraction": 0.0,
+      "mean_context_acceleration_when_early_s": null,
+      "context_delayed_trial_count": 0,
+      "mean_context_time_delta_vs_paired_eeg_s": null,
+      "context_caused_error_count": 0,
+      "strong_contradiction_windows": 0,
+      "strong_override_preserved_top_windows": 0,
+      "early_stop_count": 0,
+      "mean_onset_relative_decision_time_s": 4.0
+    },
+    "on": {
+      "N": 88,
+      "correct": 87,
+      "accuracy": 0.9886363636363636,
+      "wrong_early_stops": 0,
+      "mean_effective_eeg_evidence_time_s": 3.459090909090909,
+      "median_effective_eeg_evidence_time_s": 3.5,
+      "P90_effective_eeg_evidence_time_s": 3.5,
+      "latest_effective_eeg_evidence_time_s": 3.5,
+      "T_at_95_s": 3.5,
+      "T_at_99_s": null,
+      "T_at_100_s": null,
+      "accelerated_fraction": 0.0,
+      "mean_acceleration_when_early_s": null,
+      "context_assisted_trial_count": 0,
+      "context_accelerated_trial_count": 0,
+      "context_accelerated_fraction": 0.0,
+      "mean_context_acceleration_when_early_s": null,
+      "context_delayed_trial_count": 0,
+      "mean_context_time_delta_vs_paired_eeg_s": null,
+      "context_caused_error_count": 0,
+      "strong_contradiction_windows": 0,
+      "strong_override_preserved_top_windows": 0,
+      "early_stop_count": 3,
+      "mean_onset_relative_decision_time_s": 3.959090909090909
+    },
+    "context_caused_wrong_final_count": 1
+  }
+}

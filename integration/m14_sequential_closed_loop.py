@@ -92,8 +92,12 @@ class M14QuestTransport:
         self.submitted = []
         self.aborted = []
 
-    def register_snapshot(self, selection_id, candidates):
-        self._candidates_by_selection[str(selection_id)] = tuple(candidates)
+    def register_snapshot(self, selection_id, candidates, snapshot_id=None, snapshot_version=None):
+        self._candidates_by_selection[str(selection_id)] = {
+            "candidates": tuple(candidates),
+            "snapshotId": snapshot_id,
+            "snapshotVersion": snapshot_version,
+        }
 
     @staticmethod
     def _ack(selection_id, accepted=True, **values):
@@ -109,10 +113,16 @@ class M14QuestTransport:
         if selection_id not in self._candidates_by_selection:
             return self._ack(selection_id, False, rejectionReason="missing_frozen_snapshot")
         self.opened.append(selection_id)
-        return self._ack(selection_id)
+        record = self._candidates_by_selection[selection_id]
+        return self._ack(
+            selection_id,
+            candidateSnapshotId=record.get("snapshotId"),
+            candidateSnapshotVersion=record.get("snapshotVersion"),
+        )
 
     def submit_eeg_selection(self, selection_id, class_index):
-        candidates = self._candidates_by_selection.get(selection_id, ())
+        record = self._candidates_by_selection.get(selection_id, {})
+        candidates = record.get("candidates", ())
         self.submitted.append((selection_id, int(class_index)))
         if not isinstance(class_index, int) or class_index < 0 or class_index >= len(candidates):
             return self._ack(selection_id, False, rejectionReason="class_index_out_of_range")
@@ -122,6 +132,9 @@ class M14QuestTransport:
             True,
             resolvedTargetId=candidate.target_id,
             resolvedLogicalBlockId=candidate.logical_block_id,
+            resolvedSlot=candidate.slot_index,
+            candidateSnapshotId=record.get("snapshotId"),
+            candidateSnapshotVersion=record.get("snapshotVersion"),
             provenance="quest_frozen_selection_snapshot",
         )
 
@@ -215,11 +228,13 @@ class M14SequentialEpisodeRunner:
         no_decision_steps=(),
         duplicate_final_step=None,
         evidence_prefix="m14",
+        snapshot_overrides=None,
     ):
         if not isinstance(definition, TaskDefinition):
             raise TypeError("definition must be a TaskDefinition")
         target_overrides = dict(target_overrides or {})
         no_decision_steps = set(no_decision_steps or ())
+        snapshot_overrides = dict(snapshot_overrides or {})
         receiver = BatchIdempotentConsumer()
         transport = M14QuestTransport()
         orchestrator = M8SelectionOrchestrator(transport)
@@ -248,12 +263,19 @@ class M14SequentialEpisodeRunner:
             if not context_prior.valid:
                 raise AssertionError("M11 prior unexpectedly invalid for a valid M10 prefix")
 
-            snapshots = _no_decision_snapshots() if step_index in no_decision_steps else _strong_snapshots(
-                selected_logical_block_id,
-                context_prior,
-                candidates,
-                "m14-sequential-strong-agreement",
-            )
+            if step_index in snapshot_overrides:
+                if step_index in no_decision_steps:
+                    raise ValueError("snapshot_overrides and no_decision_steps cannot target the same step")
+                snapshots = tuple(snapshot_overrides[step_index])
+                if not snapshots or not all(isinstance(item, DynamicStoppingSnapshot) for item in snapshots):
+                    raise TypeError("snapshot_overrides must contain non-empty DynamicStoppingSnapshot sequences")
+            else:
+                snapshots = _no_decision_snapshots() if step_index in no_decision_steps else _strong_snapshots(
+                    selected_logical_block_id,
+                    context_prior,
+                    candidates,
+                    "m14-sequential-strong-agreement",
+                )
             policy = DynamicStoppingPolicy()
             evaluations = []
             if opened:
@@ -346,7 +368,7 @@ class M14SequentialEpisodeRunner:
                     "evidenceProvenance": {
                         "sourceType": self.source_type,
                         "contextSource": "M11 observable completed history",
-                        "eegSource": "deterministic synthetic trajectory",
+                        "eegSource": "historical M6 raw packet replay" if "historical" in self.source_type.lower() else "deterministic synthetic trajectory",
                     },
                     "m12FusedTrajectory": [snapshot.fused_evidence.to_public_dict() for snapshot in snapshots],
                     "m13Evaluations": evaluations,

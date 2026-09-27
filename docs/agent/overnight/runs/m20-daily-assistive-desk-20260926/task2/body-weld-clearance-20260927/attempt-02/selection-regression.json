@@ -1,0 +1,708 @@
+{
+  "activeSlotAndTriggerRearm": {
+    "invalidSlotReason": "slot_invalid",
+    "nextTriggerAccepted": true,
+    "validSlotAccepted": true
+  },
+  "candidateOrder": [
+    "assist_medicine_box",
+    "assist_storage_box",
+    "assist_phone",
+    "assist_button_switch",
+    "assist_wireless_charger",
+    "assist_user_zone"
+  ],
+  "navigation": {
+    "crossPageSelection": true,
+    "next": true,
+    "previous": true
+  },
+  "pageSize": 3,
+  "pagesAndQueueSnapshots": [
+    {
+      "action": "initial",
+      "candidates": [
+        {
+          "active": true,
+          "frequencyHz": 7.2,
+          "logicalBlockId": "block_assist_medicine_01",
+          "selected": false,
+          "slotIndex": 0,
+          "targetId": "assist_medicine_box"
+        },
+        {
+          "active": true,
+          "frequencyHz": 9.0,
+          "logicalBlockId": "block_assist_storage_02",
+          "selected": false,
+          "slotIndex": 1,
+          "targetId": "assist_storage_box"
+        },
+        {
+          "active": true,
+          "frequencyHz": 12.0,
+          "logicalBlockId": "block_assist_phone_03",
+          "selected": false,
+          "slotIndex": 2,
+          "targetId": "assist_phone"
+        }
+      ],
+      "globalQueue": [],
+      "pageEpoch": 0,
+      "pageId": "m16-page-1",
+      "pageIndex": 0
+    },
+    {
+      "action": "medicine_selected",
+      "candidates": [
+        {
+          "active": false,
+          "frequencyHz": 7.2,
+          "logicalBlockId": "block_assist_medicine_01",
+          "selected": true,
+          "slotIndex": 0,
+          "targetId": "assist_medicine_box"
+        },
+        {
+          "active": true,
+          "frequencyHz": 9.0,
+          "logicalBlockId": "block_assist_storage_02",
+          "selected": false,
+          "slotIndex": 1,
+          "targetId": "assist_storage_box"
+        },
+        {
+          "active": true,
+          "frequencyHz": 12.0,
+          "logicalBlockId": "block_assist_phone_03",
+          "selected": false,
+          "slotIndex": 2,
+          "targetId": "assist_phone"
+        }
+      ],
+      "globalQueue": [
+        "assist_medicine_box"
+      ],
+      "pageEpoch": 0,
+      "pageId": "m16-page-1",
+      "pageIndex": 0
+    },
+    {
+      "action": "next_to_page_2",
+      "candidates": [
+        {
+          "active": true,
+          "frequencyHz": 7.2,
+          "logicalBlockId": "block_assist_button_04",
+          "selected": false,
+          "slotIndex": 0,
+          "targetId": "assist_button_switch"
+        },
+        {
+          "active": true,
+          "frequencyHz": 9.0,
+          "logicalBlockId": "block_assist_charger_05",
+          "selected": false,
+          "slotIndex": 1,
+          "targetId": "assist_wireless_charger"
+        },
+        {
+          "active": true,
+          "frequencyHz": 12.0,
+          "logicalBlockId": "block_assist_user_zone_06",
+          "selected": false,
+          "slotIndex": 2,
+          "targetId": "assist_user_zone"
+        }
+      ],
+      "globalQueue": [
+        "assist_medicine_box"
+      ],
+      "pageEpoch": 1,
+      "pageId": "m16-page-2",
+      "pageIndex": 1
+    },
+    {
+      "action": "temporary_charger_selected",
+      "candidates": [
+        {
+          "active": true,
+          "frequencyHz": 7.2,
+          "logicalBlockId": "block_assist_button_04",
+          "selected": false,
+          "slotIndex": 0,
+          "targetId": "assist_button_switch"
+        },
+        {
+          "active": false,
+          "frequencyHz": 9.0,
+          "logicalBlockId": "block_assist_charger_05",
+          "selected": true,
+          "slotIndex": 1,
+          "targetId": "assist_wireless_charger"
+        },
+        {
+          "active": true,
+          "frequencyHz": 12.0,
+          "logicalBlockId": "block_assist_user_zone_06",
+          "selected": false,
+          "slotIndex": 2,
+          "targetId": "assist_user_zone"
+        }
+      ],
+      "globalQueue": [
+        "assist_medicine_box",
+        "assist_wireless_charger"
+      ],
+      "pageEpoch": 1,
+      "pageId": "m16-page-2",
+      "pageIndex": 1
+    },
+    {
+      "action": "previous_to_page_1",
+      "candidates": [
+        {
+          "active": false,
+          "frequencyHz": 7.2,
+          "logicalBlockId": "block_assist_medicine_01",
+          "selected": true,
+          "slotIndex": 0,
+          "targetId": "assist_medicine_box"
+        },
+        {
+          "active": true,
+          "frequencyHz": 9.0,
+          "logicalBlockId": "block_assist_storage_02",
+          "selected": false,
+          "slotIndex": 1,
+          "targetId": "assist_storage_box"
+        },
+        {
+          "active": true,
+          "frequencyHz": 12.0,
+          "logicalBlockId": "block_assist_phone_03",
+          "selected": false,
+          "slotIndex": 2,
+          "targetId": "assist_phone"
+        }
+      ],
+      "globalQueue": [
+        "assist_medicine_box",
+        "assist_wireless_charger"
+      ],
+      "pageEpoch": 2,
+      "pageId": "m16-page-1",
+      "pageIndex": 0
+    },
+    {
+      "action": "undo_charger",
+      "candidates": [
+        {
+          "active": false,
+          "frequencyHz": 7.2,
+          "logicalBlockId": "block_assist_medicine_01",
+          "selected": true,
+          "slotIndex": 0,
+          "targetId": "assist_medicine_box"
+        },
+        {
+          "active": true,
+          "frequencyHz": 9.0,
+          "logicalBlockId": "block_assist_storage_02",
+          "selected": false,
+          "slotIndex": 1,
+          "targetId": "assist_storage_box"
+        },
+        {
+          "active": true,
+          "frequencyHz": 12.0,
+          "logicalBlockId": "block_assist_phone_03",
+          "selected": false,
+          "slotIndex": 2,
+          "targetId": "assist_phone"
+        }
+      ],
+      "globalQueue": [
+        "assist_medicine_box"
+      ],
+      "pageEpoch": 2,
+      "pageId": "m16-page-1",
+      "pageIndex": 0
+    },
+    {
+      "action": "charger_restored_active",
+      "candidates": [
+        {
+          "active": true,
+          "frequencyHz": 7.2,
+          "logicalBlockId": "block_assist_button_04",
+          "selected": false,
+          "slotIndex": 0,
+          "targetId": "assist_button_switch"
+        },
+        {
+          "active": true,
+          "frequencyHz": 9.0,
+          "logicalBlockId": "block_assist_charger_05",
+          "selected": false,
+          "slotIndex": 1,
+          "targetId": "assist_wireless_charger"
+        },
+        {
+          "active": true,
+          "frequencyHz": 12.0,
+          "logicalBlockId": "block_assist_user_zone_06",
+          "selected": false,
+          "slotIndex": 2,
+          "targetId": "assist_user_zone"
+        }
+      ],
+      "globalQueue": [
+        "assist_medicine_box"
+      ],
+      "pageEpoch": 3,
+      "pageId": "m16-page-2",
+      "pageIndex": 1
+    },
+    {
+      "action": "zone_selected",
+      "candidates": [
+        {
+          "active": true,
+          "frequencyHz": 7.2,
+          "logicalBlockId": "block_assist_button_04",
+          "selected": false,
+          "slotIndex": 0,
+          "targetId": "assist_button_switch"
+        },
+        {
+          "active": true,
+          "frequencyHz": 9.0,
+          "logicalBlockId": "block_assist_charger_05",
+          "selected": false,
+          "slotIndex": 1,
+          "targetId": "assist_wireless_charger"
+        },
+        {
+          "active": false,
+          "frequencyHz": 12.0,
+          "logicalBlockId": "block_assist_user_zone_06",
+          "selected": true,
+          "slotIndex": 2,
+          "targetId": "assist_user_zone"
+        }
+      ],
+      "globalQueue": [
+        "assist_medicine_box",
+        "assist_user_zone"
+      ],
+      "pageEpoch": 3,
+      "pageId": "m16-page-2",
+      "pageIndex": 1
+    }
+  ],
+  "runtimeEvents": [
+    {
+      "event": "decode_request_accepted",
+      "pageEpoch": 0,
+      "selectionId": "m20-selection-regression-01"
+    },
+    {
+      "ack": {
+        "accepted": true,
+        "messageType": "eeg_decode_ack",
+        "pageEpoch": 0,
+        "pageId": "m16-page-1",
+        "protocolVersion": 1,
+        "rejectionReason": "None",
+        "selectionId": "m20-selection-regression-01",
+        "trialId": "m19-e2e-trial-01"
+      },
+      "event": "trigger_snapshot_frozen",
+      "request": {
+        "activeSlotCount": 3,
+        "contractId": "m19_decode_request_v1",
+        "createdUtc": "2026-09-27T07:41:21.152357+00:00",
+        "messageType": "eeg_decode_request",
+        "pageEpoch": 0,
+        "pageId": "m16-page-1",
+        "pageIndex": 0,
+        "presentationPolicy": "demo_preview",
+        "protocolVersion": 1,
+        "selectionId": "m20-selection-regression-01",
+        "slots": [
+          {
+            "frequencyHz": 7.2,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "MEDICINE",
+            "slotIndex": 0,
+            "targetId": "assist_medicine_box"
+          },
+          {
+            "frequencyHz": 9.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "STORAGE",
+            "slotIndex": 1,
+            "targetId": "assist_storage_box"
+          },
+          {
+            "frequencyHz": 12.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "PHONE",
+            "slotIndex": 2,
+            "targetId": "assist_phone"
+          }
+        ],
+        "trialId": "m19-e2e-trial-01"
+      }
+    },
+    {
+      "accepted": true,
+      "classIndex": 0,
+      "decisionMade": true,
+      "event": "decode_result",
+      "evidence": {
+        "backend": "synthetic",
+        "injectedClassIndex": 0
+      },
+      "messageType": "eeg_decode_result",
+      "pageEpoch": 0,
+      "pageId": "m16-page-1",
+      "protocolVersion": 1,
+      "selectionId": "m20-selection-regression-01",
+      "slotIndex": 0,
+      "trialId": "m19-e2e-trial-01"
+    },
+    {
+      "classIndex": 0,
+      "event": "queue_selection_committed",
+      "queue": [
+        "assist_medicine_box"
+      ],
+      "selectionId": "m20-selection-regression-01",
+      "targetId": "assist_medicine_box"
+    },
+    {
+      "event": "page_navigation",
+      "pageEpoch": 1,
+      "pageId": "m16-page-2",
+      "pageIndex": 1
+    },
+    {
+      "event": "decode_request_accepted",
+      "pageEpoch": 1,
+      "selectionId": "m20-selection-regression-02"
+    },
+    {
+      "ack": {
+        "accepted": true,
+        "messageType": "eeg_decode_ack",
+        "pageEpoch": 1,
+        "pageId": "m16-page-2",
+        "protocolVersion": 1,
+        "rejectionReason": "None",
+        "selectionId": "m20-selection-regression-02",
+        "trialId": "m19-e2e-trial-02"
+      },
+      "event": "trigger_snapshot_frozen",
+      "request": {
+        "activeSlotCount": 3,
+        "contractId": "m19_decode_request_v1",
+        "createdUtc": "2026-09-27T07:41:21.152357+00:00",
+        "messageType": "eeg_decode_request",
+        "pageEpoch": 1,
+        "pageId": "m16-page-2",
+        "pageIndex": 1,
+        "presentationPolicy": "demo_preview",
+        "protocolVersion": 1,
+        "selectionId": "m20-selection-regression-02",
+        "slots": [
+          {
+            "frequencyHz": 7.2,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "BUTTON",
+            "slotIndex": 0,
+            "targetId": "assist_button_switch"
+          },
+          {
+            "frequencyHz": 9.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "CHARGER",
+            "slotIndex": 1,
+            "targetId": "assist_wireless_charger"
+          },
+          {
+            "frequencyHz": 12.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "USER ZONE",
+            "slotIndex": 2,
+            "targetId": "assist_user_zone"
+          }
+        ],
+        "trialId": "m19-e2e-trial-02"
+      }
+    },
+    {
+      "accepted": true,
+      "classIndex": 1,
+      "decisionMade": true,
+      "event": "decode_result",
+      "evidence": {
+        "backend": "synthetic",
+        "injectedClassIndex": 1
+      },
+      "messageType": "eeg_decode_result",
+      "pageEpoch": 1,
+      "pageId": "m16-page-2",
+      "protocolVersion": 1,
+      "selectionId": "m20-selection-regression-02",
+      "slotIndex": 1,
+      "trialId": "m19-e2e-trial-02"
+    },
+    {
+      "classIndex": 1,
+      "event": "queue_selection_committed",
+      "queue": [
+        "assist_medicine_box",
+        "assist_wireless_charger"
+      ],
+      "selectionId": "m20-selection-regression-02",
+      "targetId": "assist_wireless_charger"
+    },
+    {
+      "event": "page_navigation",
+      "pageEpoch": 2,
+      "pageId": "m16-page-1",
+      "pageIndex": 0
+    },
+    {
+      "event": "queue_undo",
+      "queue": [
+        "assist_medicine_box"
+      ],
+      "targetId": "assist_wireless_charger"
+    },
+    {
+      "event": "page_navigation",
+      "pageEpoch": 3,
+      "pageId": "m16-page-2",
+      "pageIndex": 1
+    },
+    {
+      "event": "decode_request_accepted",
+      "pageEpoch": 3,
+      "selectionId": "m20-selection-regression-03"
+    },
+    {
+      "ack": {
+        "accepted": true,
+        "messageType": "eeg_decode_ack",
+        "pageEpoch": 3,
+        "pageId": "m16-page-2",
+        "protocolVersion": 1,
+        "rejectionReason": "None",
+        "selectionId": "m20-selection-regression-03",
+        "trialId": "m19-e2e-trial-03"
+      },
+      "event": "trigger_snapshot_frozen",
+      "request": {
+        "activeSlotCount": 3,
+        "contractId": "m19_decode_request_v1",
+        "createdUtc": "2026-09-27T07:41:21.153370+00:00",
+        "messageType": "eeg_decode_request",
+        "pageEpoch": 3,
+        "pageId": "m16-page-2",
+        "pageIndex": 1,
+        "presentationPolicy": "demo_preview",
+        "protocolVersion": 1,
+        "selectionId": "m20-selection-regression-03",
+        "slots": [
+          {
+            "frequencyHz": 7.2,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "BUTTON",
+            "slotIndex": 0,
+            "targetId": "assist_button_switch"
+          },
+          {
+            "frequencyHz": 9.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "CHARGER",
+            "slotIndex": 1,
+            "targetId": "assist_wireless_charger"
+          },
+          {
+            "frequencyHz": 12.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "USER ZONE",
+            "slotIndex": 2,
+            "targetId": "assist_user_zone"
+          }
+        ],
+        "trialId": "m19-e2e-trial-03"
+      }
+    },
+    {
+      "accepted": true,
+      "classIndex": 2,
+      "decisionMade": true,
+      "event": "decode_result",
+      "evidence": {
+        "backend": "synthetic",
+        "injectedClassIndex": 2
+      },
+      "messageType": "eeg_decode_result",
+      "pageEpoch": 3,
+      "pageId": "m16-page-2",
+      "protocolVersion": 1,
+      "selectionId": "m20-selection-regression-03",
+      "slotIndex": 2,
+      "trialId": "m19-e2e-trial-03"
+    },
+    {
+      "classIndex": 2,
+      "event": "queue_selection_committed",
+      "queue": [
+        "assist_medicine_box",
+        "assist_user_zone"
+      ],
+      "selectionId": "m20-selection-regression-03",
+      "targetId": "assist_user_zone"
+    },
+    {
+      "accepted": true,
+      "event": "queue_submit",
+      "orderedTargets": [
+        "assist_medicine_box",
+        "assist_user_zone"
+      ],
+      "reason": "submitted"
+    }
+  ],
+  "slotFrequenciesHz": [
+    7.2,
+    9.0,
+    12.0
+  ],
+  "staleResult": {
+    "currentPageEpoch": 1,
+    "currentPageId": "m16-page-2",
+    "oldPageEpoch": 0,
+    "oldPageId": "m16-page-1",
+    "queueUnchanged": true,
+    "rejectedReason": "STALE_SELECTION_REJECTED"
+  },
+  "status": "PASS",
+  "submit": {
+    "accepted": true,
+    "orderedTargetIds": [
+      "assist_medicine_box",
+      "assist_user_zone"
+    ],
+    "state": "executing"
+  },
+  "triggerTrace": [
+    {
+      "accepted": true,
+      "decodedClassIndex": 0,
+      "pageEpoch": 0,
+      "pageId": "m16-page-1",
+      "selectedTargetIds": [
+        "assist_medicine_box"
+      ],
+      "slots": [
+        {
+          "frequencyHz": 7.2,
+          "provenance": "m16_frozen_page_snapshot",
+          "semanticLabel": "MEDICINE",
+          "slotIndex": 0,
+          "targetId": "assist_medicine_box"
+        },
+        {
+          "frequencyHz": 9.0,
+          "provenance": "m16_frozen_page_snapshot",
+          "semanticLabel": "STORAGE",
+          "slotIndex": 1,
+          "targetId": "assist_storage_box"
+        },
+        {
+          "frequencyHz": 12.0,
+          "provenance": "m16_frozen_page_snapshot",
+          "semanticLabel": "PHONE",
+          "slotIndex": 2,
+          "targetId": "assist_phone"
+        }
+      ]
+    },
+    {
+      "accepted": true,
+      "decodedClassIndex": 1,
+      "pageEpoch": 1,
+      "pageId": "m16-page-2",
+      "selectedTargetIds": [
+        "assist_medicine_box",
+        "assist_wireless_charger"
+      ],
+      "slots": [
+        {
+          "frequencyHz": 7.2,
+          "provenance": "m16_frozen_page_snapshot",
+          "semanticLabel": "BUTTON",
+          "slotIndex": 0,
+          "targetId": "assist_button_switch"
+        },
+        {
+          "frequencyHz": 9.0,
+          "provenance": "m16_frozen_page_snapshot",
+          "semanticLabel": "CHARGER",
+          "slotIndex": 1,
+          "targetId": "assist_wireless_charger"
+        },
+        {
+          "frequencyHz": 12.0,
+          "provenance": "m16_frozen_page_snapshot",
+          "semanticLabel": "USER ZONE",
+          "slotIndex": 2,
+          "targetId": "assist_user_zone"
+        }
+      ]
+    },
+    {
+      "accepted": true,
+      "decodedClassIndex": 2,
+      "pageEpoch": 3,
+      "pageId": "m16-page-2",
+      "selectedTargetIds": [
+        "assist_medicine_box",
+        "assist_user_zone"
+      ],
+      "slots": [
+        {
+          "frequencyHz": 7.2,
+          "provenance": "m16_frozen_page_snapshot",
+          "semanticLabel": "BUTTON",
+          "slotIndex": 0,
+          "targetId": "assist_button_switch"
+        },
+        {
+          "frequencyHz": 9.0,
+          "provenance": "m16_frozen_page_snapshot",
+          "semanticLabel": "CHARGER",
+          "slotIndex": 1,
+          "targetId": "assist_wireless_charger"
+        },
+        {
+          "frequencyHz": 12.0,
+          "provenance": "m16_frozen_page_snapshot",
+          "semanticLabel": "USER ZONE",
+          "slotIndex": 2,
+          "targetId": "assist_user_zone"
+        }
+      ]
+    }
+  ],
+  "undo": {
+    "removedTargetId": "assist_wireless_charger",
+    "restoredActive": true
+  }
+}

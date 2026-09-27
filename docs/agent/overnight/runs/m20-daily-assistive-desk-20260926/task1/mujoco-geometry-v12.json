@@ -1,0 +1,422 @@
+{
+  "mujoco": {
+    "buttonCap": {
+      "canonicalUnpressedPositionErrorMeters": [
+        0.0,
+        0.0,
+        2.42861286636753e-17
+      ],
+      "housingApertureMeters": {
+        "x": 0.04,
+        "y": 0.04
+      },
+      "jointId": "assist_button_cap_slide",
+      "pressedCenterWorldMeters": [
+        -0.24,
+        -0.03,
+        0.773
+      ],
+      "travelMeters": 0.0050000000000000044,
+      "travelPass": true,
+      "unpressedCenterWorldMeters": [
+        -0.24,
+        -0.03,
+        0.778
+      ]
+    },
+    "candidateGeometry": [
+      {
+        "dimensionsMeters": {
+          "x": 0.1,
+          "y": 0.06,
+          "z": 0.03
+        },
+        "mujocoDimensionErrorMeters": [
+          2.7755575615628914e-17,
+          0.0,
+          2.7755575615628914e-17
+        ],
+        "mujocoPositionErrorMeters": [
+          0.0,
+          0.0,
+          1.3877787807814457e-17
+        ],
+        "positionMeters": {
+          "x": -0.24,
+          "y": 0.1,
+          "z": 0.015
+        },
+        "semanticId": "assist_medicine_box",
+        "targetId": "assist_medicine_box",
+        "yawErrorDegrees": 0.0
+      },
+      {
+        "dimensionsMeters": {
+          "x": 0.18,
+          "y": 0.12,
+          "z": 0.075
+        },
+        "mujocoDimensionErrorMeters": [
+          0.0,
+          0.0,
+          4.163336342344337e-17
+        ],
+        "mujocoPositionErrorMeters": [
+          0.0,
+          0.0,
+          2.0816681711721685e-17
+        ],
+        "positionMeters": {
+          "x": 0.0,
+          "y": 0.1,
+          "z": 0.0375
+        },
+        "semanticId": "assist_storage_box",
+        "targetId": "assist_storage_box",
+        "yawErrorDegrees": 0.0
+      },
+      {
+        "dimensionsMeters": {
+          "x": 0.15,
+          "y": 0.072,
+          "z": 0.008
+        },
+        "mujocoDimensionErrorMeters": [
+          2.7755575615628914e-17,
+          1.3877787807814457e-17,
+          6.938893903907228e-18
+        ],
+        "mujocoPositionErrorMeters": [
+          0.0,
+          0.0,
+          3.469446951953614e-18
+        ],
+        "positionMeters": {
+          "x": 0.24,
+          "y": 0.1,
+          "z": 0.004
+        },
+        "semanticId": "assist_phone",
+        "targetId": "assist_phone",
+        "yawErrorDegrees": 0.0
+      },
+      {
+        "dimensionsMeters": {
+          "x": 0.11,
+          "y": 0.06,
+          "z": 0.022
+        },
+        "mujocoDimensionErrorMeters": [
+          1.3877787807814457e-17,
+          0.0,
+          2.0816681711721685e-17
+        ],
+        "mujocoPositionErrorMeters": [
+          0.0,
+          0.0,
+          1.0408340855860843e-17
+        ],
+        "positionMeters": {
+          "x": -0.24,
+          "y": -0.03,
+          "z": 0.011
+        },
+        "semanticId": "assist_button_switch",
+        "targetId": "assist_button_switch",
+        "yawErrorDegrees": 0.0
+      },
+      {
+        "dimensionsMeters": {
+          "x": 0.095,
+          "y": 0.095,
+          "z": 0.012
+        },
+        "mujocoDimensionErrorMeters": [
+          2.7755575615628914e-17,
+          0.0,
+          1.0408340855860843e-17
+        ],
+        "mujocoPositionErrorMeters": [
+          0.0,
+          0.0,
+          5.204170427930421e-18
+        ],
+        "positionMeters": {
+          "x": 0.24,
+          "y": -0.03,
+          "z": 0.006
+        },
+        "semanticId": "assist_wireless_charger",
+        "targetId": "assist_wireless_charger",
+        "yawErrorDegrees": 0.0
+      },
+      {
+        "dimensionsMeters": {
+          "x": 0.46,
+          "y": 0.18,
+          "z": 0.002
+        },
+        "mujocoDimensionErrorMeters": [
+          0.0,
+          2.7755575615628914e-17,
+          1.734723475976807e-18
+        ],
+        "mujocoPositionErrorMeters": [
+          0.0,
+          0.0,
+          8.673617379884035e-19
+        ],
+        "positionMeters": {
+          "x": 0.0,
+          "y": -0.19,
+          "z": 0.001
+        },
+        "semanticId": "assist_user_zone",
+        "targetId": "assist_user_zone",
+        "yawErrorDegrees": 0.0
+      }
+    ],
+    "initialContactCount": 33,
+    "initialM20ContactInterpenetrations": [],
+    "m9GraspReachability": [
+      {
+        "graspPositionMeters": [
+          -0.243,
+          0.1,
+          0.961
+        ],
+        "ikReachable": true,
+        "planner": "GripperGraspPlanner",
+        "preGraspPositionMeters": [
+          -0.243,
+          0.1,
+          1.111
+        ],
+        "sourceId": "assist_medicine_box"
+      },
+      {
+        "graspPositionMeters": [
+          0.237,
+          0.1,
+          0.961
+        ],
+        "ikReachable": true,
+        "planner": "GripperGraspPlanner",
+        "preGraspPositionMeters": [
+          0.237,
+          0.1,
+          1.111
+        ],
+        "sourceId": "assist_phone"
+      }
+    ],
+    "modelBodyCount": 21,
+    "modelGeomCount": 95,
+    "placementPoses": [
+      {
+        "contactInterpenetrations": [],
+        "objectBottomWorldZMeters": 0.752,
+        "sourceId": "assist_medicine_box",
+        "targetId": "assist_user_zone",
+        "targetTopWorldZMeters": 0.752,
+        "verticalGapMeters": 0.0
+      },
+      {
+        "contactInterpenetrations": [],
+        "objectBottomWorldZMeters": 0.752,
+        "sourceId": "assist_phone",
+        "targetId": "assist_user_zone",
+        "targetTopWorldZMeters": 0.752,
+        "verticalGapMeters": 0.0
+      },
+      {
+        "contactInterpenetrations": [],
+        "objectBottomWorldZMeters": 0.762,
+        "sourceId": "assist_phone",
+        "targetId": "assist_wireless_charger",
+        "targetTopWorldZMeters": 0.762,
+        "verticalGapMeters": 0.0
+      }
+    ],
+    "robotBase": {
+      "entityId": "franka_fr3_umi",
+      "positionErrorMeters": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "worldPositionMeters": [
+        0.0,
+        0.4,
+        0.75
+      ]
+    },
+    "status": "PASS",
+    "storageLid": {
+      "clearsTableAndBase": true,
+      "closedDegrees": 0.0,
+      "closedGeomCenterWorldMeters": [
+        0.0,
+        0.1,
+        0.829
+      ],
+      "closedPositionErrorMeters": [
+        0.0,
+        0.0,
+        4.163336342344337e-17
+      ],
+      "jointId": "assist_storage_lid_hinge",
+      "openDegrees": -100.0,
+      "openGeomCenterWorldMeters": [
+        0.0,
+        0.17435812167206466,
+        0.8833938724700647
+      ],
+      "openLowestPointWorldZMeters": 0.8236108145786645,
+      "openPoseContactInterpenetrations": [],
+      "tableTopWorldZMeters": 0.75
+    },
+    "table": {
+      "dimensionErrorMeters": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "entityId": "assist_table",
+      "positionErrorMeters": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "topSurfaceWorldZMeters": 0.75
+    }
+  },
+  "recordType": "m20_assistive_desk_geometry_parity",
+  "screenshots": {
+    "perspective": "docs\\agent\\overnight\\runs\\m20-daily-assistive-desk-20260926\\task1\\mujoco-screenshots-v12\\mujoco_perspective.png",
+    "topdown": "docs\\agent\\overnight\\runs\\m20-daily-assistive-desk-20260926\\task1\\mujoco-screenshots-v12\\mujoco_topdown.png"
+  },
+  "specPath": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\m7_unity6000\\Assets\\Resources\\BCI\\M20\\assistive_desk_scene.json",
+  "specSha256": "414a7aeb0e488432af9283c3151cbc3757b6126d75e8239dbf45b42c830024d2",
+  "staticContract": {
+    "articulations": {
+      "buttonCapHoleClearanceMeters": 0.006,
+      "buttonTravelMeters": 0.005,
+      "storageHingeDegrees": {
+        "maximum": 0.0,
+        "minimum": -100.0
+      }
+    },
+    "candidateCount": 6,
+    "candidateOrder": [
+      "assist_medicine_box",
+      "assist_storage_box",
+      "assist_phone",
+      "assist_button_switch",
+      "assist_wireless_charger",
+      "assist_user_zone"
+    ],
+    "candidatePages": [
+      [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone"
+      ],
+      [
+        "assist_button_switch",
+        "assist_wireless_charger",
+        "assist_user_zone"
+      ]
+    ],
+    "coordinateFrame": {
+      "origin": "center of the tabletop top surface",
+      "unit": "meter",
+      "unityHingeAngleSignFromMujoco": 1,
+      "unityRobotVisualScale": 0.7,
+      "unityTableRootFacesUser": true,
+      "unityTableRootLocalPositionAdapter": "(-x, z, -y)",
+      "unityUsesNegativeScale": false,
+      "x": "user visual right",
+      "y": "away from user toward robot",
+      "z": "up"
+    },
+    "crossEngineTargets": [
+      "assist_medicine_box",
+      "assist_storage_box",
+      "assist_phone",
+      "assist_button_switch",
+      "assist_wireless_charger",
+      "assist_user_zone"
+    ],
+    "geometryDimensionToleranceMeters": 0.005,
+    "geometryDimensionToleranceRelative": 0.02,
+    "geometryPositionToleranceMeters": 0.005,
+    "mirrorChecks": {
+      "buttonXNegative": true,
+      "chargerXPositive": true,
+      "medicineXNegative": true,
+      "phoneXPositive": true,
+      "robotBehindCandidates": true,
+      "storageCentered": true,
+      "userZoneInFront": true
+    },
+    "placementChecks": {
+      "allPlacementPosesCollisionClear": true,
+      "medicineRestsOnUserZone": true,
+      "phoneCenteredAndRestsOnCharger": true,
+      "phoneRestsOnUserZone": true,
+      "placementPoses": [
+        {
+          "objectBottomLocalZMeters": 0.0020000000000000018,
+          "restsOnTarget": true,
+          "sourceId": "assist_medicine_box",
+          "targetId": "assist_user_zone",
+          "targetTopLocalZMeters": 0.002,
+          "verticalGapMeters": 1.734723475976807e-18
+        },
+        {
+          "objectBottomLocalZMeters": 0.002,
+          "restsOnTarget": true,
+          "sourceId": "assist_phone",
+          "targetId": "assist_user_zone",
+          "targetTopLocalZMeters": 0.002,
+          "verticalGapMeters": 0.0
+        },
+        {
+          "objectBottomLocalZMeters": 0.012,
+          "restsOnTarget": true,
+          "sourceId": "assist_phone",
+          "targetId": "assist_wireless_charger",
+          "targetTopLocalZMeters": 0.012,
+          "verticalGapMeters": 0.0
+        }
+      ]
+    },
+    "sceneId": "m20_daily_assistive_desk",
+    "slotMapping": [
+      {
+        "framesPerHalfCycle": 5,
+        "frequencyHz": 7.2,
+        "slotIndex": 0
+      },
+      {
+        "framesPerHalfCycle": 4,
+        "frequencyHz": 9.0,
+        "slotIndex": 1
+      },
+      {
+        "framesPerHalfCycle": 3,
+        "frequencyHz": 12.0,
+        "slotIndex": 2
+      }
+    ],
+    "status": "PASS",
+    "tableSizeMeters": {
+      "x": 0.96,
+      "y": 0.56,
+      "z": 0.05
+    },
+    "yawToleranceDegrees": 2.0
+  },
+  "status": "PASS"
+}

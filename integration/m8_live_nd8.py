@@ -38,6 +38,8 @@ from integration.m8_selection_orchestration import (
     QuestSelectionTcpServer,
 )
 from integration.m13_5_live_controller import M135LiveOnlineController
+from integration.m15_stage2_v2_live_controller import Stage2V2LiveOnlineController
+from integration.m13_real_acceptance_schedule import validate_schedule
 
 
 M8_LIVE_TRIAL_SPECS = (
@@ -219,19 +221,57 @@ def _write_json(path, value):
     Path(path).write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def _create_session(data_root, session_prefix, dry_run=False, max_trials=3, selection_plan="fixed"):
+def _load_classifier_acceptance_trials(schedule_path, data_root):
+    path = Path(schedule_path)
+    schedule = json.loads(path.read_text(encoding="utf-8"))
+    validate_schedule(schedule)
+    session_id = str(schedule["sessionId"])
+    if not session_id or Path(session_id).name != session_id or session_id in (".", "..") or "obj_" in session_id:
+        raise ValueError("classifier schedule sessionId must be a safe public directory identity")
+    root = Path(data_root) / session_id
+    if root.exists():
+        raise ValueError("classifier schedule session directory already exists: {}".format(root))
+    trials = []
+    for item in schedule["trials"]:
+        trials.append({
+            "sessionId": session_id,
+            "trialId": item["trialId"],
+            "selectionId": item["selectionId"],
+            "trialIndex": item["trialIndex"],
+            "slot": item["slot"],
+            "expectedClassIndex": item["slot"],
+            "expectedLabel": item["intendedClass"],
+            "frequencyHz": item["frequencyHz"],
+            "operatorPrompt": "Trial {}: look at slot {} / {} Hz".format(item["trialIndex"], item["slot"], item["frequencyHz"]),
+            "classifierAcceptance": True,
+            "resetMode": item["resetMode"],
+        })
+    return session_id, root, trials, schedule
+
+
+def _create_session(data_root, session_prefix, dry_run=False, max_trials=3, selection_plan="fixed", acceptance_schedule_path=None):
     if selection_plan not in ("fixed", "free"):
         raise ValueError("selection_plan must be fixed or free")
-    session_id = _new_session_id(session_prefix)
-    root = Path(data_root) / session_id
-    root.mkdir(parents=True, exist_ok=False)
-    if selection_plan == "free":
-        trials = build_m8_free_trial_plan(session_id, max_trials)
+    schedule = None
+    if acceptance_schedule_path is not None:
+        if selection_plan != "fixed":
+            raise ValueError("classifier acceptance schedule requires the fixed selection plan")
+        session_id, root, trials, schedule = _load_classifier_acceptance_trials(acceptance_schedule_path, data_root)
+        if int(max_trials) != len(trials):
+            raise ValueError("max_trials must equal classifier schedule trial count")
+        effective_selection_plan = "classifier_acceptance"
     else:
-        trials = limit_m8_live_trial_plan(build_m8_live_trial_plan(session_id), max_trials)
-    plan_mode = "m8_free_selection" if selection_plan == "free" else (
+        session_id = _new_session_id(session_prefix)
+        root = Path(data_root) / session_id
+        if selection_plan == "free":
+            trials = build_m8_free_trial_plan(session_id, max_trials)
+        else:
+            trials = limit_m8_live_trial_plan(build_m8_live_trial_plan(session_id), max_trials)
+        effective_selection_plan = selection_plan
+    root.mkdir(parents=True, exist_ok=False)
+    plan_mode = "m13_classifier_acceptance" if schedule is not None else ("m8_free_selection" if selection_plan == "free" else (
         "m8_final_single_trial" if len(trials) == 1 else "m8_2b_engineering_smoke"
-    )
+    ))
     plan = {"sessionId": session_id, "planMode": plan_mode, "trials": trials}
     manifest = {
         "recordType": "m8_2b_live_nd8_session",
@@ -240,7 +280,7 @@ def _create_session(data_root, session_prefix, dry_run=False, max_trials=3, sele
         "mode": "m8_2b_live_nd8",
         "status": "prepared",
         "gitCommit": _git_commit(),
-        "selectionPlan": selection_plan,
+        "selectionPlan": effective_selection_plan,
         "plannedTrialCount": len(trials),
         "trialOrder": [item["expectedClassIndex"] for item in trials],
         "plannedTrialIndices": [item["trialIndex"] for item in trials],
@@ -252,7 +292,7 @@ def _create_session(data_root, session_prefix, dry_run=False, max_trials=3, sele
         "stabilizer": "2-Consecutive",
         "sampleRateHz": 1000,
         "groundTruthLeakage": False,
-        "expectedClassUse": "post_hoc_evidence_only" if selection_plan == "fixed" else "not_applicable_free_selection",
+        "expectedClassUse": "classifier_schedule_ground_truth" if schedule is not None else ("post_hoc_evidence_only" if selection_plan == "fixed" else "not_applicable_free_selection"),
         "nd8Started": False,
         "rawEegFile": "raw-eeg.jsonl",
         "packetMetadataFile": "packet-metadata.jsonl",
@@ -264,6 +304,15 @@ def _create_session(data_root, session_prefix, dry_run=False, max_trials=3, sele
         "hardwareSampleAnchorVerified": False,
         "dryRun": bool(dry_run),
     }
+    if schedule is not None:
+        manifest["classifierAcceptance"] = {
+            "schedulePath": str(Path(acceptance_schedule_path)),
+            "scheduleSessionId": schedule["sessionId"],
+            "seed": schedule["seed"],
+            "resetMode": schedule["resetMode"],
+            "productionMode": "active",
+            "sequentialTaskDemo": False,
+        }
     _write_json(root / "manifest.json", manifest)
     _write_json(root / "m8-trial-plan.json", plan)
     return root, manifest, plan
@@ -341,7 +390,22 @@ class M8LiveNd8Session:
         self._controller = None
 
     def _default_controller_factory(self, backend, selected_channels, prediction_log, decision_log):
-        if getattr(self.args, "m13_mode", "baseline") == "active":
+        runtime_mode = getattr(self.args, "m13_mode", "baseline")
+        if runtime_mode == "dynamic_v2":
+            controller = Stage2V2LiveOnlineController(
+                backend,
+                selected_channels,
+                prediction_log,
+                decision_log,
+            )
+            self.manifest.update({
+                "decoderRuntimeMode": "dynamic_v2",
+                "liveController": "Stage2V2LiveOnlineController",
+                "stage2V2RuntimeConfig": controller.runtime_config_snapshot,
+            })
+            self._save_manifest()
+            return controller
+        if runtime_mode in ("active", "dynamic_v1"):
             controller = M135LiveOnlineController(
                 backend,
                 selected_channels,
@@ -352,13 +416,15 @@ class M8LiveNd8Session:
                 software_commit=_git_commit(),
             )
             self.manifest.update({
-                "m13RuntimeMode": "active",
+                "m13RuntimeMode": "active" if runtime_mode == "active" else "dynamic_v1",
                 "m13SessionLog": "m13.5-session.jsonl",
                 "m13SourceType": "real_nd8_floating_electrodes_no_human_eeg",
                 "liveController": "M135LiveOnlineController",
             })
             self._save_manifest()
             return controller
+        self.manifest.update({"decoderRuntimeMode": "baseline", "liveController": "LiveOnlineController"})
+        self._save_manifest()
         return LiveOnlineController(backend, selected_channels, prediction_log, decision_log)
 
     def _record_cue_warning(self, message):
@@ -472,7 +538,7 @@ class M8LiveNd8Session:
             "syntheticWarmup": warmup,
             "nd8HostMacReady": self.adapter.host_mac_ready,
             "nd8HostMacSuffix": self.adapter.host_mac_suffix,
-            "liveController": "LiveOnlineController",
+            "liveController": self.manifest.get("liveController", "LiveOnlineController"),
             "m6EvidenceReference": {"sessionRoot": str(self.root), "rawEegFile": "raw-eeg.jsonl",
                                     "packetMetadataFile": "packet-metadata.jsonl"},
         })
@@ -536,7 +602,7 @@ class M8LiveNd8Session:
         self._emit_cue("trial_ended")
         m8_result = completed["m8Selection"]
         status = m8_result.get("status")
-        if status == "quest_rejected" and getattr(self.args, "m13_mode", "baseline") == "active":
+        if status == "quest_rejected" and getattr(self.args, "m13_mode", "baseline") in ("active", "dynamic_v1", "dynamic_v2"):
             self._record_trial(completed, "quest_rejected", status)
             return
         if status not in ("quest_accepted", "no_decision"):
@@ -577,6 +643,7 @@ class M8LiveNd8Session:
             dry_run=bool(self.args.dry_run),
             max_trials=getattr(self.args, "max_trials", 3),
             selection_plan=getattr(self.args, "selection_plan", "fixed"),
+            acceptance_schedule_path=getattr(self.args, "m13_schedule", None),
         )
         self.session_id = self.manifest["sessionId"]
         self.manifest["m13RuntimeMode"] = getattr(self.args, "m13_mode", "baseline")

@@ -1,0 +1,28 @@
+{
+    "recordType": "m20_task1_unity_editor_validation",
+    "status": "PASS",
+    "unityVersion": "6000.0.66f2",
+    "sceneAssetPath": "Assets/PassthroughCameraApiSamples/MultiObjectDetection/M20DailyAssistiveDesk.unity",
+    "sceneProfile": "PagedQueueV1",
+    "testRunId": "capture-only",
+    "testResult": "direct_EditMode_assertions_passed",
+    "error": "",
+    "startedUtc": "2026-09-26T23:05:17.5576237Z",
+    "completedUtc": "2026-09-26T23:05:18.1668252Z",
+    "sceneProfileValid": true,
+    "capturePass": true,
+    "directEditModeFallback": true,
+    "testPassed": 2,
+    "testFailed": 0,
+    "testSkipped": 0,
+    "testAssertCount": 0,
+    "runtimeCandidateCount": 6,
+    "storageLidOpenDegrees": 100.00000762939453,
+    "storageLidClosedErrorDegrees": 0.0,
+    "buttonTravelMeters": 0.004999998956918716,
+    "buttonReleasedErrorMeters": 0.0,
+    "screenshotPaths": [
+        "docs/agent/overnight/runs/m20-daily-assistive-desk-20260926/task1/unity-screenshots-v4/unity_topdown.png",
+        "docs/agent/overnight/runs/m20-daily-assistive-desk-20260926/task1/unity-screenshots-v4/unity_perspective.png"
+    ]
+}

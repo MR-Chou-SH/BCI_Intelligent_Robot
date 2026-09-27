@@ -41,7 +41,7 @@ namespace BCIIntelligentRobot.Tests
         }
 
         [Test]
-        public void EmptySubmitIsNoop_WhileConfirmedBatchPreservesSelectionOrderAndStartsNextGroup()
+        public void EmptySubmitIsNoop_WhileConfirmedBatchPreservesSelectionOrderAndLeavesUnselectedTargetsAvailable()
         {
             var coordinator = NewActiveCoordinator();
             Assert.That(coordinator.TryConfirmCurrentGroup(out ConfirmedTargetBatch empty), Is.False);
@@ -59,7 +59,10 @@ namespace BCIIntelligentRobot.Tests
             Assert.That(duplicateSubmit, Is.Null);
 
             Assert.That(coordinator.TryActivateNextGroup(), Is.True);
-            Assert.That(TargetIds(coordinator.ActiveGroup.Value.Targets), Is.EqualTo(new[] { "d", "e" }));
+            Assert.That(TargetIds(coordinator.ActiveGroup.Value.Targets), Is.EqualTo(new[] { "b", "d", "e" }));
+            Assert.That(coordinator.ProcessedTargetIds, Does.Contain("a"));
+            Assert.That(coordinator.ProcessedTargetIds, Does.Contain("c"));
+            Assert.That(coordinator.ProcessedTargetIds, Does.Not.Contain("b"));
         }
 
         [Test]
@@ -121,6 +124,120 @@ namespace BCIIntelligentRobot.Tests
             Assert.That(coordinator.EvaluateActiveGroupReassociation(false), Is.Empty);
         }
 
+        [Test]
+        public void AuthoritativeSnapshotRebindsLegacyVisualOrderBeforeSelection()
+        {
+            var coordinator = new BciTargetGroupCoordinator();
+            StableWorldAnchorSnapshot blue = Anchor("blue", 0f);
+            StableWorldAnchorSnapshot yellow = Anchor("yellow", 1f);
+            StableWorldAnchorSnapshot green = Anchor("green", 2f);
+            StableWorldAnchorSnapshot red = Anchor("red", 3f);
+            coordinator.UpdateCandidatePool(new[] { blue, yellow, green, red });
+
+            Assert.That(coordinator.TryActivateNextGroup(), Is.True);
+            Assert.That(TargetIds(coordinator.ActiveGroup.Value.Targets), Is.EqualTo(new[] { "blue", "yellow", "green" }));
+
+            var authoritative = new BciSelectionSnapshot(
+                "authoritative-red-first",
+                1,
+                new[]
+                {
+                    new BciSelectionTarget(0, red),
+                    new BciSelectionTarget(1, green),
+                    new BciSelectionTarget(2, yellow),
+                });
+            Assert.That(coordinator.TryApplyAuthoritativeSelectionSnapshot(authoritative), Is.True);
+            Assert.That(TargetIds(coordinator.ActiveGroup.Value.Targets), Is.EqualTo(new[] { "red", "green", "yellow" }));
+            Assert.That(coordinator.TryAccept(Result("selection-red", 0, "red")), Is.True);
+            Assert.That(TargetIdsFromResults(coordinator.CurrentSelections), Is.EqualTo(new[] { "red" }));
+        }
+
+        [Test]
+        public void AuthoritativeSnapshotSupportsInactiveGapForDynamicNextBatch()
+        {
+            var coordinator = new BciTargetGroupCoordinator();
+            StableWorldAnchorSnapshot blue = Anchor("blue", 0f);
+            StableWorldAnchorSnapshot yellow = Anchor("yellow", 1f);
+            StableWorldAnchorSnapshot green = Anchor("green", 2f);
+            coordinator.UpdateCandidatePool(new[] { blue, yellow, green });
+            Assert.That(coordinator.TryActivateNextGroup(), Is.True);
+            Assert.That(coordinator.TryConfirmCurrentGroup(out ConfirmedTargetBatch _), Is.False);
+
+            var authoritative = new BciSelectionSnapshot(
+                "authoritative-yellow-blue",
+                2,
+                new[]
+                {
+                    new BciSelectionTarget(0, yellow),
+                    new BciSelectionTarget(1, null, null, StableTargetState.TemporarilyMissing),
+                    new BciSelectionTarget(2, blue),
+                });
+            Assert.That(coordinator.TryApplyAuthoritativeSelectionSnapshot(authoritative), Is.True);
+            Assert.That(coordinator.ActiveGroup.Value.Targets.Count, Is.EqualTo(3));
+            Assert.That(coordinator.ActiveGroup.Value.Targets[0].TargetId, Is.EqualTo("yellow"));
+            Assert.That(coordinator.ActiveGroup.Value.Targets[1].TargetId, Is.Null);
+            Assert.That(coordinator.ActiveGroup.Value.Targets[2].TargetId, Is.EqualTo("blue"));
+            Assert.That(coordinator.TryAccept(Result("selection-blue", 2, "blue")), Is.True);
+        }
+
+        [Test]
+        public void HostBatchCloseValidatesImmutableSelectionFactsAndClearsActiveGroup()
+        {
+            var coordinator = NewActiveCoordinator();
+            Assert.That(coordinator.TryAccept(Result("selection-c", 2, "c")), Is.True);
+            Assert.That(coordinator.TryAccept(Result("selection-a", 0, "a")), Is.True);
+
+            var expected = new[]
+            {
+                new ConfirmedTargetSelectionPayload
+                {
+                    selectionId = "selection-c",
+                    predictedClassIndex = 2,
+                    slotIndex = 2,
+                    targetId = "c"
+                },
+                new ConfirmedTargetSelectionPayload
+                {
+                    selectionId = "selection-a",
+                    predictedClassIndex = 0,
+                    slotIndex = 0,
+                    targetId = "a"
+                }
+            };
+
+            Assert.That(coordinator.TryCloseCurrentGroupFromHost(expected, out string groupId), Is.True);
+            Assert.That(groupId, Is.EqualTo("m8-group-0001"));
+            Assert.That(coordinator.HasActiveGroup, Is.False);
+            Assert.That(coordinator.CurrentSelections, Is.Empty);
+            Assert.That(coordinator.ProcessedTargetIds, Does.Contain("a"));
+            Assert.That(coordinator.ProcessedTargetIds, Does.Contain("c"));
+            Assert.That(coordinator.TryActivateNextGroup(), Is.True);
+            Assert.That(TargetIds(coordinator.ActiveGroup.Value.Targets), Is.EqualTo(new[] { "b", "d", "e" }));
+        }
+
+        [Test]
+        public void HostBatchCloseRejectsStaleOrReorderedSelectionFacts()
+        {
+            var coordinator = NewActiveCoordinator();
+            Assert.That(coordinator.TryAccept(Result("selection-a", 0, "a")), Is.True);
+
+            var stale = new[]
+            {
+                new ConfirmedTargetSelectionPayload
+                {
+                    selectionId = "selection-a",
+                    predictedClassIndex = 0,
+                    slotIndex = 0,
+                    targetId = "b"
+                }
+            };
+
+            Assert.That(coordinator.TryCloseCurrentGroupFromHost(stale, out string groupId), Is.False);
+            Assert.That(groupId, Is.Null);
+            Assert.That(coordinator.HasActiveGroup, Is.True);
+            Assert.That(coordinator.CurrentSelections, Has.Count.EqualTo(1));
+        }
+
         private static BciTargetGroupCoordinator NewActiveCoordinator()
         {
             var coordinator = new BciTargetGroupCoordinator();
@@ -154,6 +271,15 @@ namespace BCIIntelligentRobot.Tests
                 new TargetBoundingBox(bboxX, 20f, 30f, 100f),
                 0d,
                 1d);
+        }
+
+        private static StableWorldAnchorSnapshot Anchor(string targetId, float x)
+        {
+            return new StableWorldAnchorSnapshot(
+                targetId,
+                "block",
+                StableTargetState.Active,
+                new Vector3(x, 0f, 2f));
         }
 
         private static BciTargetSelectionResult Result(string selectionId, int slot, string targetId)

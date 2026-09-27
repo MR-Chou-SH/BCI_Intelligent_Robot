@@ -147,6 +147,8 @@ class M136VisualSyncTests(unittest.TestCase):
     def test_quest_receiver_static_contract_is_separate_from_control(self):
         receiver = Path("m7_unity6000/Assets/PassthroughCameraApiSamples/MultiObjectDetection/DetectionManager/Scripts/M13_6VisualSyncReceiver.cs").read_text(encoding="utf-8")
         installer = Path("m7_unity6000/Assets/PassthroughCameraApiSamples/MultiObjectDetection/DetectionManager/Scripts/M13_6VisualSyncAutoInstaller.cs").read_text(encoding="utf-8")
+        paged_controller = Path("m7_unity6000/Assets/BCI/Integration/BciPagedTargetQueueController.cs").read_text(encoding="utf-8")
+        hud = Path("m7_unity6000/Assets/BCI/Integration/BciPagedQueueHud.cs").read_text(encoding="utf-8")
         self.assertIn("DefaultPort = 11002", receiver)
         self.assertNotIn("11001", receiver)
         self.assertIn("M13_6VisualTransportMode", receiver)
@@ -163,6 +165,16 @@ class M136VisualSyncTests(unittest.TestCase):
         self.assertIn("BuildIdentity", receiver)
         self.assertIn("diagnostics build=", receiver)
         self.assertIn("RuntimeInitializeOnLoadMethod", installer)
+        self.assertIn('string.Equals(simulationState, "executing"', receiver)
+        self.assertIn('string.Equals(simulationState, "completed"', receiver)
+        self.assertIn('string.Equals(simulationState, "execution_failed"', receiver)
+        self.assertIn('robotStatus = "EXECUTING"', receiver)
+        self.assertIn('robotStatus = "COMPLETE"', receiver)
+        self.assertIn('robotStatus = "FAILED"', receiver)
+        self.assertIn("SetRobotExecutionStatus(robotStatus)", Path("m7_unity6000/Assets/BCI/Integration/BciTargetBatchController.cs").read_text(encoding="utf-8"))
+        self.assertIn("Robot: ", hud)
+        self.assertIn('SetRobotExecutionStatus("EXECUTING")', paged_controller)
+        self.assertIn('SetRobotExecutionStatus("COMPLETE")', paged_controller)
 
     def test_receiver_keeps_scene_robot_anchor_fixed(self):
         receiver = Path("m7_unity6000/Assets/PassthroughCameraApiSamples/MultiObjectDetection/DetectionManager/Scripts/M13_6VisualSyncReceiver.cs").read_text(encoding="utf-8")

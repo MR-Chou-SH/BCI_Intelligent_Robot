@@ -111,6 +111,7 @@ class RobotObjectRequest:
     resolved_utc: str
     batch_provenance: str
     selection_provenance: str
+    build_slot_index: Optional[int] = None
 
     def __post_init__(self):
         validate_logical_block_id(self.logical_block_id)
@@ -123,6 +124,8 @@ class RobotObjectRequest:
         _required_integer(self.group_index, "groupIndex", 0)
         _required_integer(self.predicted_class_index, "predictedClassIndex", 0, 2)
         _required_integer(self.slot_index, "slotIndex", 0, 2)
+        if self.build_slot_index is not None:
+            _required_integer(self.build_slot_index, "buildSlotIndex", 0, 3)
         if self.semantic_label is not None and not isinstance(self.semantic_label, str):
             raise ConfirmedBatchContractError("semanticLabel must be a string when present")
         if self.batch_provenance != CONFIRMED_BATCH_PROVENANCE:
@@ -208,6 +211,9 @@ def confirmed_batch_to_robot_requests(message, target_id_to_logical_block_id):
             raise DuplicateTargetIdError(
                 "multiple selections resolve to logical block: {!r}".format(logical_block_id)
             )
+        build_slot_index = selection.get("buildSlotIndex")
+        if build_slot_index is not None:
+            _required_integer(build_slot_index, "buildSlotIndex", 0, 3)
 
         seen_selection_ids.add(selection_id)
         seen_target_ids.add(target_id)
@@ -228,6 +234,7 @@ def confirmed_batch_to_robot_requests(message, target_id_to_logical_block_id):
                 resolved_utc=resolved_utc,
                 batch_provenance=batch["provenance"],
                 selection_provenance=selection_provenance,
+                build_slot_index=build_slot_index,
             )
         )
 

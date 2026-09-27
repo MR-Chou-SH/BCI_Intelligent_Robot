@@ -130,6 +130,54 @@ namespace BCIIntelligentRobot.Vision
             localPositions[2] = localCenter + Vector3.right * spacing;
         }
 
+        /// <summary>
+        /// Calculates HUD panel positions from the current on-screen order of
+        /// the stable anchors.  The array index remains the canonical SSVEP
+        /// slot; only the camera-facing panel position is reordered.
+        /// </summary>
+        public static void CalculateViewLockedPositionsByScreenOrder(
+            IReadOnlyList<StableWorldAnchorSnapshot> anchors,
+            IReadOnlyList<bool> slotVisible,
+            Camera camera,
+            Vector3 localCenter,
+            float horizontalSpacing,
+            Vector3[] localPositions)
+        {
+            if (anchors == null || slotVisible == null || camera == null ||
+                localPositions == null ||
+                anchors.Count < BciTargetSlotAllocator.SlotCount ||
+                slotVisible.Count < BciTargetSlotAllocator.SlotCount ||
+                localPositions.Length < BciTargetSlotAllocator.SlotCount)
+                throw new ArgumentException("Three slots and a camera are required.");
+
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+                localPositions[slot] = localCenter;
+
+            var ordered = new List<SlotPosition>(BciTargetSlotAllocator.SlotCount);
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+            {
+                if (!slotVisible[slot])
+                    continue;
+
+                Vector3 screen = camera.WorldToScreenPoint(anchors[slot].WorldPosition);
+                ordered.Add(new SlotPosition(slot, screen.x));
+            }
+
+            ordered.Sort((left, right) =>
+            {
+                int byScreenX = left.DesiredRight.CompareTo(right.DesiredRight);
+                return byScreenX != 0 ? byScreenX : left.SlotIndex.CompareTo(right.SlotIndex);
+            });
+
+            float spacing = Mathf.Max(0f, horizontalSpacing);
+            float centerRank = (ordered.Count - 1) * 0.5f;
+            for (int index = 0; index < ordered.Count; index++)
+            {
+                localPositions[ordered[index].SlotIndex] =
+                    localCenter + Vector3.right * ((index - centerRank) * spacing);
+            }
+        }
+
         public static bool HasViewSpaceOverlap(
             Vector3 firstPosition,
             Vector3 secondPosition,

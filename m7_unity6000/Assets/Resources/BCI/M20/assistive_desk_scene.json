@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "sceneId": "m20_daily_assistive_desk",
+  "frame": {
+    "unit": "meter",
+    "origin": "center of the tabletop top surface",
+    "x": "user visual right",
+    "y": "away from user toward robot",
+    "z": "up",
+    "unityTableRootLocalPositionAdapter": "(-x, z, -y)",
+    "unityTableRootFacesUser": true,
+    "unityRobotVisualScale": 0.70,
+    "unityUsesNegativeScale": false,
+    "unityHingeAngleSignFromMujoco": 1
+  },
+  "table": {
+    "entityId": "assist_table",
+    "dimensionsMeters": { "x": 0.96, "y": 0.56, "z": 0.05 },
+    "mujocoTopSurfaceWorldZMeters": 0.75,
+    "topSurfaceAtTableLocalZMeters": 0.0
+  },
+  "robot": {
+    "entityId": "franka_fr3_umi",
+    "modelSource": "existing_m9_fr3_umi_mujoco_model_and_m9_franka_visual_factory",
+    "basePositionMeters": { "x": 0.0, "y": 0.40, "z": 0.0 },
+    "identityPreserved": true
+  },
+  "slots": [
+    { "slotIndex": 0, "nominalFrequencyHz": 7.2, "framesPerHalfCycle": 5 },
+    { "slotIndex": 1, "nominalFrequencyHz": 9.0, "framesPerHalfCycle": 4 },
+    { "slotIndex": 2, "nominalFrequencyHz": 12.0, "framesPerHalfCycle": 3 }
+  ],
+  "candidateOrderFarToNearLeftToRight": [
+    "assist_medicine_box",
+    "assist_storage_box",
+    "assist_phone",
+    "assist_button_switch",
+    "assist_wireless_charger",
+    "assist_user_zone"
+  ],
+  "candidatePageSize": 3,
+  "entities": [
+    {
+      "semanticId": "assist_medicine_box",
+      "targetId": "assist_medicine_box",
+      "logicalBlockId": "block_assist_medicine_01",
+      "semanticLabel": "small_medicine_box",
+      "displayLabel": "MEDICINE",
+      "sourceKind": "virtual_block",
+      "role": "movable_source",
+      "selectable": true,
+      "active": true,
+      "slotEligible": true,
+      "geometry": "box",
+      "positionMeters": { "x": -0.24, "y": 0.10, "z": 0.015 },
+      "dimensionsMeters": { "x": 0.10, "y": 0.06, "z": 0.03 },
+      "yawDegrees": 0.0,
+      "color": { "r": 0.89, "g": 0.88, "b": 0.78, "a": 1.0 },
+      "affordanceTags": ["medicine_container", "small_rigid_box", "movable"],
+      "grasp": {
+        "mujocoBodyName": "assist_medicine_box",
+        "enabled": true,
+        "preferredApproach": "top",
+        "maximumObjectWidthMeters": 0.06
+      },
+      "placements": [
+        { "targetId": "assist_user_zone", "positionMeters": { "x": -0.11, "y": -0.19, "z": 0.017 }, "yawDegrees": 0.0 }
+      ]
+    },
+    {
+      "semanticId": "assist_storage_box",
+      "targetId": "assist_storage_box",
+      "logicalBlockId": "block_assist_storage_02",
+      "semanticLabel": "hinged_storage_box",
+      "displayLabel": "STORAGE",
+      "sourceKind": "virtual_block",
+      "role": "articulated_context_object",
+      "selectable": true,
+      "active": true,
+      "slotEligible": true,
+      "geometry": "box",
+      "positionMeters": { "x": 0.0, "y": 0.10, "z": 0.0375 },
+      "dimensionsMeters": { "x": 0.18, "y": 0.12, "z": 0.075 },
+      "yawDegrees": 0.0,
+      "construction": { "type": "hollow_open_top_box", "wallThicknessMeters": 0.006, "bottomThicknessMeters": 0.006 },
+      "color": { "r": 0.55, "g": 0.32, "b": 0.16, "a": 1.0 },
+      "affordanceTags": ["storage_container", "hinged_lid", "stationary_context_object"],
+      "grasp": { "mujocoBodyName": "assist_storage_box", "enabled": false },
+      "placements": []
+    },
+    {
+      "semanticId": "assist_phone",
+      "targetId": "assist_phone",
+      "logicalBlockId": "block_assist_phone_03",
+      "semanticLabel": "smartphone",
+      "displayLabel": "PHONE",
+      "sourceKind": "virtual_block",
+      "role": "movable_source",
+      "selectable": true,
+      "active": true,
+      "slotEligible": true,
+      "geometry": "box",
+      "positionMeters": { "x": 0.24, "y": 0.10, "z": 0.004 },
+      "dimensionsMeters": { "x": 0.15, "y": 0.072, "z": 0.008 },
+      "mujocoCollisionGeometry": {
+        "dimensionsMeters": { "x": 0.15, "y": 0.072, "z": 0.013 },
+        "centerOffsetMeters": { "x": 0.0, "y": 0.0, "z": 0.0025 },
+        "purpose": "raise the collision top by 5 mm for the existing UMI fingertip reach while preserving the canonical visible 8 mm phone thickness"
+      },
+      "yawDegrees": 0.0,
+      "color": { "r": 0.12, "g": 0.14, "b": 0.17, "a": 1.0 },
+      "affordanceTags": ["smartphone", "flat_rigid_object", "wireless_charging_source", "movable"],
+      "grasp": {
+        "mujocoBodyName": "assist_phone",
+        "enabled": true,
+        "preferredApproach": "top",
+        "maximumObjectWidthMeters": 0.072
+      },
+      "placements": [
+        { "targetId": "assist_user_zone", "positionMeters": { "x": 0.10, "y": -0.19, "z": 0.006 }, "yawDegrees": 0.0 },
+        { "targetId": "assist_wireless_charger", "positionMeters": { "x": 0.24, "y": -0.03, "z": 0.016 }, "yawDegrees": 0.0 }
+      ]
+    },
+    {
+      "semanticId": "assist_button_switch",
+      "targetId": "assist_button_switch",
+      "logicalBlockId": "block_assist_button_04",
+      "semanticLabel": "button_switch",
+      "displayLabel": "BUTTON",
+      "sourceKind": "virtual_block",
+      "role": "articulated_context_object",
+      "selectable": true,
+      "active": true,
+      "slotEligible": true,
+      "geometry": "box",
+      "positionMeters": { "x": -0.24, "y": -0.03, "z": 0.011 },
+      "dimensionsMeters": { "x": 0.11, "y": 0.06, "z": 0.022 },
+      "yawDegrees": 0.0,
+      "construction": {
+        "type": "button_housing_with_cap_aperture",
+        "apertureMeters": { "x": 0.04, "y": 0.04 },
+        "wallThicknessMeters": 0.01,
+        "bottomThicknessMeters": 0.004,
+        "capClearanceMeters": 0.006
+      },
+      "color": { "r": 0.23, "g": 0.25, "b": 0.28, "a": 1.0 },
+      "affordanceTags": ["button", "switch", "pressable", "stationary_context_object"],
+      "grasp": { "mujocoBodyName": "assist_button_switch", "enabled": false },
+      "placements": []
+    },
+    {
+      "semanticId": "assist_wireless_charger",
+      "targetId": "assist_wireless_charger",
+      "logicalBlockId": "block_assist_charger_05",
+      "semanticLabel": "wireless_charging_pad",
+      "displayLabel": "CHARGER",
+      "sourceKind": "virtual_block",
+      "role": "fixed_destination",
+      "selectable": true,
+      "active": true,
+      "slotEligible": true,
+      "geometry": "box",
+      "positionMeters": { "x": 0.24, "y": -0.03, "z": 0.006 },
+      "dimensionsMeters": { "x": 0.095, "y": 0.095, "z": 0.012 },
+      "yawDegrees": 0.0,
+      "color": { "r": 0.22, "g": 0.23, "b": 0.25, "a": 1.0 },
+      "affordanceTags": ["wireless_charger", "phone_destination", "fixed_surface"],
+      "grasp": { "mujocoBodyName": "assist_wireless_charger", "enabled": false },
+      "placements": []
+    },
+    {
+      "semanticId": "assist_user_zone",
+      "targetId": "assist_user_zone",
+      "logicalBlockId": "block_assist_user_zone_06",
+      "semanticLabel": "user_zone",
+      "displayLabel": "USER ZONE",
+      "sourceKind": "virtual_block",
+      "role": "fixed_destination",
+      "selectable": true,
+      "active": true,
+      "slotEligible": true,
+      "geometry": "box",
+      "positionMeters": { "x": 0.0, "y": -0.19, "z": 0.001 },
+      "dimensionsMeters": { "x": 0.46, "y": 0.18, "z": 0.002 },
+      "yawDegrees": 0.0,
+      "color": { "r": 0.83, "g": 0.71, "b": 0.28, "a": 0.72 },
+      "affordanceTags": ["user_zone", "placement_destination", "fixed_surface"],
+      "grasp": { "mujocoBodyName": "assist_user_zone", "enabled": false },
+      "placements": []
+    },
+    {
+      "semanticId": "assist_storage_lid",
+      "targetId": "",
+      "logicalBlockId": "",
+      "semanticLabel": "storage_lid",
+      "displayLabel": "",
+      "sourceKind": "articulated_part",
+      "role": "hinged_part",
+      "selectable": false,
+      "active": true,
+      "slotEligible": false,
+      "geometry": "box",
+      "positionMeters": { "x": 0.0, "y": 0.10, "z": 0.079 },
+      "dimensionsMeters": { "x": 0.18, "y": 0.12, "z": 0.008 },
+      "yawDegrees": 0.0,
+      "color": { "r": 0.48, "g": 0.27, "b": 0.13, "a": 1.0 },
+      "parentSemanticId": "assist_storage_box",
+      "affordanceTags": ["hinged_lid"],
+      "grasp": { "mujocoBodyName": "assist_storage_lid", "enabled": false },
+      "placements": []
+    },
+    {
+      "semanticId": "assist_button_cap",
+      "targetId": "",
+      "logicalBlockId": "",
+      "semanticLabel": "button_cap",
+      "displayLabel": "",
+      "sourceKind": "articulated_part",
+      "role": "sliding_part",
+      "selectable": false,
+      "active": true,
+      "slotEligible": false,
+      "geometry": "cylinder",
+      "positionMeters": { "x": -0.24, "y": -0.03, "z": 0.028 },
+      "dimensionsMeters": { "x": 0.028, "y": 0.028, "z": 0.012 },
+      "yawDegrees": 0.0,
+      "color": { "r": 0.78, "g": 0.15, "b": 0.12, "a": 1.0 },
+      "parentSemanticId": "assist_button_switch",
+      "affordanceTags": ["button_cap", "sliding_part"],
+      "grasp": { "mujocoBodyName": "assist_button_cap", "enabled": false },
+      "placements": []
+    }
+  ],
+  "articulations": [
+    {
+      "jointId": "assist_storage_lid_hinge",
+      "kind": "hinge",
+      "entityId": "assist_storage_lid",
+      "parentEntityId": "assist_storage_box",
+      "pivotPositionMeters": { "x": 0.0, "y": 0.16, "z": 0.075 },
+      "axis": { "x": 1.0, "y": 0.0, "z": 0.0 },
+      "rangeDegrees": { "minimum": -100.0, "maximum": 0.0 },
+      "closedDegrees": 0.0,
+      "openDegrees": -100.0
+    },
+    {
+      "jointId": "assist_button_cap_slide",
+      "kind": "slide",
+      "entityId": "assist_button_cap",
+      "parentEntityId": "assist_button_switch",
+      "axis": { "x": 0.0, "y": 0.0, "z": 1.0 },
+      "rangeMeters": { "minimum": 0.0, "maximum": 0.005 },
+      "unpressedMeters": 0.005,
+      "pressedMeters": 0.0
+    }
+  ],
+  "affordancePriorAfterPhoneHistory": [
+    "assist_wireless_charger",
+    "assist_storage_box",
+    "assist_medicine_box",
+    "assist_button_switch"
+  ]
+}

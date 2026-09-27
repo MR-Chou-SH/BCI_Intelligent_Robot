@@ -1,0 +1,12 @@
+{
+  "strongContradictoryEegPreservesRawTop": true,
+  "strongContradictoryEegWindowsAcrossFixedNonzeroAlphaConflictPolicies": 8232,
+  "strongOverridePreservedWindowsAcrossFixedNonzeroAlphaConflictPolicies": 8232,
+  "heldOutConflictPriorWrongEarlyStops": 0,
+  "heldOutConflictPriorContextCausedErrors": 0,
+  "fixedSensitivityConflictWrongEarlyStops": 0,
+  "fixedSensitivityConflictContextCausedErrors": 0,
+  "fixedNonzeroAlphaConflictPolicyTrialEvaluations": 2124,
+  "allAlphaZeroIsEegOnly": true,
+  "controlledLabelDerivedPriorsAreOfflineOnly": true
+}

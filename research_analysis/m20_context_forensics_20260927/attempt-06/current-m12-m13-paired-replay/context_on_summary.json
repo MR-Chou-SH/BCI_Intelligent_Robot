@@ -1,0 +1,46 @@
+{
+  "branch": "on",
+  "n_total": 89,
+  "n_correct": 88,
+  "accuracy": 0.9887640449438202,
+  "early_stop_count": 3,
+  "early_stop_rate": 0.033707865168539325,
+  "fallback_count": 86,
+  "fallback_rate": 0.9662921348314607,
+  "wrong_early_stop_count": 0,
+  "mean_decision_time": 3.9595505617977524,
+  "median_decision_time": 4.0,
+  "p90_decision_time": 4.0,
+  "mean_saved_time_vs_4s": 0.040449438202247195,
+  "median_saved_time": 0.0,
+  "decision_reasons": {
+    "early_stable_fused_evidence": 3,
+    "full_window_fallback": 86
+  },
+  "per_frequency": {
+    "7.2": {
+      "n": 30,
+      "n_correct": 30,
+      "accuracy": 1.0,
+      "early_stop_count": 3,
+      "mean_decision_time": 3.8800000000000003,
+      "mean_saved_time": 0.12000000000000001
+    },
+    "9": {
+      "n": 29,
+      "n_correct": 29,
+      "accuracy": 1.0,
+      "early_stop_count": 0,
+      "mean_decision_time": 4.0,
+      "mean_saved_time": 0.0
+    },
+    "12": {
+      "n": 30,
+      "n_correct": 29,
+      "accuracy": 0.9666666666666667,
+      "early_stop_count": 0,
+      "mean_decision_time": 4.0,
+      "mean_saved_time": 0.0
+    }
+  }
+}

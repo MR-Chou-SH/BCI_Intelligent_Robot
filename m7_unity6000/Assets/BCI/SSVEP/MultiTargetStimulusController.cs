@@ -61,6 +61,9 @@ namespace BCIIntelligentRobot.VRStimulus
             [SerializeField, Min(0)]
             private int m_PhaseOffsetFrames;
 
+            [SerializeField]
+            private Color m_ActiveColor = Color.white;
+
             [NonSerialized]
             private MaterialPropertyBlock m_PropertyBlock;
 
@@ -79,6 +82,15 @@ namespace BCIIntelligentRobot.VRStimulus
             [NonSerialized]
             private bool m_IsStaticSelectionVisual;
 
+            [NonSerialized]
+            private bool m_IsStaticPreview;
+
+            [NonSerialized]
+            private bool m_StaticPreviewWhite;
+
+            [NonSerialized]
+            private bool m_IsBrowseFlicker;
+
             public string TargetId => m_TargetId;
             public int TargetIndex => m_TargetIndex;
             public Renderer TargetRenderer => m_TargetRenderer;
@@ -87,19 +99,22 @@ namespace BCIIntelligentRobot.VRStimulus
             public int TransitionCount => m_TransitionCount;
             public bool IsWhite => m_IsWhite;
             public bool IsCandidateActive => m_IsCandidateActive;
+            public bool IsBrowseFlicker => m_IsBrowseFlicker;
 
             public void Configure(
                 string targetId,
                 int targetIndex,
                 Renderer targetRenderer,
                 int framesPerHalfCycle,
-                int phaseOffsetFrames)
+                int phaseOffsetFrames,
+                Color activeColor)
             {
                 m_TargetId = targetId;
                 m_TargetIndex = targetIndex;
                 m_TargetRenderer = targetRenderer;
                 m_FramesPerHalfCycle = framesPerHalfCycle;
                 m_PhaseOffsetFrames = phaseOffsetFrames;
+                m_ActiveColor = activeColor;
             }
 
             public void Initialize()
@@ -109,19 +124,71 @@ namespace BCIIntelligentRobot.VRStimulus
                 m_TransitionCount = 0;
                 m_IsCandidateActive = true;
                 m_IsStaticSelectionVisual = false;
+                m_IsStaticPreview = false;
+                m_StaticPreviewWhite = false;
+                m_IsBrowseFlicker = false;
             }
 
             public void SetCandidateActive(bool active)
             {
-                if (m_IsCandidateActive == active)
+                if (m_IsCandidateActive == active && !m_IsStaticPreview && !m_IsBrowseFlicker)
                     return;
 
                 m_IsCandidateActive = active;
+                m_IsStaticPreview = false;
+                m_IsBrowseFlicker = false;
+                m_HasAppliedState = false;
+            }
+
+            public void SetStaticPreview(bool white)
+            {
+                m_IsCandidateActive = false;
+                m_IsStaticPreview = true;
+                m_StaticPreviewWhite = white;
+                m_IsBrowseFlicker = false;
+                m_HasAppliedState = false;
+            }
+
+            public void SetBrowseFlicker(bool enabled)
+            {
+                m_IsCandidateActive = false;
+                m_IsStaticPreview = false;
+                m_IsBrowseFlicker = enabled;
                 m_HasAppliedState = false;
             }
 
             public void ApplyState(bool white)
             {
+                if (m_IsBrowseFlicker)
+                {
+                    if (m_HasAppliedState && m_IsWhite == white)
+                        return;
+
+                    m_IsWhite = white;
+                    m_HasAppliedState = true;
+                    m_IsStaticSelectionVisual = false;
+                    m_TransitionCount++;
+                    m_TargetRenderer.GetPropertyBlock(m_PropertyBlock);
+                    m_PropertyBlock.SetColor(ColorPropertyId, white ? m_ActiveColor : Color.black);
+                    m_TargetRenderer.SetPropertyBlock(m_PropertyBlock);
+                    return;
+                }
+
+                if (m_IsStaticPreview)
+                {
+                    if (m_HasAppliedState && m_IsWhite == m_StaticPreviewWhite)
+                        return;
+
+                    m_IsWhite = m_StaticPreviewWhite;
+                    m_HasAppliedState = true;
+                    m_IsStaticSelectionVisual = false;
+                    m_TransitionCount++;
+                    m_TargetRenderer.GetPropertyBlock(m_PropertyBlock);
+                    m_PropertyBlock.SetColor(ColorPropertyId, m_StaticPreviewWhite ? Color.white : Color.black);
+                    m_TargetRenderer.SetPropertyBlock(m_PropertyBlock);
+                    return;
+                }
+
                 if (!m_IsCandidateActive)
                 {
                     if (m_HasAppliedState && m_IsStaticSelectionVisual)
@@ -144,7 +211,7 @@ namespace BCIIntelligentRobot.VRStimulus
                 m_IsStaticSelectionVisual = false;
                 m_TransitionCount++;
                 m_TargetRenderer.GetPropertyBlock(m_PropertyBlock);
-                m_PropertyBlock.SetColor(ColorPropertyId, white ? Color.white : Color.black);
+                m_PropertyBlock.SetColor(ColorPropertyId, white ? m_ActiveColor : Color.black);
                 m_TargetRenderer.SetPropertyBlock(m_PropertyBlock);
             }
         }
@@ -157,11 +224,29 @@ namespace BCIIntelligentRobot.VRStimulus
         private bool m_HasObservedRefreshRate;
         private bool m_HasWarnedRefreshRateUnavailable;
         private bool m_IsInitialized;
+        private bool m_FormalStimulusActive;
+        private int m_FormalStimulusEpochCount;
 
         public int CommonStartFrame => m_CommonStartFrame;
         public int CurrentGlobalStimulusFrame => Time.frameCount - m_CommonStartFrame;
         public bool IsInitialized => m_IsInitialized;
         public int TargetCount => m_Targets?.Length ?? 0;
+        public bool IsFormalStimulusActive => m_FormalStimulusActive;
+        public int FormalStimulusEpochCount => m_FormalStimulusEpochCount;
+        public bool IsVisualFlickerEnabled
+        {
+            get
+            {
+                if (!m_IsInitialized || m_Targets == null)
+                    return false;
+                for (int index = 0; index < m_Targets.Length; index++)
+                {
+                    if (m_Targets[index].IsCandidateActive || m_Targets[index].IsBrowseFlicker)
+                        return true;
+                }
+                return false;
+            }
+        }
 
         public bool IsSlotCandidateActive(int slotIndex)
         {
@@ -173,19 +258,23 @@ namespace BCIIntelligentRobot.VRStimulus
         /// Configures the verified three-slot frame-driven controller from runtime-created world targets.
         /// All slots still share one common frame origin and use 5/4/3 frames per half-cycle.
         /// </summary>
-        public void ConfigureRuntimeTargets(Renderer[] targetRenderers)
+        public void ConfigureRuntimeTargets(Renderer[] targetRenderers, Color[] activeColors = null)
         {
             if (m_IsInitialized)
                 throw new InvalidOperationException("SSVEP targets are already initialized.");
             if (targetRenderers == null || targetRenderers.Length != RequiredTargetCount)
                 throw new ArgumentException($"Exactly {RequiredTargetCount} target renderers are required.", nameof(targetRenderers));
+            if (activeColors != null && activeColors.Length != RequiredTargetCount)
+                throw new ArgumentException($"Exactly {RequiredTargetCount} active colors are required.", nameof(activeColors));
 
             int[] framesPerHalfCycle = { 5, 4, 3 };
             m_Targets = new TargetConfiguration[RequiredTargetCount];
             for (int i = 0; i < RequiredTargetCount; i++)
             {
                 m_Targets[i] = new TargetConfiguration();
-                m_Targets[i].Configure($"slot-{i}", i, targetRenderers[i], framesPerHalfCycle[i], 0);
+                m_Targets[i].Configure(
+                    $"slot-{i}", i, targetRenderers[i], framesPerHalfCycle[i], 0,
+                    activeColors == null ? Color.white : activeColors[i]);
             }
 
             InitializeController();
@@ -211,6 +300,58 @@ namespace BCIIntelligentRobot.VRStimulus
                 return;
 
             m_Targets[slotIndex].SetCandidateActive(active);
+        }
+
+        /// <summary>
+        /// Starts a Browse-only frame-driven preview. Browse flicker is visual
+        /// exposure only: it is not a formal EEG stimulus epoch and does not
+        /// create an onset/sample anchor.
+        /// </summary>
+        public void SetSlotBrowseFlicker(int slotIndex, bool enabled)
+        {
+            if (!m_IsInitialized || slotIndex < 0 || slotIndex >= m_Targets.Length)
+                return;
+
+            m_Targets[slotIndex].SetBrowseFlicker(enabled);
+            m_Targets[slotIndex].ApplyState((Time.frameCount - m_CommonStartFrame +
+                m_Targets[slotIndex].PhaseOffsetFrames) / m_Targets[slotIndex].FramesPerHalfCycle % 2 == 0);
+        }
+
+        /// <summary>
+        /// Re-anchors the formal SSVEP epoch at selection_open. This is kept
+        /// separate from Browse flicker so pre-exposure cannot become the EEG
+        /// trial time zero.
+        /// </summary>
+        public void BeginFormalStimulusEpoch()
+        {
+            if (!m_IsInitialized)
+                return;
+
+            m_CommonStartFrame = Time.frameCount;
+            m_LastRefreshRateAttemptFrame = m_CommonStartFrame - RefreshRateRetryIntervalFrames;
+            m_FormalStimulusActive = true;
+            m_FormalStimulusEpochCount++;
+            foreach (TargetConfiguration target in m_Targets)
+                target.SetCandidateActive(target.IsCandidateActive);
+        }
+
+        public void EndFormalStimulusEpoch()
+        {
+            m_FormalStimulusActive = false;
+        }
+
+        /// <summary>
+        /// Shows a non-flickering black/white browse preview. This is not a
+        /// formal SSVEP candidate: selection_open must call SetSlotCandidateActive
+        /// before any EEG trial can use the slot.
+        /// </summary>
+        public void SetSlotStaticPreview(int slotIndex, bool white)
+        {
+            if (!m_IsInitialized || slotIndex < 0 || slotIndex >= m_Targets.Length)
+                return;
+
+            m_Targets[slotIndex].SetStaticPreview(white);
+            m_Targets[slotIndex].ApplyState(white);
         }
 
         public TargetRuntimeSnapshot[] GetTargetRuntimeSnapshots()

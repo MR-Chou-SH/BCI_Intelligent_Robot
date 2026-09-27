@@ -340,13 +340,15 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 anchor.LastSeen = target.LastSeen;
                 if (target.State == StableTargetState.TemporarilyMissing)
                 {
-                    LogStable(target, anchor.HasAnchor ? "hold_missing" : "hold_missing_before_anchor", anchor.HasAnchor ? anchor.WorldPosition : null);
+                    Vector3? anchorWorldPosition = anchor.HasAnchor ? anchor.WorldPosition : (Vector3?)null;
+                    LogStable(target, anchor.HasAnchor ? "hold_missing" : "hold_missing_before_anchor", anchorWorldPosition);
                     continue;
                 }
 
                 if (!TryGetWorldHit(target, inputSize, cameraPose, out var worldHit, out var ray))
                 {
-                    LogStable(target, anchor.HasAnchor ? "hold_raycast_miss" : "candidate_raycast_miss", anchor.HasAnchor ? anchor.WorldPosition : null);
+                    Vector3? anchorWorldPosition = anchor.HasAnchor ? anchor.WorldPosition : (Vector3?)null;
+                    LogStable(target, anchor.HasAnchor ? "hold_raycast_miss" : "candidate_raycast_miss", anchorWorldPosition);
                     continue;
                 }
 

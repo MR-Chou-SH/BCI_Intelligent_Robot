@@ -8,8 +8,8 @@ import unittest
 from integration import m9_robot_adapter as contract
 
 
-def selection(selection_id, target_id, predicted_class_index, slot_index):
-    return {
+def selection(selection_id, target_id, predicted_class_index, slot_index, build_slot_index=None):
+    value = {
         "selectionId": selection_id,
         "predictedClassIndex": predicted_class_index,
         "slotIndex": slot_index,
@@ -20,6 +20,9 @@ def selection(selection_id, target_id, predicted_class_index, slot_index):
         "resolvedUtc": "2026-09-14T01:00:00.0000000Z",
         "provenance": contract.FROZEN_SELECTION_PROVENANCE,
     }
+    if build_slot_index is not None:
+        value["buildSlotIndex"] = build_slot_index
+    return value
 
 
 def confirmed_message(selections=None):
@@ -86,6 +89,21 @@ class M9RobotAdapterContractTests(unittest.TestCase):
         self.assertEqual([request], adapter.requests)
         with self.assertRaises(FrozenInstanceError):
             request.logical_block_id = "block_blue_01"
+
+    def test_preserves_global_build_slot_provenance_in_selection_order(self):
+        payload = confirmed_message([
+            selection("selection-red", "target-red", 0, 0, build_slot_index=2),
+            selection("selection-blue", "target-blue", 2, 2, build_slot_index=3),
+        ])
+        requests = contract.confirmed_batch_to_robot_requests(
+            payload,
+            {"target-red": "block_red_01", "target-blue": "block_blue_01"},
+        )
+        self.assertEqual([2, 3], [item.build_slot_index for item in requests])
+        self.assertEqual(
+            ["block_red_01", "block_blue_01"],
+            [item.logical_block_id for item in requests],
+        )
 
     def test_rejects_unknown_target_id(self):
         with self.assertRaises(contract.UnknownTargetIdError):

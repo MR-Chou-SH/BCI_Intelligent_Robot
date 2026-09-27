@@ -620,18 +620,38 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             if (m_batchController == null || string.IsNullOrWhiteSpace(simulationState))
                 return;
 
-            bool execution;
+            bool hideSelectionPresentation;
+            string robotStatus;
             if (string.Equals(simulationState, "executing", StringComparison.OrdinalIgnoreCase))
-                execution = true;
+            {
+                hideSelectionPresentation = true;
+                robotStatus = "EXECUTING";
+            }
+            else if (string.Equals(simulationState, "completed", StringComparison.OrdinalIgnoreCase))
+            {
+                // Keep the terminal M16 batch locked and its selection stimuli
+                // hidden, while making successful completion visible in HUD.
+                hideSelectionPresentation = true;
+                robotStatus = "COMPLETE";
+            }
+            else if (string.Equals(simulationState, "execution_failed", StringComparison.OrdinalIgnoreCase))
+            {
+                hideSelectionPresentation = true;
+                robotStatus = "FAILED";
+            }
             else if (string.Equals(simulationState, "usb_synthetic", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(simulationState, "selection_open", StringComparison.OrdinalIgnoreCase))
-                execution = false;
+            {
+                hideSelectionPresentation = false;
+                robotStatus = "READY";
+            }
             else
                 return;
 
             m_batchController.SetM13_6ExecutionPresentation(
-                execution,
-                "visual_telemetry_state=" + simulationState);
+                hideSelectionPresentation,
+                "visual_telemetry_state=" + simulationState,
+                robotStatus);
         }
 
         private void ApplyVisualBlockSize(float[] sizeMeters)

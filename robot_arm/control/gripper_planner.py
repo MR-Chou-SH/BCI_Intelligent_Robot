@@ -96,7 +96,10 @@ class GripperGraspPlanner:
 
     def __init__(self, model, data, obj, pre_h=PRE_H, lift_h=LIFT_H,
                  pinch_from_top=0.025, close_steps=340, settle_steps=100,
-                 place=False, drop_clear=DROP_CLEAR):
+                 place=False, drop_clear=DROP_CLEAR, place_center=None,
+                 place_region_center=None, place_region_half_size=None,
+                 place_target_position=None, place_region_z_tolerance=None,
+                 start_arm_q=None):
         self.model = model
         self.data = data
         self.obj = obj
@@ -106,7 +109,42 @@ class GripperGraspPlanner:
         self.close_steps = close_steps
         self.settle_steps = settle_steps
         self.place = place
-        self.drop_clear = drop_clear
+        self.drop_clear = DROP_CLEAR if drop_clear is None else float(drop_clear)
+        if not np.isfinite(self.drop_clear) or self.drop_clear < 0.0:
+            raise ValueError("drop_clear must be a finite non-negative number")
+        self.place_target_center = np.asarray(
+            place_center if place_center is not None else PLACE_BOX["center"],
+            dtype=float,
+        )
+        if self.place_target_center.shape != (2,) or not np.all(np.isfinite(self.place_target_center)):
+            raise ValueError("place_center must contain two finite coordinates")
+        self.place_region_center = np.asarray(
+            place_region_center if place_region_center is not None else PLACE_BOX["center"],
+            dtype=float,
+        )
+        if self.place_region_center.shape != (2,) or not np.all(np.isfinite(self.place_region_center)):
+            raise ValueError("place_region_center must contain two finite coordinates")
+        self.place_region_half_size = float(
+            place_region_half_size if place_region_half_size is not None else PLACE_BOX["inner_half"]
+        )
+        if not np.isfinite(self.place_region_half_size) or self.place_region_half_size <= 0.0:
+            raise ValueError("place_region_half_size must be a positive finite number")
+        self.place_target_position = None
+        if place_target_position is not None:
+            self.place_target_position = np.asarray(place_target_position, dtype=float)
+            if self.place_target_position.shape != (3,) or not np.all(np.isfinite(self.place_target_position)):
+                raise ValueError("place_target_position must contain three finite coordinates")
+        self.place_region_z_tolerance = float(
+            place_region_z_tolerance if place_region_z_tolerance is not None else 0.04
+        )
+        if not np.isfinite(self.place_region_z_tolerance) or self.place_region_z_tolerance <= 0.0:
+            raise ValueError("place_region_z_tolerance must be a positive finite number")
+        self.home_start_q = np.asarray(
+            ARM_REACH if start_arm_q is None else start_arm_q,
+            dtype=float,
+        ).copy()
+        if self.home_start_q.shape != (7,) or not np.all(np.isfinite(self.home_start_q)):
+            raise ValueError("start_arm_q must contain seven finite joint values")
         self.quiet = False
 
         self.obj_bid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, obj)
@@ -155,7 +193,7 @@ class GripperGraspPlanner:
         # ---- 臂 IK(多起点; 预抓/抓取 6DOF) ----
         self.arm_pre, pe1, re1 = ik_pose_6dof_best(model, data, GRIPPER_BODY,
                                                     self.flange_pre, self.R_flange,
-                                                    q_init=ARM_REACH)
+                                                    q_init=self.home_start_q)
         self.arm_grasp, pe2, re2 = ik_pose_6dof_best(model, data, GRIPPER_BODY,
                                                       self.flange_pos, self.R_flange,
                                                       q_init=self.arm_pre)
@@ -179,10 +217,14 @@ class GripperGraspPlanner:
         self.place_traj = None
         self.place_ok_target = False
         if place:
-            pb = PLACE_BOX
-            cx, cy = pb["center"]
-            box_top = TABLE_TOP_Z + pb["wall_h"]
-            place_pos = np.array([cx, cy, box_top + PAD_OFFSET_IN_FLANGE[2] + drop_clear])
+            cx, cy = self.place_target_center
+            if self.place_target_position is None:
+                pb = PLACE_BOX
+                box_top = TABLE_TOP_Z + pb["wall_h"]
+                target_z = box_top
+            else:
+                target_z = float(self.place_target_position[2])
+            place_pos = np.array([cx, cy, target_z + PAD_OFFSET_IN_FLANGE[2] + self.drop_clear])
             self.place_pos = place_pos
             # 水平段: 抬升高度不变, 横移到盒中心正上方
             corner = np.array([cx, cy, self.lift_end_pos[2]])
@@ -191,9 +233,9 @@ class GripperGraspPlanner:
             # 下降段: 盒上方竖直下降一小段到释放位
             traj_d = self._build_traj(traj_h[-1], corner, place_pos, N=PLACE_D_N)
             self.place_traj = traj_h[:-1] + traj_d
-            self.place_box_center = np.array([cx, cy])
-            self.place_box_inner = pb["inner_half"]
-            self.place_box_bottom = TABLE_TOP_Z
+            self.place_box_center = self.place_region_center.copy()
+            self.place_box_inner = self.place_region_half_size
+            self.place_box_bottom = target_z
 
         # ---- 执行器/接触增强 ----
         for a in range(7):                        # 臂: 只放大 forcerange(kp 不能动)
@@ -205,8 +247,9 @@ class GripperGraspPlanner:
         # 夹爪执行器: kp 1000 原值(2000 会让闭合太暴力, 把圆物块挤飞), forcerange ±200
         model.actuator_forcerange[7] = [-200.0, 200.0]
 
-        # ---- 初始状态: 臂在 ARM_REACH, 夹爪张开 ----
-        data.qpos[:7] = ARM_REACH
+        # ---- 初始状态: 首次动作沿用 ARM_REACH；persistent world 可从上一动作的
+        #      当前关节状态平滑进入本次 HOME，不再瞬移回固定姿态。 ----
+        data.qpos[:7] = self.home_start_q
         data.qpos[7:9] = 0.0
         mujoco.mj_forward(model, data)
         self.obj_start = data.xpos[self.obj_bid].copy()
@@ -268,6 +311,45 @@ class GripperGraspPlanner:
         mujoco.mj_forward(m, d)
         return traj
 
+    def retreat_to_safe_wait(self, step_callback=None, lift_h=0.12, segment_steps=30):
+        """Smoothly retreat vertically before the next persistent action.
+
+        This is a transition seam for the persistent context-demo adapter only.
+        It does not change the pick/place state machine or teleport qpos: the
+        current arm state is IK-planned, then reached through normal MuJoCo
+        control steps before the next planner is constructed.
+        """
+        if not self.ik_ok:
+            return False
+        if isinstance(segment_steps, bool) or not isinstance(segment_steps, int) or segment_steps < 1:
+            raise ValueError("segment_steps must be a positive integer")
+        if not np.isfinite(lift_h) or lift_h <= 0.0:
+            raise ValueError("lift_h must be a positive finite number")
+
+        start_q = np.asarray(self.data.qpos[:7], dtype=float).copy()
+        start_pos = np.asarray(self.data.xpos[self.gripper_bid], dtype=float).copy()
+        safe_pos = start_pos + np.array([0.0, 0.0, float(lift_h)])
+        retreat_traj = self._build_traj(
+            start_q,
+            start_pos,
+            safe_pos,
+            N=8,
+        )
+        self.servo = GripperServo()
+        for index in range(len(retreat_traj) - 1):
+            begin = retreat_traj[index]
+            end = retreat_traj[index + 1]
+            for step in range(segment_steps):
+                t = min(1.0, float(step + 1) / float(segment_steps))
+                self.data.ctrl[:7] = begin + t * (end - begin)
+                self.data.ctrl[7] = self.servo.step(0)
+                mujoco.mj_step(self.model, self.data)
+                if step_callback is not None:
+                    step_callback()
+        self.data.ctrl[:7] = retreat_traj[-1]
+        mujoco.mj_forward(self.model, self.data)
+        return True
+
     def _ramp_through(self, traj, seg_steps):
         """沿轨迹 traj 逐段关节空间 ramp; 返回 (是否走完, 当前 ctrl 值)。"""
         nseg = len(traj) - 1
@@ -287,7 +369,7 @@ class GripperGraspPlanner:
 
         if ph == "HOME":
             t = min(1.0, self.n / RAMP_STEPS)
-            d.ctrl[:7] = ARM_REACH + t * (self.arm_pre - ARM_REACH)
+            d.ctrl[:7] = self.home_start_q + t * (self.arm_pre - self.home_start_q)
             if t >= 1.0:
                 self._next("APPROACH")
         elif ph == "APPROACH":
@@ -361,8 +443,10 @@ class GripperGraspPlanner:
         p = self.data.xpos[self.obj_bid]
         c = self.place_box_center
         ih = self.place_box_inner
-        return (abs(p[0] - c[0]) <= ih and abs(p[1] - c[1]) <= ih
-                and p[2] > self.place_box_bottom - 0.02)
+        horizontal = abs(p[0] - c[0]) <= ih and abs(p[1] - c[1]) <= ih
+        if self.place_target_position is not None:
+            return horizontal and abs(p[2] - self.place_target_position[2]) <= self.place_region_z_tolerance
+        return horizontal and p[2] > self.place_box_bottom - 0.02
 
     def summary(self):
         """结构化结果(枚举值)。"""

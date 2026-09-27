@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "task": "M20 Task 2 - synthetic paged selection, Context, and MuJoCo full-chain acceptance",
+  "status": "PASS",
+  "sourceHead": "ea497b26587a877605874d8109d809ae17c50d61",
+  "canonicalSpecSha256": "dad6e32b198d5d6f41cbea8b22f35b7fb46a617e0c6a26ec1e4b02d4f3aa57b3",
+  "syntheticEegOnly": true,
+  "nd8Opened": false,
+  "questBuildRun": false,
+  "candidateOrderingAndSlotMapping": "PASS",
+  "pagedSelectionUndoSubmitAndStaleFailClosed": "PASS",
+  "contextAffordanceAndStrongEegOverride": "PASS",
+  "pickPlaceScenarios": [
+    {
+      "scenarioId": "medicine-to-user-zone",
+      "status": "PASS"
+    },
+    {
+      "scenarioId": "phone-to-user-zone",
+      "status": "PASS"
+    },
+    {
+      "scenarioId": "phone-to-charger",
+      "status": "PASS"
+    }
+  ],
+  "focusedRegression": {
+    "status": "PASS",
+    "testsRun": 61,
+    "command": ".venv\\Scripts\\python.exe -B -m unittest integration.test_m20_assistive_scene_contract integration.test_m20_assistive_desk_e2e integration.test_m16_paged_queue integration.test_m16_paged_queue_orchestration integration.test_m19_paged_live_eeg_demo integration.test_m9_batch_dispatch integration.test_m9_mujoco_execution -v"
+  },
+  "pickPlaceEvidence": "task2/body-weld-clearance-20260927/attempt-02/",
+  "manualOnly": [
+    "Quest visual comfort/orientation and physical robot realism have not been observed in hardware."
+  ]
+}

@@ -6,6 +6,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from integration.m8_live_nd8 import (
+    _create_session,
     M8LiveNd8Session,
     M8LiveTrialCoordinator,
     M8WindowsAudibleCue,
@@ -16,6 +17,7 @@ from integration.m8_live_nd8 import (
     run_m8_preparation_countdown,
     validate_vendor_cpython39_runtime,
 )
+from integration.m13_real_acceptance_schedule import build_schedule
 import integration.m8_selection_cli as selection_cli
 from integration.m8_selection_cli import main as cli_main
 from integration.m8_selection_orchestration import M8LiveTrialBridge, M8SelectionOrchestrator
@@ -69,6 +71,22 @@ class FakeLiveController:
 
 
 class M8LiveNd8Tests(unittest.TestCase):
+    def test_classifier_acceptance_schedule_is_opt_in_and_preserves_fresh_trial_ids(self):
+        with tempfile.TemporaryDirectory() as directory:
+            schedule = build_schedule(2, 7, "classifier-schedule")
+            schedule_path = Path(directory) / "m13-schedule.json"
+            schedule_path.write_text(json.dumps(schedule), encoding="utf-8")
+            root, manifest, plan = _create_session(
+                Path(directory) / "data", "unused", dry_run=True, max_trials=6,
+                selection_plan="fixed", acceptance_schedule_path=schedule_path)
+            self.assertTrue(root.is_dir())
+            self.assertEqual(manifest["selectionPlan"], "classifier_acceptance")
+            self.assertEqual(manifest["expectedClassUse"], "classifier_schedule_ground_truth")
+            self.assertEqual(manifest["plannedTrialCount"], 6)
+            self.assertEqual(manifest["classifierAcceptance"]["resetMode"], "independent_three_candidate_selection")
+            self.assertEqual([item["trialId"] for item in plan["trials"]], [item["trialId"] for item in schedule["trials"]])
+            self.assertTrue(all(item["classifierAcceptance"] for item in plan["trials"]))
+
     def test_free_selection_plan_has_no_preselected_class_or_slot(self):
         trials = build_m8_free_trial_plan("m8-free", 2)
 
@@ -234,6 +252,18 @@ class M8LiveNd8Tests(unittest.TestCase):
             self.assertEqual(0, exit_code)
             self.assertEqual(1, len(manifests))
             self.assertEqual("dry_run_passed", json.loads(manifests[0].read_text(encoding="utf-8"))["status"])
+
+    def test_live_nd8_cli_accepts_an_explicit_non_com11_operator_port_in_dry_run(self):
+        with tempfile.TemporaryDirectory() as directory:
+            exit_code = cli_main([
+                "--mode", "live-nd8", "--dry-run", "--com", "COM7", "--data-root", directory,
+            ])
+            manifests = list(Path(directory).glob("*/manifest.json"))
+
+            self.assertEqual(0, exit_code)
+            self.assertEqual(1, len(manifests))
+            manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
+            self.assertEqual("dry_run_passed", manifest["status"])
 
     def test_live_nd8_cli_single_trial_dry_run_is_one_trial_without_batch_listener(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -41,6 +41,51 @@ OBJECTS = [
     ("obj_3", mujoco.mjtGeom.mjGEOM_BOX, [0.018, 0.018, 0.060], (-0.11, 0.03)),   # 小方柱 3.6x3.6x12cm
 ]
 
+# M13.6 visual/demo mode uses one grasp-safe canonical cube fixture.  The
+# shared MuJoCo -> Quest transform uses scale 0.70, so its runtime Quest edge
+# is 0.080 * 0.70 = 0.056 m.  The shared 0.085 m catalog remains unchanged;
+# M13.6 telemetry carries this opt-in runtime visual size.  This fixture is
+# isolated; OBJECTS and build_gripper_scene() remain the historical
+# heterogeneous M9/M10/M14 scene.
+M13_6_VISUAL_SCALE = 0.70
+M13_6_VISUAL_BLOCK_EDGE_METERS = 0.080
+M13_6_VISUAL_BLOCK_HALF_METERS = M13_6_VISUAL_BLOCK_EDGE_METERS / 2.0
+M13_6_VISUAL_BLOCK_CENTER_Z = TABLE_TOP_Z + M13_6_VISUAL_BLOCK_HALF_METERS
+M13_6_VISUAL_OBJECTS = tuple(
+    (
+        "obj_{}".format(index),
+        mujoco.mjtGeom.mjGEOM_BOX,
+        [M13_6_VISUAL_BLOCK_HALF_METERS] * 3,
+        # The catalog's +0.0425 m local y is vertical above the table.  Its
+        # local z is zero, so the shared transform keeps the MuJoCo y center
+        # at zero and derives the height from the cube half extent.
+        (x / M13_6_VISUAL_SCALE, 0.0),
+    )
+    for index, x in enumerate((-0.320, -0.105, 0.105, 0.320))
+)
+
+# Context-aware Demo fixture: four grasp-safe, same-size cubes.  The visual
+# Quest catalog remains the source of color/TargetId semantics; these colors
+# are only the MuJoCo evidence fixture.  Build slots are global and stable:
+# left-bottom, right-bottom, left-top, right-top.
+CONTEXT_DEMO_CUBE_HALF_METERS = 0.035
+CONTEXT_DEMO_CUBE_CENTER_Z = TABLE_TOP_Z + CONTEXT_DEMO_CUBE_HALF_METERS
+CONTEXT_DEMO_BUILD_SLOT_TARGETS = (
+    (0.30, 0.30, CONTEXT_DEMO_CUBE_CENTER_Z),
+    (0.40, 0.30, CONTEXT_DEMO_CUBE_CENTER_Z),
+    # The baseline release settles a bottom cube a few centimetres above the
+    # nominal table center.  Keep the upper target one full cube edge above
+    # that settled center so the final evidence proves a real upper topology.
+    (0.30, 0.30, TABLE_TOP_Z + 4.0 * CONTEXT_DEMO_CUBE_HALF_METERS),
+    (0.40, 0.30, TABLE_TOP_Z + 4.0 * CONTEXT_DEMO_CUBE_HALF_METERS),
+)
+CONTEXT_DEMO_OBJECTS = (
+    ("obj_0", mujoco.mjtGeom.mjGEOM_BOX, [CONTEXT_DEMO_CUBE_HALF_METERS] * 3, (-0.24, -0.18), [0.90, 0.10, 0.10, 1.0]),
+    ("obj_1", mujoco.mjtGeom.mjGEOM_BOX, [CONTEXT_DEMO_CUBE_HALF_METERS] * 3, (0.24, -0.18), [0.10, 0.80, 0.15, 1.0]),
+    ("obj_2", mujoco.mjtGeom.mjGEOM_BOX, [CONTEXT_DEMO_CUBE_HALF_METERS] * 3, (-0.24, -0.02), [0.10, 0.25, 0.90, 1.0]),
+    ("obj_3", mujoco.mjtGeom.mjGEOM_BOX, [CONTEXT_DEMO_CUBE_HALF_METERS] * 3, (0.24, -0.02), [0.95, 0.80, 0.10, 1.0]),
+)
+
 # 放置箱: 平底开口盒子, 放在桌子靠近机械臂的一角(机械臂底座在 y=+0.4 后边中心)
 PLACE_BOX = dict(
     center=(0.35, 0.30),     # 盒中心水平位置(桌面系)
@@ -67,12 +112,14 @@ def _add_table(arm):
                         rgba=[0.30, 0.22, 0.14, 1])
 
 
-def _add_objects(arm):
+def _add_objects(arm, objects=OBJECTS):
     wb = arm.worldbody
-    for name, kind, size, (x, y) in OBJECTS:
+    for record in objects:
+        name, kind, size, (x, y) = record[:4]
+        rgba = record[4] if len(record) > 4 else [0.62, 0.78, 0.5, 1]
         half_h = size[1] if kind == mujoco.mjtGeom.mjGEOM_CYLINDER else size[2]
         body = wb.add_body(name=name, pos=[x, y, TABLE_TOP_Z + half_h])
-        g = body.add_geom(type=kind, size=list(size), rgba=[0.62, 0.78, 0.5, 1])
+        g = body.add_geom(type=kind, size=list(size), rgba=list(rgba))
         g.density = 150.0   # 轻质(约 0.04~0.1kg)
         body.add_freejoint()
 
@@ -117,19 +164,34 @@ def _add_camera(arm):
     cam.quat = look_at_quat([0.9, -0.9, 1.3], [0.0, 0.0, 0.7]).tolist()
 
 
-def build_gripper_scene():
+def build_gripper_scene(objects=OBJECTS):
     """返回 (model, data)。加载统一夹爪 XML + 桌/物体/放置箱/灯光/相机。"""
     assert os.path.exists(GRIPPER_XML), f"缺少统一夹爪 XML: {GRIPPER_XML}, 请先跑 python scripts/build_merged_xml_umi.py"
     arm = mujoco.MjSpec.from_file(GRIPPER_XML)
     arm.body("base").pos = [ARM_BASE_XY[0], ARM_BASE_XY[1], TABLE_TOP_Z]
     _add_table(arm)
-    _add_objects(arm)
+    _add_objects(arm, objects)
     _add_place_box(arm)
     _add_lighting(arm)
     _add_camera(arm)
     model = arm.compile()
     data = mujoco.MjData(model)
     return model, data
+
+
+def build_m13_6_visual_scene():
+    """Build the isolated M13.6 visual/demo cube fixture.
+
+    The robot, table, gripper and physics implementation are shared with the
+    existing scene; only the four free-body block definitions and their
+    catalog-aligned initial layout differ.  The default builder is unchanged.
+    """
+    return build_gripper_scene(objects=M13_6_VISUAL_OBJECTS)
+
+
+def build_context_aware_demo_scene():
+    """Build the isolated four-cube context-aware Demo fixture."""
+    return build_gripper_scene(objects=CONTEXT_DEMO_OBJECTS)
 
 
 def object_half_extents(model, obj_body):

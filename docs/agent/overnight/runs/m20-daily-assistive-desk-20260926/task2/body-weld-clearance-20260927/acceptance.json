@@ -1,0 +1,59 @@
+{
+  "candidateOrderingAndSlotMapping": "PASS",
+  "canonicalSpecSha256": "dad6e32b198d5d6f41cbea8b22f35b7fb46a617e0c6a26ec1e4b02d4f3aa57b3",
+  "contextAffordanceAndStrongEegOverride": "PASS",
+  "evidenceDirectory": "docs/agent/overnight/runs/m20-daily-assistive-desk-20260926/task2/body-weld-clearance-20260927/attempt-02",
+  "focusedRegressionCommands": [
+    ".venv\\Scripts\\python.exe -m pytest integration\\test_m20_assistive_desk_e2e.py",
+    ".venv\\Scripts\\python.exe -m pytest integration\\test_m16_paged_queue.py integration\\test_m16_paged_queue_orchestration.py integration\\test_m19_paged_live_eeg_demo.py integration\\test_m9_batch_dispatch.py integration\\test_m9_mujoco_execution.py"
+  ],
+  "nd8Opened": false,
+  "pickPlaceScenarios": [
+    {
+      "destinationTargetId": "assist_user_zone",
+      "executionEvidence": "attempt-02/medicine-to-user-zone.json",
+      "finalLinearSpeedMetersPerSecond": 1.627816818994407e-10,
+      "finalObjectPoseWorldMeters": [
+        -0.11085072799914955,
+        -0.18849604046835397,
+        0.766892244579783
+      ],
+      "scenarioId": "medicine-to-user-zone",
+      "sourceTargetId": "assist_medicine_box",
+      "status": "PASS"
+    },
+    {
+      "destinationTargetId": "assist_user_zone",
+      "executionEvidence": "attempt-02/phone-to-user-zone.json",
+      "finalLinearSpeedMetersPerSecond": 9.737103582696467e-05,
+      "finalObjectPoseWorldMeters": [
+        0.10248847860019893,
+        -0.20447134599209363,
+        0.7523911942944037
+      ],
+      "scenarioId": "phone-to-user-zone",
+      "sourceTargetId": "assist_phone",
+      "status": "PASS"
+    },
+    {
+      "destinationTargetId": "assist_wireless_charger",
+      "executionEvidence": "attempt-02/phone-to-charger.json",
+      "finalLinearSpeedMetersPerSecond": 0.00011806013310831524,
+      "finalObjectPoseWorldMeters": [
+        0.24486145906310913,
+        -0.046309563907257593,
+        0.7621740285508304
+      ],
+      "scenarioId": "phone-to-charger",
+      "sourceTargetId": "assist_phone",
+      "status": "PASS"
+    }
+  ],
+  "previousNextUndoSubmitAndStaleFailClosed": "PASS",
+  "questBuildRun": false,
+  "schemaVersion": 1,
+  "sourceHead": "ea497b26587a877605874d8109d809ae17c50d61",
+  "status": "PASS",
+  "syntheticEegOnly": true,
+  "task": "M20 Task 2 - synthetic paged selection, Context, and MuJoCo full chain"
+}

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "task": "M20 Task 1 - Daily Assistive Desk scene",
+  "status": "PASS",
+  "sourceHead": "ea497b26587a877605874d8109d809ae17c50d61",
+  "canonicalSpec": {
+    "path": "m7_unity6000/Assets/Resources/BCI/M20/assistive_desk_scene.json",
+    "sha256": "414a7aeb0e488432af9283c3151cbc3757b6126d75e8239dbf45b42c830024d2"
+  },
+  "geometryParity": {
+    "report": "docs/agent/overnight/runs/m20-daily-assistive-desk-20260926/task1/geometry-parity-v1.json",
+    "status": "PASS",
+    "positionToleranceMeters": 0.005,
+    "dimensionToleranceMeters": 0.005,
+    "yawToleranceDegrees": 2.0,
+    "candidateOrderFarToNearLeftToRight": [
+      "assist_medicine_box",
+      "assist_storage_box",
+      "assist_phone",
+      "assist_button_switch",
+      "assist_wireless_charger",
+      "assist_user_zone"
+    ],
+    "candidatePages": [
+      ["assist_medicine_box", "assist_storage_box", "assist_phone"],
+      ["assist_button_switch", "assist_wireless_charger", "assist_user_zone"]
+    ],
+    "leftRightMirrorChecks": {
+      "medicineXNegative": true,
+      "buttonXNegative": true,
+      "phoneXPositive": true,
+      "chargerXPositive": true,
+      "storageCentered": true,
+      "userZoneInFront": true,
+      "robotBehindCandidates": true
+    }
+  },
+  "unity": {
+    "version": "6000.0.66f2",
+    "scene": "m7_unity6000/Assets/PassthroughCameraApiSamples/MultiObjectDetection/M20DailyAssistiveDesk.unity",
+    "legacyM9ScenePreserved": "m7_unity6000/Assets/PassthroughCameraApiSamples/MultiObjectDetection/M9VirtualManipulation.unity",
+    "legacyM9SceneLastWriteUtc": "2026-09-26T11:18:51Z",
+    "sceneProfile": "PagedQueueV1",
+    "sceneProfileValid": true,
+    "editModeTests": {
+      "testRunnerReport": "docs/agent/overnight/runs/m20-daily-assistive-desk-20260926/task1/unity-editor-validation.json",
+      "testRunnerStatus": "Passed",
+      "testRunnerPassed": 2,
+      "testRunnerFailed": 0,
+      "finalCaptureReport": "docs/agent/overnight/runs/m20-daily-assistive-desk-20260926/task1/unity-editor-validation-v4.json",
+      "finalCaptureStatus": "PASS",
+      "directAssertionsPassed": 2,
+      "candidateCount": 6,
+      "storageLidOpenDegrees": 100.00001,
+      "storageLidClosedErrorDegrees": 0.0,
+      "buttonTravelMeters": 0.005,
+      "buttonReleasedErrorMeters": 0.0
+    },
+    "screenshots": {
+      "topDown": "docs/agent/overnight/runs/m20-daily-assistive-desk-20260926/task1/unity-screenshots-v4/unity_topdown.png",
+      "perspective": "docs/agent/overnight/runs/m20-daily-assistive-desk-20260926/task1/unity-screenshots-v4/unity_perspective.png"
+    }
+  },
+  "mujoco": {
+    "report": "docs/agent/overnight/runs/m20-daily-assistive-desk-20260926/task1/mujoco-geometry-v12.json",
+    "status": "PASS",
+    "modelBodyCount": 21,
+    "modelGeomCount": 95,
+    "initialM20Interpenetrations": 0,
+    "storageLidOpenDegrees": 100.0,
+    "buttonTravelMeters": 0.005,
+    "collisionClearPlacementPoses": 3,
+    "reachableGraspSources": ["assist_medicine_box", "assist_phone"],
+    "screenshots": {
+      "topDown": "docs/agent/overnight/runs/m20-daily-assistive-desk-20260926/task1/mujoco-screenshots-v12/mujoco_topdown.png",
+      "perspective": "docs/agent/overnight/runs/m20-daily-assistive-desk-20260926/task1/mujoco-screenshots-v12/mujoco_perspective.png"
+    }
+  },
+  "questPhysicalValidation": {
+    "status": "NOT_ATTEMPTED",
+    "evidence": "Meta Quest Developer Hub showed Meta Quest 3 Disconnected; adb is unavailable in PATH.",
+    "requiredManualChecks": [
+      "Build and launch the M20 scene when the Quest is connected.",
+      "Confirm visual comfort, left/right orientation, and M16 paged gaze selection on headset."
+    ]
+  },
+  "validationDriverRecovery": [
+    "The v1 test run passed but its scene-open audit caused a duplicate-OVRCameraRig Editor log error; later driver versions use static scene YAML inspection.",
+    "The v2/v3 capture attempts exposed Unity's unsaved-scene additive restriction and a transient request-file sharing violation; v4 uses the already loaded scene, restores global lighting, cleans temporary objects, and passes."
+  ],
+  "hardwareBoundary": {
+    "ND8Opened": false,
+    "COM11Opened": false,
+    "HumanEEGCollected": false,
+    "PhysicalRobotOperated": false,
+    "QuestBuildRun": false
+  }
+}

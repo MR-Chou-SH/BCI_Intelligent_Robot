@@ -1,0 +1,35 @@
+{
+  "contractId": "m19_decode_request_v1",
+  "protocolVersion": 1,
+  "messageType": "eeg_decode_request",
+  "trialId": "m19-contract-trial-001",
+  "selectionId": "m19-contract-selection-001",
+  "pageId": "m16-page-1",
+  "pageIndex": 0,
+  "pageEpoch": 7,
+  "createdUtc": "2026-09-22T00:00:00Z",
+  "activeSlotCount": 3,
+  "slots": [
+    {
+      "slotIndex": 0,
+      "frequencyHz": 7.2,
+      "targetId": "m9-vblock-yellow-01",
+      "semanticLabel": "yellow_block",
+      "provenance": "m16_frozen_page_snapshot"
+    },
+    {
+      "slotIndex": 1,
+      "frequencyHz": 9.0,
+      "targetId": "m9-vblock-blue-01",
+      "semanticLabel": "blue_block",
+      "provenance": "m16_frozen_page_snapshot"
+    },
+    {
+      "slotIndex": 2,
+      "frequencyHz": 12.0,
+      "targetId": "m9-vblock-green-01",
+      "semanticLabel": "green_block",
+      "provenance": "m16_frozen_page_snapshot"
+    }
+  ]
+}

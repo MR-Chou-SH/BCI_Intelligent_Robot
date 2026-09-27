@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using BCIIntelligentRobot.Integration;
 using BCIIntelligentRobot.VRStimulus;
 using PassthroughCameraSamples.MultiObjectDetection;
@@ -25,6 +26,7 @@ namespace BCIIntelligentRobot.Vision
         private enum PresentationLifecycleState
         {
             NoActiveGroup,
+            GroupReady,
             SelectionOpen,
             RobotExecution
         }
@@ -77,6 +79,7 @@ namespace BCIIntelligentRobot.Vision
             new Dictionary<string, float>(StringComparer.Ordinal);
         private readonly HashSet<string> m_processedTargetIds = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> m_submittedTargetIds = new HashSet<string>(StringComparer.Ordinal);
+        private readonly HashSet<string> m_pagedSelectedTargetIds = new HashSet<string>(StringComparer.Ordinal);
         private readonly HashSet<string> m_loggedLostActiveGroupTargetIds = new HashSet<string>(StringComparer.Ordinal);
         private readonly bool[] m_groupSlotSelected = new bool[BciTargetSlotAllocator.SlotCount];
 
@@ -96,16 +99,30 @@ namespace BCIIntelligentRobot.Vision
         private bool m_initialized;
         private bool m_usesVirtualTargetSource;
         private bool m_batchGroupModeEnabled;
+        private bool m_pagedQueueModeEnabled;
         private string m_activeGroupId;
         private PresentationLifecycleState m_presentationState = PresentationLifecycleState.NoActiveGroup;
+        private bool m_pagedBrowsePresentationActive;
         private string m_lastFrozenGroupPresentationSignature;
         private string m_lastFrozenGroupIdentityRelationSignature;
+        private string m_authoritativeSelectionSnapshotId;
+        private int m_authoritativeSelectionSnapshotVersion;
+        private bool m_hasAuthoritativeSelectionSnapshot;
 
         public BciSsvepLayoutMode LayoutMode => m_layoutMode;
         public bool IsBatchGroupModeEnabled => m_batchGroupModeEnabled;
         public bool HasActiveGroup => !string.IsNullOrWhiteSpace(m_activeGroupId);
         public bool IsSelectionLayoutFrozen => m_layoutFreezeGate.IsFrozen;
         public bool IsVirtualTargetSourceActive => m_usesVirtualTargetSource;
+        public bool IsPagedQueueModeEnabled => m_pagedQueueModeEnabled;
+        public bool IsFormalStimulusActive =>
+            m_stimulusController != null && m_stimulusController.IsFormalStimulusActive;
+        public bool IsVisualFlickerEnabled =>
+            m_stimulusController != null && m_stimulusController.IsVisualFlickerEnabled;
+        public int FormalStimulusEpochCount =>
+            m_stimulusController == null ? 0 : m_stimulusController.FormalStimulusEpochCount;
+        public int FormalCommonStartFrame =>
+            m_stimulusController == null ? 0 : m_stimulusController.CommonStartFrame;
         public event Action<IReadOnlyList<StableWorldAnchorSnapshot>> HudCandidatesChanged;
 
         public bool IsSlotActiveCandidate(int slotIndex)
@@ -125,6 +142,9 @@ namespace BCIIntelligentRobot.Vision
 
             if (m_submittedTargetIds.Contains(targetId))
                 return BciCandidateVisualState.Submitted;
+
+            if (m_pagedQueueModeEnabled && m_pagedSelectedTargetIds.Contains(targetId))
+                return BciCandidateVisualState.Selected;
 
             if (!HasActiveGroup || !m_slotByTargetId.TryGetValue(targetId, out int slotIndex))
                 return BciCandidateVisualState.Inactive;
@@ -247,6 +267,164 @@ namespace BCIIntelligentRobot.Vision
         }
 
         /// <summary>
+        /// Builds the immutable Quest selection snapshot from the PC-owned
+        /// candidate binding. Unity resolves TargetId to its local anchor only
+        /// for presentation; it never reorders or recomputes the mapping.
+        /// </summary>
+        public bool TryCreateAuthoritativeSelectionSnapshot(
+            string snapshotId,
+            int snapshotVersion,
+            IReadOnlyList<BciSelectionCandidatePayload> candidates,
+            out BciSelectionSnapshot snapshot,
+            out string rejectionReason)
+        {
+            snapshot = null;
+            rejectionReason = null;
+            if (!m_initialized || !m_usesVirtualTargetSource || string.IsNullOrWhiteSpace(snapshotId) ||
+                snapshotVersion < 1 || candidates == null || candidates.Count != BciTargetSlotAllocator.SlotCount)
+            {
+                rejectionReason = "invalid_snapshot_header_or_count";
+                return false;
+            }
+
+            var targets = new BciSelectionTarget[BciTargetSlotAllocator.SlotCount];
+            var seenTargetIds = new HashSet<string>(StringComparer.Ordinal);
+            for (int index = 0; index < candidates.Count; index++)
+            {
+                BciSelectionCandidatePayload candidate = candidates[index];
+                if (candidate == null || candidate.slotIndex != index ||
+                    candidate.nominalFrequencyHz <= 0f ||
+                    Mathf.Abs(candidate.nominalFrequencyHz - NominalFrequenciesHz[index]) > 0.01f)
+                {
+                    rejectionReason = "slot_frequency_contract_mismatch";
+                    return false;
+                }
+
+                if (!candidate.active &&
+                    (!m_pagedQueueModeEnabled || string.IsNullOrWhiteSpace(candidate.targetId)))
+                {
+                    targets[index] = new BciSelectionTarget(
+                        index, null, null, StableTargetState.TemporarilyMissing);
+                    continue;
+                }
+
+                bool targetIdEmpty = string.IsNullOrWhiteSpace(candidate.targetId);
+                bool targetIdDuplicate = false;
+                bool targetFoundInLocalCatalog = false;
+                StableWorldAnchorSnapshot anchor = default(StableWorldAnchorSnapshot);
+                if (!targetIdEmpty)
+                {
+                    targetIdDuplicate = !seenTargetIds.Add(candidate.targetId);
+                    if (!targetIdDuplicate)
+                        targetFoundInLocalCatalog = m_hudCandidatesByTargetId.TryGetValue(
+                            candidate.targetId, out anchor);
+                }
+
+                if (targetIdEmpty || targetIdDuplicate || !targetFoundInLocalCatalog ||
+                    anchor.State != StableTargetState.Active)
+                {
+                    string anchorState = targetFoundInLocalCatalog ?
+                        anchor.State.ToString() : "N/A";
+                    var catalogEntries = new List<string>(m_hudCandidatesByTargetId.Count);
+                    foreach (KeyValuePair<string, StableWorldAnchorSnapshot> entry in m_hudCandidatesByTargetId)
+                    {
+                        catalogEntries.Add("target_id=" + entry.Key + " state=" + entry.Value.State);
+                    }
+                    Debug.LogWarning(
+                        "M8_SELECTION authoritative_target_catalog_diagnostic" +
+                        " candidate_index=" + index +
+                        " target_id=" + (candidate.targetId ?? "") +
+                        " slot=" + candidate.slotIndex +
+                        " active=" + candidate.active +
+                        " nominal_frequency_hz=" + candidate.nominalFrequencyHz +
+                        " target_id_empty=" + targetIdEmpty +
+                        " target_id_duplicate=" + targetIdDuplicate +
+                        " target_found_in_local_catalog=" + targetFoundInLocalCatalog +
+                        " anchor_state=" + anchorState +
+                        " active_group_id=" + (HasActiveGroup ? m_activeGroupId : "none") +
+                        " local_catalog=[" + string.Join(";", catalogEntries) + "]",
+                        this);
+                    rejectionReason = "authoritative_target_not_in_active_local_catalog";
+                    return false;
+                }
+
+                targets[index] = candidate.active
+                    ? new BciSelectionTarget(index, anchor)
+                    : new BciSelectionTarget(index, anchor).WithState(StableTargetState.TemporarilyMissing);
+            }
+
+            if (!ApplyAuthoritativeSelectionMapping(snapshotId, snapshotVersion, targets, rejectionReason))
+            {
+                rejectionReason = "authoritative_slot_mapping_rejected";
+                return false;
+            }
+            snapshot = new BciSelectionSnapshot(snapshotId, snapshotVersion, targets);
+            return true;
+        }
+
+        private bool ApplyAuthoritativeSelectionMapping(
+            string snapshotId,
+            int snapshotVersion,
+            IReadOnlyList<BciSelectionTarget> targets,
+            string ignoredRejectionReason)
+        {
+            if (targets == null || targets.Count != BciTargetSlotAllocator.SlotCount || m_layoutFreezeGate.IsFrozen)
+                return false;
+
+            bool preserveSelectionState = m_hasAuthoritativeSelectionSnapshot &&
+                string.Equals(m_authoritativeSelectionSnapshotId, snapshotId, StringComparison.Ordinal) &&
+                m_authoritativeSelectionSnapshotVersion == snapshotVersion;
+            if (!preserveSelectionState)
+                Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
+
+            m_slotByTargetId.Clear();
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+            {
+                BciSelectionTarget target = targets[slot];
+                bool pagedSelectedTarget = m_pagedQueueModeEnabled &&
+                    target.State == StableTargetState.TemporarilyMissing &&
+                    !string.IsNullOrWhiteSpace(target.TargetId);
+                if ((target.State == StableTargetState.Active || pagedSelectedTarget) &&
+                    !string.IsNullOrWhiteSpace(target.TargetId) &&
+                    m_hudCandidatesByTargetId.TryGetValue(target.TargetId, out StableWorldAnchorSnapshot anchor))
+                {
+                    m_slotByTargetId[target.TargetId] = slot;
+                    m_selectionTargets[slot] = new BciSelectionTarget(slot, anchor);
+                    m_slotAnchors[slot] = anchor;
+                    m_slotHasAnchor[slot] = true;
+                    bool selected = pagedSelectedTarget || m_groupSlotSelected[slot];
+                    m_groupSlotSelected[slot] = selected;
+                    if (m_pagedQueueModeEnabled && pagedSelectedTarget)
+                        m_pagedSelectedTargetIds.Add(target.TargetId);
+                    SetSlotCandidateActive(
+                        slot,
+                        m_presentationState == PresentationLifecycleState.SelectionOpen &&
+                        target.State == StableTargetState.Active && !selected);
+                    ApplySlotAssociationColor(slot, selected ? GroupSelectedColor : GroupAvailableColor);
+                }
+                else
+                {
+                    m_groupSlotSelected[slot] = false;
+                    m_selectionTargets[slot] = default(BciSelectionTarget);
+                    m_slotAnchors[slot] = default(StableWorldAnchorSnapshot);
+                    m_slotHasAnchor[slot] = false;
+                    SetSlotCandidateActive(slot, false);
+                }
+            }
+            m_authoritativeSelectionSnapshotId = snapshotId;
+            m_authoritativeSelectionSnapshotVersion = snapshotVersion;
+            m_hasAuthoritativeSelectionSnapshot = true;
+            m_layoutDirty = true;
+            RefreshLiveLayout();
+            RefreshCandidateIndicators(BuildGroupPresentationCandidates(BuildOrderedHudCandidates()));
+            Debug.Log("M8_SELECTION authoritative_snapshot_applied id=" + snapshotId +
+                " version=" + snapshotVersion, this);
+            LogPresentationForensic("authoritative_snapshot_applied", "snapshot=" + snapshotId +
+                " version=" + snapshotVersion);
+            return true;
+        }
+
+        /// <summary>
         /// Enables the outer M8.4 lifecycle. It is HUD-only because the HUD
         /// already retains the complete stable-anchor candidate pool.
         /// </summary>
@@ -261,6 +439,20 @@ namespace BCIIntelligentRobot.Vision
             return true;
         }
 
+        /// <summary>
+        /// Enables the opt-in M16 interpretation where a selected page member
+        /// may remain in its real slot with active=false. Legacy grouped mode
+        /// retains the existing inactive-slot contract.
+        /// </summary>
+        public bool EnablePagedQueueMode()
+        {
+            if (!m_batchGroupModeEnabled || !m_usesVirtualTargetSource)
+                return false;
+
+            m_pagedQueueModeEnabled = true;
+            return true;
+        }
+
         public void DisableBatchGroupMode()
         {
             if (!m_batchGroupModeEnabled)
@@ -268,9 +460,11 @@ namespace BCIIntelligentRobot.Vision
 
             m_batchGroupModeEnabled = false;
             m_presentationState = PresentationLifecycleState.NoActiveGroup;
+            m_pagedBrowsePresentationActive = false;
             m_activeGroupId = null;
             m_processedTargetIds.Clear();
             m_submittedTargetIds.Clear();
+            m_pagedSelectedTargetIds.Clear();
             Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
             HideCandidateIndicators();
             RefreshHudAssignments(true);
@@ -286,20 +480,48 @@ namespace BCIIntelligentRobot.Vision
             if (!m_initialized || !m_batchGroupModeEnabled)
                 return false;
 
+            // M13.6 telemetry can arrive while the M8 selection window is
+            // already open.  That frame belongs to the robot presentation
+            // stream and must not close the active candidate presentation:
+            // the group remains authoritative until its batch is committed.
+            // After EndActiveGroup clears HasActiveGroup, execution telemetry
+            // is still allowed to hide the presentation normally.
+            if (hidden && HasActiveGroup &&
+                m_presentationState == PresentationLifecycleState.SelectionOpen)
+            {
+                Debug.Log("M8_PRESENTATION execution_ignored_during_selection reason=" +
+                    (string.IsNullOrWhiteSpace(reason) ? "unspecified" : reason) +
+                    " active_group=" + m_activeGroupId, this);
+                LogPresentationForensic("execution_ignored_during_selection", reason);
+                return true;
+            }
+
             PresentationLifecycleState nextState = hidden
                 ? PresentationLifecycleState.RobotExecution
                 : (HasActiveGroup
                     ? PresentationLifecycleState.SelectionOpen
                     : PresentationLifecycleState.NoActiveGroup);
             if (m_presentationState == nextState)
+            {
+                // The lifecycle state is also used as the protocol-facing
+                // presentation marker. Re-assert the concrete slot state when
+                // selection_open is repeated or arrives after authoritative
+                // mapping; GroupReady must never leave candidates inactive once
+                // the presentation is logically open.
+                if (!hidden && nextState == PresentationLifecycleState.SelectionOpen && HasActiveGroup)
+                    ShowSelectionPresentation();
+                else
+                    LogPresentationForensic("presentation_state_unchanged", reason);
                 return true;
+            }
 
             m_presentationState = nextState;
-            if (nextState == PresentationLifecycleState.SelectionOpen && HasActiveGroup &&
-                !m_layoutFreezeGate.IsFrozen)
+            if (nextState == PresentationLifecycleState.SelectionOpen && HasActiveGroup)
             {
-                RefreshLiveLayout();
-                RefreshCandidateIndicators(BuildGroupPresentationCandidates(BuildOrderedHudCandidates()));
+                if (!m_layoutFreezeGate.IsFrozen)
+                    RefreshLiveLayout();
+                BeginFormalStimulusEpoch();
+                ShowSelectionPresentation();
             }
             else
             {
@@ -309,11 +531,25 @@ namespace BCIIntelligentRobot.Vision
             Debug.Log("M8_PRESENTATION state=" + nextState +
                 " reason=" + (string.IsNullOrWhiteSpace(reason) ? "unspecified" : reason) +
                 " active_group=" + (HasActiveGroup ? m_activeGroupId : "none"), this);
+            LogPresentationForensic("state_transition", reason);
             return true;
         }
 
         /// <summary>Applies one already ordered, frozen group to slots 0/1/2.</summary>
         public bool ActivateGroup(string groupId, IReadOnlyList<StableWorldAnchorSnapshot> targets)
+        {
+            return ActivateGroup(groupId, targets, openPresentation: true);
+        }
+
+        /// <summary>
+        /// Makes a group available for authoritative snapshot validation. The
+        /// host-close path uses openPresentation=false so protocol readiness does
+        /// not start the next visual/stimulus window before selection_open.
+        /// </summary>
+        public bool ActivateGroup(
+            string groupId,
+            IReadOnlyList<StableWorldAnchorSnapshot> targets,
+            bool openPresentation)
         {
             if (!m_batchGroupModeEnabled || string.IsNullOrWhiteSpace(groupId) ||
                 targets == null || targets.Count == 0 || targets.Count > BciTargetSlotAllocator.SlotCount ||
@@ -323,6 +559,9 @@ namespace BCIIntelligentRobot.Vision
             m_activeGroupId = groupId;
             m_lastFrozenGroupPresentationSignature = null;
             m_lastFrozenGroupIdentityRelationSignature = null;
+            m_authoritativeSelectionSnapshotId = null;
+            m_authoritativeSelectionSnapshotVersion = 0;
+            m_hasAuthoritativeSelectionSnapshot = false;
             m_loggedLostActiveGroupTargetIds.Clear();
             Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
             m_slotByTargetId.Clear();
@@ -335,8 +574,13 @@ namespace BCIIntelligentRobot.Vision
                     m_selectionTargets[slot] = new BciSelectionTarget(slot, anchor);
                     m_slotAnchors[slot] = anchor;
                     m_slotHasAnchor[slot] = true;
-                    SetSlotCandidateActive(slot, true);
-                    ApplySlotAssociationColor(slot, GroupAvailableColor);
+                    bool alreadySelected = m_pagedQueueModeEnabled &&
+                        m_pagedSelectedTargetIds.Contains(anchor.TargetId);
+                    m_groupSlotSelected[slot] = alreadySelected;
+                    SetSlotCandidateActive(slot, openPresentation && !alreadySelected);
+                    ApplySlotAssociationColor(
+                        slot,
+                        alreadySelected ? GroupSelectedColor : GroupAvailableColor);
                     LogHudAssignment(anchor, slot);
                 }
                 else
@@ -348,13 +592,24 @@ namespace BCIIntelligentRobot.Vision
                 }
             }
             bool wasPresentationSuppressed = m_presentationState != PresentationLifecycleState.SelectionOpen;
-            m_presentationState = PresentationLifecycleState.SelectionOpen;
+            m_presentationState = openPresentation
+                ? PresentationLifecycleState.SelectionOpen
+                : PresentationLifecycleState.GroupReady;
             m_layoutDirty = true;
             RefreshLiveLayout();
-            RefreshCandidateIndicators(BuildGroupPresentationCandidates(BuildOrderedHudCandidates()));
-            if (wasPresentationSuppressed)
+            if (openPresentation)
+            {
+                BeginFormalStimulusEpoch();
+                ShowSelectionPresentation();
+            }
+            else
+                HideSelectionPresentation();
+            if (wasPresentationSuppressed && openPresentation)
                 Debug.Log("M8_PRESENTATION state=SelectionOpen reason=group_activated active_group=" + groupId, this);
+            if (!openPresentation)
+                Debug.Log("M8_PRESENTATION state=GroupReady reason=group_activated_protocol_ready active_group=" + groupId, this);
             Debug.Log("M8_GROUP activated group_id=" + groupId + " targets=" + targets.Count, this);
+            LogPresentationForensic("group_activated", "openPresentation=" + openPresentation);
             return true;
         }
 
@@ -365,6 +620,14 @@ namespace BCIIntelligentRobot.Vision
                 return false;
 
             m_groupSlotSelected[slotIndex] = selected;
+            if (m_pagedQueueModeEnabled)
+            {
+                string targetId = m_slotAnchors[slotIndex].TargetId;
+                if (selected)
+                    m_pagedSelectedTargetIds.Add(targetId);
+                else
+                    m_pagedSelectedTargetIds.Remove(targetId);
+            }
             SetSlotCandidateActive(slotIndex, !selected);
             ApplySlotAssociationColor(slotIndex, selected ? GroupSelectedColor : GroupAvailableColor);
             UpdateSlotLabel(slotIndex, m_slotAnchors[slotIndex]);
@@ -420,6 +683,7 @@ namespace BCIIntelligentRobot.Vision
             HideCandidateIndicators();
             Debug.Log("M8_PRESENTATION state=NoActiveGroup reason=group_ended active_group=none", this);
             Debug.Log("M8_GROUP ended group_id=" + groupId, this);
+            LogPresentationForensic("group_ended", "ended_group=" + groupId);
             return true;
         }
 
@@ -431,6 +695,7 @@ namespace BCIIntelligentRobot.Vision
             m_submittedTargetIds.Clear();
             AddTargetIds(m_processedTargetIds, processedTargetIds);
             AddTargetIds(m_submittedTargetIds, submittedTargetIds);
+            m_pagedSelectedTargetIds.ExceptWith(m_processedTargetIds);
             if (HasActiveGroup)
                 RefreshCandidateIndicators(BuildOrderedHudCandidates());
             else
@@ -890,10 +1155,15 @@ namespace BCIIntelligentRobot.Vision
 
         private void ClearActiveGroupPresentation()
         {
+            EndFormalStimulusEpoch();
             m_presentationState = PresentationLifecycleState.NoActiveGroup;
+            m_pagedBrowsePresentationActive = false;
             m_activeGroupId = null;
             m_lastFrozenGroupPresentationSignature = null;
             m_lastFrozenGroupIdentityRelationSignature = null;
+            m_authoritativeSelectionSnapshotId = null;
+            m_authoritativeSelectionSnapshotVersion = 0;
+            m_hasAuthoritativeSelectionSnapshot = false;
             m_loggedLostActiveGroupTargetIds.Clear();
             Array.Clear(m_groupSlotSelected, 0, m_groupSlotSelected.Length);
             m_slotByTargetId.Clear();
@@ -959,7 +1229,11 @@ namespace BCIIntelligentRobot.Vision
                 }
 
                 if (!belongsToFrozenPhysicalTarget)
+                {
+                    if (m_processedTargetIds.Contains(candidate.TargetId))
+                        continue;
                     presentation.Add(candidate);
+                }
             }
 
             LogFrozenGroupPreserved(presentation.Count, frozenTargets);
@@ -1112,7 +1386,9 @@ namespace BCIIntelligentRobot.Vision
 
         private void RefreshCandidateIndicators(IReadOnlyList<StableWorldAnchorSnapshot> candidates)
         {
-            if (!m_batchGroupModeEnabled || m_presentationState != PresentationLifecycleState.SelectionOpen)
+            if (!m_batchGroupModeEnabled ||
+                (m_presentationState != PresentationLifecycleState.SelectionOpen &&
+                 !m_pagedBrowsePresentationActive))
             {
                 HideCandidateIndicators();
                 return;
@@ -1286,9 +1562,34 @@ namespace BCIIntelligentRobot.Vision
 
         private void HideSelectionPresentation()
         {
+            EndFormalStimulusEpoch();
+            m_pagedBrowsePresentationActive = false;
             HideCandidateIndicators();
             for (int slot = 0; slot < m_slotObjects.Length; slot++)
                 SetSlotPresentationVisible(slot, false);
+        }
+
+        private void ShowSelectionPresentation()
+        {
+            if (!HasActiveGroup || m_presentationState != PresentationLifecycleState.SelectionOpen)
+                return;
+
+            m_pagedBrowsePresentationActive = false;
+
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+            {
+                if (!m_slotHasAnchor[slot])
+                {
+                    SetSlotCandidateActive(slot, false);
+                    SetSlotPresentationVisible(slot, false);
+                    continue;
+                }
+
+                SetSlotCandidateActive(slot, !m_groupSlotSelected[slot]);
+                SetSlotPresentationVisible(slot, true);
+            }
+            RefreshCandidateIndicators(BuildGroupPresentationCandidates(BuildOrderedHudCandidates()));
+            LogPresentationForensic("selection_presentation_shown", "selection_open");
         }
 
         private void ApplySlotAssociationColor(int slotIndex, Color color)
@@ -1319,6 +1620,91 @@ namespace BCIIntelligentRobot.Vision
                 m_stimulusController.SetSlotCandidateActive(slotIndex, active);
         }
 
+        private void BeginFormalStimulusEpoch()
+        {
+            if (m_stimulusController != null)
+                m_stimulusController.BeginFormalStimulusEpoch();
+        }
+
+        private void EndFormalStimulusEpoch()
+        {
+            if (m_stimulusController != null)
+                m_stimulusController.EndFormalStimulusEpoch();
+        }
+
+        /// <summary>
+        /// Shows the current M16 page without opening an EEG selection trial.
+        /// The panels use a Browse-only frame-driven preview and remain outside
+        /// the formal SelectionOpen lifecycle until the host sends selection_open.
+        /// </summary>
+        public bool ShowPagedBrowsePresentation()
+        {
+            if (!m_initialized || !m_batchGroupModeEnabled || !m_pagedQueueModeEnabled ||
+                !HasActiveGroup || m_presentationState != PresentationLifecycleState.GroupReady)
+                return false;
+
+            m_pagedBrowsePresentationActive = true;
+            EndFormalStimulusEpoch();
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+            {
+                if (!m_slotHasAnchor[slot])
+                {
+                    SetSlotCandidateActive(slot, false);
+                    SetSlotPresentationVisible(slot, false);
+                    continue;
+                }
+
+                if (m_groupSlotSelected[slot])
+                    SetSlotCandidateActive(slot, false);
+                else if (m_stimulusController != null)
+                    m_stimulusController.SetSlotBrowseFlicker(slot, true);
+                SetSlotPresentationVisible(slot, true);
+            }
+
+            RefreshCandidateIndicators(BuildGroupPresentationCandidates(BuildOrderedHudCandidates()));
+            Debug.Log("M16_BROWSE event=shown group_id=" + m_activeGroupId, this);
+            LogPresentationForensic("browse_shown", "paged_queue");
+            return true;
+        }
+
+        /// <summary>
+        /// Starts one testable software stimulus epoch for M19 research_strict.
+        /// This records a Unity frame boundary only; it is not a physical
+        /// optical-onset claim.
+        /// </summary>
+        public bool BeginM19FormalStimulusEpoch(string selectionId)
+        {
+            if (string.IsNullOrWhiteSpace(selectionId) || !m_initialized ||
+                !m_batchGroupModeEnabled || !m_pagedQueueModeEnabled || !HasActiveGroup ||
+                m_presentationState != PresentationLifecycleState.GroupReady)
+                return false;
+
+            m_pagedBrowsePresentationActive = false;
+            m_presentationState = PresentationLifecycleState.SelectionOpen;
+            BeginFormalStimulusEpoch();
+            ShowSelectionPresentation();
+            Debug.Log("M19_TIMING event=STIMULUS_ONSET selection_id=" + selectionId +
+                " software_frame=" + Time.frameCount +
+                " software_utc=" + DateTime.UtcNow.ToString("O") +
+                " physical_optical_onset=unverified", this);
+            return true;
+        }
+
+        /// <summary>Ends the current M19 strict epoch and restores paged browse presentation.</summary>
+        public bool EndM19FormalStimulusEpoch(string selectionId, string reason)
+        {
+            if (!m_initialized || !m_batchGroupModeEnabled || !m_pagedQueueModeEnabled || !HasActiveGroup)
+                return false;
+            EndFormalStimulusEpoch();
+            m_presentationState = PresentationLifecycleState.GroupReady;
+            m_pagedBrowsePresentationActive = true;
+            Debug.Log("M19_TIMING event=STIMULUS_OFF selection_id=" + (selectionId ?? "") +
+                " reason=" + (reason ?? "unspecified") +
+                " software_frame=" + Time.frameCount +
+                " physical_optical_timing=unverified", this);
+            return ShowPagedBrowsePresentation();
+        }
+
         private bool HasSameHudAssignment(IReadOnlyList<StableWorldAnchorSnapshot> ordered)
         {
             if (m_slotByTargetId.Count != ordered.Count)
@@ -1337,10 +1723,25 @@ namespace BCIIntelligentRobot.Vision
         private void RefreshViewLockedHudLayout()
         {
             EnsureViewLockedHudRoot();
-            BciSsvepDisplayLayout.CalculateViewLockedPositions(
-                m_hudLocalCenter,
-                m_hudHorizontalSpacing,
-                m_hudLocalPositions);
+            if (m_mainCamera == null)
+            {
+                // Preserve deterministic slot layout until a camera is
+                // available; LateUpdate will rebuild by screen order.
+                BciSsvepDisplayLayout.CalculateViewLockedPositions(
+                    m_hudLocalCenter,
+                    m_hudHorizontalSpacing,
+                    m_hudLocalPositions);
+            }
+            else
+            {
+                BciSsvepDisplayLayout.CalculateViewLockedPositionsByScreenOrder(
+                    m_slotAnchors,
+                    m_slotHasAnchor,
+                    m_mainCamera,
+                    m_hudLocalCenter,
+                    m_hudHorizontalSpacing,
+                    m_hudLocalPositions);
+            }
 
             for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
             {
@@ -1460,7 +1861,8 @@ namespace BCIIntelligentRobot.Vision
             if (slotIndex < 0 || slotIndex >= m_slotObjects.Length)
                 return;
 
-            if (m_batchGroupModeEnabled && m_presentationState != PresentationLifecycleState.SelectionOpen)
+            if (m_batchGroupModeEnabled && m_presentationState != PresentationLifecycleState.SelectionOpen &&
+                !m_pagedBrowsePresentationActive)
                 visible = false;
 
             if (m_stimulusController != null)
@@ -1469,6 +1871,87 @@ namespace BCIIntelligentRobot.Vision
                 m_slotLeaderLines[slotIndex].gameObject.SetActive(visible);
             if (m_slotTargetMarkers[slotIndex] != null)
                 m_slotTargetMarkers[slotIndex].SetActive(visible);
+        }
+
+        /// <summary>
+        /// Emits one bounded, transition-oriented snapshot of all concrete
+        /// presentation objects. This is diagnostic evidence only: it does
+        /// not change lifecycle decisions or renderer state.
+        /// </summary>
+        private void LogPresentationForensic(string eventName, string reason)
+        {
+            if (!m_initialized || m_slotObjects == null || m_slotLeaderLines == null)
+                return;
+
+            var trace = new StringBuilder(4096);
+            trace.Append("M8_PRESENTATION_FORENSIC event=").Append(eventName ?? "unspecified");
+            trace.Append(" reason=").Append(string.IsNullOrWhiteSpace(reason) ? "unspecified" : reason);
+            trace.Append(" state=").Append(m_presentationState);
+            trace.Append(" active_group=").Append(HasActiveGroup ? m_activeGroupId : "none");
+            trace.Append(" batch_mode=").Append(m_batchGroupModeEnabled);
+            trace.Append(" initialized=").Append(m_initialized);
+
+            Canvas canvas = m_viewLockedHudRoot != null
+                ? m_viewLockedHudRoot.GetComponentInParent<Canvas>()
+                : null;
+            trace.Append(" hud_root_present=").Append(m_viewLockedHudRoot != null);
+            trace.Append(" hud_root_active_self=").Append(
+                m_viewLockedHudRoot != null && m_viewLockedHudRoot.gameObject.activeSelf);
+            trace.Append(" hud_root_active_in_hierarchy=").Append(
+                m_viewLockedHudRoot != null && m_viewLockedHudRoot.gameObject.activeInHierarchy);
+            trace.Append(" canvas_present=").Append(canvas != null);
+            if (canvas != null)
+            {
+                trace.Append(" canvas_enabled=").Append(canvas.enabled);
+                trace.Append(" canvas_render_mode=").Append(canvas.renderMode);
+            }
+
+            for (int slot = 0; slot < BciTargetSlotAllocator.SlotCount; slot++)
+            {
+                GameObject panel = m_slotObjects[slot];
+                Renderer panelRenderer = panel != null ? panel.GetComponent<Renderer>() : null;
+                LineRenderer line = m_slotLeaderLines[slot];
+                bool hasAnchor = m_slotHasAnchor[slot];
+                string targetId = hasAnchor ? m_slotAnchors[slot].TargetId : "none";
+                float screenX = float.NaN;
+                float screenZ = float.NaN;
+                if (hasAnchor && m_mainCamera != null)
+                {
+                    Vector3 screen = m_mainCamera.WorldToScreenPoint(m_slotAnchors[slot].WorldPosition);
+                    screenX = screen.x;
+                    screenZ = screen.z;
+                }
+
+                trace.Append(" slot[").Append(slot).Append("]");
+                trace.Append(" target_id=").Append(targetId);
+                trace.Append(" candidate_active=").Append(IsSlotActiveCandidate(slot));
+                trace.Append(" selected=").Append(m_groupSlotSelected[slot]);
+                trace.Append(" anchor_available=").Append(hasAnchor);
+                trace.Append(" anchor_world=").Append(hasAnchor ? m_slotAnchors[slot].WorldPosition.ToString("F3") : "none");
+                trace.Append(" anchor_screen_x=").Append(screenX.ToString("F3"));
+                trace.Append(" anchor_screen_z=").Append(screenZ.ToString("F3"));
+                trace.Append(" screen_x_finite=").Append(!float.IsNaN(screenX) && !float.IsInfinity(screenX));
+                trace.Append(" panel_active_self=").Append(panel != null && panel.activeSelf);
+                trace.Append(" panel_active_in_hierarchy=").Append(panel != null && panel.activeInHierarchy);
+                trace.Append(" panel_renderer_enabled=").Append(panelRenderer != null && panelRenderer.enabled);
+                trace.Append(" panel_local=").Append(panel != null ? panel.transform.localPosition.ToString("F3") : "none");
+                trace.Append(" panel_world=").Append(panel != null ? panel.transform.position.ToString("F3") : "none");
+                trace.Append(" line_active_self=").Append(line != null && line.gameObject.activeSelf);
+                trace.Append(" line_active_in_hierarchy=").Append(line != null && line.gameObject.activeInHierarchy);
+                trace.Append(" line_enabled=").Append(line != null && line.enabled);
+            }
+
+            foreach (KeyValuePair<string, LineRenderer> entry in m_candidateIndicatorsByTargetId)
+            {
+                LineRenderer indicator = entry.Value;
+                trace.Append(" indicator[").Append(entry.Key).Append("]");
+                trace.Append(" state=").Append(GetCandidateVisualState(entry.Key));
+                trace.Append(" active_self=").Append(indicator != null && indicator.gameObject.activeSelf);
+                trace.Append(" active_in_hierarchy=").Append(indicator != null && indicator.gameObject.activeInHierarchy);
+                trace.Append(" renderer_enabled=").Append(indicator != null && indicator.enabled);
+            }
+
+            Debug.Log(trace.ToString(), this);
         }
 
         private void LogSlot(StableWorldAnchorSnapshot anchor, BciSlotUpdate update, string eventName)

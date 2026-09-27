@@ -41,6 +41,69 @@ namespace BCIIntelligentRobot.Tests
         }
 
         [Test]
+        public void ViewLockedHudPositions_ReorderPanelsByAnchorScreenXWithoutChangingSlots()
+        {
+            var cameraObject = new GameObject("BciHudOrderCamera");
+            Camera camera = cameraObject.AddComponent<Camera>();
+            camera.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            var anchors = new[]
+            {
+                Anchor("slot0-right", new Vector3(1f, 0f, 2f)),
+                Anchor("slot1-left", new Vector3(-1f, 0f, 2f)),
+                Anchor("slot2-center", new Vector3(0f, 0f, 2f))
+            };
+            var positions = new Vector3[3];
+
+            try
+            {
+                BciSsvepDisplayLayout.CalculateViewLockedPositionsByScreenOrder(
+                    anchors,
+                    new[] { true, true, true },
+                    camera,
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter,
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters,
+                    positions);
+
+                Assert.That(positions[1].x, Is.EqualTo(
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter.x -
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters));
+                Assert.That(positions[2].x, Is.EqualTo(
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter.x));
+                Assert.That(positions[0].x, Is.EqualTo(
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter.x +
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters));
+
+                BciSsvepDisplayLayout.CalculateViewLockedPositionsByScreenOrder(
+                    anchors,
+                    new[] { false, true, false },
+                    camera,
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter,
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters,
+                    positions);
+                Assert.That(positions[1].x, Is.EqualTo(
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter.x));
+
+                BciSsvepDisplayLayout.CalculateViewLockedPositionsByScreenOrder(
+                    anchors,
+                    new[] { true, false, true },
+                    camera,
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter,
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters,
+                    positions);
+                Assert.That(positions[2].x, Is.EqualTo(
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter.x -
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters * 0.5f));
+                Assert.That(positions[0].x, Is.EqualTo(
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter.x +
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters * 0.5f));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(cameraObject);
+            }
+        }
+
+        [Test]
         public void ViewLockedHudBinding_PreservesCameraLocalPoseAndUniformScale()
         {
             var cameraObject = new GameObject("BciHudCamera");

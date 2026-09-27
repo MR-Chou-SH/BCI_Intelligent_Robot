@@ -7,7 +7,7 @@ or robot behavior.
 
 from dataclasses import dataclass
 import math
-from typing import Iterable, Mapping, Sequence, Tuple
+from typing import Iterable, Mapping, Optional, Sequence, Tuple
 
 from integration.m11_context_prediction import ContextPrior
 from integration.m9_virtual_block_mapping import load_virtual_block_target_mapping
@@ -16,6 +16,11 @@ from integration.m9_virtual_block_mapping import load_virtual_block_target_mappi
 ACTIVE_SLOT_FREQUENCIES_HZ = (7.2, 9.0, 12.0)
 LAMBDA_CONTEXT = 0.5
 EEG_SCORE_EPSILON = 1e-12
+# Raw FBCCA evidence is not calibrated as a probability.  This is therefore
+# deliberately a simple engineering margin gate, not a decoder threshold.
+# The value reuses the frozen M13 margin scale and is validated by sensitivity
+# analysis against the recorded Golden evidence.
+STRONG_EEG_MARGIN_THRESHOLD = 0.20
 
 
 class FusionInputError(ValueError):
@@ -82,13 +87,35 @@ class FusedTargetEvidence:
     top_logical_block_ids: Tuple[str, ...]
     top_target_ids: Tuple[str, ...]
     tie: bool
+    raw_eeg_top_logical_block_ids: Tuple[str, ...]
+    eeg_confidence: float
+    eeg_margin: float
+    is_strong_eeg: bool
+    context_preferred_logical_block_ids: Tuple[str, ...]
+    context_strength: float
+    fusion_mode: str
+    override_reason: Optional[str]
 
     def to_public_dict(self):
+        final_prediction = None if self.tie else self.top_logical_block_ids[0]
+        raw_prediction = None if len(self.raw_eeg_top_logical_block_ids) != 1 else self.raw_eeg_top_logical_block_ids[0]
+        context_prediction = None if len(self.context_preferred_logical_block_ids) != 1 else self.context_preferred_logical_block_ids[0]
         return {
             "entries": [entry.to_public_dict() for entry in self.entries],
             "topLogicalBlockIds": list(self.top_logical_block_ids),
             "topTargetIds": list(self.top_target_ids),
             "tie": self.tie,
+            "rawEegTopLogicalBlockIds": list(self.raw_eeg_top_logical_block_ids),
+            "rawEegPrediction": raw_prediction,
+            "eegConfidence": self.eeg_confidence,
+            "eegMargin": self.eeg_margin,
+            "isStrongEeg": self.is_strong_eeg,
+            "contextPreferredClass": context_prediction,
+            "contextPreferredLogicalBlockIds": list(self.context_preferred_logical_block_ids),
+            "contextStrength": self.context_strength,
+            "finalPrediction": final_prediction,
+            "fusionMode": self.fusion_mode,
+            "overrideReason": self.override_reason,
         }
 
 
@@ -147,11 +174,39 @@ def _validate_scores(active_candidates, eeg_scores_by_logical_block_id):
     return scores
 
 
-def fuse_context_and_eeg(context_prior, active_candidates, eeg_scores_by_logical_block_id):
+def fuse_context_and_eeg(
+    context_prior,
+    active_candidates,
+    eeg_scores_by_logical_block_id,
+    *,
+    strong_eeg_margin_threshold=STRONG_EEG_MARGIN_THRESHOLD,
+):
     """Fuse an M11 context prior with nonnegative, uncalibrated EEG evidence."""
-    global_context = _validate_context_prior(context_prior)
     candidates = _validate_candidates(active_candidates)
     raw_scores = _validate_scores(candidates, eeg_scores_by_logical_block_id)
+
+    if isinstance(strong_eeg_margin_threshold, bool) or not isinstance(strong_eeg_margin_threshold, (int, float)):
+        raise FusionInputError("strongEegMarginThreshold must be numeric")
+    strong_eeg_margin_threshold = float(strong_eeg_margin_threshold)
+    if not math.isfinite(strong_eeg_margin_threshold) or strong_eeg_margin_threshold < 0.0:
+        raise FusionInputError("strongEegMarginThreshold must be finite and nonnegative")
+
+    context_available = context_prior is not None
+    global_context = _validate_context_prior(context_prior) if context_available else {
+        item.logical_block_id: 1.0 / len(candidates) for item in candidates
+    }
+
+    raw_values = sorted(raw_scores.values(), reverse=True)
+    raw_maximum = raw_values[0]
+    raw_top = tuple(
+        item.logical_block_id
+        for item in candidates
+        if math.isclose(raw_scores[item.logical_block_id], raw_maximum, rel_tol=0.0, abs_tol=1e-12)
+    )
+    raw_margin = raw_values[0] - raw_values[1]
+    raw_total = sum(raw_values)
+    raw_confidence = raw_maximum / raw_total if raw_total > 0.0 else 1.0 / len(candidates)
+    is_strong_eeg = len(raw_top) == 1 and raw_margin >= strong_eeg_margin_threshold
 
     active_mass = sum(global_context.get(item.logical_block_id, 0.0) for item in candidates)
     if active_mass > 0.0:
@@ -161,6 +216,14 @@ def fuse_context_and_eeg(context_prior, active_candidates, eeg_scores_by_logical
         }
     else:
         active_context = {item.logical_block_id: 1.0 / len(candidates) for item in candidates}
+    context_values = sorted(active_context.values(), reverse=True)
+    context_maximum = context_values[0]
+    context_preferred = tuple(
+        item.logical_block_id
+        for item in candidates
+        if math.isclose(active_context[item.logical_block_id], context_maximum, rel_tol=0.0, abs_tol=1e-12)
+    )
+    context_strength = context_values[0] - context_values[1]
     uniform = 1.0 / len(candidates)
     softened_context = {
         item.logical_block_id: (1.0 - LAMBDA_CONTEXT) * uniform
@@ -171,13 +234,31 @@ def fuse_context_and_eeg(context_prior, active_candidates, eeg_scores_by_logical
         item.logical_block_id: max(raw_scores[item.logical_block_id], EEG_SCORE_EPSILON)
         for item in candidates
     }
-    unnormalized = {
+    context_unnormalized = {
         item.logical_block_id: softened_context[item.logical_block_id]
         * prepared_scores[item.logical_block_id]
         for item in candidates
     }
-    total = sum(unnormalized.values())
-    fused = {logical_id: value / total for logical_id, value in unnormalized.items()}
+    context_total = sum(context_unnormalized.values())
+    context_fused = {logical_id: value / context_total for logical_id, value in context_unnormalized.items()}
+    if is_strong_eeg:
+        # Context remains recorded as evidence, but cannot change a uniquely
+        # strong raw EEG ordering.  This is a policy gate, not a decoder edit.
+        total = sum(prepared_scores.values())
+        fused = {logical_id: value / total for logical_id, value in prepared_scores.items()}
+        fusion_mode = "eeg_strong_override"
+        override_reason = "unique_raw_eeg_top_margin_gte_{:.2f}".format(strong_eeg_margin_threshold)
+    else:
+        fused = context_fused
+        if not context_available or context_strength <= 1e-12:
+            fusion_mode = "context_neutral"
+            override_reason = None
+        elif len(raw_top) == 1 and len(context_preferred) == 1 and raw_top[0] != context_preferred[0]:
+            fusion_mode = "context_conflict_weak_eeg"
+            override_reason = "context_prior_allowed_for_non_strong_eeg"
+        else:
+            fusion_mode = "context_assisted"
+            override_reason = None
     maximum = max(fused.values())
     top_logical = tuple(
         item.logical_block_id
@@ -202,6 +283,14 @@ def fuse_context_and_eeg(context_prior, active_candidates, eeg_scores_by_logical
         top_logical_block_ids=top_logical,
         top_target_ids=tuple(target_by_logical[item] for item in top_logical),
         tie=len(top_logical) > 1,
+        raw_eeg_top_logical_block_ids=raw_top,
+        eeg_confidence=raw_confidence,
+        eeg_margin=raw_margin,
+        is_strong_eeg=is_strong_eeg,
+        context_preferred_logical_block_ids=context_preferred,
+        context_strength=context_strength,
+        fusion_mode=fusion_mode,
+        override_reason=override_reason,
     )
 
 
@@ -222,6 +311,7 @@ def fuse_fbcca_score_vector(context_prior, active_candidates, fused_score_vector
 __all__ = [
     "ACTIVE_SLOT_FREQUENCIES_HZ",
     "EEG_SCORE_EPSILON",
+    "STRONG_EEG_MARGIN_THRESHOLD",
     "FusionInputError",
     "ActiveSsvepCandidate",
     "FusedEvidenceEntry",

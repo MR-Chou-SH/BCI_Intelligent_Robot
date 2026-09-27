@@ -1,0 +1,13 @@
+analysis_set,held_out_session,policy,alpha,soften_lambda,min_evidence_seconds,fused_top_threshold,fused_margin_threshold,required_consecutive,context_min_raw_margin
+all_89,A,analysis_eeg_only,0.0,0.5,0.9,0.42,0.05,2,0.0
+all_89,A,analysis_context_fusion,0.0,0.5,0.9,0.42,0.05,2,0.0
+all_89,B1,analysis_eeg_only,0.0,0.5,0.9,0.42,0.05,2,0.0
+all_89,B1,analysis_context_fusion,0.0,0.5,0.9,0.42,0.05,2,0.0
+all_89,B2,analysis_eeg_only,0.0,0.5,0.9,0.42,0.05,2,0.0
+all_89,B2,analysis_context_fusion,0.0,0.5,0.9,0.42,0.05,2,0.0
+formal_88,A,analysis_eeg_only,0.0,0.5,0.9,0.42,0.05,2,0.0
+formal_88,A,analysis_context_fusion,0.0,0.5,0.9,0.42,0.05,2,0.0
+formal_88,B1,analysis_eeg_only,0.0,0.5,0.9,0.42,0.05,2,0.0
+formal_88,B1,analysis_context_fusion,0.0,0.5,0.9,0.42,0.05,2,0.0
+formal_88,B2,analysis_eeg_only,0.0,0.5,0.9,0.42,0.05,2,0.0
+formal_88,B2,analysis_context_fusion,0.0,0.5,0.9,0.42,0.05,2,0.0

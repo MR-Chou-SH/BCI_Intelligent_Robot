@@ -1,0 +1,176 @@
+{
+  "recordType": "m20_context_forensic_replay",
+  "analysisOnly": true,
+  "productionM19Modified": false,
+  "rawEegModified": false,
+  "nd8Opened": false,
+  "questBuildRun": false,
+  "datasetIdentity": {
+    "allAnalysisTrials": 89,
+    "formalManifestTrials": 88,
+    "exploratorySupplement": [
+      "B2",
+      "m6_4-trial-023"
+    ]
+  },
+  "inputs": {
+    "v3PriorArtifactPerTrial": {
+      "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\artifacts\\m15_stage2_v3_context_20260921T081744Z\\per_trial_results.csv",
+      "exists": true,
+      "sha256": "cf760466f714640f6d38191bb86b8a3c89c3defb294ad9278cea6590ca1edf43"
+    },
+    "pairedTrajectory": {
+      "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\artifacts\\m15_stage2_paired_context_20260921T054628Z\\paired_timepoint_trajectories.csv",
+      "exists": true,
+      "sha256": "840b48c6557d188c6d82dffd625095cd70d05e716874f489f92026c8c52f5ae0"
+    },
+    "pairedTrialResults": {
+      "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\artifacts\\m15_stage2_paired_context_20260921T054628Z\\paired_trial_results.csv",
+      "exists": true,
+      "sha256": "e5573419fea7b773386efe1807daf73f448bbf3776ffd43c2e83c757cc6cd190"
+    },
+    "datasetManifest": {
+      "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\artifacts\\m15_matched_accuracy_analysis_20260921\\dataset_manifest.json",
+      "exists": true,
+      "sha256": "2b498486de06a372b63e0b6786af22c493c3b5573dcf27c44299dbf5aa1c4064"
+    },
+    "m6_5bReplay": {
+      "path": "D:\\EEG_Study\\m6_4\\replay\\m6_5b-continuous-results.json",
+      "exists": true,
+      "sha256": "99e47ddcd15216feeef33d0212c3730e8b14980fa8c711f4a8e6995a5e4afbf3"
+    },
+    "m6_1bRawEeg": {
+      "path": "D:\\EEG_Study\\m6_1b\\m6_1b-dataset-20260819T090215Z-d70eaa0d\\raw-eeg-packets.jsonl",
+      "exists": true,
+      "sha256": "35d30ea8ba92f36acf04f32970cc310c1217bd890fb7b7b817de013e5f69e568"
+    },
+    "m6_4_B1_RawEeg": {
+      "path": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T155147Z-386f95dd\\raw-eeg-packets.jsonl",
+      "exists": true,
+      "sha256": "4a117b119bf631ff39d09a28d70792ad990167e6fe6c75e4b5355f851266dac2"
+    },
+    "m6_4_B2_RawEeg": {
+      "path": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T161943Z-afaac607\\raw-eeg-packets.jsonl",
+      "exists": true,
+      "sha256": "4b6da19af61ead8bd49bc298054fa53d2c24da9a44348439af43367b847cc176"
+    },
+    "m12FusionCode": {
+      "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\integration\\m12_context_eeg_fusion.py",
+      "exists": true,
+      "sha256": "b05660f46d1afba9b113a491e1fbf9ba82960e8ee3cc2827c15115d8b8692b2e"
+    },
+    "m13StoppingCode": {
+      "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\integration\\m13_dynamic_stopping.py",
+      "exists": true,
+      "sha256": "479968d073ce6c7186799e596221ab3391d5353d4f258ec9778bb270af29daee"
+    },
+    "m13ContextGenerator": {
+      "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\integration\\m13_historical_replay.py",
+      "exists": true,
+      "sha256": "1eadb68ed8adf3c718b60a4e0d33e707563dfaa9029af63be57064dba3e18e97"
+    },
+    "v3AnalysisCode": {
+      "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\analysis\\paper_eeg\\m15_stage2_v3_context_analysis.py",
+      "exists": true,
+      "sha256": "10c29ed02eac696a5d63c6347493790f651de2189a792bf11864c1668c62759b"
+    },
+    "m15MatchedAccuracyCode": {
+      "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\analysis\\paper_eeg\\m15_matched_accuracy_analysis.py",
+      "exists": true,
+      "sha256": "0752aa6059c70ca3ab41d2ac51a21e8a16a476a4bebf5ee182cbee1dab9c6a0b"
+    }
+  },
+  "timing": {
+    "onsetGuardSeconds": 0.5,
+    "decisionTimeGridOnsetRelativeSeconds": [
+      1.4,
+      1.6,
+      1.8,
+      2.0,
+      2.2,
+      2.4
+    ],
+    "effectiveEvidenceTimeGridSeconds": [
+      0.9,
+      1.1,
+      1.3,
+      1.5,
+      1.7,
+      1.9
+    ],
+    "endpointEvidenceSeconds": 1.9
+  },
+  "classMapping": {
+    "target_left": "Red / 7.2 Hz / block_sim_01",
+    "target_center": "Green / 9 Hz / block_sim_02",
+    "target_right": "Blue / 12 Hz / block_sim_03"
+  },
+  "policyGrid": {
+    "alphas": [
+      0.0,
+      0.25,
+      0.5,
+      1.0,
+      1.5
+    ],
+    "priorSofteningLambda": [
+      0.5,
+      0.75,
+      1.0
+    ],
+    "alignedPriorStrengths": [
+      0.6,
+      0.75,
+      0.9,
+      0.95
+    ],
+    "neutralPrior": [
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333
+    ],
+    "conflictPriorTop": 0.9,
+    "minimumEvidenceSeconds": [
+      0.9,
+      1.1,
+      1.3
+    ],
+    "fusedTopThresholds": [
+      0.42,
+      0.5,
+      0.55,
+      0.6,
+      0.7
+    ],
+    "fusedMarginThresholds": [
+      0.05,
+      0.1,
+      0.15
+    ],
+    "requiredConsecutiveWindows": 2,
+    "contextStopStability": {
+      "minimumRawEegTopMargin": 0.15,
+      "requiredConsecutiveWindows": 3,
+      "eegOnlyRequiredConsecutiveWindows": 2
+    },
+    "fixedContextStopSensitivity": {
+      "alphas": [
+        0.0,
+        0.25,
+        0.5,
+        1.0,
+        1.5
+      ],
+      "priorSofteningLambda": [
+        0.5,
+        0.75,
+        1.0
+      ],
+      "fixedMinimumEvidenceSeconds": 0.9,
+      "fixedFusedTopThreshold": 0.42,
+      "fixedFusedMarginThreshold": 0.05,
+      "usesCrossFittedSettings": false,
+      "selectionNote": "Fixed settings compare Context weights without tuning on evaluated trials; the separate analysis_context_fusion result remains cross-fitted."
+    }
+  }
+}

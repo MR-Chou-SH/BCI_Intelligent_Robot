@@ -9,6 +9,7 @@ if __package__ in (None, ""):
 
 from eeg.sample_association.jsonl import AppendOnlyJsonl
 from integration.m8_live_nd8 import run_live_nd8
+from integration.m13_7_live_launcher import validate_windows_com_port
 from integration.m8_selection_orchestration import M8SelectionOrchestrator, QuestSelectionTcpServer
 from integration.m8_selection_transport.simulated_batch_consumer import consume_one_batch
 
@@ -71,7 +72,7 @@ def main(argv=None):
     parser.add_argument("--final-label", choices=("target_left", "target_center", "target_right"))
     parser.add_argument("--no-decision", action="store_true")
     parser.add_argument("--replay-final-decisions", type=Path)
-    parser.add_argument("--com", choices=("COM11",))
+    parser.add_argument("--com", help="explicit operator-selected Windows port, for example COM3")
     parser.add_argument("--data-root", type=Path)
     parser.add_argument("--session-prefix", default="m8_2b-live")
     parser.add_argument("--preflight-only", action="store_true")
@@ -80,10 +81,12 @@ def main(argv=None):
     parser.add_argument("--packet-stall-seconds", default=2.0, type=float)
     parser.add_argument("--selection-plan", default="fixed", choices=("fixed", "free"),
                         help="fixed is the verified slot order; free forwards each decoder class without an expected class")
-    parser.add_argument("--m13-mode", default="baseline", choices=("baseline", "active"),
-                        help="live-nd8 only: preserve baseline by default or explicitly opt in to active M13")
-    parser.add_argument("--max-trials", default=3, type=int, choices=(1, 2, 3),
-                        help="default frozen three-trial protocol; 1 or 2 enables a shortened demonstration")
+    parser.add_argument("--m13-schedule", type=Path,
+                        help="optional M13 classifier-acceptance schedule; dynamic_v1/active only, preserves the existing M8 transport")
+    parser.add_argument("--m13-mode", default="baseline", choices=("baseline", "active", "dynamic_v1", "dynamic_v2"),
+                        help="live-nd8 only: baseline is fixed M6, active/dynamic_v1 is existing M13, dynamic_v2 is frozen EEG-only Stage 2 v2")
+    parser.add_argument("--max-trials", default=3, type=int, choices=(1, 2, 3, 6, 9),
+                        help="default frozen three-trial protocol; 6/9 are allowed only with --m13-schedule")
     parser.add_argument("--batch-consumer-timeout-seconds", default=45.0, type=float,
                         help="single-trial only: wait on released TCP 11001 for the confirmed batch")
     parser.set_defaults(preparation_seconds=13.0, trial_window_seconds=4.0)
@@ -93,9 +96,21 @@ def main(argv=None):
         if args.data_root is None:
             parser.error("live-nd8 requires --data-root under the external EEG study root")
         if args.com is None:
-            parser.error("live-nd8 requires the verified --com COM11 configuration")
+            parser.error("live-nd8 requires an explicit --com COMx selected from com-list")
+        try:
+            args.com = validate_windows_com_port(args.com)
+        except RuntimeError as error:
+            parser.error(str(error))
         if args.dry_run and args.preflight_only:
             parser.error("--dry-run and --preflight-only are mutually exclusive")
+        if args.m13_schedule is not None and args.m13_mode not in ("active", "dynamic_v1"):
+            parser.error("--m13-schedule requires explicit --m13-mode active or dynamic_v1")
+        if args.m13_schedule is not None and args.selection_plan != "fixed":
+            parser.error("--m13-schedule requires --selection-plan fixed")
+        if args.m13_schedule is not None and args.max_trials not in (6, 9):
+            parser.error("--m13-schedule requires --max-trials 6 or 9")
+        if args.m13_schedule is None and args.max_trials not in (1, 2, 3):
+            parser.error("--max-trials 6/9 requires --m13-schedule")
         exit_code, session_root = run_live_nd8(args)
         if (exit_code == 0 and (args.selection_plan == "free" or args.max_trials in (1, 2)) and
                 not args.dry_run and not args.preflight_only):
@@ -109,7 +124,7 @@ def main(argv=None):
             record = _record_final_batch_delivery(session_root, receipt)
             print(json.dumps(record, ensure_ascii=False, sort_keys=True), flush=True)
         return exit_code
-    if (args.dry_run or args.preflight_only or args.com or args.data_root or args.m13_mode != "baseline" or
+    if (args.dry_run or args.preflight_only or args.com or args.data_root or args.m13_mode != "baseline" or args.m13_schedule is not None or
             args.selection_plan != "fixed" or args.max_trials != 3):
         parser.error("live-nd8-only arguments require --mode live-nd8")
     if args.event_log is None or not args.selection_id_prefix:

@@ -1,0 +1,29 @@
+{
+  "candidateOrder": [
+    "assist_medicine_box",
+    "assist_storage_box",
+    "assist_phone",
+    "assist_button_switch",
+    "assist_wireless_charger",
+    "assist_user_zone"
+  ],
+  "pageSize": 3,
+  "pages": [
+    [
+      "assist_medicine_box",
+      "assist_storage_box",
+      "assist_phone"
+    ],
+    [
+      "assist_button_switch",
+      "assist_wireless_charger",
+      "assist_user_zone"
+    ]
+  ],
+  "slotFrequencyHz": [
+    7.2,
+    9.0,
+    12.0
+  ],
+  "status": "PASS"
+}

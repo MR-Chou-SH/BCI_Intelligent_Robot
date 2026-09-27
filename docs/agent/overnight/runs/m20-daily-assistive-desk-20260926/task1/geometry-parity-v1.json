@@ -1,0 +1,128 @@
+{
+  "mujoco": null,
+  "recordType": "m20_assistive_desk_geometry_parity",
+  "screenshots": {},
+  "specPath": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\m7_unity6000\\Assets\\Resources\\BCI\\M20\\assistive_desk_scene.json",
+  "specSha256": "414a7aeb0e488432af9283c3151cbc3757b6126d75e8239dbf45b42c830024d2",
+  "staticContract": {
+    "articulations": {
+      "buttonCapHoleClearanceMeters": 0.006,
+      "buttonTravelMeters": 0.005,
+      "storageHingeDegrees": {
+        "maximum": 0.0,
+        "minimum": -100.0
+      }
+    },
+    "candidateCount": 6,
+    "candidateOrder": [
+      "assist_medicine_box",
+      "assist_storage_box",
+      "assist_phone",
+      "assist_button_switch",
+      "assist_wireless_charger",
+      "assist_user_zone"
+    ],
+    "candidatePages": [
+      [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone"
+      ],
+      [
+        "assist_button_switch",
+        "assist_wireless_charger",
+        "assist_user_zone"
+      ]
+    ],
+    "coordinateFrame": {
+      "origin": "center of the tabletop top surface",
+      "unit": "meter",
+      "unityHingeAngleSignFromMujoco": 1,
+      "unityRobotVisualScale": 0.7,
+      "unityTableRootFacesUser": true,
+      "unityTableRootLocalPositionAdapter": "(-x, z, -y)",
+      "unityUsesNegativeScale": false,
+      "x": "user visual right",
+      "y": "away from user toward robot",
+      "z": "up"
+    },
+    "crossEngineTargets": [
+      "assist_medicine_box",
+      "assist_storage_box",
+      "assist_phone",
+      "assist_button_switch",
+      "assist_wireless_charger",
+      "assist_user_zone"
+    ],
+    "geometryDimensionToleranceMeters": 0.005,
+    "geometryDimensionToleranceRelative": 0.02,
+    "geometryPositionToleranceMeters": 0.005,
+    "mirrorChecks": {
+      "buttonXNegative": true,
+      "chargerXPositive": true,
+      "medicineXNegative": true,
+      "phoneXPositive": true,
+      "robotBehindCandidates": true,
+      "storageCentered": true,
+      "userZoneInFront": true
+    },
+    "placementChecks": {
+      "allPlacementPosesCollisionClear": true,
+      "medicineRestsOnUserZone": true,
+      "phoneCenteredAndRestsOnCharger": true,
+      "phoneRestsOnUserZone": true,
+      "placementPoses": [
+        {
+          "objectBottomLocalZMeters": 0.0020000000000000018,
+          "restsOnTarget": true,
+          "sourceId": "assist_medicine_box",
+          "targetId": "assist_user_zone",
+          "targetTopLocalZMeters": 0.002,
+          "verticalGapMeters": 1.734723475976807e-18
+        },
+        {
+          "objectBottomLocalZMeters": 0.002,
+          "restsOnTarget": true,
+          "sourceId": "assist_phone",
+          "targetId": "assist_user_zone",
+          "targetTopLocalZMeters": 0.002,
+          "verticalGapMeters": 0.0
+        },
+        {
+          "objectBottomLocalZMeters": 0.012,
+          "restsOnTarget": true,
+          "sourceId": "assist_phone",
+          "targetId": "assist_wireless_charger",
+          "targetTopLocalZMeters": 0.012,
+          "verticalGapMeters": 0.0
+        }
+      ]
+    },
+    "sceneId": "m20_daily_assistive_desk",
+    "slotMapping": [
+      {
+        "framesPerHalfCycle": 5,
+        "frequencyHz": 7.2,
+        "slotIndex": 0
+      },
+      {
+        "framesPerHalfCycle": 4,
+        "frequencyHz": 9.0,
+        "slotIndex": 1
+      },
+      {
+        "framesPerHalfCycle": 3,
+        "frequencyHz": 12.0,
+        "slotIndex": 2
+      }
+    ],
+    "status": "PASS",
+    "tableSizeMeters": {
+      "x": 0.96,
+      "y": 0.56,
+      "z": 0.05
+    },
+    "yawToleranceDegrees": 2.0
+  },
+  "status": "PASS"
+}

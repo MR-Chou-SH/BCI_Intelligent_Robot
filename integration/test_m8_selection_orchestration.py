@@ -259,6 +259,69 @@ class QuestSelectionTcpServerTests(unittest.TestCase):
         self.assertEqual("bottle", decision_ack["resolvedClassName"])
         self.assertTrue(open_ack["accepted"])
 
+    def test_selection_open_request_sink_observes_exact_payload_before_send(self):
+        diagnostic_requests = []
+        transport = QuestSelectionTcpServer(
+            "127.0.0.1",
+            0,
+            accept_timeout_seconds=1.0,
+            ack_timeout_seconds=1.0,
+            request_event_sink=diagnostic_requests.append,
+        )
+        transport.start()
+        received = []
+        snapshot = {
+            "snapshotId": "snapshot-s2",
+            "snapshotVersion": 2,
+            "candidates": [
+                {
+                    "slotIndex": 0,
+                    "logicalBlockId": "block_sim_04",
+                    "targetId": "m9-vblock-yellow-01",
+                    "active": True,
+                    "nominalFrequencyHz": 7.2,
+                },
+                {
+                    "slotIndex": 1,
+                    "logicalBlockId": "block_sim_03",
+                    "targetId": "m9-vblock-blue-01",
+                    "active": True,
+                    "nominalFrequencyHz": 9.0,
+                },
+                {
+                    "slotIndex": 2,
+                    "logicalBlockId": "__inactive_slot_2__",
+                    "targetId": "__inactive_slot_2__",
+                    "active": False,
+                    "nominalFrequencyHz": 12.0,
+                },
+            ],
+        }
+
+        def quest_client():
+            with socket.create_connection(("127.0.0.1", transport.port), timeout=1.0) as client:
+                stream = client.makefile("rwb")
+                request = json.loads(stream.readline().decode("utf-8"))
+                received.append(request)
+                stream.write((json.dumps(accepted_ack(request["selectionId"])) + "\n").encode("utf-8"))
+                stream.flush()
+
+        worker = threading.Thread(target=quest_client)
+        worker.start()
+        try:
+            self.assertTrue(transport.open_selection("selection-s2", snapshot=snapshot)["accepted"])
+        finally:
+            transport.close()
+        worker.join(1.0)
+
+        self.assertFalse(worker.is_alive())
+        self.assertEqual(1, len(diagnostic_requests))
+        self.assertEqual("selection_open", diagnostic_requests[0]["messageType"])
+        self.assertEqual("snapshot-s2", diagnostic_requests[0]["candidateSnapshotId"])
+        self.assertEqual(2, diagnostic_requests[0]["candidateSnapshotVersion"])
+        self.assertEqual(snapshot["candidates"], diagnostic_requests[0]["candidateSnapshot"])
+        self.assertEqual(diagnostic_requests[0], received[0])
+
     def test_abort_uses_its_own_terminal_message_without_an_eeg_selection(self):
         transport = QuestSelectionTcpServer("127.0.0.1", 0, accept_timeout_seconds=1.0, ack_timeout_seconds=1.0)
         transport.start()
@@ -285,6 +348,61 @@ class QuestSelectionTcpServerTests(unittest.TestCase):
 
         self.assertFalse(worker.is_alive())
         self.assertEqual(["selection_open", "selection_abort"], [item["messageType"] for item in received])
+
+    def test_showcase_batch_close_reuses_target_batch_contract_and_waits_for_batch_ack(self):
+        transport = QuestSelectionTcpServer("127.0.0.1", 0, accept_timeout_seconds=1.0, ack_timeout_seconds=1.0)
+        transport.start()
+        received = []
+        close_payload = {
+            "messageType": "target_batch_confirmed",
+            "batchId": "showcase-batch-0",
+            "confirmedBatch": {
+                "batchId": "showcase-batch-0",
+                "selections": [{
+                    "selectionId": "selection-close",
+                    "predictedClassIndex": 2,
+                    "slotIndex": 2,
+                    "targetId": "target-blue",
+                }],
+            },
+        }
+
+        def quest_client():
+            with socket.create_connection(("127.0.0.1", transport.port), timeout=1.0) as client:
+                stream = client.makefile("rwb")
+                for expected_type in ("selection_open", "eeg_selection", "target_batch_confirmed"):
+                    request = json.loads(stream.readline().decode("utf-8"))
+                    received.append(request)
+                    self.assertEqual(expected_type, request["messageType"])
+                    if expected_type == "target_batch_confirmed":
+                        self.assertEqual("showcase-batch-0", request["batchId"])
+                        response = {
+                            "protocolVersion": 1,
+                            "messageType": "batch_ack",
+                            "batchId": "showcase-batch-0",
+                            "accepted": True,
+                            "rejectionReason": "None",
+                        }
+                    else:
+                        response = accepted_ack(request["selectionId"])
+                    stream.write((json.dumps(response) + "\n").encode("utf-8"))
+                    stream.flush()
+
+        worker = threading.Thread(target=quest_client)
+        worker.start()
+        try:
+            self.assertTrue(transport.open_selection("selection-close")["accepted"])
+            self.assertTrue(transport.submit_eeg_selection("selection-close", 2)["accepted"])
+            close_ack = transport.close_batch(close_payload)
+        finally:
+            transport.close()
+        worker.join(1.0)
+
+        self.assertFalse(worker.is_alive())
+        self.assertTrue(close_ack["accepted"])
+        self.assertEqual(["selection_open", "eeg_selection", "target_batch_confirmed"],
+                         [item["messageType"] for item in received])
+        self.assertEqual(1, transport.evidence["batchCloseAckCount"])
 
 
 class M8SelectionCliTests(unittest.TestCase):

@@ -1,0 +1,36 @@
+{
+  "n_total": 89,
+  "context_earlier_count": 3,
+  "context_earlier_mean_seconds": 1.2,
+  "off_fallback_to_on_early_count": 3,
+  "off_early_to_on_earlier_count": 0,
+  "context_delayed_count": 0,
+  "final_class_changed_count": 1,
+  "accuracy_helped_count": 0,
+  "accuracy_harmed_count": 1,
+  "paired_mean_latency_delta_off_minus_on": 0.040449438202247195,
+  "paired_median_latency_delta_off_minus_on": 0.0,
+  "helped_trials_mean_advance_seconds": null,
+  "delta_by_frequency": {
+    "7.2": {
+      "n": 30,
+      "mean_delta_seconds": 0.12000000000000001,
+      "earlier_count": 3
+    },
+    "9": {
+      "n": 29,
+      "mean_delta_seconds": 0.0,
+      "earlier_count": 0
+    },
+    "12": {
+      "n": 30,
+      "mean_delta_seconds": 0.0,
+      "earlier_count": 0
+    }
+  },
+  "effect_type_counts": {
+    "TYPE_1_TRUE_LATENCY_HELP": 3,
+    "TYPE_2_NO_EFFECT": 85,
+    "TYPE_4_DECISION_HARM": 1
+  }
+}

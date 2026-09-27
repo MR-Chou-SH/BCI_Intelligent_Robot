@@ -113,6 +113,53 @@ class M12ContextEegFusionTests(unittest.TestCase):
         self.assertEqual(("block_sim_03",), result.top_logical_block_ids)
         self.assertTrue(all(entry.context_prior_soft > 0.0 for entry in result.entries))
 
+    def test_golden_conflict_strong_eeg_cannot_be_overridden_by_context(self):
+        # Session B Block 3 trial-082: real replay evidence, not a ground-truth
+        # label injected into the fusion call.
+        context = simple_context({
+            "block_sim_01": 0.02,
+            "block_sim_02": 0.94,
+            "block_sim_03": 0.02,
+            "block_sim_04": 0.02,
+        }, history=())
+        result = fuse_context_and_eeg(context, candidates(), {
+            "block_sim_01": 1.2568097085822083,
+            "block_sim_02": 0.676054705615901,
+            "block_sim_03": 0.6087883686553649,
+        })
+        self.assertEqual(("block_sim_01",), result.top_logical_block_ids)
+        self.assertTrue(result.is_strong_eeg)
+        self.assertEqual("eeg_strong_override", result.fusion_mode)
+        self.assertEqual(("block_sim_01",), result.raw_eeg_top_logical_block_ids)
+        self.assertAlmostEqual(0.580755003, result.eeg_margin, places=6)
+        self.assertEqual("block_sim_02", result.context_preferred_logical_block_ids[0])
+
+    def test_missing_context_falls_back_to_eeg_only(self):
+        result = fuse_context_and_eeg(None, candidates(), {
+            "block_sim_01": 1.0,
+            "block_sim_02": 1.1,
+            "block_sim_03": 1.0,
+        })
+        self.assertEqual(("block_sim_02",), result.top_logical_block_ids)
+        self.assertEqual("context_neutral", result.fusion_mode)
+        self.assertFalse(result.is_strong_eeg)
+
+    def test_weak_conflicting_eeg_can_still_be_assisted_by_context(self):
+        context = simple_context({
+            "block_sim_01": 0.02,
+            "block_sim_02": 0.94,
+            "block_sim_03": 0.02,
+            "block_sim_04": 0.02,
+        })
+        result = fuse_context_and_eeg(context, candidates(), {
+            "block_sim_01": 1.1,
+            "block_sim_02": 1.0,
+            "block_sim_03": 0.01,
+        })
+        self.assertFalse(result.is_strong_eeg)
+        self.assertEqual("context_conflict_weak_eeg", result.fusion_mode)
+        self.assertEqual(("block_sim_02",), result.top_logical_block_ids)
+
     def test_half_half_context_ambiguity_is_resolved_by_eeg_without_id_winner(self):
         context = predict_context_prior(make_observation(("block_sim_01", "block_sim_02")))
         result = fuse_context_and_eeg(context, candidates(("block_sim_02", "block_sim_03", "block_sim_04")), {

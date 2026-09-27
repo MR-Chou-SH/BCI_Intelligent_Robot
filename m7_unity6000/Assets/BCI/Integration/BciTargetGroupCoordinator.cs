@@ -73,6 +73,31 @@ namespace BCIIntelligentRobot.Integration
             return new BciActiveTargetGroup(GroupId, GroupIndex, updated);
         }
 
+        public BciActiveTargetGroup WithAuthoritativeTargets(
+            IReadOnlyList<StableWorldAnchorSnapshot> targets)
+        {
+            if (targets == null || targets.Count != BciTargetSlotAllocator.SlotCount)
+                return this;
+
+            var selectedTargetIds = new HashSet<string>(StringComparer.Ordinal);
+            for (int index = 0; index < Members.Count; index++)
+            {
+                if (Members[index].IsSelected && !string.IsNullOrWhiteSpace(Members[index].CurrentTargetId))
+                    selectedTargetIds.Add(Members[index].CurrentTargetId);
+            }
+
+            var updated = new BciLogicalGroupMember[targets.Count];
+            for (int slot = 0; slot < targets.Count; slot++)
+            {
+                StableWorldAnchorSnapshot target = targets[slot];
+                updated[slot] = new BciLogicalGroupMember(
+                    slot,
+                    target,
+                    selectedTargetIds.Contains(target.TargetId));
+            }
+            return new BciActiveTargetGroup(GroupId, GroupIndex, updated);
+        }
+
         private BciLogicalGroupMember[] CopyMembers()
         {
             var copy = new BciLogicalGroupMember[Members.Count];
@@ -197,6 +222,62 @@ namespace BCIIntelligentRobot.Integration
             return true;
         }
 
+        /// <summary>
+        /// Applies the PC authoritative slot-to-TargetId snapshot at the
+        /// selection_open boundary. This changes only the current Quest view
+        /// of slot membership; accepted-result order and batch semantics stay
+        /// owned by the existing coordinator.
+        /// </summary>
+        public bool TryApplyAuthoritativeSelectionSnapshot(BciSelectionSnapshot snapshot)
+        {
+            if (!m_activeGroup.HasValue || snapshot == null)
+                return false;
+
+            var targets = new StableWorldAnchorSnapshot[BciTargetSlotAllocator.SlotCount];
+            var seenTargetIds = new HashSet<string>(StringComparer.Ordinal);
+            for (int slot = 0; slot < targets.Length; slot++)
+            {
+                BciSelectionResolution resolution = snapshot.ResolveClassIndex(slot);
+                if (resolution.Rejection == BciSelectionRejection.EmptySlot)
+                {
+                    targets[slot] = default(StableWorldAnchorSnapshot);
+                    continue;
+                }
+                if (!resolution.IsAccepted || string.IsNullOrWhiteSpace(resolution.Target.TargetId) ||
+                    !seenTargetIds.Add(resolution.Target.TargetId))
+                    return false;
+
+                StableWorldAnchorSnapshot matchingCandidate = default(StableWorldAnchorSnapshot);
+                bool found = false;
+                for (int index = 0; index < m_candidates.Count; index++)
+                {
+                    StableWorldAnchorSnapshot candidate = m_candidates[index];
+                    if (string.Equals(candidate.TargetId, resolution.Target.TargetId, StringComparison.Ordinal) &&
+                        candidate.State == StableTargetState.Active)
+                    {
+                        matchingCandidate = candidate;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    return false;
+                targets[slot] = matchingCandidate;
+            }
+
+            BciActiveTargetGroup current = m_activeGroup.Value;
+            for (int index = 0; index < m_selectedResults.Count; index++)
+            {
+                BciTargetSelectionResult selected = m_selectedResults[index];
+                if (selected.SlotIndex < 0 || selected.SlotIndex >= targets.Length ||
+                    !string.Equals(targets[selected.SlotIndex].TargetId, selected.TargetId, StringComparison.Ordinal))
+                    return false;
+            }
+
+            m_activeGroup = current.WithAuthoritativeTargets(targets);
+            return true;
+        }
+
         public bool TryAccept(BciTargetSelectionResult result)
         {
             if (!m_activeGroup.HasValue || string.IsNullOrWhiteSpace(result.TargetId) ||
@@ -248,15 +329,64 @@ namespace BCIIntelligentRobot.Integration
                 m_selectedResults,
                 DateTime.UtcNow);
 
-            for (int index = 0; index < group.Targets.Count; index++)
-                m_processedTargetIds.Add(group.Targets[index].TargetId);
             for (int index = 0; index < m_selectedResults.Count; index++)
-                m_submittedTargetIds.Add(group.Targets[m_selectedResults[index].SlotIndex].TargetId);
+            {
+                string selectedTargetId = group.Targets[m_selectedResults[index].SlotIndex].TargetId;
+                // A confirms only the provisional selections actually present
+                // in the ordered batch. Unselected members stay available for
+                // the next group instead of being silently consumed.
+                m_processedTargetIds.Add(selectedTargetId);
+                m_submittedTargetIds.Add(selectedTargetId);
+            }
 
             m_selectedResults.Clear();
             m_selectedTargetIds.Clear();
             m_activeGroup = null;
             BatchConfirmed?.Invoke(batch);
+            return true;
+        }
+
+        /// <summary>
+        /// Closes the current group for the PC Showcase after validating the
+        /// immutable Quest selection facts. This is the host-driven equivalent
+        /// of controller A; it never remaps a slot and never accepts a
+        /// selection that is not already present in the active group.
+        /// </summary>
+        public bool TryCloseCurrentGroupFromHost(
+            IReadOnlyList<ConfirmedTargetSelectionPayload> expectedSelections,
+            out string groupId)
+        {
+            groupId = null;
+            if (!m_activeGroup.HasValue || m_selectedResults.Count == 0 ||
+                expectedSelections == null || expectedSelections.Count != m_selectedResults.Count)
+                return false;
+
+            BciActiveTargetGroup group = m_activeGroup.Value;
+            for (int index = 0; index < m_selectedResults.Count; index++)
+            {
+                BciTargetSelectionResult actual = m_selectedResults[index];
+                ConfirmedTargetSelectionPayload expected = expectedSelections[index];
+                if (expected == null ||
+                    !string.Equals(actual.SelectionId, expected.selectionId, StringComparison.Ordinal) ||
+                    actual.PredictedClassIndex != expected.predictedClassIndex ||
+                    actual.SlotIndex != expected.slotIndex ||
+                    !string.Equals(actual.TargetId, expected.targetId, StringComparison.Ordinal) ||
+                    actual.SlotIndex < 0 || actual.SlotIndex >= group.Targets.Count ||
+                    !string.Equals(group.Targets[actual.SlotIndex].TargetId, actual.TargetId, StringComparison.Ordinal))
+                    return false;
+            }
+
+            for (int index = 0; index < m_selectedResults.Count; index++)
+            {
+                string selectedTargetId = group.Targets[m_selectedResults[index].SlotIndex].TargetId;
+                m_processedTargetIds.Add(selectedTargetId);
+                m_submittedTargetIds.Add(selectedTargetId);
+            }
+
+            groupId = group.GroupId;
+            m_selectedResults.Clear();
+            m_selectedTargetIds.Clear();
+            m_activeGroup = null;
             return true;
         }
     }

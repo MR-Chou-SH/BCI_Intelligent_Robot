@@ -17,17 +17,30 @@ namespace BCIIntelligentRobot.Integration
         private SentisInferenceUiManager m_detectionVisuals;
         private DetectionManager m_detectionManager;
         private BciTargetGroupCoordinator m_groups;
+        private BciPagedTargetQueueController m_pagedQueueController;
         private string m_pendingSelectionId;
         private string m_lastReassociationLogSignature;
         private bool m_initialized;
+        private bool m_presentationOnly;
         private int m_lastCandidateCount = -1;
 
-        public bool OwnsBatchInput => m_initialized && m_binding != null && m_binding.IsBatchGroupModeEnabled;
+        public bool OwnsBatchInput => m_initialized && !m_presentationOnly &&
+            m_binding != null && m_binding.IsBatchGroupModeEnabled;
 
-        public bool SetM13_6ExecutionPresentation(bool execution, string reason)
+        public bool SetM13_6ExecutionPresentation(
+            bool execution,
+            string reason,
+            string robotStatus = null)
         {
             if (!m_initialized || m_binding == null)
                 return false;
+            if (m_presentationOnly && !string.IsNullOrWhiteSpace(robotStatus))
+            {
+                if (m_pagedQueueController == null)
+                    m_pagedQueueController = GetComponent<BciPagedTargetQueueController>();
+                if (m_pagedQueueController != null)
+                    m_pagedQueueController.SetRobotExecutionStatus(robotStatus);
+            }
             return m_binding.SetExecutionPresentationHidden(execution, reason);
         }
 
@@ -62,7 +75,9 @@ namespace BCIIntelligentRobot.Integration
 
             m_transport.TargetSelected += OnTargetSelected;
             m_transport.SelectionOpened += OnSelectionOpened;
+            m_transport.AuthoritativeSelectionOpening += OnAuthoritativeSelectionOpening;
             m_transport.SelectionTerminated += OnSelectionTerminated;
+            m_transport.HostBatchCloseRequested += OnHostBatchCloseRequested;
             m_groups.GroupActivated += OnGroupActivated;
             m_groups.GroupSlotSelectionChanged += OnGroupSlotSelectionChanged;
             m_groups.BatchConfirmed += OnBatchConfirmed;
@@ -76,9 +91,24 @@ namespace BCIIntelligentRobot.Integration
             Debug.Log("M8_GROUP controller_initialized input_owner=batch submit=right_A undo=right_B", this);
         }
 
+        /// <summary>
+        /// M16 keeps this component as the existing M13.6 presentation bridge,
+        /// but leaves legacy grouped input/event ownership disabled.
+        /// </summary>
+        public void InitializePresentationBridge(BciSsvepTargetBinding binding)
+        {
+            if (m_initialized || binding == null)
+                return;
+            m_binding = binding;
+            m_presentationOnly = true;
+            m_pagedQueueController = GetComponent<BciPagedTargetQueueController>();
+            m_initialized = true;
+            Debug.Log("M8_GROUP presentation_bridge_initialized owner=m16_paged_queue", this);
+        }
+
         private void Update()
         {
-            if (!m_initialized)
+            if (!m_initialized || m_presentationOnly)
                 return;
 
             if (InputManager.IsButtonBDownOrMiddleFingerPinchStarted())
@@ -89,7 +119,7 @@ namespace BCIIntelligentRobot.Integration
 
         private void LateUpdate()
         {
-            if (m_initialized)
+            if (m_initialized && !m_presentationOnly)
                 m_groups.TryActivateNextGroup();
         }
 
@@ -112,7 +142,9 @@ namespace BCIIntelligentRobot.Integration
         private void OnGroupActivated(BciActiveTargetGroup group)
         {
             m_lastReassociationLogSignature = null;
-            m_binding.ActivateGroup(group.GroupId, group.Targets);
+            // Keep the group available for authoritative TargetId validation,
+            // but do not open its visual/SSVEP presentation until selection_open.
+            m_binding.ActivateGroup(group.GroupId, group.Targets, openPresentation: false);
             string mapping = string.Empty;
             for (int slot = 0; slot < group.Targets.Count; slot++)
             {
@@ -156,6 +188,14 @@ namespace BCIIntelligentRobot.Integration
                 m_pendingSelectionId = selectionId;
         }
 
+        private bool OnAuthoritativeSelectionOpening(string selectionId, BciSelectionSnapshot snapshot)
+        {
+            bool accepted = m_groups != null && m_groups.TryApplyAuthoritativeSelectionSnapshot(snapshot);
+            if (!accepted)
+                Debug.LogWarning("M8_GROUP authoritative_snapshot_rejected selection_id=" + selectionId, this);
+            return accepted;
+        }
+
         private void OnSelectionTerminated(string selectionId)
         {
             if (string.Equals(m_pendingSelectionId, selectionId, StringComparison.Ordinal))
@@ -172,6 +212,8 @@ namespace BCIIntelligentRobot.Integration
             Debug.Log("M8_GROUP selection_undone selection_id=" + undone.SelectionId +
                 " slot=" + undone.SlotIndex + " target_id=" + undone.TargetId +
                 " selected_count=" + m_groups.CurrentSelections.Count, this);
+            if (!m_transport.PublishSelectionUndo(undone))
+                Debug.LogWarning("M8_GROUP undo_publish_rejected selection_id=" + undone.SelectionId, this);
             return true;
         }
 
@@ -200,11 +242,57 @@ namespace BCIIntelligentRobot.Integration
 
         private void OnBatchConfirmed(ConfirmedTargetBatch batch)
         {
-            m_lastReassociationLogSignature = null;
-            m_binding.EndActiveGroup(batch.GroupId);
-            m_binding.SetProcessedTargetIds(m_groups.ProcessedTargetIds, m_groups.SubmittedTargetIds);
+            CloseConfirmedGroup(batch.GroupId, batch.BatchId, publishToPc: true);
             if (!m_transport.PublishConfirmedTargetBatch(batch))
                 Debug.LogWarning("M8_GROUP batch_publish_rejected batch_id=" + batch.BatchId, this);
+        }
+
+        private bool OnHostBatchCloseRequested(ConfirmedTargetBatchPayload payload)
+        {
+            if (payload == null || m_groups == null)
+                return false;
+
+            if (!m_groups.TryCloseCurrentGroupFromHost(payload.selections, out string groupId))
+            {
+                Debug.LogWarning("M8_GROUP host_batch_close_rejected batch_id=" +
+                    (payload.batchId ?? "") + " reason=selection_identity_or_order_mismatch", this);
+                return false;
+            }
+
+            bool closed = CloseConfirmedGroup(groupId, payload.batchId, publishToPc: false);
+            if (closed)
+                Debug.Log("M8_GROUP host_batch_close_accepted batch_id=" +
+                    (payload.batchId ?? "") + " group_id=" + groupId, this);
+            return closed;
+        }
+
+        private bool CloseConfirmedGroup(string groupId, string batchId, bool publishToPc)
+        {
+            m_lastReassociationLogSignature = null;
+            if (!m_binding.EndActiveGroup(groupId))
+            {
+                Debug.LogWarning("M8_GROUP batch_close_rejected batch_id=" +
+                    (batchId ?? "") + " group_id=" + (groupId ?? "") +
+                    " reason=active_group_not_ended", this);
+                return false;
+            }
+            m_binding.SetProcessedTargetIds(m_groups.ProcessedTargetIds, m_groups.SubmittedTargetIds);
+            if (!publishToPc && !m_groups.HasActiveGroup)
+            {
+                // The Showcase sends the next selection_open immediately after
+                // receiving batch_ack.  Do not leave the next group waiting for
+                // LateUpdate: the host-close ACK is the batch-boundary event.
+                bool activated = m_groups.TryActivateNextGroup();
+                if (activated)
+                {
+                    Debug.Log("M8_GROUP next_group_activated_before_host_batch_ack", this);
+                }
+                else
+                {
+                    Debug.Log("M8_GROUP no_next_group_before_host_batch_ack", this);
+                }
+            }
+            return true;
         }
 
         private void TryReassociateActiveGroup()
@@ -287,10 +375,18 @@ namespace BCIIntelligentRobot.Integration
             if (!m_initialized)
                 return;
 
+            if (m_presentationOnly)
+            {
+                m_binding = null;
+                return;
+            }
+
             m_binding.HudCandidatesChanged -= OnHudCandidatesChanged;
             m_transport.TargetSelected -= OnTargetSelected;
             m_transport.SelectionOpened -= OnSelectionOpened;
+            m_transport.AuthoritativeSelectionOpening -= OnAuthoritativeSelectionOpening;
             m_transport.SelectionTerminated -= OnSelectionTerminated;
+            m_transport.HostBatchCloseRequested -= OnHostBatchCloseRequested;
             m_groups.GroupActivated -= OnGroupActivated;
             m_groups.GroupSlotSelectionChanged -= OnGroupSlotSelectionChanged;
             m_groups.BatchConfirmed -= OnBatchConfirmed;

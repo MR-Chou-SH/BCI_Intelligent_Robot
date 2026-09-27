@@ -53,7 +53,11 @@ namespace BCIIntelligentRobot.Integration
             return new BciSelectionTransportResult(selectionId, -1, BciSelectionTransportRejection.None, default(BciSelectionTarget));
         }
 
-        public BciSelectionTransportResult Resolve(string selectionId, int predictedClassIndex)
+        public BciSelectionTransportResult Resolve(
+            string selectionId,
+            int predictedClassIndex,
+            string candidateSnapshotId = null,
+            int candidateSnapshotVersion = 0)
         {
             if (string.IsNullOrWhiteSpace(selectionId))
                 return Reject(selectionId, predictedClassIndex, BciSelectionTransportRejection.InvalidSelectionId);
@@ -65,6 +69,10 @@ namespace BCIIntelligentRobot.Integration
             // Every decision is terminal, including invalid data, so a retry cannot cause a second selection side effect.
             m_pendingSnapshots.Remove(selectionId);
             m_completedSelectionIds.Add(selectionId);
+            if (!string.IsNullOrWhiteSpace(snapshot.SnapshotId) &&
+                (!string.Equals(snapshot.SnapshotId, candidateSnapshotId, StringComparison.Ordinal) ||
+                 snapshot.SnapshotVersion != candidateSnapshotVersion))
+                return Reject(selectionId, predictedClassIndex, BciSelectionTransportRejection.TargetInvalid);
             BciSelectionResolution resolution = snapshot.ResolveClassIndex(predictedClassIndex);
             if (!resolution.IsAccepted)
                 return Reject(selectionId, predictedClassIndex, MapRejection(resolution.Rejection));

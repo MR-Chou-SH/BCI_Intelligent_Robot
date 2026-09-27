@@ -1,0 +1,18 @@
+{
+  "trial_count": 89,
+  "timepoint_count": 979,
+  "complete_trajectory_points": 11,
+  "trajectory_not_truncated": true,
+  "raw_scores_paired": true,
+  "off_context_prior_uniform": true,
+  "ground_truth_used_for_context": false,
+  "decision_time_reconstructable": true,
+  "required_numeric_values_finite": true,
+  "figure_count": 4,
+  "figures_present": true,
+  "frozen_thresholds": {
+    "score": 0.7,
+    "margin": 0.2,
+    "required_consecutive": 2
+  }
+}

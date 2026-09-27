@@ -36,6 +36,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private Vector2Int m_inputSize;
         private readonly List<(int classId, Vector4 boundingBox)> m_detections = new List<(int classId, Vector4 boundingBox)>();
 
+        [DllImport("OVRPlugin", CallingConvention = CallingConvention.Cdecl)]
+        private static extern OVRPlugin.Result ovrp_GetNodePoseStateAtTime(
+            double time,
+            OVRPlugin.Node nodeId,
+            out OVRPlugin.PoseStatef nodePoseState);
+
         private void Awake()
         {
             var model = ModelLoader.Load(m_sentisModel);
@@ -96,8 +102,6 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 yield break;
             }
 
-            [DllImport("OVRPlugin", CallingConvention = CallingConvention.Cdecl)]
-            static extern OVRPlugin.Result ovrp_GetNodePoseStateAtTime(double time, OVRPlugin.Node nodeId, out OVRPlugin.PoseStatef nodePoseState);
             if (!ovrp_GetNodePoseStateAtTime(OVRPlugin.GetTimeInSeconds(), OVRPlugin.Node.Head, out _).IsSuccess())
             {
                 Debug.Log("ovrp_GetNodePoseStateAtTime failed, which means 'm_cameraAccess.GetCameraPose()' is not reliable, skipping.");

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "task": "M20 Task 3 - historical EEG Context forensic replay and stopping study",
+  "status": "PASS",
+  "sourceHead": "ea497b26587a877605874d8109d809ae17c50d61",
+  "analysisOnly": true,
+  "productionM19Modified": false,
+  "rawEegModified": false,
+  "nd8Opened": false,
+  "questBuildRun": false,
+  "historicalRecords": {
+    "allAnalysisRecords": 89,
+    "formalManifestRecords": 88,
+    "exploratorySupplement": {
+      "session": "B2",
+      "trialId": "m6_4-trial-023"
+    }
+  },
+  "baselineReproduction": {
+    "v3Status": "PASS",
+    "v3ComparedRows": 267,
+    "v3Mismatches": 0,
+    "currentM12M13Status": "PASS",
+    "currentM12M13ComparedTrials": 89,
+    "currentM12M13Mismatches": 0,
+    "evidenceDirectory": "research_analysis/m20_context_forensics_20260927/attempt-06"
+  },
+  "v3EffectiveEvidenceSeconds": {
+    "all89EegOnlyMean": 0.944943820224719,
+    "all89ContextMean": 0.9314606741573033,
+    "all89ContextAdvance": 0.0134831460674157,
+    "formal88EegOnlyMean": 0.9454545454545453,
+    "formal88ContextMean": 0.9318181818181818,
+    "formal88ContextAdvance": 0.0136363636363635,
+    "formal88AccuracyBoth": "88/88",
+    "formal88WrongEarlyStopsBoth": 0
+  },
+  "currentM12M13PairedReplay": {
+    "formal88OffCorrect": 88,
+    "formal88OnCorrect": 87,
+    "formal88ContextOnEarlyStops": 3,
+    "formal88ContextCausedWrongFinals": 1,
+    "formal88OffMeanEffectiveEvidenceSeconds": 3.5,
+    "formal88OnMeanEffectiveEvidenceSeconds": 3.459090909090909,
+    "all89ComparedMeanDecisionAdvanceSeconds": 0.040449438202247195,
+    "reproductionStatus": "PASS"
+  },
+  "contextAudit": {
+    "fbccaValuesCalibratedProbabilities": false,
+    "v3UsesM12MultiplicativeFusion": false,
+    "m12PriorSofteningLambda": 0.5,
+    "rawPrior090AfterSoftening": [
+      0.6166666666666667,
+      0.19166666666666665,
+      0.19166666666666665
+    ],
+    "activeCandidateProjectionFlattensContext": false,
+    "strongEegOverrideRawMargin": 0.2,
+    "m13RequiresRawEegConfirmation": true
+  },
+  "stoppingStudy": {
+    "alignedPriorStrengths": [0.6, 0.75, 0.9, 0.95],
+    "neutralPriorIncluded": true,
+    "wrongTopPrior090Included": true,
+    "alphaSweep": [0.0, 0.25, 0.5, 1.0, 1.5],
+    "softeningSweep": [0.5, 0.75, 1.0],
+    "contextStopRequiresRawMargin": 0.15,
+    "contextStopConsecutiveWindows": 3,
+    "crossFittedSelectedAlphaByFold": 0.0,
+    "crossFittedHeldOutConflictWrongEarlyStops": 0,
+    "crossFittedHeldOutContextCausedErrors": 0,
+    "formal88FixedAlpha025Lambda050Aligned090": {
+      "accuracy": "88/88",
+      "wrongEarlyStops": 0,
+      "contextAcceleratedTrials": 3,
+      "contextAccelerationFraction": 0.03409090909090909,
+      "meanAdvanceAmongAcceleratedSeconds": 0.2,
+      "meanEffectiveEvidenceSeconds": 1.5818181818181818,
+      "TAt95Seconds": 1.9,
+      "TAt99Seconds": 1.9,
+      "TAt100Seconds": 1.9
+    },
+    "formal88CausalHistoryAlpha025Lambda050": {
+      "contextAcceleratedTrials": 1,
+      "meanAdvanceAmongAcceleratedSeconds": 0.2,
+      "wrongEarlyStops": 0,
+      "contextCausedErrors": 0
+    },
+    "fixedNonzeroAlphaWrongPriorEvaluations": 2124,
+    "fixedNonzeroAlphaConflictWrongEarlyStops": 0,
+    "fixedNonzeroAlphaConflictContextCausedErrors": 0,
+    "strongContradictionWindows": 8232,
+    "strongOverridePreservedWindows": 8232
+  },
+  "finalConclusion": "Historical V3 EEG-only decoding already reached 88/88 formal accuracy with a 0.945 s mean effective evidence time. Its Context rule reduced that by only 13.6 ms. Context is softened in current M12, and M13 also requires raw EEG confirmation; the current paired M12/M13 replay shows only three earlier decisions and one Context-caused wrong final. Fixed offline aligned priors can accelerate a few trials without errors under the added stability gates, but the cross-fitted selector chose alpha=0 in every fold and natural observable history produced only one accelerated formal trial. Keep experimental Context fusion offline; the historical evidence does not support changing production M19."
+}

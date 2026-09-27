@@ -1,0 +1,784 @@
+{
+  "actionResolution": {
+    "destinationSemanticId": "assist_wireless_charger",
+    "destinationTargetId": "assist_wireless_charger",
+    "placementPositionTableLocalMeters": [
+      0.24,
+      -0.03,
+      0.016
+    ],
+    "placementYawDegrees": 0.0,
+    "resolutionProvenance": "canonical_m20_source_placements_after_ordered_submit",
+    "scenarioId": "phone-to-charger",
+    "sourceLogicalBlockId": "block_assist_phone_03",
+    "sourceSemanticId": "assist_phone",
+    "sourceTargetId": "assist_phone",
+    "syntheticFrequenciesHz": [
+      12.0,
+      9.0
+    ],
+    "syntheticSlotSequence": [
+      2,
+      1
+    ]
+  },
+  "execution": {
+    "action": {
+      "destinationSemanticId": "assist_wireless_charger",
+      "destinationTargetId": "assist_wireless_charger",
+      "placementPositionTableLocalMeters": [
+        0.24,
+        -0.03,
+        0.016
+      ],
+      "placementYawDegrees": 0.0,
+      "resolutionProvenance": "canonical_m20_source_placements_after_ordered_submit",
+      "scenarioId": "phone-to-charger",
+      "sourceLogicalBlockId": "block_assist_phone_03",
+      "sourceSemanticId": "assist_phone",
+      "sourceTargetId": "assist_phone",
+      "syntheticFrequenciesHz": [
+        12.0,
+        9.0
+      ],
+      "syntheticSlotSequence": [
+        2,
+        1
+      ]
+    },
+    "expectedCenterWorldMeters": [
+      0.24,
+      -0.03,
+      0.766
+    ],
+    "finalLinearSpeedMetersPerSecond": 0.00011806013310831524,
+    "finalObjectPoseWorldMeters": [
+      0.24486145906310913,
+      -0.046309563907257593,
+      0.7621740285508304
+    ],
+    "graspContactTrace": [
+      {
+        "contactPairs": [],
+        "entryZ": 0.754,
+        "maxObjectGripperContacts": 0,
+        "maxZ": 0.754,
+        "minZ": 0.7538922447353791,
+        "name": "HOME"
+      },
+      {
+        "contactPairs": [],
+        "entryZ": 0.7538922447247837,
+        "maxObjectGripperContacts": 0,
+        "maxZ": 0.7538922447247837,
+        "minZ": 0.753892244577874,
+        "name": "APPROACH"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7538922445793333,
+        "maxObjectGripperContacts": 4,
+        "maxZ": 0.7538922445797857,
+        "minZ": 0.7520121434613829,
+        "name": "CLOSE"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7520116560919479,
+        "maxObjectGripperContacts": 4,
+        "maxZ": 0.7520116560919479,
+        "minZ": 0.7519988547797438,
+        "name": "SETTLE"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7520008098723174,
+        "maxObjectGripperContacts": 4,
+        "maxZ": 1.008240548520661,
+        "minZ": 0.7520005537054295,
+        "name": "LIFT"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 1.0086309883195772,
+        "maxObjectGripperContacts": 4,
+        "maxZ": 1.0225647808064735,
+        "minZ": 1.0086309883195772,
+        "name": "HOLD"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 1.0226861587462286,
+        "maxObjectGripperContacts": 4,
+        "maxZ": 1.0284231236948336,
+        "minZ": 0.7976655829379158,
+        "name": "PLACE"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7969168432953091,
+        "maxObjectGripperContacts": 4,
+        "maxZ": 0.7969168432953091,
+        "minZ": 0.7622551281824741,
+        "name": "PLACE_HOLD"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7622637167865536,
+        "maxObjectGripperContacts": 4,
+        "maxZ": 0.7624273093875968,
+        "minZ": 0.7621277804875803,
+        "name": "RELEASE"
+      },
+      {
+        "contactPairs": [],
+        "entryZ": 0.7621740285508304,
+        "maxObjectGripperContacts": 0,
+        "maxZ": 0.7621740285508304,
+        "minZ": 0.7621740285508304,
+        "name": "DONE"
+      }
+    ],
+    "gripperTableClearance": {
+      "gripperGeom": null,
+      "minimumMeters": 0.008877401144363082,
+      "phase": "LIFT"
+    },
+    "horizontalErrorMeters": 0.017018685585767357,
+    "m9Dispatch": {
+      "accepted": true,
+      "acceptedSelectionIds": [
+        "m20-phone-to-charger-01"
+      ],
+      "batchId": "m20-resolved-action-assist_phone-1",
+      "duplicateBatch": false,
+      "duplicateSelectionIds": [],
+      "executions": [
+        {
+          "backendExecutionId": "2c99a29407744534a28590117c7c7186",
+          "completedUtc": "2026-09-27T07:41:27.958009Z",
+          "executionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+          "executionState": "completed",
+          "failureCode": null,
+          "failureReason": null,
+          "logicalBlockId": "block_assist_phone_03",
+          "requestId": "m20-request-assist_phone",
+          "selectionId": "m20-phone-to-charger-01",
+          "simulatorObjectResolution": "resolved",
+          "startedUtc": "2026-09-27T07:41:25.957067Z",
+          "success": true,
+          "targetId": "assist_phone"
+        }
+      ],
+      "failureCode": null,
+      "failureReason": null,
+      "state": "accepted"
+    },
+    "phoneGraspEvidence": {
+      "activated": true,
+      "activationAnchorErrorMeters": 3.3306690738754696e-16,
+      "activationOrientationErrorRadians": 1.1542389828584842e-07,
+      "bilateralContactBodies": [
+        "umi_left_finger_holder",
+        "umi_right_finger_holder"
+      ],
+      "mechanism": "bilateral_contact_confirmed_runtime_body_weld",
+      "released": true
+    },
+    "placementStable": true,
+    "plannerProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+    "settlingSteps": 600,
+    "sideGraspIkErrors": null,
+    "sourceConfirmedBatch": {
+      "batchId": "m20-resolved-action-assist_phone-1",
+      "confirmedBatch": {
+        "batchId": "m20-resolved-action-assist_phone-1",
+        "groupId": "m16-paged-session",
+        "groupIndex": 0,
+        "provenance": "quest_confirmed_target_batch",
+        "selections": [
+          {
+            "buildSlotIndex": 0,
+            "logicalBlockId": "block_assist_phone_03",
+            "predictedClassIndex": 2,
+            "provenance": "quest_frozen_selection_snapshot",
+            "resolvedUtc": "2026-09-27T07:41:25.851251+00:00",
+            "selectionId": "m20-phone-to-charger-01",
+            "semanticLabel": "PHONE",
+            "slotIndex": 2,
+            "targetId": "assist_phone"
+          }
+        ],
+        "submittedUtc": "2026-09-27T07:41:25.851251+00:00"
+      },
+      "messageType": "target_batch_confirmed",
+      "protocolVersion": 1
+    },
+    "status": "PASS",
+    "tableBottomClearanceMeters": 0.008174028550830381,
+    "trajectoryEvidence": [
+      {
+        "blockHalfExtentsMujoco": [
+          0.075,
+          0.036,
+          0.0065
+        ],
+        "blockPositionMujoco": [
+          0.23999999999816315,
+          0.10000000000163008,
+          0.7538922445793056
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.007462505784587966,
+        "graspHorizontalToleranceMeters": 0.118,
+        "gripperPadPositionMujoco": [
+          0.24601801722901329,
+          0.09558723882588084,
+          0.8711315401267816
+        ],
+        "gripperPositionMujoco": [
+          0.24296523927141797,
+          0.09516156020863481,
+          0.9955295278293824
+        ],
+        "gripperToBlockDistanceMeters": 0.11747655686584214,
+        "phase": "pre_grasp",
+        "plannerPhase": "CLOSE",
+        "simulatorObject": "assist_phone",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          0.24,
+          -0.03,
+          0.766
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.075,
+          0.036,
+          0.0065
+        ],
+        "blockPositionMujoco": [
+          0.23765565315334314,
+          0.09684350913367798,
+          0.7520008098723174
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.004731253726636755,
+        "graspHorizontalToleranceMeters": 0.118,
+        "gripperPadPositionMujoco": [
+          0.23916285580346702,
+          0.1013282724493139,
+          0.8358399259757563
+        ],
+        "gripperPositionMujoco": [
+          0.23613043969854136,
+          0.10075555759291216,
+          0.9602378216583594
+        ],
+        "gripperToBlockDistanceMeters": 0.08397250830379974,
+        "phase": "grasp",
+        "plannerPhase": "LIFT",
+        "simulatorObject": "assist_phone",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          0.24,
+          -0.03,
+          0.766
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.075,
+          0.036,
+          0.0065
+        ],
+        "blockPositionMujoco": [
+          0.2355696253579932,
+          0.09140915540949124,
+          1.008240548520661
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.009127814294440541,
+        "graspHorizontalToleranceMeters": 0.118,
+        "gripperPadPositionMujoco": [
+          0.2389047760820462,
+          0.09990584673268534,
+          1.093455879069456
+        ],
+        "gripperPositionMujoco": [
+          0.236498310297747,
+          0.0993971522432787,
+          1.2178677360298977
+        ],
+        "gripperToBlockDistanceMeters": 0.08570279782092412,
+        "phase": "carry",
+        "plannerPhase": "HOLD",
+        "simulatorObject": "assist_phone",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          0.24,
+          -0.03,
+          0.766
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.075,
+          0.036,
+          0.0065
+        ],
+        "blockPositionMujoco": [
+          0.24829540575525183,
+          -0.054234997768319734,
+          0.7976655829379158
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.023994695054742533,
+        "graspHorizontalToleranceMeters": 0.118,
+        "gripperPadPositionMujoco": [
+          0.24214851862077189,
+          -0.031041007828551917,
+          0.8814600129299069
+        ],
+        "gripperPositionMujoco": [
+          0.23927175141886675,
+          -0.03176894800758673,
+          1.005860793930517
+        ],
+        "gripperToBlockDistanceMeters": 0.08716221594505726,
+        "phase": "place",
+        "plannerPhase": "PLACE_HOLD",
+        "simulatorObject": "assist_phone",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          0.24,
+          -0.03,
+          0.766
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.075,
+          0.036,
+          0.0065
+        ],
+        "blockPositionMujoco": [
+          0.24475402576543498,
+          -0.04641076327648199,
+          0.7623869744808685
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.018103851773923253,
+        "graspHorizontalToleranceMeters": 0.118,
+        "gripperPadPositionMujoco": [
+          0.24209629604152558,
+          -0.028503057623137325,
+          0.8439639655476107
+        ],
+        "gripperPositionMujoco": [
+          0.23907087522751072,
+          -0.02921049680851385,
+          0.9683613383442139
+        ],
+        "gripperToBlockDistanceMeters": 0.0835616833276803,
+        "phase": "release",
+        "plannerPhase": "DONE",
+        "simulatorObject": "assist_phone",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          0.24,
+          -0.03,
+          0.766
+        ]
+      }
+    ],
+    "verticalErrorMeters": 0.0038259714491696295
+  },
+  "scenarioId": "phone-to-charger",
+  "selection": {
+    "orderedLogicalBlockIds": [
+      "block_assist_phone_03",
+      "block_assist_charger_05"
+    ],
+    "orderedTargetIds": [
+      "assist_phone",
+      "assist_wireless_charger"
+    ],
+    "queueFrequencyHz": [
+      12.0,
+      9.0
+    ],
+    "runtimeEvents": [
+      {
+        "event": "decode_request_accepted",
+        "pageEpoch": 0,
+        "selectionId": "m20-phone-to-charger-01"
+      },
+      {
+        "ack": {
+          "accepted": true,
+          "messageType": "eeg_decode_ack",
+          "pageEpoch": 0,
+          "pageId": "m16-page-1",
+          "protocolVersion": 1,
+          "rejectionReason": "None",
+          "selectionId": "m20-phone-to-charger-01",
+          "trialId": "m19-e2e-trial-01"
+        },
+        "event": "trigger_snapshot_frozen",
+        "request": {
+          "activeSlotCount": 3,
+          "contractId": "m19_decode_request_v1",
+          "createdUtc": "2026-09-27T07:41:25.849991+00:00",
+          "messageType": "eeg_decode_request",
+          "pageEpoch": 0,
+          "pageId": "m16-page-1",
+          "pageIndex": 0,
+          "presentationPolicy": "demo_preview",
+          "protocolVersion": 1,
+          "selectionId": "m20-phone-to-charger-01",
+          "slots": [
+            {
+              "frequencyHz": 7.2,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "MEDICINE",
+              "slotIndex": 0,
+              "targetId": "assist_medicine_box"
+            },
+            {
+              "frequencyHz": 9.0,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "STORAGE",
+              "slotIndex": 1,
+              "targetId": "assist_storage_box"
+            },
+            {
+              "frequencyHz": 12.0,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "PHONE",
+              "slotIndex": 2,
+              "targetId": "assist_phone"
+            }
+          ],
+          "trialId": "m19-e2e-trial-01"
+        }
+      },
+      {
+        "accepted": true,
+        "classIndex": 2,
+        "decisionMade": true,
+        "event": "decode_result",
+        "evidence": {
+          "backend": "synthetic",
+          "injectedClassIndex": 2
+        },
+        "messageType": "eeg_decode_result",
+        "pageEpoch": 0,
+        "pageId": "m16-page-1",
+        "protocolVersion": 1,
+        "selectionId": "m20-phone-to-charger-01",
+        "slotIndex": 2,
+        "trialId": "m19-e2e-trial-01"
+      },
+      {
+        "classIndex": 2,
+        "event": "queue_selection_committed",
+        "queue": [
+          "assist_phone"
+        ],
+        "selectionId": "m20-phone-to-charger-01",
+        "targetId": "assist_phone"
+      },
+      {
+        "event": "page_navigation",
+        "pageEpoch": 3,
+        "pageId": "m16-page-2",
+        "pageIndex": 1
+      },
+      {
+        "event": "decode_request_accepted",
+        "pageEpoch": 3,
+        "selectionId": "m20-phone-to-charger-02"
+      },
+      {
+        "ack": {
+          "accepted": true,
+          "messageType": "eeg_decode_ack",
+          "pageEpoch": 3,
+          "pageId": "m16-page-2",
+          "protocolVersion": 1,
+          "rejectionReason": "None",
+          "selectionId": "m20-phone-to-charger-02",
+          "trialId": "m19-e2e-trial-02"
+        },
+        "event": "trigger_snapshot_frozen",
+        "request": {
+          "activeSlotCount": 3,
+          "contractId": "m19_decode_request_v1",
+          "createdUtc": "2026-09-27T07:41:25.851251+00:00",
+          "messageType": "eeg_decode_request",
+          "pageEpoch": 3,
+          "pageId": "m16-page-2",
+          "pageIndex": 1,
+          "presentationPolicy": "demo_preview",
+          "protocolVersion": 1,
+          "selectionId": "m20-phone-to-charger-02",
+          "slots": [
+            {
+              "frequencyHz": 7.2,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "BUTTON",
+              "slotIndex": 0,
+              "targetId": "assist_button_switch"
+            },
+            {
+              "frequencyHz": 9.0,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "CHARGER",
+              "slotIndex": 1,
+              "targetId": "assist_wireless_charger"
+            },
+            {
+              "frequencyHz": 12.0,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "USER ZONE",
+              "slotIndex": 2,
+              "targetId": "assist_user_zone"
+            }
+          ],
+          "trialId": "m19-e2e-trial-02"
+        }
+      },
+      {
+        "accepted": true,
+        "classIndex": 1,
+        "decisionMade": true,
+        "event": "decode_result",
+        "evidence": {
+          "backend": "synthetic",
+          "injectedClassIndex": 1
+        },
+        "messageType": "eeg_decode_result",
+        "pageEpoch": 3,
+        "pageId": "m16-page-2",
+        "protocolVersion": 1,
+        "selectionId": "m20-phone-to-charger-02",
+        "slotIndex": 1,
+        "trialId": "m19-e2e-trial-02"
+      },
+      {
+        "classIndex": 1,
+        "event": "queue_selection_committed",
+        "queue": [
+          "assist_phone",
+          "assist_wireless_charger"
+        ],
+        "selectionId": "m20-phone-to-charger-02",
+        "targetId": "assist_wireless_charger"
+      },
+      {
+        "accepted": true,
+        "event": "queue_submit",
+        "orderedTargets": [
+          "assist_phone",
+          "assist_wireless_charger"
+        ],
+        "reason": "submitted"
+      }
+    ],
+    "submitState": "executing",
+    "submittedBatchCount": 1,
+    "syntheticBackendCalls": [
+      {
+        "pageEpoch": 0,
+        "pageId": "m16-page-1",
+        "selectionId": "m20-phone-to-charger-01",
+        "trialId": "m19-e2e-trial-01"
+      },
+      {
+        "pageEpoch": 3,
+        "pageId": "m16-page-2",
+        "selectionId": "m20-phone-to-charger-02",
+        "trialId": "m19-e2e-trial-02"
+      }
+    ],
+    "triggerRequests": [
+      {
+        "decodedClassIndex": 2,
+        "pageEpoch": 0,
+        "pageId": "m16-page-1",
+        "slots": [
+          {
+            "frequencyHz": 7.2,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "MEDICINE",
+            "slotIndex": 0,
+            "targetId": "assist_medicine_box"
+          },
+          {
+            "frequencyHz": 9.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "STORAGE",
+            "slotIndex": 1,
+            "targetId": "assist_storage_box"
+          },
+          {
+            "frequencyHz": 12.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "PHONE",
+            "slotIndex": 2,
+            "targetId": "assist_phone"
+          }
+        ]
+      },
+      {
+        "decodedClassIndex": 1,
+        "pageEpoch": 3,
+        "pageId": "m16-page-2",
+        "slots": [
+          {
+            "frequencyHz": 7.2,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "BUTTON",
+            "slotIndex": 0,
+            "targetId": "assist_button_switch"
+          },
+          {
+            "frequencyHz": 9.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "CHARGER",
+            "slotIndex": 1,
+            "targetId": "assist_wireless_charger"
+          },
+          {
+            "frequencyHz": 12.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "USER ZONE",
+            "slotIndex": 2,
+            "targetId": "assist_user_zone"
+          }
+        ]
+      }
+    ]
+  }
+}

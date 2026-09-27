@@ -82,13 +82,22 @@ namespace BCIIntelligentRobot.Vision
         private readonly BciSelectionTarget[] m_targets;
 
         public BciSelectionSnapshot(IReadOnlyList<BciSelectionTarget> targets)
+            : this(null, 0, targets)
         {
+        }
+
+        public BciSelectionSnapshot(string snapshotId, int snapshotVersion, IReadOnlyList<BciSelectionTarget> targets)
+        {
+            SnapshotId = snapshotId;
+            SnapshotVersion = snapshotVersion;
             m_targets = new BciSelectionTarget[BciTargetSlotAllocator.SlotCount];
             for (int slot = 0; slot < m_targets.Length; slot++)
                 m_targets[slot] = targets[slot];
         }
 
         public const int SlotCount = BciTargetSlotAllocator.SlotCount;
+        public string SnapshotId { get; }
+        public int SnapshotVersion { get; }
 
         public BciSelectionResolution ResolveClassIndex(int classIndex)
         {

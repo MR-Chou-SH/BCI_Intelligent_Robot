@@ -899,6 +899,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_selectionServerHost: 192.168.43.168
   m_selectionServerPort: 11001
+  m_selectionInteractionMode: 2
   m_hudLocalCenter: {x: 0, y: 0.18, z: 0.85}
   m_hudHorizontalSpacingMeters: 0.32
   m_hudStimulusSizeMeters: 0.2

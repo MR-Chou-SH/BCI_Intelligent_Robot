@@ -1,12 +1,18 @@
 # Project Status
 
-Last updated: 2026-09-14
+Last updated: 2026-09-22
 
 ## Overall Phase
 
+Current active milestone: **M19 — Paged Live EEG Selection**. The current Unity interaction baseline is M16 `PagedQueueV1`; M13.10 Showcase remains legacy/regression evidence only. The M19 implementation and software acceptance are complete, with Unity EditMode and Quest visual acceptance still requiring the already-open Editor and a human operator. No Quest Build & Run, COM/ND8 access, or physical-robot operation was performed for this milestone. See [M19 architecture and handoff](../experiments/m19-paged-live-eeg-architecture.md) and the [run evidence](../agent/overnight/runs/m19_paged_live_eeg_20260922T105007Z/handoff.md).
+
 M1–M8 — Completed engineering capabilities; documented warnings and evidence boundaries remain part of the record.
 
-The next milestone is M9 — Virtual Manipulation Baseline. The current benchmark uses a controlled virtual tabletop and logical block IDs; the detailed M9–M15 direction is in docs/roadmap/context-aware-bci-shared-autonomy.md.
+Current software state: **M10 Sequential Task Benchmark COMPLETE / SOFTWARE + MUJOCO SIMULATION PASS; M11 CONTEXT PREDICTION BASELINE = SOFTWARE PASS; M12 CONTEXT × EEG FUSION BASELINE = SOFTWARE / REPLAY PASS; M13 CONTEXT-AWARE DYNAMIC STOPPING = SOFTWARE / REPLAY PASS; M13.5 LIVE READINESS & ROBUSTNESS = SOFTWARE PASS; M13.6 QUEST VISUAL HUMAN ACCEPTANCE = PASS / SEALED; M13.7 GOLDEN HUMAN SESSION = SOFTWARE / REPLAY + AUDIO + HISTORICAL HUMAN-EEG READINESS PASS; FINAL DEMO SOFTWARE READY — LIVE ND8 ONLY.** Real ND8/human M13 acceptance, physical timing and any physical-robot acceptance remain pending. The benchmark uses a controlled virtual tabletop and logical block IDs; the M9–M15 research sequence is in docs/roadmap/context-aware-bci-shared-autonomy.md.
+
+M18 Unified Phase 2 + Phase 3 acquisition framework: **SOFTWARE READY FOR PHYSICAL SMOKE**. The frozen one-wear plan is Focused 18 + Natural 60 + Self-paced 24, True Idle 9 minutes, Passive Browse 12 minutes, and 12 embedded sham READY cues. Deterministic matrix/schedule, immutable prospective Context snapshots, fail-closed episode state machine, append-only per-block continuous raw-EEG layout, resume/abort safety, canonical Phase 2/3 exports, synthetic dry-run, a bounded `--confirm-live-human` physical-smoke runner, and software/hardware preflight reports are complete in `artifacts/m18_unified_acquisition_20260921T161522Z/`. The synthetic run passed matrix/causality/state/raw-continuity/export checks with 102 intentional episode records; no accuracy, TPR, FPR, Context benefit, human EEG, Quest, ND8, or physical timing claim is made. The next authorized action is operator-run physical smoke only after human Quest/ND8/electrode/cue checks; production decoder, thresholds, Context runtime, robot semantics, and Unity canonical target mapping were unchanged.
+
+Pre-live operational state: **PRE-LIVE BASELINE FROZEN — READY FOR PHYSICAL VALIDATION.** The reproducibility snapshot, operator runbook, pre-live sentinel, evidence index, and isolated future-analysis/adaptive harness are recorded under `docs/agent/baselines/pre-live-nd8-demo-baseline-20260918/`, `docs/acceptance/`, and `docs/agent/overnight/runs/20260918-m13-pre-live-freeze-overnight/`. No M13.6 visual path or production Demo behavior was changed in this freeze; the only operator-boundary correction allows the existing M8 live smoke CLI to accept the explicitly discovered `COMx` rather than assuming COM11. Physical ND8/driver/packet/contact and human Quest/controller checks remain pending.
 
 The real-world Passthrough / Quest Camera / YOLO / StableTarget / EnvironmentRaycast route is a completed capability and future extension. It is preserved, but is not the current research benchmark and should not be revalidated by default.
 
@@ -30,15 +36,386 @@ M7 acceptance boundary:
 - Known non-blockers are approximately 1–2 seconds of stale target retention when a static target moves quickly, and black stimuli appearing subjectively lighter than the legacy M6 scene. Neither is changed in this closeout.
 - EEG transport and robot control remain outside this completed M7 boundary. M8.1 has now completed Quest 3 transport acceptance; M8.2a adds only PC-side M6 final-decision orchestration over the existing Quest transport and does not start ND8 hardware or robot control.
 
-## Next Milestone
+## M9 Milestone Record
 
 ### M9 — Virtual Manipulation Baseline
 
-Status: In Progress — exact FR3/UMI baseline is integrated behind the logical-ID adapter; the first headless MuJoCo Pick/Place smoke returned `place_ok` in an isolated project-local environment.
+Status: **M9 SOFTWARE E2E COMPLETE / UNITY VISUAL + QUEST TRANSPORT / EEG-HARDWARE ACCEPTANCE PENDING**. The formal M8 TCP → M9 dispatcher → MuJoCo path and four-target headless physics run are verified; M9.10 adds only the final floor-text orientation correction on top of the M9.9 UI polish, while Unity/Quest visual re-acceptance remains manual.
 
 The first formal M9 run is on `feature/m9-virtual-manipulation`. The read-only snapshot `a42a0876350f6c94747ce93fa640807b14b18bfd` was inspected and its minimum runtime subset was copied into `robot_arm/`, with every source file and all 44 XML-referenced mesh blobs verified against that commit. `integration/m9_mujoco_execution.py` resolves logical IDs using the baseline's MuJoCo BODY type and calls its existing `GripperGraspPlanner.run_headless()`; it returns structured request/selection provenance, timestamps, baseline result and failure reason without exposing `obj_N` or MuJoCo IDs to the caller. Unit tests exercise this wrapper through an injected fake runtime; separately, the real no-file headless smoke has run with CPython 3.12.14, MuJoCo 3.12.0 and NumPy 2.5.3, returning `place_ok` for `block_sim_01`. The tested dependency set is recorded in `robot_arm/requirements-m9-smoke.txt`; the project-local `.venv/` is ignored and the configured Python 3.9.13 verifier environment remains unchanged. This smoke starts from a synthetic confirmed selection and verifies the software path only; Quest/EEG/hardware were not accessed.
 
 The second formal run (`m9-virtual-block-selection-20260914T064215Z`) adds the M9 virtual-selection software path in `m7_unity6000/`: an explicit four-block catalog, runtime tabletop bootstrap, separate virtual-candidate input at the existing `BciSsvepTargetBinding` seam, and reuse of the frozen M8 selection/group/batch lifecycle. The four stable `m9-vblock-*` TargetIds map explicitly to the existing default logical IDs `block_sim_01`–`block_sim_04`; the Unity-independent contract test resolves them through the current logical-ID scene registry. The software-default verifier includes this test. Unity 6000.0.66f2 startup was blocked before project compilation by the absence of a valid Editor license (return code 198); the dedicated scene's YAML/build settings passed static checks, but Editor import, compile, EditMode tests, Quest visibility, physical SSVEP timing and real EEG remain unverified. The C# EditMode integration test is present but was not run. See the [run handoff](../agent/overnight/runs/m9-virtual-block-selection-20260914T064215Z/handoff.md) for the exact evidence and human acceptance steps.
+
+The later Unity GUI rerun reported by the user passed EditMode 74/74, including M8 regression and M9 virtual-selection tests. M9.1–M9.4 are visual follow-ups; they do not change the M9 selection contract or start M10.
+
+### M9.1 — Virtual Manipulation Scene Polish & Franka Visual Integration
+
+Status: **SOFTWARE COMPLETE / QUEST VISUAL ACCEPTANCE REQUIRED**.
+
+The dedicated `M9VirtualManipulation` scene now disables its `[BuildingBlock] Passthrough` root and OVRManager Insight Passthrough flag, with an opaque neutral virtual background. Its bootstrap places the workspace 1.45 m along the initial HMD's horizontal forward direction and 0.55 m below the initial head position. The catalog-sized tabletop is rebuilt from a light-oak top, apron and four supports; a camera-facing instruction panel sits above it. A static visual FR3 + UMI hierarchy reuses the fixed `a42a0876350f6c94747ce93fa640807b14b18bfd` snapshot: 28 FR3 OBJ parts and six converted UMI visual meshes, with both upstream license texts retained. No collision meshes, robot physics, IK, planner or transport are added to Unity. Existing four block identities, three SSVEP slots, M8 selection boundary and MuJoCo adapter are unchanged. M7 passthrough and its real-target scene remain intact.
+
+The Unity-independent M9 visual contract checks are included in `software-default-v1`. Quest framing/material readability, real-device rendering/performance and final fully-virtual visibility still require manual Quest acceptance. M10 has not started.
+
+### M9.2 — Quest Spatial / Rendering Repair
+
+Status: **SOFTWARE COMPLETE / QUEST RE-ACCEPTANCE REQUIRED**.
+
+The M9 bootstrap now waits for a tracked XR head device and two stable camera-world-pose frames before placing the workspace. A single unit-scale `M9WorkspaceRoot` uses the horizontal HMD forward vector at 1.45 m; the table, blocks, static Franka + UMI model, instruction panel and neutral-room geometry use local coordinates under that root. The table remains 0.55 m below the sampled head height. The non-XR Editor path has a clearly logged eye-height fallback; Android does not use it and times out visibly if a tracked pose is unavailable. This fixes the prior startup-order path where the camera could still be at its serialized identity pose, putting the workspace below the virtual floor.
+
+Instruction text is now a workspace sibling to the panel, placed just off its user-facing surface, independently scaled, oriented from the text toward the sampled head position and horizontally flipped using the existing M8 TextMesh convention. The M9-only background is brighter blue-gray with flat ambient fill and a no-shadow directional key light. Runtime primitive materials now prefer the project's Built-in Render Pipeline `Standard` shader, with `Unlit/Color` fallback. A one-shot `M9_SPATIAL startup` log reports HMD/root/table/red-block/Franka/instruction transforms, camera culling and clip settings, plus renderer activity/layer/clip/shader support summaries.
+
+Software-default M9 visual contract tests verify the delayed tracked-pose bootstrap, root hierarchy, direct workspace parenting for instruction text, explicit facing/mirror correction, built-in shader choice and startup render diagnostics. The existing block TargetIds, logical-ID mapping, three SSVEP frequencies, M8 selection/batch lifecycle, M9 Robot Adapter, visual Franka assets and M7 scene are unchanged. No Quest/ADB/ND8/EEG hardware was accessed. Manual Quest re-acceptance must confirm that all four blocks, the complete table and FR3/UMI are visible, the text reads normally, the virtual room is bright enough and the existing SSVEP presentation remains correct. M10 has not started.
+
+### M9.3 — Franka Visual Polish & Dual-Arm Layout Preparation
+
+Status: **SOFTWARE COMPLETE / QUEST VISUAL RE-ACCEPTANCE REQUIRED**.
+
+The FR3 body and joint transforms remain matched to the fixed MuJoCo snapshot; no guessed per-link offsets or filler geometry were added. Mesh assembly now keeps the MJCF geometry pose on a dedicated child frame instead of overwriting the Unity-imported model root, preserving the imported hierarchy and its transforms. The entire Franka + UMI visual assembly is scaled to 0.7 at `FrankaRoot`; individual link/joint proportions and the named joint hierarchy remain unchanged.
+
+The workspace has symmetric unit-scale `LeftRobotAnchor` and `RightRobotAnchor` layout points at `(-0.24, 0.006, 0.25)` m and `(+0.24, 0.006, 0.25)` m. Only one visual is created under the left anchor; the right anchor is empty. The z position keeps the base near the table rear while accounting for the shorter static reach after scaling. No dual-arm execution, planner, or control path is present. M9 block identities, 3-slot SSVEP mapping, M8 frozen selection boundary, M9 Robot Adapter, and M7 scene are unchanged.
+
+The M9 visual contract and `software-default-v1` pass, and `git diff --check` is clean. The repaired mesh continuity, tabletop clearance, arm-to-block spacing, and future anchor presentation still require manual Unity/Quest visual re-acceptance. No Quest, ADB, ND8, EEG hardware or physical robot was accessed. M10 has not started.
+
+### M9.4 — Franka Seam Audit & HUD Cleanup
+
+Status: **SOFTWARE COMPLETE / QUEST VISUAL RE-ACCEPTANCE FAILED ON FRANKA SEAM**.
+
+The teal-gray occluder was the Cube created by the old instruction-panel bootstrap. That Cube and its renderer/material are removed; the two-line instruction now uses a positive-scale TextMesh lying 1.5 cm above the virtual floor, 0.62 m toward the user from the workspace center, with a 10° user-facing tilt. The TextMesh local +Z front face points up from the floor and its local +Y top edge points toward the HMD, so glyphs are not mirrored. The reviewed 1.45 m workspace distance, 0.55 m table drop, Franka 0.7 scale and robot anchors are unchanged.
+
+The fixed-qpos audit found no first body/joint divergence. A MuJoCo 3.12 forward pass compared to the factory's FR3 hierarchy gives a maximum position delta of `4.84e-16 m` and orientation delta of `4.19e-6°` over link0–link7 and the UMI base. The MuJoCo compiler's geom frames for link3–link5 are nonidentity, but its compiled vertices contain the inverse transform: all seven seam-adjacent compiled visual meshes reproduce their source OBJ vertices within `1.9e-8 m`. Applying those compiled geom transforms to the raw OBJ in Unity would double-transform the geometry. At the fixed pose, `link4_0` and `link5_0` have a source-mesh clearance of `2.05 mm`, or `1.44 mm` at the reviewed 0.7 scale. No per-link offset or filler geometry was added. A one-shot `M9_FRANKA_XFORM` startup diagnostic now records normalized and world link poses, joint anchors, Unity imported mesh-root poses and renderer bounds, so Unity can confirm whether its actual imported roots add any transform.
+
+The numerical MuJoCo audit, M9 visual contract, `software-default-v1`, and `git diff --check` pass. The Quest-visible seam still requires manual re-acceptance; if it remains larger than the measured source-mesh clearance, inspect the startup imported-root and bounds values before considering any asset-level change. No Quest, ADB, ND8, EEG hardware or physical robot was accessed. M10 has not started.
+
+### M9.5 — Runtime Franka Visual Audit & Presentation Repair
+
+Status: **SOFTWARE COMPLETE / QUEST VISUAL ACCEPTANCE FAILED**.
+
+The follow-up audit moved from theoretical FK to the Unity objects that are actually imported and instantiated. Unity 6000.0.66f2 `Library/Artifacts` was inspected with its own `binary2text` tool: all 34 required FR3/UMI ModelPrefabs have identity imported root/child transforms, one enabled MeshRenderer, active GameObjects, a non-null MeshFilter mesh and nonzero vertices. The factory's live chain remains `FrankaRoot/link0/joint1/link1/.../joint7/link7/UMI`; every mesh is instantiated as `body/_GeometryFrame/ImportedRoot/renderer`, and no later reparent or world-pose overwrite exists. Together with the M9.4 old-pose 1.44 mm surface-clearance result, this rules out a centimeter-scale imported-root offset, missing mesh or disabled renderer. The Quest image was exposing the old pose's strongly folded joint4/wrist silhouette and self-occlusion rather than a broken runtime parent chain.
+
+The user subsequently rechecked the newer, more extended pose and still observed two apparent mechanical breaks. That evidence supersedes the earlier folded-pose explanation; M9.5 did not pass Quest visual acceptance.
+
+No parent, asset mapping, mesh, scale or anchor was changed. The fixed display qpos now comes from the repository's existing 6-DOF IK utility at a legal robot-local tabletop pre-grasp target, placing the UMI over the left/center work area with its tool axis down: `(0.084207, -1.087620, 1.221978, -2.349414, 0.992534, 1.681765, 0.822657)` rad. `FrankaRoot` remains uniformly scaled to 0.7. The floor instruction keeps its reviewed position, clearance and positive scale; its rotation receives a 180° local-Z in-plane correction so both line direction and glyph top face the user.
+
+One-shot `M9_FRANKA_RUNTIME` diagnostics now report every actual Renderer path, parent chain, associated body, geometry/import root transforms, world transform, bounds, vertex count, mesh bounds, enabled/active/layer state and material/shader. A Unity EditMode test builds the real factory output and checks its articulated chain, all 34 imported roots/renderers/meshes, and the old folded pose without changing hierarchy. The Unity-independent visual contract, fixed/current transform audit, old-pose continuity audit and actual serialized ModelPrefab audit pass. Unity GUI and Quest must confirm the new silhouette and floor-text orientation; no batch Unity, Quest, ADB, ND8, EEG hardware or physical robot was operated by the software pass. M10 has not started.
+
+### M9.6 — Franka Joint-Closure Diagnostics
+
+Status: **SOFTWARE REFERENCE CHECKS PASS / UNITY EDITMODE AND QUEST JOINT-CLOSURE RE-ACCEPTANCE REQUIRED**.
+
+The purple mid-arm seam maps to `fr3_link4` (`link4_0`, `link4_1`) ↔ `fr3_link5` (`link5_0`, `link5_1`, `link5_2`) at `fr3_joint5`. The red distal region is checked at both adjacent interfaces: `fr3_link6` (`link6_0`–`link6_7`) ↔ `fr3_link7` (`link7_0`–`link7_3`) at `fr3_joint7`, and `fr3_link7` / MJCF `attachment_site` ↔ `umi_umi_gripper_base` / `umi_base_link`. The UMI base is now parented beneath an explicit `fr3_attachment_site` transform at link7 local `(0, 0, 0.107)` m; its own local pose is identity, preserving the prior world pose while making the MJCF flange frame visible in the Unity hierarchy.
+
+The focused MuJoCo attachment test checks the current, previous and third legal qposes. At every pose, joint5 and joint7 anchors coincide with their child-body origins, their expected parent and child frame rotations agree within `5.6e-6°`, and the flange site and UMI base coincide with the same rotational tolerance. At the current pose, the MuJoCo model-world positions are A `(-0.059926, 0.385208, 0.507047)` m, adjacent wrist joint7 `(-0.000062, 0.449708, 0.507040)` m, and link7 attachment/UMI `(-0.000077, 0.449710, 0.400040)` m. The position delta is zero at the source precision. Existing source meshes have a 2.05 mm opposing-face clearance between `link4_0` and `link5_0` (1.44 mm at 0.7 display scale); the sampled closest `link7_1` / `umi_base_link` surfaces are about 0.31 mm apart. These measurements do not justify a link offset, and no body/joint pose, display qpos, scale, anchor, mesh or asset changed.
+
+The Unity factory now adds small Scene View-only green-parent/magenta-child XYZ frame gizmos for joint5, joint7 and the UMI attachment, plus one-shot Editor attachment logs. `M9FrankaAttachmentClosureTests` constructs the actual factory hierarchy and checks all three interfaces across the same three qposes with 1e-5 m / 0.02° tolerances. The current environment could not run Unity GUI tests because the Computer Use bridge failed initialization while Unity Editor was already open; no batch Unity launch was made. Thus the MuJoCo reference checks pass, but actual Unity EditMode closure and Quest visual re-acceptance remain required before marking the visual issue accepted. No Quest, ADB, ND8, EEG hardware or physical robot was accessed. M10 has not started.
+
+The “M10 has not started” notes in M9.1–M9.6 above describe the state at those historical substages. Current state is recorded below: the conditional M10 Prep scaffold is complete, while M10 benchmark acceptance remains open.
+
+### M9.7 — Software E2E Closeout
+
+Status: **M9 SOFTWARE E2E COMPLETE / UNITY VISUAL + QUEST TRANSPORT / EEG-HARDWARE ACCEPTANCE PENDING**.
+
+`integration/m9_batch_dispatch.py` composes the existing M8 `BatchConsumerReceipt` with the M9 `ConfirmedTargetBatch` validator, virtual TargetId catalog, logical-ID adapter, scene binding, and production MuJoCo execution adapter. The all-target runner uses localhost M8 TCP, validates each `batch_ack`, and executes four serial full pick-and-place requests, each returning `place_ok`. It then confirms same-`batchId` replay and cross-batch same-`selectionId` replay are acknowledged but suppressed, with exactly four total executions. Public results and ACKs contain no MuJoCo `obj_N` names or numeric IDs. Batch and selection dedup are process-local; a failed selection remains reserved rather than retrying the same ID, while a later distinct request remains executable.
+
+`integration/m9_virtual_e2e.py` checks four exact TargetId/logical-ID pairs, success/provenance `place_ok`, ACK batch IDs, duplicate suppression, and simulator-ID privacy. The reused planner mutates model-level actuator force ranges and geom friction; `ExistingFr3UmiPickPlaceBackend` restores snapshots before and after each execution, including exceptions, so sequential requests do not compound those changes.
+
+The existing repository-root `.venv` (CPython 3.12.14, MuJoCo 3.12.0) was found and used; no dependency was installed. `scripts/agent/m9-software-acceptance.ps1` now selects it for E2E, runs from the repository root, and temporarily scopes Git safe-directory configuration to the verifier child process. Final acceptance passed: dispatch tests **6/6**, four full physics runs **4/4 `place_ok`**, `software-default-v1` **15/15**, and `git diff --check` **PASS**. The profile's SciPy-dependent EEG decoder checks remain `NOT_ENABLED`. The outstanding Franka visual seam, Unity GUI/EditMode checks, Quest visuals/transport, EEG/ND8, and any physical robot remain separate manual/hardware gates.
+
+### M9.8 — Franka Visual Geometry Reconstruction
+
+Status: **SOFTWARE COMPLETE / UNITY VISUAL RE-ACCEPTANCE REQUIRED**.
+
+The remaining Franka discontinuities were traced to a coordinate-space mismatch
+in Unity's built-in OBJ importer. The imported mesh vertices mirror the source
+right-handed OBJ X axis even though their ImportedRoot transforms are identity;
+the body/joint hierarchy and MJCF visual geometry frames remain unchanged.
+`M9FrankaVisualFactory` now applies one inverse `(-1, 1, 1)` scale on every
+dedicated geometry frame, covering the full FR3 and UMI OBJ set without
+per-link offsets, stretched meshes or filler primitives. Primitive UMI helper
+boxes are unchanged, as are FrankaRoot scale `0.7`, anchors, qpos, attachments,
+M8/M9 contracts, table, workspace placement and SSVEP presentation.
+
+`integration/test_m9_franka_visual_geometry.py` decodes the actual Unity
+serialized vertex buffers and compares corrected world vertices with the
+compiled MuJoCo visual meshes for the reported link3/link4, link4/link5 and
+link6/link7 seam regions at the M9.5 pose and a second legal pose. It also
+checks the same conversion across all 28 FR3 imported mesh bounds. The focused
+visual, transform, attachment and virtual-block software checks pass. Unity
+EditMode and Quest visual seam acceptance remain manual; no Quest, ADB, ND8,
+EEG hardware or physical robot was accessed, and M10 was not started.
+
+### M9.9 — UI Cleanup & Block Scale Polish
+
+Status: **M9.9 SOFTWARE COMPLETE / UNITY + QUEST RE-ACCEPTANCE REQUIRED**.
+
+The floor instruction TextMesh now builds its readable orientation from the
+actual world-space tilted floor normal and applies the required 180° in-plane
+roll around that normal. Its existing floor clearance, workspace-local Z offset
+and positive unit scale remain unchanged. The unrelated
+`ReturnToStartScene` sample-navigation root (component plus child `Tooltip`
+TextMesh) is disabled in `M9VirtualManipulation` and guarded by the M9
+bootstrap; the shared sample prefab and original M7 scene remain intact.
+
+The four virtual blocks remain the shared `0.085 m` cube. Optional resizing was
+skipped because the current static visual presentation does not provide a
+single validated usable UMI opening without coupling a cosmetic change to the
+robot model. TargetIds, positions, colors, SSVEP slots, M8/M9 execution and
+Franka geometry are unchanged. The updated visual contract and software
+verifier remain passing; Unity/Quest visual re-acceptance is manual.
+
+### M9.10 — Final Floor Text Orientation Fix
+
+Status: **M9.10 FLOOR TEXT ORIENTATION SOFTWARE COMPLETE / QUEST TEXT RE-ACCEPTANCE REQUIRED**.
+
+The M9 floor instruction now constructs its TextMesh rotation directly from
+the known local `+Z` front and local `+Y` glyph-top axes. The glyph top is the
+projected direction away from the sampled HMD, while the front is the tilted
+floor normal; the previous in-plane 180-degree reversal was removed. The text
+remains 1.5 cm above the virtual floor at the existing workspace-local
+`-0.62 m` offset with positive unit scale. All other M9 visual and execution
+contracts remain unchanged. The M9 visual contract, `software-default-v1`, and
+`git diff --check` pass; Quest must re-confirm readable text manually.
+
+### M9 Checkpoint & Real Quest-PC Acceptance Preparation
+
+Status: **M9 SOFTWARE CHECKPOINT PREPARED / REAL QUEST-PC ACCEPTANCE REQUIRED**.
+
+The PC-only acceptance bridge in `integration/m9_quest_pc_acceptance.py` reuses
+the frozen M8 `selection_open`, `eeg_selection`, `selection_ack`,
+`target_batch_confirmed` and `batch_ack` messages. It accepts a software-
+simulated class index, lets Quest resolve the class through its frozen snapshot,
+receives and acknowledges the confirmed batch on the reconnecting M8 listener,
+then dispatches the logical block through the existing M9 FR3+UMI MuJoCo
+adapter. `integration/m9_quest_pc_readiness.py` checks the selected Python/
+MuJoCo environment, TCP 11001 availability, scene network configuration,
+required files and the four exact virtual-block mappings without accessing
+Unity, Quest, ND8, EEG or a physical robot. The operator procedure and expected
+logs are in `docs/acceptance/m9-quest-pc-mujoco.md`.
+
+This preparation adds no wire message, TargetId mapping, Unity scene/runtime
+change or hardware claim. The real Quest APK, LAN transport, Quest-side batch
+submission, and any physical-device acceptance remain manual gates. M10
+benchmark acceptance remains open.
+
+### M10 Prep — Deterministic Sequential Task Benchmark Scaffold
+
+Status: **M10 PREP SOFTWARE SCAFFOLD COMPLETE; superseded by M10.1 formal software acceptance below**.
+
+After the M9 software-feasible gates passed, `integration/m10_task_benchmark.py` added a pure deterministic task state machine over the frozen logical block IDs. The machine-readable fixture defines House `01→02→03→04`, Tower `01→03→02→04`, and Bridge `01→02→04→03`, along with valid full/partial and invalid transition examples. The runner emits ordered state transitions and a minimal `TaskContext`; wrong-order and unknown IDs terminate an episode as invalid without appending the rejected ID, and reset restores the initial state. A post-completion selection is rejected while preserving the completed state.
+
+The Prep state-machine semantics remain frozen and are covered by the formal M10.1 test suite. The historical Prep-only report above is retained; its earlier `9/9` count is superseded by the current test result below.
+
+### M10.1 — Formal Benchmark Acceptance & Semantics Freeze
+
+Status: **M10.1 FORMAL SOFTWARE BENCHMARK = PASS**.
+
+`integration/m10_benchmark_acceptance.py` reads the checked-in fixture and executes all seven declared cases: three canonical full sequences, one valid partial prefix, wrong-order, unknown-ID, and post-completion rejection. All **7/7 benchmark cases PASS**. Canonical House, Tower, and Bridge each finish `completed`; the partial case is `benchmarkCaseStatus=PASS` with `episodeOutcome=valid_incomplete`; wrong-order and unknown-ID are accepted negative cases with `episodeOutcome=invalid`; post-completion rejection passes while preserving `episodeOutcome=completed`.
+
+The acceptance also emits **2/2 branching evidence records**. After `block_sim_01`, House/Bridge resolve to `block_sim_02` while Tower resolves to `block_sim_03`. After `block_sim_01 → block_sim_02`, House resolves to `block_sim_03` while Bridge resolves to `block_sim_04`. The summary and append-only JSONL evidence are deterministic and contain no simulator-internal IDs.
+
+The targeted M10 suite passes **12/12** with the repository `.venv` CPython 3.12.14. The state-machine semantics were not redefined; only the explicit episode outcome and formal acceptance/evidence layer was added. M10.1 was software-only.
+
+### M10.2 — Sequential MuJoCo E2E and M10 Closeout
+
+Status: **M10 SEQUENTIAL TASK BENCHMARK = COMPLETE / SOFTWARE + MUJOCO SIMULATION PASS**.
+
+`integration/m10_mujoco_sequential_e2e.py` composes one confirmed/frozen M8 selection at a time with the existing M9 TargetId→logical-ID conversion, M9 dispatcher, and reused FR3/UMI MuJoCo adapter. M10 preflight occurs before dispatch; only a successful `place_ok` execution commits the next M10 state. Adapter/backend failure leaves the sequence state unchanged, and a wrong-order preflight never calls the robot adapter.
+
+The Stage A gate passed with House, Tower, and Bridge each completing four ordered steps, four dispatches, and four `place_ok` results. The representative House wrong-order case after `block_sim_01` retained the prefix, rejected `block_sim_03` before dispatch, and recorded zero robot executions for that rejected target. Public evidence has no `obj_N` simulator identifiers. Focused M10.2 tests pass **3/3**; the M10.1 plus existing M9 dispatcher/adapter regression passes **35/35**.
+
+This closes M10 as a software and MuJoCo simulation benchmark. It does not claim Quest visual/transport acceptance, EEG/ND8 behavior, physical-robot execution, physical timing, or a human/research performance benefit. M11 investigation is the next authorized software step; its predictor contract must not consume M10 `remainingLogicalBlockIds` or `validNextLogicalBlockIds`, which remain evaluator/oracle truth.
+
+### M11 — Context-only Next-Target Prediction Baseline
+
+Status: **M11 CONTEXT PREDICTION BASELINE = SOFTWARE PASS**.
+
+The user-frozen M11 contract defines a hidden-task setting over the House/Tower/Bridge task library. The predictor receives only `completedLogicalBlockHistory`, the frozen four-ID `availableLogicalBlockIds` catalogue, and derived `stepIndex`; M10 `remainingLogicalBlockIds` and `validNextLogicalBlockIds`, true task identity, EEG evidence, and fused output never cross the predictor boundary. It filters prefix-compatible hypotheses from a uniform prior and aggregates next-target probability mass.
+
+The canonical empty, one-prefix, two-prefix, branch, tie, invalid-history, terminal, deterministic-replay, anti-leakage, probability-sum and logical-ID isolation cases pass. The focused M11 suite passes **12/12**, formal acceptance passes **11/11**, and the M10 regression passes **12/12**. Evidence is in `docs/agent/overnight/runs/m11-to-m12-campaign-20260915T103723Z/`.
+
+This is a context prior baseline, not a task-recognition accuracy claim. It is software-only and does not access Quest, ND8, real EEG, or a physical robot. M12 now reuses this `ContextPrior` contract.
+
+### M12 — Context Prior × EEG Evidence Fusion Baseline
+
+Status: **M12 CONTEXT × EEG FUSION BASELINE = SOFTWARE / REPLAY PASS**.
+
+M12 reuses the M11 `ContextPrior`, the explicit virtual `TargetId → logicalBlockId` mapping, and the existing three-class M6/FBCCA fused score vector. The score is retained as finite nonnegative `EEGEvidenceScore`, not a calibrated probability. The active three-slot set uses the frozen 7.2/9/12 Hz slots; global context is projected onto those candidates, softened toward uniform with fixed `lambda = 0.5`, and multiplied by `max(score, 1e-12)` before normalization. Context biases but cannot veto an active candidate.
+
+Uniform, agreement, moderate conflict, strong EEG override, half-half ambiguity, active projection, zero active mass, epsilon preparation, invalid evidence, deterministic replay, existing-vector adaptation, active-candidate nonzero influence, `obj_N` isolation and no-robot-invocation checks all pass. The focused fusion suite passes **13/13** and formal replay acceptance passes **12/12**. The pure NumPy FBCCA seam returns three finite score values for each frozen synthetic frequency; the broader M8/M9/M10/M11/M12 regression passes **75/75**. The old decoder test module could not import because this environment lacks optional `scipy`; no dependency was installed or changed.
+
+This is software/replay evidence only. No Quest, ND8/COM11, real EEG, physical robot, human study or M13 work was entered. See `docs/agent/overnight/runs/m11-to-m12-campaign-20260915T103723Z/` and the M12 development log.
+
+### M13 — Context-aware Dynamic Stopping Baseline
+
+Status: **M13 CONTEXT-AWARE DYNAMIC STOPPING = SOFTWARE / REPLAY PASS; REAL QUEST + ND8 ACCEPTANCE PENDING**.
+
+M13 reuses `eeg/decoder/characterization.py::WINDOW_GRID_SECONDS` (`0.5, 1.0, 1.5, 2.0, 2.5, 3.0` seconds) and the existing M6.5b online timing semantics (`0.5 s` onset guard, `1.5 s` analysis, `0.2 s` step). It consumes repeated M12 fused-evidence snapshots and applies the transparent v1 policy: normalized fused top `>= 0.70`, top1-top2 margin `>= 0.20`, fused top must equal raw EEG top, and two consecutive eligible windows. These are engineering defaults, not calibrated or optimized thresholds.
+
+The policy/trajectory suite passes **14/14**; synthetic acceptance passes **10/10** cases, including transient spike, target switch reset, context/EEG conflict, strong EEG override, ambiguous evidence, fallback, tie, invalid evidence, deterministic replay and uniform-context invariance. The read-only historical M6.5b result fixture `D:\EEG_Study\m6_4\replay\m6_5b-continuous-results.json` replayed **89 trials**: 20 early stops and 69 full-window fallbacks; this is historical recorded EEG plus deterministic synthetic context overlay, not a human context-aware experiment. Descriptive agreement with the M12 full-window target was 89/89; no optimization or performance threshold was applied.
+
+The M13 adapter delegates only `decisionMade=true` results to the existing `M8SelectionOrchestrator.submit_final_decision` seam. Mock acceptance verifies exactly-once early submission, no-decision suppression and frozen slot/label identity; no wire protocol, Quest contract, M6/M12 decoder or Robot Adapter path changed. Readiness passed with Python 3.12.14, required imports/files, mapping checks and a local bind/close probe for TCP 11001. The related regression passed **70/70**; the old M6 pseudo-online suite remains dependency-limited at 7/8 because the existing environment lacks optional scipy for legacy FBCCA, while the pure NumPy FBCCA seam passes.
+
+Evidence boundary: Quest operated = **NO**; ND8/COM11 operated = **NO**; new real EEG collected = **NO**; physical robot operated = **NO**. The next authorized action is the operator procedure in `docs/experiments/m13-real-quest-nd8-operator-procedure.md`, not M14 or learned/optimized stopping.
+
+### M13.5 — Live Readiness & Robustness
+
+Status: **M13.5 LIVE READINESS & ROBUSTNESS = SOFTWARE PASS; M13 REAL QUEST + ND8 ACCEPTANCE = PENDING**.
+
+M13.5 adds explicit safe-default `baseline`, non-interfering `shadow` and opt-in `active` PC runtime modes. It reuses M12 fused evidence, the real M13 policy and the existing M8 `submit_final_decision` seam. PC-only streaming acceptance passes for early stop, fallback, no-decision, shadow non-interference, target switch and context conflict. Fault injection passes duplicate/replayed windows, out-of-order/missing windows, stale trial/selection identity, closed-selection/late evidence, malformed/NaN/Inf evidence, empty target set, mapping mismatch, duplicate finalization and simulated transport interruption.
+
+Structured append-only JSONL sessions, a descriptive analyzer and engineering acceptance reporter are complete. They check trial identity, state reset, monotonic windows, mode semantics, mapping provenance, ACK order, exactly-once submission, no fabricated no-decision and `obj_N` privacy without imposing research-performance thresholds. Readiness is `READY` with explicit warnings that Quest/ND8 were not checked. The environment has no scipy declaration; legacy FBCCA imports it, while the M13 default NumPy seam does not. No dependency was installed. A second compatible historical continuous fixture was not available, so the optional multi-dataset audit is deferred without blocking.
+
+Use `docs/experiments/m13.5-live-readiness-operator-package.md` for the future user-controlled direct-`active` M13 classifier-acceptance session. Baseline and shadow remain diagnostic modes only; this is an engineering readiness closeout, not live-device or human-study evidence.
+
+### M13.6 — MuJoCo ↔ Quest Real-Time Visual Sync
+
+Status: **M13.6 REAL QUEST RECEIVER + MUJOCO STREAM = USB/ADB ENGINEERING PASS / HARDENED; M13.6 QUEST VISUAL HUMAN ACCEPTANCE = PASS / SEALED at m13.6-quest-visual-pass**.
+
+The final Quest human acceptance confirmed the accepted viewpoint, instruction
+text, SSVEP slots and labels, startup-size continuity, robot synchronization,
+no-air-grasp behavior, four-block manipulation/stacking, and execution-time
+suppression of candidate indicators and flashing presentation. This is a Quest
+visual/integration acceptance, not an ND8 or live-human SSVEP acceptance.
+The authority chain remains MuJoCo authoritative state -> telemetry -> Quest
+presentation mirror. Do not reopen M13.6 visual polish without an explicit
+regression.
+
+The independent visual transport keeps UDP `11002`, TCP compatibility `11002`,
+and M8 control TCP `11001` separate. The Quest receiver uses the mounted M9
+scene, TCP `NODELAY`, persistent newline framing, latest-state replacement,
+stale/duplicate sequence protection and main-thread transform application.
+The PC side now includes an ADB USB runner, same-LAN TCP preflight, a return-to-
+lab demo launcher and software-only transform sanity output.
+
+The currently installed user-built APK was exercised over `tcp:21002 ->
+Quest:11002`: 30 Hz and 60 Hz 90-second streams had no sender errors and the
+Quest process/listener remained alive; a 600 Hz short stress wrote fewer
+physical frames than producer calls, consistent with latest-state replacement.
+MuJoCo single Pick/Lift/Place returned `place_ok` with 208 frames and the
+four-block stream returned `4/4 place_ok` with 832 frames. A 10-minute mixed
+30/60 Hz soak was completed in two 200-second phases after an app restart;
+sender errors remained absent and the listener stayed alive, though the old
+APK did not expose the new periodic receiver counters.
+
+The earlier readiness notes about a pending Unity GUI Build And Run and zero-
+byte screenshot are historical pre-acceptance evidence. The final human Quest
+visual acceptance is recorded in the M13.6 postmortem and sealed by the tag
+above. Software transform sanity passed for 180 synthetic frames and 208
+MuJoCo frames. Relevant M13.6/M13.5/M14/M15/M16/M10 regression passed
+**52/52**; M16 no-EEG report dry-run passed. No ND8/COM11, EEG or physical
+robot was operated for this visual closeout.
+
+Use docs/experiments/m13.6-mujoco-quest-visual-sync.md and
+python -m integration.m13_6_visual_demo --transport usb --phase all --human
+only for historical reproduction or an explicitly authorized regression. The
+current M13.6 visual baseline is sealed and must not be polished as part of
+M13.7.
+
+### M13.7 — Golden Human Session Live Acquisition Launcher
+
+Status: **M13.7 SOFTWARE / REPLAY + HISTORICAL HUMAN-EEG READINESS PASS; REAL ND8/QUEST HUMAN ACCEPTANCE PENDING**.
+
+The new `integration/m13_7_live_launcher.py` reads the versioned protocol JSON
+as authority and executes the complete generated order without hardcoding the
+147 trial records. `LiveND8Source(COM11)` uses the existing explicit-lifecycle
+adapter and persists each raw packet through `HumanSessionRecorder` before the
+common `GoldenPacketPipeline`/existing NumPy FBCCA and M13.5 path. The same
+packet/continuity contract is used by `RecordedND8Replay`; the old M8 6/9-stage
+launcher remains unchanged.
+
+AudioCueSystem provides an explicit PC `winsound` path and a silent
+Null/Logging path with the fixed slot 0/1/2 = 7.2/9/12 Hz and 1/2/3 beep
+contract, a guaranteed one-second pre-stimulus silence, analysis-window audio
+exclusion, and monotonic/UTC event records. Default rehearsal, simulation and
+silent preflight remain speaker-independent. Explicit audible rehearsal and
+confirmed LIVE HUMAN use `PcToneAudioBackend`; PC backend initialization or
+playback errors fail fast rather than falling back to Null. HumanSessionRecorder writes fsync-backed raw ND8 packets, packet
+metadata, lifecycle events, decoder/context evidence, Quest events and
+action/telemetry associations into a new manifest-scoped session directory.
+The launcher freezes Git/protocol/configuration provenance, supports a
+confirmation gate, durable block-boundary pause/resume and partial-session
+preservation, and marks short runs as PREFLIGHT rather than Golden data.
+
+The no-ND8 dry-run passed with 80 synthetic replay packets, all three slots,
+aligned/neutral/conflict context, no-intent/no-decision, verifier PASS, replay
+of the resulting session, and six complete synthetic House/Tower/Bridge
+episodes with 24 individual action segments. Golden Protocol v1 is frozen in
+docs/protocols/M13_7_Golden_Protocol_v1.json: 60 static calibration, 18
+independent M13 active, 27 context, 9 no-intent, 24 closed-loop selections
+and 9 controlled-artifact labels, plus a time-based baseline. Its projected
+duration is **44.20 minutes** from the implemented formal timing configuration
+(`preparationSeconds=6.0`; 2651.76 s projected).
+
+Full no-hardware launcher simulation passed with `planned=147`,
+`executed=147`, 148 raw packets, verifier PASS, and replay PASS. A separate
+synthetic PREFLIGHT passed with four representative segments. Live wiring was
+tested with a fake ND8 device and proved raw persistence before downstream
+delivery. This is software/replay infrastructure evidence only. No real
+ND8/COM11 was opened, no human EEG was collected, no existing EEG was
+overwritten, and no new M13.6 visual behavior was changed. See
+docs/experiments/m13_7_golden_human_session_protocol.md and the run handoff
+under docs/agent/overnight/runs/. The PC audible routes are implemented and
+covered by fake-backend tests; no real speaker rehearsal was run automatically,
+and the first manual audible rehearsal failed perceptual acceptance because the
+original tones were too short, too closely spaced and not pitch-distinct. The
+cue parameters have now been refined and the manual audible rehearsal has
+passed. The overnight historical-human readiness rehearsal then fed the
+verbatim M6.1b raw values through the M13.7 recorder, onset/sample-anchor
+pipeline, NumPy FBCCA, M13.5 runtime, replay and verifier: 30/30 trials,
+verifier PASS, replay first-window agreement 30/30, and the one-command Golden
+QA report PASS. This remains software/replay evidence; no COM11, ND8, Quest or
+new human EEG was operated in that rehearsal. A separate operator-run partial
+session is retained read-only after the pre-hotfix silence-boundary failure;
+it is not a finalized Golden acceptance. A low-risk operator preflight is
+available at `integration/m13_7_operator_preflight.py`; the future live session
+still requires the external runtime, Quest, ND8 channel-quality and human
+acceptance gates.
+
+#### Final Context-Aware Building Demo deployment readiness (2026-09-18)
+
+The formal operator entry point is
+`integration/m13_context_aware_building_launcher.py`. It supports the existing
+historical/replay source and the actual `LiveND8Source(COMx)` through the same
+M13.7 packet/sample-anchor boundary and the same M11 → M12 → M13 → M8 → M9 →
+MuJoCo downstream chain. Live mode is explicitly label-free: the building task
+posterior is derived only from observable selection history, provisional/current
+batch state and EEG evidence; historical ground truth is used only to choose a
+matching replay trial in the test harness.
+
+The final software gate passed: 132/132 cross-M8–M14 regression tests,
+69/69 M13.7/M8/M9 timing and transport tests, all 12 task×batch-partition
+scenarios (3+1, 2+2, 1+3, 1+1+1+1), undo/alternative selection, dynamic
+candidate remapping/stale-slot rejection, and two bounded historical replay
+soak scenarios. The external CPython 3.9.13 runtime passed the read-only
+operator preflight with vendor SDK imports and COM enumeration; no COM port,
+ND8, Quest, or physical robot was opened or operated in this run. Tomorrow's
+remaining boundary is therefore actual COM selection/packet arrival, channel
+quality, human EEG, and human Quest/controller validation. See
+`docs/experiments/m13_context_aware_building_demo_operator.md`.
+
+### M14–M16 — Assumption-Jump Software Campaign
+
+Status: **M14 FULL SEQUENTIAL SHARED-AUTONOMY CLOSED LOOP = SOFTWARE / MUJOCO / REPLAY PASS; M15 COMPARATIVE BENCHMARK & ABLATION = SOFTWARE / REPLAY PASS; M16 EXPERIMENT / DATASET / REPRODUCIBILITY INFRASTRUCTURE = SOFTWARE READY. M13 REAL-HUMAN SSVEP EVIDENCE = PENDING; DOWNSTREAM HUMAN SEQUENTIAL ACCEPTANCE = NOT VALIDATED.**
+
+M14 now composes the existing observable-history M11 prior, M12 fusion, frozen M13 dynamic stopping, M8 final-decision lifecycle, M9 TargetId/logical-ID dispatcher and reused FR3/UMI MuJoCo path. House, Tower and Bridge each completed four synthetic-evidence steps with four `place_ok` simulation executions and four M10 commits; no-decision, wrong-target, robot-failure and duplicate-final-decision cases fail closed. M15 supplies paired EEG-only, M12 full-window and M13 dynamic-stop conditions with descriptive JSON/JSONL/CSV output; the registered M6.5b fixture was replayed read-only as historical EEG plus synthetic context overlay. M16 supplies a pseudonymous manifest, deterministic development schedule, stable session layout, resume-safe checkpoint and reused M13.5 analyzer/acceptance composition.
+
+This campaign used `ASSUMED_PASS` only as a clearly labeled development assumption for pending real-human M13 evidence. It does not claim human EEG accuracy, latency, early-stop benefit, cognitive-load change, generalized performance or real sequential shared-autonomy success. The first unavoidable research fork is recorded in `docs/roadmap/next-research-fork.md`; no new research direction was selected automatically.
+
+M15 Stage 2 v2 runtime integration is now **SOFTWARE READY FOR LIVE SMOKE**. The explicit `dynamic_v2` M8 live-ND8 mode uses the frozen EEG-only raw-score gate (2.0 s minimum; margin `0.15`; normalized top `0.40`; ratio `1.05`; raw-top run `2`; 4.0 s raw-EEG fallback) through the existing NumPy FBCCA, rolling-buffer, selectionId, Quest transport and M9 mapping seams. Historical replay through the production policy is 89/89 development and 3/3 M6.6b external per-trial parity with zero wrong early stops. This remains software/replay evidence: no live ND8/Quest smoke, physical timing, hardware sample-anchor, or physical latency claim is made here; M13 v1 and baseline remain available and unchanged by default.
+
+The 2026-09-18 software-only context-aware building-demo checkpoint adds a thin
+`integration/m13_context_aware_building_demo.py` composition over those frozen
+seams. It consumes read-only M6.1b human raw EEG through the existing NumPy
+FBCCA boundary, records M11 observable-history priors and M12 fusion, preserves
+M13 stopping and M8 ACK semantics, supports provisional 1–3 selection batches
+with A submit/B undo, and dispatches canonical Bridge/Tower/House order through
+the existing M9 FR3/UMI MuJoCo adapter. The versioned contract is
+`docs/protocols/M13_Context_Aware_Building_Demo_v1.json`; all three tasks passed
+3+1 batches, 12/12 headless `place_ok` executions, ordered `build_slot_0`–
+`build_slot_3` assignment, context-vs-EEG dominance probes and invalid/stale
+selection guards. This is software/replay/MuJoCo readiness only: no Quest,
+ND8/COM11, new human EEG, or physical robot was operated, and the fourth block
+uses a clearly tagged scripted candidate assignment because the historical M6
+source has three EEG classes.
 
 Build a controlled virtual tabletop manipulation baseline: Quest 3 presents virtual blocks and SSVEP interaction; PC performs EEG decoding and maps the selected block to a stable logical block ID; MuJoCo runs the Franka FR3 + UMI gripper simulation and returns execution feedback.
 

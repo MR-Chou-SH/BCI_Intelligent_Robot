@@ -311,7 +311,14 @@ def run_synthetic_acceptance():
 def load_trials(paths):
     trials = []
     for path in paths:
-        with Path(path).open("r", encoding="utf-8") as stream:
+        path = Path(path)
+        if path.suffix.lower() == ".jsonl":
+            with path.open("r", encoding="utf-8") as stream:
+                for line in stream:
+                    if line.strip():
+                        trials.append(json.loads(line))
+            continue
+        with path.open("r", encoding="utf-8") as stream:
             payload = json.load(stream)
             trials.extend(payload if isinstance(payload, list) else payload.get("trials", []))
     return trials

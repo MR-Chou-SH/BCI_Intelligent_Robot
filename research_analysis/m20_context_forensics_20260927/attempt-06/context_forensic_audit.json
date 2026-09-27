@@ -1,0 +1,174 @@
+{
+  "historical_v3_analysis": {
+    "code": "analysis/paper_eeg/m15_stage2_v3_context_analysis.py",
+    "fbcca_input": "Three raw, nonnegative fused CCA scores from eeg.decoder.fbcca.predict_fbcca; scores and top/sum ratios are not calibrated class probabilities.",
+    "context_source": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\artifacts\\m15_stage2_paired_context_20260921T054628Z\\paired_timepoint_trajectories.csv",
+    "context_source_sha256": "840b48c6557d188c6d82dffd625095cd70d05e716874f489f92026c8c52f5ae0",
+    "context_generator": "predeclared alternating observable histories in integration.m13_historical_replay._context_for_trial; no current/future label input",
+    "v3_fusion": "No M12 multiplicative fusion in the V3 policy sweep. V3 computes label-free context informativeness, requires a unique context top agreeing with the raw EEG top, then evaluates a separately cross-fitted relaxed EEG gate. Selected class always remains the raw EEG top.",
+    "informative_score": "context_top_probability * (1 - normalized_context_entropy), threshold 0.5",
+    "loso_sessions": [
+      "A",
+      "B1",
+      "B2"
+    ],
+    "timing": "Decision times are onset-relative; effective EEG evidence is decision_time - 0.5 s guard."
+  },
+  "current_m12_m13_path": {
+    "code": [
+      "integration/m12_context_eeg_fusion.py",
+      "integration/m13_dynamic_stopping.py"
+    ],
+    "context_softening_lambda": 0.5,
+    "softening_formula": "p_soft = (1-lambda)*uniform + lambda*renormalized_active_prior",
+    "prior_090_example": {
+      "raw_prior": [
+        0.9,
+        0.05,
+        0.05
+      ],
+      "soft_prior": [
+        0.6166666666666667,
+        0.19166666666666665,
+        0.19166666666666665
+      ],
+      "softened_top_probability": 0.6166666666666667
+    },
+    "active_candidate_projection": {
+      "all_three_legacy_candidates_active": true,
+      "active_prior_mass_min": 1.0,
+      "active_prior_mass_max": 1.0,
+      "three_candidate_projection_flattens_context": false
+    },
+    "multiplicative_fusion": "normalize(raw_FBCCA_score_i * p_soft_i); scores remain uncalibrated; epsilon floor 1e-12",
+    "strong_eeg_override_margin": 0.2,
+    "strong_eeg_override": "When the unique raw FBCCA top has raw top1-top2 margin >= 0.20, M12 records Context but uses normalized raw EEG scores as fused evidence.",
+    "m13_stopping_gates": {
+      "fused_top_threshold": 0.7,
+      "fused_margin_threshold": 0.2,
+      "required_consecutive_windows": 2,
+      "raw_eeg_confirmation_required": true,
+      "context_can_raise_fused_confidence_before_gates": true,
+      "context_can_change_selected_target_at_stop": false
+    },
+    "prior_strength_statistics": {
+      "N": 89,
+      "mean_top_probability": 0.8352059925093632,
+      "median_top_probability": 1.0,
+      "minimum_top_probability": 0.6666666666666666,
+      "maximum_top_probability": 1.0
+    }
+  },
+  "formal_record_identity": {
+    "all_analysis_trials": 89,
+    "formal_manifest_records": 88,
+    "exploratory_replay_supplement": {
+      "session": "B2",
+      "trialId": "m6_4-trial-023"
+    },
+    "reason": "B2 formal manifest lacks the canonical association start for trial-023; M6.5b replay supplies its exact anchor/trajectory as the 30th exploratory B2 record.",
+    "b1_qc_exclusion": "B1 trial-011 remains excluded by immutable QC-valid index because clock-sync freshness exceeded the frozen five-second limit."
+  },
+  "paired_m12_m13_replay": {
+    "reproduction": "PASS",
+    "newReplayDirectory": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\research_analysis\\m20_context_forensics_20260927\\attempt-06\\current-m12-m13-paired-replay",
+    "pairedSummary": {
+      "n_total": 89,
+      "context_earlier_count": 3,
+      "context_earlier_mean_seconds": 1.2,
+      "off_fallback_to_on_early_count": 3,
+      "off_early_to_on_earlier_count": 0,
+      "context_delayed_count": 0,
+      "final_class_changed_count": 1,
+      "accuracy_helped_count": 0,
+      "accuracy_harmed_count": 1,
+      "paired_mean_latency_delta_off_minus_on": 0.040449438202247195,
+      "paired_median_latency_delta_off_minus_on": 0.0,
+      "helped_trials_mean_advance_seconds": null,
+      "delta_by_frequency": {
+        "7.2": {
+          "n": 30,
+          "mean_delta_seconds": 0.12000000000000001,
+          "earlier_count": 3
+        },
+        "9": {
+          "n": 29,
+          "mean_delta_seconds": 0.0,
+          "earlier_count": 0
+        },
+        "12": {
+          "n": 30,
+          "mean_delta_seconds": 0.0,
+          "earlier_count": 0
+        }
+      },
+      "effect_type_counts": {
+        "TYPE_1_TRUE_LATENCY_HELP": 3,
+        "TYPE_2_NO_EFFECT": 85,
+        "TYPE_4_DECISION_HARM": 1
+      }
+    },
+    "formal88": {
+      "N": 88,
+      "off": {
+        "N": 88,
+        "correct": 88,
+        "accuracy": 1.0,
+        "wrong_early_stops": 0,
+        "mean_effective_eeg_evidence_time_s": 3.5,
+        "median_effective_eeg_evidence_time_s": 3.5,
+        "P90_effective_eeg_evidence_time_s": 3.5,
+        "latest_effective_eeg_evidence_time_s": 3.5,
+        "T_at_95_s": 3.5,
+        "T_at_99_s": 3.5,
+        "T_at_100_s": 3.5,
+        "accelerated_fraction": 0.0,
+        "mean_acceleration_when_early_s": null,
+        "context_assisted_trial_count": 0,
+        "context_accelerated_trial_count": 0,
+        "context_accelerated_fraction": 0.0,
+        "mean_context_acceleration_when_early_s": null,
+        "context_delayed_trial_count": 0,
+        "mean_context_time_delta_vs_paired_eeg_s": null,
+        "context_caused_error_count": 0,
+        "strong_contradiction_windows": 0,
+        "strong_override_preserved_top_windows": 0,
+        "early_stop_count": 0,
+        "mean_onset_relative_decision_time_s": 4.0
+      },
+      "on": {
+        "N": 88,
+        "correct": 87,
+        "accuracy": 0.9886363636363636,
+        "wrong_early_stops": 0,
+        "mean_effective_eeg_evidence_time_s": 3.459090909090909,
+        "median_effective_eeg_evidence_time_s": 3.5,
+        "P90_effective_eeg_evidence_time_s": 3.5,
+        "latest_effective_eeg_evidence_time_s": 3.5,
+        "T_at_95_s": 3.5,
+        "T_at_99_s": null,
+        "T_at_100_s": null,
+        "accelerated_fraction": 0.0,
+        "mean_acceleration_when_early_s": null,
+        "context_assisted_trial_count": 0,
+        "context_accelerated_trial_count": 0,
+        "context_accelerated_fraction": 0.0,
+        "mean_context_acceleration_when_early_s": null,
+        "context_delayed_trial_count": 0,
+        "mean_context_time_delta_vs_paired_eeg_s": null,
+        "context_caused_error_count": 0,
+        "strong_contradiction_windows": 0,
+        "strong_override_preserved_top_windows": 0,
+        "early_stop_count": 3,
+        "mean_onset_relative_decision_time_s": 3.959090909090909
+      },
+      "context_caused_wrong_final_count": 1
+    }
+  },
+  "v3_baseline_reproduction": {
+    "status": "PASS",
+    "comparedRows": 267,
+    "mismatchCount": 0,
+    "priorArtifact": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\artifacts\\m15_stage2_v3_context_20260921T081744Z\\per_trial_results.csv"
+  }
+}

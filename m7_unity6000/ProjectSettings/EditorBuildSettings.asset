@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/PassthroughCameraApiSamples/MultiObjectDetection/M9VirtualManipulation.unity
     guid: 2a1e1c591cf14dd4aa9d7a992a44d0bd
+  - enabled: 1
+    path: Assets/PassthroughCameraApiSamples/MultiObjectDetection/M20DailyAssistiveDesk.unity
+    guid: 1595aa439a834d0684208dd127c4cdf6
   - enabled: 0
     path: Assets/PassthroughCameraApiSamples/StartScene/StartScene.unity
     guid: 69e1b31c45bac42f88f75017ee404de1
@@ -20,7 +23,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/PassthroughCameraApiSamples/BrightnessEstimation/BrightnessEstimation.unity
     guid: 8ea13e682474e1748965f8e21972f2b2
-  - enabled: 1
+  - enabled: 0
     path: Assets/PassthroughCameraApiSamples/MultiObjectDetection/MultiObjectDetection.unity
     guid: 20c230cce46443841b5727b1d6100bfc
   - enabled: 0

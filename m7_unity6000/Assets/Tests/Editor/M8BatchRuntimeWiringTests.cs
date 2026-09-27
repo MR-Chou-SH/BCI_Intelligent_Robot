@@ -68,6 +68,377 @@ namespace BCIIntelligentRobot.Tests
         }
 
         [Test]
+        public void HostBatchClose_PreparesNextGroupButDefersPresentationUntilSelectionOpen()
+        {
+            var cameraObject = new GameObject("M8HostCloseCamera");
+            var managerObject = new GameObject("M8HostCloseManager");
+            var parentObject = new GameObject("M8HostCloseParent");
+            var bindingObject = new GameObject("M8HostCloseBinding");
+            var transportObject = new GameObject("M8HostCloseTransport");
+            var controllerObject = new GameObject("M8HostCloseController");
+            cameraObject.tag = "MainCamera";
+            cameraObject.AddComponent<Camera>();
+            var manager = managerObject.AddComponent<DetectionManager>();
+            var binding = bindingObject.AddComponent<BciSsvepTargetBinding>();
+            var transport = transportObject.AddComponent<BciSelectionTransportClient>();
+            var controller = controllerObject.AddComponent<BciTargetBatchController>();
+
+            try
+            {
+                binding.ConfigureLayout(
+                    BciSsvepLayoutMode.ViewLockedHud,
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter,
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters,
+                    BciSsvepDisplayLayout.HudStimulusSizeMeters);
+                binding.Initialize(manager, parentObject.transform, BciSsvepDisplayLayout.ExperimentalStimulusSizeMeters);
+                foreach (StableWorldAnchorSnapshot anchor in new[]
+                {
+                    Anchor("m9-vblock-red-01", -1f),
+                    Anchor("m9-vblock-green-01", 0f),
+                    Anchor("m9-vblock-yellow-01", 1f),
+                    Anchor("m9-vblock-blue-01", 2f)
+                })
+                    InvokeStableAnchor(binding, anchor);
+
+                controller.Initialize(binding, transport);
+                InvokeLifecycle(controller, "LateUpdate");
+                BciTargetGroupCoordinator groups = GetPrivateField<BciTargetGroupCoordinator>(controller, "m_groups");
+                BciActiveTargetGroup firstGroup = groups.ActiveGroup.Value;
+                Assert.That(firstGroup.Targets.Count, Is.EqualTo(3));
+                Assert.That(firstGroup.Targets[0].TargetId, Is.EqualTo("m9-vblock-red-01"));
+                Assert.That(firstGroup.Targets[1].TargetId, Is.EqualTo("m9-vblock-green-01"));
+                Assert.That(firstGroup.Targets[2].TargetId, Is.EqualTo("m9-vblock-yellow-01"));
+                InvokePrivate(controller, "OnSelectionOpened", "selection-red");
+                Assert.That(binding.IsSlotActiveCandidate(0), Is.True,
+                    "The first SSVEP window must begin at selection_open.");
+                BciTargetSelectionResult first = SelectionResult("selection-red", 0, firstGroup.Targets[0].TargetId);
+                BciTargetSelectionResult second = SelectionResult("selection-green", 1, firstGroup.Targets[1].TargetId);
+                InvokePrivate(controller, "OnTargetSelected", first);
+                InvokePrivate(controller, "OnTargetSelected", second);
+
+                var payload = new ConfirmedTargetBatchPayload
+                {
+                    batchId = "batch-1",
+                    groupId = firstGroup.GroupId,
+                    groupIndex = firstGroup.GroupIndex,
+                    selections = new[]
+                    {
+                        ConfirmedTargetSelectionPayload.From(first),
+                        ConfirmedTargetSelectionPayload.From(second)
+                    }
+                };
+
+                Assert.That((bool)InvokePrivate(controller, "OnHostBatchCloseRequested", payload), Is.True);
+                Assert.That(groups.HasActiveGroup, Is.True,
+                    "Host close must make the next group available before its batch ACK returns.");
+                Assert.That(groups.ProcessedTargetIds, Does.Contain("m9-vblock-red-01"));
+                Assert.That(groups.ProcessedTargetIds, Does.Contain("m9-vblock-green-01"));
+                Assert.That(groups.ProcessedTargetIds, Does.Not.Contain("m9-vblock-yellow-01"),
+                    "An unselected S1 candidate must remain available for S2.");
+
+                Assert.That(binding.IsSlotActiveCandidate(0), Is.False,
+                    "Protocol-ready S2 must not start its SSVEP candidate timing before selection_open.");
+                Assert.That(binding.IsSlotActiveCandidate(1), Is.False,
+                    "Protocol-ready S2 must not start its SSVEP candidate timing before selection_open.");
+                LineRenderer oldRedIndicator = GetCandidateIndicator(binding, "m9-vblock-red-01");
+                LineRenderer oldGreenIndicator = GetCandidateIndicator(binding, "m9-vblock-green-01");
+                Assert.That(oldRedIndicator == null || !oldRedIndicator.gameObject.activeSelf, Is.True,
+                    "Committed Red overlay must be hidden before the next selection opens.");
+                Assert.That(oldGreenIndicator == null || !oldGreenIndicator.gameObject.activeSelf, Is.True,
+                    "Committed Green overlay must be hidden before the next selection opens.");
+
+                BciActiveTargetGroup secondGroup = groups.ActiveGroup.Value;
+                Assert.That(secondGroup.Targets.Count, Is.EqualTo(2));
+                Assert.That(secondGroup.Targets[0].TargetId, Is.EqualTo("m9-vblock-yellow-01"));
+                Assert.That(secondGroup.Targets[1].TargetId, Is.EqualTo("m9-vblock-blue-01"));
+
+                var nextSnapshot = new BciSelectionSnapshot(
+                    "snapshot-2",
+                    2,
+                    new[]
+                    {
+                        new BciSelectionTarget(0, new StableWorldAnchorSnapshot(
+                            "m9-vblock-yellow-01", "yellow_block", StableTargetState.Active, Vector3.zero)),
+                        new BciSelectionTarget(1, new StableWorldAnchorSnapshot(
+                            "m9-vblock-blue-01", "blue_block", StableTargetState.Active, Vector3.right)),
+                        new BciSelectionTarget(2, null, null, StableTargetState.TemporarilyMissing)
+                    });
+
+                Assert.That((bool)InvokePrivate(
+                    controller,
+                    "OnAuthoritativeSelectionOpening",
+                    "selection-yellow",
+                    nextSnapshot), Is.True,
+                    "The immediate next selection_open must see the newly active group.");
+                InvokePrivate(controller, "OnSelectionOpened", "selection-yellow");
+                Assert.That(binding.IsSlotActiveCandidate(0), Is.True,
+                    "S2 stimulus must begin at selection_open, not at protocol group activation.");
+                Assert.That(binding.IsSlotActiveCandidate(1), Is.True,
+                    "S2 stimulus must begin at selection_open, not at protocol group activation.");
+
+                BciTargetSelectionResult third = SelectionResult(
+                    "selection-yellow", 0, "m9-vblock-yellow-01");
+                BciTargetSelectionResult fourth = SelectionResult(
+                    "selection-blue", 1, "m9-vblock-blue-01");
+                InvokePrivate(controller, "OnTargetSelected", third);
+                InvokePrivate(controller, "OnTargetSelected", fourth);
+                var secondPayload = new ConfirmedTargetBatchPayload
+                {
+                    batchId = "batch-2",
+                    groupId = secondGroup.GroupId,
+                    groupIndex = secondGroup.GroupIndex,
+                    selections = new[]
+                    {
+                        ConfirmedTargetSelectionPayload.From(third),
+                        ConfirmedTargetSelectionPayload.From(fourth)
+                    }
+                };
+
+                Assert.That((bool)InvokePrivate(
+                    controller, "OnHostBatchCloseRequested", secondPayload), Is.True,
+                    "S2 Yellow+Blue must close through the same host-driven lifecycle.");
+                Assert.That(groups.ProcessedTargetIds, Does.Contain("m9-vblock-yellow-01"));
+                Assert.That(groups.ProcessedTargetIds, Does.Contain("m9-vblock-blue-01"));
+                Assert.That(groups.HasActiveGroup, Is.False,
+                    "The final S2 close must leave no active candidate group.");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(controllerObject);
+                UnityEngine.Object.DestroyImmediate(transportObject);
+                UnityEngine.Object.DestroyImmediate(bindingObject);
+                UnityEngine.Object.DestroyImmediate(parentObject);
+                UnityEngine.Object.DestroyImmediate(managerObject);
+                UnityEngine.Object.DestroyImmediate(cameraObject);
+            }
+        }
+
+        [Test]
+        public void ThreePlusOne_PresentationVisibilityIsConcreteAtBothSelectionWindows()
+        {
+            var cameraObject = new GameObject("M8ForensicCamera");
+            var managerObject = new GameObject("M8ForensicManager");
+            var parentObject = new GameObject("M8ForensicParent");
+            var bindingObject = new GameObject("M8ForensicBinding");
+            var transportObject = new GameObject("M8ForensicTransport");
+            var controllerObject = new GameObject("M8ForensicController");
+            cameraObject.tag = "MainCamera";
+            cameraObject.AddComponent<Camera>();
+            var manager = managerObject.AddComponent<DetectionManager>();
+            var binding = bindingObject.AddComponent<BciSsvepTargetBinding>();
+            var transport = transportObject.AddComponent<BciSelectionTransportClient>();
+            var controller = controllerObject.AddComponent<BciTargetBatchController>();
+
+            try
+            {
+                binding.ConfigureLayout(
+                    BciSsvepLayoutMode.ViewLockedHud,
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter,
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters,
+                    BciSsvepDisplayLayout.HudStimulusSizeMeters);
+                binding.Initialize(manager, parentObject.transform, BciSsvepDisplayLayout.ExperimentalStimulusSizeMeters);
+                foreach (StableWorldAnchorSnapshot anchor in new[]
+                {
+                    Anchor("m9-vblock-red-01", -1f),
+                    Anchor("m9-vblock-green-01", 0f),
+                    Anchor("m9-vblock-yellow-01", 1f),
+                    Anchor("m9-vblock-blue-01", 2f)
+                })
+                    InvokeStableAnchor(binding, anchor);
+
+                controller.Initialize(binding, transport);
+                InvokeLifecycle(controller, "LateUpdate");
+
+                GameObject[] slotObjects = GetPrivateField<GameObject[]>(binding, "m_slotObjects");
+                LineRenderer[] leaderLines = GetPrivateField<LineRenderer[]>(binding, "m_slotLeaderLines");
+                for (int slot = 0; slot < 3; slot++)
+                {
+                    Assert.That(slotObjects[slot].activeSelf, Is.False,
+                        "GroupReady must hide the first protocol group panels.");
+                    Assert.That(leaderLines[slot].gameObject.activeSelf, Is.False,
+                        "GroupReady must hide the first protocol group connector lines.");
+                }
+
+                BciTargetGroupCoordinator groups = GetPrivateField<BciTargetGroupCoordinator>(controller, "m_groups");
+                BciActiveTargetGroup firstGroup = groups.ActiveGroup.Value;
+                Assert.That(firstGroup.Targets.Count, Is.EqualTo(3));
+                InvokePrivate(controller, "OnSelectionOpened", "forensic-selection-1");
+                Assert.That(binding.IsSlotActiveCandidate(0), Is.True);
+                Assert.That(binding.IsSlotActiveCandidate(1), Is.True);
+                Assert.That(binding.IsSlotActiveCandidate(2), Is.True);
+                for (int slot = 0; slot < 3; slot++)
+                {
+                    Assert.That(slotObjects[slot].activeSelf, Is.True,
+                        "selection_open must activate the concrete SSVEP panel.");
+                    Assert.That(leaderLines[slot].gameObject.activeSelf, Is.True,
+                        "selection_open must activate the concrete connector line.");
+                    Assert.That(
+                        GetCandidateIndicator(binding, firstGroup.Targets[slot].TargetId).gameObject.activeSelf,
+                        Is.True,
+                        "selection_open must activate the concrete candidate indicator.");
+                }
+
+                BciTargetSelectionResult first = SelectionResult(
+                    "forensic-red", 0, firstGroup.Targets[0].TargetId);
+                BciTargetSelectionResult second = SelectionResult(
+                    "forensic-green", 1, firstGroup.Targets[1].TargetId);
+                BciTargetSelectionResult third = SelectionResult(
+                    "forensic-yellow", 2, firstGroup.Targets[2].TargetId);
+                InvokePrivate(controller, "OnTargetSelected", first);
+                InvokePrivate(controller, "OnTargetSelected", second);
+                InvokePrivate(controller, "OnTargetSelected", third);
+                var firstPayload = new ConfirmedTargetBatchPayload
+                {
+                    batchId = "forensic-batch-1",
+                    groupId = firstGroup.GroupId,
+                    groupIndex = firstGroup.GroupIndex,
+                    selections = new[]
+                    {
+                        ConfirmedTargetSelectionPayload.From(first),
+                        ConfirmedTargetSelectionPayload.From(second),
+                        ConfirmedTargetSelectionPayload.From(third)
+                    }
+                };
+
+                Assert.That((bool)InvokePrivate(controller, "OnHostBatchCloseRequested", firstPayload), Is.True);
+                BciActiveTargetGroup secondGroup = groups.ActiveGroup.Value;
+                Assert.That(secondGroup.Targets.Count, Is.EqualTo(1));
+                Assert.That(secondGroup.Targets[0].TargetId, Is.EqualTo("m9-vblock-blue-01"));
+                Assert.That(binding.IsSlotActiveCandidate(0), Is.False,
+                    "GroupReady must keep the second group stimulus closed.");
+                Assert.That(slotObjects[0].activeSelf, Is.False);
+                Assert.That(leaderLines[0].gameObject.activeSelf, Is.False);
+
+                // This is the stale-telemetry interleave that the physical run
+                // can produce before the host opens the next selection window.
+                Assert.That(controller.SetM13_6ExecutionPresentation(true, "forensic_stale_execution"), Is.True);
+
+                var secondSnapshot = new BciSelectionSnapshot(
+                    "forensic-snapshot-2",
+                    2,
+                    new[]
+                    {
+                        new BciSelectionTarget(0, Anchor("m9-vblock-blue-01", 2f)),
+                        new BciSelectionTarget(1, null, null, StableTargetState.TemporarilyMissing),
+                        new BciSelectionTarget(2, null, null, StableTargetState.TemporarilyMissing)
+                    });
+                Assert.That((bool)InvokePrivate(
+                    controller,
+                    "OnAuthoritativeSelectionOpening",
+                    "forensic-selection-2",
+                    secondSnapshot), Is.True);
+                InvokePrivate(controller, "OnSelectionOpened", "forensic-selection-2");
+
+                Assert.That(binding.IsSlotActiveCandidate(0), Is.True,
+                    "The real remaining target must become an active SSVEP candidate at selection_open.");
+                Assert.That(binding.IsSlotActiveCandidate(1), Is.False);
+                Assert.That(binding.IsSlotActiveCandidate(2), Is.False);
+                Assert.That(slotObjects[0].activeSelf, Is.True,
+                    "The second selection panel must be concretely visible.");
+                Assert.That(leaderLines[0].gameObject.activeSelf, Is.True,
+                    "The second selection connector line must be concretely visible.");
+                Assert.That(GetCandidateIndicator(binding, "m9-vblock-blue-01").gameObject.activeSelf, Is.True,
+                    "The second selection candidate indicator must be concretely visible.");
+                Assert.That(slotObjects[1].activeSelf, Is.False);
+                Assert.That(slotObjects[2].activeSelf, Is.False);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(controllerObject);
+                UnityEngine.Object.DestroyImmediate(transportObject);
+                UnityEngine.Object.DestroyImmediate(bindingObject);
+                UnityEngine.Object.DestroyImmediate(parentObject);
+                UnityEngine.Object.DestroyImmediate(managerObject);
+                UnityEngine.Object.DestroyImmediate(cameraObject);
+            }
+        }
+
+        [Test]
+        public void M13TelemetryExecutionCannotHideOpenSelectionPresentation()
+        {
+            var cameraObject = new GameObject("M8TelemetryGateCamera");
+            var managerObject = new GameObject("M8TelemetryGateManager");
+            var parentObject = new GameObject("M8TelemetryGateParent");
+            var bindingObject = new GameObject("M8TelemetryGateBinding");
+            var transportObject = new GameObject("M8TelemetryGateTransport");
+            var controllerObject = new GameObject("M8TelemetryGateController");
+            cameraObject.tag = "MainCamera";
+            cameraObject.AddComponent<Camera>();
+            var manager = managerObject.AddComponent<DetectionManager>();
+            var binding = bindingObject.AddComponent<BciSsvepTargetBinding>();
+            var transport = transportObject.AddComponent<BciSelectionTransportClient>();
+            var controller = controllerObject.AddComponent<BciTargetBatchController>();
+
+            try
+            {
+                binding.ConfigureLayout(
+                    BciSsvepLayoutMode.ViewLockedHud,
+                    BciSsvepDisplayLayout.DefaultHudLocalCenter,
+                    BciSsvepDisplayLayout.HudHorizontalSpacingMeters,
+                    BciSsvepDisplayLayout.HudStimulusSizeMeters);
+                binding.Initialize(manager, parentObject.transform, BciSsvepDisplayLayout.ExperimentalStimulusSizeMeters);
+                StableWorldAnchorSnapshot[] group =
+                {
+                    Anchor("m9-vblock-red-01", -1f),
+                    Anchor("m9-vblock-green-01", 0f),
+                    Anchor("m9-vblock-yellow-01", 1f)
+                };
+                foreach (StableWorldAnchorSnapshot anchor in group)
+                    InvokeStableAnchor(binding, anchor);
+
+                controller.Initialize(binding, transport);
+                InvokeLifecycle(controller, "LateUpdate");
+
+                GameObject[] slotObjects = GetPrivateField<GameObject[]>(binding, "m_slotObjects");
+                LineRenderer[] leaderLines = GetPrivateField<LineRenderer[]>(binding, "m_slotLeaderLines");
+                for (int slot = 0; slot < group.Length; slot++)
+                {
+                    Assert.That(slotObjects[slot].activeSelf, Is.False,
+                        "GroupReady must keep stimulus panels hidden.");
+                    Assert.That(leaderLines[slot].gameObject.activeSelf, Is.False,
+                        "GroupReady must keep connector lines hidden.");
+                }
+
+                InvokePrivate(controller, "OnSelectionOpened", "selection-telemetry-gate");
+                for (int slot = 0; slot < group.Length; slot++)
+                {
+                    Assert.That(binding.IsSlotActiveCandidate(slot), Is.True,
+                        "selection_open must activate the real candidate slot.");
+                    Assert.That(slotObjects[slot].activeSelf, Is.True,
+                        "selection_open must show the stimulus panel.");
+                    Assert.That(leaderLines[slot].gameObject.activeSelf, Is.True,
+                        "selection_open must show the connector line.");
+                    Assert.That(
+                        GetCandidateIndicator(binding, group[slot].TargetId).gameObject.activeSelf,
+                        Is.True,
+                        "selection_open must show the candidate indicator.");
+                }
+
+                Assert.That(controller.SetM13_6ExecutionPresentation(true, "stale_executing_frame"), Is.True);
+                for (int slot = 0; slot < group.Length; slot++)
+                {
+                    Assert.That(slotObjects[slot].activeSelf, Is.True,
+                        "A stale executing telemetry frame must not hide an open selection panel.");
+                    Assert.That(leaderLines[slot].gameObject.activeSelf, Is.True,
+                        "A stale executing telemetry frame must not hide an open connector line.");
+                    Assert.That(
+                        GetCandidateIndicator(binding, group[slot].TargetId).gameObject.activeSelf,
+                        Is.True,
+                        "A stale executing telemetry frame must not hide an open candidate indicator.");
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(controllerObject);
+                UnityEngine.Object.DestroyImmediate(transportObject);
+                UnityEngine.Object.DestroyImmediate(bindingObject);
+                UnityEngine.Object.DestroyImmediate(parentObject);
+                UnityEngine.Object.DestroyImmediate(managerObject);
+                UnityEngine.Object.DestroyImmediate(cameraObject);
+            }
+        }
+
+        [Test]
         public void CandidateVisualState_UsesFrozenStableTargetIdentityForInactiveAvailableSelectedAndSubmitted()
         {
             var cameraObject = new GameObject("M8WiringCamera");
@@ -99,20 +470,31 @@ namespace BCIIntelligentRobot.Tests
                 Assert.That(binding.GetCandidateVisualState("left"), Is.EqualTo(BciCandidateVisualState.Available));
                 Assert.That(binding.GetCandidateVisualState("other"), Is.EqualTo(BciCandidateVisualState.Inactive));
 
+                // An execution frame can be stale while this active group is
+                // still SelectionOpen.  The production contract keeps the
+                // selection presentation visible until the group is committed.
                 Assert.That(binding.SetExecutionPresentationHidden(true, "test_execution"), Is.True);
-                Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.False);
+                Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.True);
                 InvokeLifecycle(binding, "LateUpdate");
-                Assert.That(GetCandidateIndicator(binding, "center").gameObject.activeSelf, Is.False);
+                Assert.That(GetCandidateIndicator(binding, "center").gameObject.activeSelf, Is.True);
                 Assert.That(binding.SetExecutionPresentationHidden(false, "test_selection_open"), Is.True);
                 Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.True);
 
                 Assert.That(binding.SetGroupSlotSelected("group-1", 0, true), Is.True);
+                Assert.That(binding.SetGroupSlotSelected("group-1", 1, true), Is.True);
                 Assert.That(binding.GetCandidateVisualState("left"), Is.EqualTo(BciCandidateVisualState.Selected));
 
                 Assert.That(binding.EndActiveGroup("group-1"), Is.True);
-                binding.SetProcessedTargetIds(new[] { "left", "center", "right" }, new[] { "left" });
+                // Once the active group is ended, the same presentation gate
+                // is allowed to hide the committed group for robot execution.
+                Assert.That(binding.SetExecutionPresentationHidden(true, "test_execution_after_commit"), Is.True);
+                Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.False);
+                // Match the canonical batch contract: only the confirmed
+                // selections are processed; the unselected right target stays
+                // available for the next group.
+                binding.SetProcessedTargetIds(new[] { "left", "center" }, new[] { "left", "center" });
                 Assert.That(binding.GetCandidateVisualState("left"), Is.EqualTo(BciCandidateVisualState.Submitted));
-                Assert.That(binding.GetCandidateVisualState("center"), Is.EqualTo(BciCandidateVisualState.Inactive));
+                Assert.That(binding.GetCandidateVisualState("center"), Is.EqualTo(BciCandidateVisualState.Submitted));
                 Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.False);
                 Assert.That(GetCandidateIndicator(binding, "center").gameObject.activeSelf, Is.False);
 
@@ -122,11 +504,17 @@ namespace BCIIntelligentRobot.Tests
                 Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.False);
                 Assert.That(GetCandidateIndicator(binding, "center").gameObject.activeSelf, Is.False);
 
-                // A new selection group is the lifecycle event that restores
-                // the presentation objects.
-                Assert.That(binding.ActivateGroup("group-2", group), Is.True);
-                Assert.That(GetCandidateIndicator(binding, "left").gameObject.activeSelf, Is.True);
-                Assert.That(GetCandidateIndicator(binding, "center").gameObject.activeSelf, Is.True);
+                // A new selection group must not restore committed overlays.
+                StableWorldAnchorSnapshot[] nextGroup = { group[2], Anchor("other", 2f) };
+                Assert.That(binding.ActivateGroup("group-2", nextGroup), Is.True);
+                LineRenderer leftIndicator = GetCandidateIndicator(binding, "left");
+                LineRenderer centerIndicator = GetCandidateIndicator(binding, "center");
+                Assert.That(leftIndicator == null || !leftIndicator.gameObject.activeSelf, Is.True,
+                    "A committed target must not regain its old blue overlay in a later group.");
+                Assert.That(centerIndicator == null || !centerIndicator.gameObject.activeSelf, Is.True,
+                    "A committed target must not regain its old blue overlay in a later group.");
+                Assert.That(GetCandidateIndicator(binding, "right").gameObject.activeSelf, Is.True);
+                Assert.That(GetCandidateIndicator(binding, "other").gameObject.activeSelf, Is.True);
             }
             finally
             {
@@ -306,6 +694,32 @@ namespace BCIIntelligentRobot.Tests
                 methodName,
                 BindingFlags.Instance | BindingFlags.NonPublic);
             method.Invoke(binding, null);
+        }
+
+        private static object InvokePrivate(object target, string methodName, params object[] arguments)
+        {
+            MethodInfo method = target.GetType().GetMethod(
+                methodName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            return method.Invoke(target, arguments);
+        }
+
+        private static T GetPrivateField<T>(object target, string fieldName)
+        {
+            FieldInfo field = target.GetType().GetField(
+                fieldName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            return (T)field.GetValue(target);
+        }
+
+        private static BciTargetSelectionResult SelectionResult(string selectionId, int slot, string targetId)
+        {
+            return new BciTargetSelectionResult(
+                selectionId,
+                slot,
+                new BciSelectionTarget(slot, new StableWorldAnchorSnapshot(
+                    targetId, "block", StableTargetState.Active, new Vector3(slot, 0f, 2f))),
+                System.DateTime.UtcNow);
         }
     }
 }

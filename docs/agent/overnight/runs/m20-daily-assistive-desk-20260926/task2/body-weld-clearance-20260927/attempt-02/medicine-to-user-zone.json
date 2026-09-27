@@ -1,0 +1,886 @@
+{
+  "actionResolution": {
+    "destinationSemanticId": "assist_user_zone",
+    "destinationTargetId": "assist_user_zone",
+    "placementPositionTableLocalMeters": [
+      -0.11,
+      -0.19,
+      0.017
+    ],
+    "placementYawDegrees": 0.0,
+    "resolutionProvenance": "canonical_m20_source_placements_after_ordered_submit",
+    "scenarioId": "medicine-to-user-zone",
+    "sourceLogicalBlockId": "block_assist_medicine_01",
+    "sourceSemanticId": "assist_medicine_box",
+    "sourceTargetId": "assist_medicine_box",
+    "syntheticFrequenciesHz": [
+      7.2,
+      12.0
+    ],
+    "syntheticSlotSequence": [
+      0,
+      2
+    ]
+  },
+  "execution": {
+    "action": {
+      "destinationSemanticId": "assist_user_zone",
+      "destinationTargetId": "assist_user_zone",
+      "placementPositionTableLocalMeters": [
+        -0.11,
+        -0.19,
+        0.017
+      ],
+      "placementYawDegrees": 0.0,
+      "resolutionProvenance": "canonical_m20_source_placements_after_ordered_submit",
+      "scenarioId": "medicine-to-user-zone",
+      "sourceLogicalBlockId": "block_assist_medicine_01",
+      "sourceSemanticId": "assist_medicine_box",
+      "sourceTargetId": "assist_medicine_box",
+      "syntheticFrequenciesHz": [
+        7.2,
+        12.0
+      ],
+      "syntheticSlotSequence": [
+        0,
+        2
+      ]
+    },
+    "expectedCenterWorldMeters": [
+      -0.11,
+      -0.19,
+      0.767
+    ],
+    "finalLinearSpeedMetersPerSecond": 1.627816818994407e-10,
+    "finalObjectPoseWorldMeters": [
+      -0.11085072799914955,
+      -0.18849604046835397,
+      0.766892244579783
+    ],
+    "graspContactTrace": [
+      {
+        "contactPairs": [],
+        "entryZ": 0.765,
+        "maxObjectGripperContacts": 0,
+        "maxZ": 0.765,
+        "minZ": 0.7648248694727239,
+        "name": "HOME"
+      },
+      {
+        "contactPairs": [],
+        "entryZ": 0.7648922443628798,
+        "maxObjectGripperContacts": 0,
+        "maxZ": 0.7648922445816667,
+        "minZ": 0.7648922443628798,
+        "name": "APPROACH"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7648922445816787,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 0.7648922445817157,
+        "minZ": 0.7616659341049846,
+        "name": "CLOSE"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7616658746691837,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 0.7616822750571973,
+        "minZ": 0.7616656567468821,
+        "name": "SETTLE"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7616825659721758,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 1.019762188428128,
+        "minZ": 0.7616825659721758,
+        "name": "LIFT"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 1.0201517315921353,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 1.0334736176503796,
+        "minZ": 1.0201517315921353,
+        "name": "HOLD"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 1.0335868201147458,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 1.0393557535924745,
+        "minZ": 0.8042303181383781,
+        "name": "PLACE"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.8034819261698909,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 0.8034819261698909,
+        "minZ": 0.7680633362565108,
+        "name": "PLACE_HOLD"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7680322558032382,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 0.7680322558032382,
+        "minZ": 0.7667397082289421,
+        "name": "RELEASE"
+      },
+      {
+        "contactPairs": [],
+        "entryZ": 0.766892244579783,
+        "maxObjectGripperContacts": 0,
+        "maxZ": 0.766892244579783,
+        "minZ": 0.766892244579783,
+        "name": "DONE"
+      }
+    ],
+    "gripperTableClearance": {
+      "gripperGeom": null,
+      "minimumMeters": 0.008280013100159467,
+      "phase": "LIFT"
+    },
+    "horizontalErrorMeters": 0.0017278982612891156,
+    "m9Dispatch": {
+      "accepted": true,
+      "acceptedSelectionIds": [
+        "m20-medicine-to-user-zone-01"
+      ],
+      "batchId": "m20-resolved-action-assist_medicine_box-1",
+      "duplicateBatch": false,
+      "duplicateSelectionIds": [],
+      "executions": [
+        {
+          "backendExecutionId": "f0dbd434d60b460ca66df348585e5b96",
+          "completedUtc": "2026-09-27T07:41:23.716480Z",
+          "executionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+          "executionState": "completed",
+          "failureCode": null,
+          "failureReason": null,
+          "logicalBlockId": "block_assist_medicine_01",
+          "requestId": "m20-request-assist_medicine_box",
+          "selectionId": "m20-medicine-to-user-zone-01",
+          "simulatorObjectResolution": "resolved",
+          "startedUtc": "2026-09-27T07:41:21.935884Z",
+          "success": true,
+          "targetId": "assist_medicine_box"
+        }
+      ],
+      "failureCode": null,
+      "failureReason": null,
+      "state": "accepted"
+    },
+    "phoneGraspEvidence": null,
+    "placementStable": true,
+    "plannerProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+    "settlingSteps": 600,
+    "sideGraspIkErrors": null,
+    "sourceConfirmedBatch": {
+      "batchId": "m20-resolved-action-assist_medicine_box-1",
+      "confirmedBatch": {
+        "batchId": "m20-resolved-action-assist_medicine_box-1",
+        "groupId": "m16-paged-session",
+        "groupIndex": 0,
+        "provenance": "quest_confirmed_target_batch",
+        "selections": [
+          {
+            "buildSlotIndex": 0,
+            "logicalBlockId": "block_assist_medicine_01",
+            "predictedClassIndex": 0,
+            "provenance": "quest_frozen_selection_snapshot",
+            "resolvedUtc": "2026-09-27T07:41:21.189645+00:00",
+            "selectionId": "m20-medicine-to-user-zone-01",
+            "semanticLabel": "MEDICINE",
+            "slotIndex": 0,
+            "targetId": "assist_medicine_box"
+          }
+        ],
+        "submittedUtc": "2026-09-27T07:41:21.189645+00:00"
+      },
+      "messageType": "target_batch_confirmed",
+      "protocolVersion": 1
+    },
+    "status": "PASS",
+    "tableBottomClearanceMeters": 0.0018922445797829868,
+    "trajectoryEvidence": [
+      {
+        "blockHalfExtentsMujoco": [
+          0.05,
+          0.03,
+          0.015
+        ],
+        "blockPositionMujoco": [
+          -0.24,
+          0.1,
+          0.7648922445816667
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.006028952283241873,
+        "graspHorizontalToleranceMeters": 0.093,
+        "gripperPadPositionMujoco": [
+          -0.246019294538503,
+          0.09965888580745541,
+          0.8704799679042272
+        ],
+        "gripperPositionMujoco": [
+          -0.2489060655037537,
+          0.09664248556938733,
+          0.9948460721408636
+        ],
+        "gripperToBlockDistanceMeters": 0.10575970679836057,
+        "phase": "pre_grasp",
+        "plannerPhase": "CLOSE",
+        "simulatorObject": "assist_medicine_box",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          -0.11,
+          -0.19,
+          0.767
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.05,
+          0.03,
+          0.015
+        ],
+        "blockPositionMujoco": [
+          -0.23897622449543365,
+          0.10023753497361089,
+          0.7616822750571973
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.0008028515224772117,
+        "graspHorizontalToleranceMeters": 0.093,
+        "gripperPadPositionMujoco": [
+          -0.23975433704953375,
+          0.1004353010482946,
+          0.835250232050145
+        ],
+        "gripperPositionMujoco": [
+          -0.24301733780392804,
+          0.10009201813453607,
+          0.9596431377277514
+        ],
+        "gripperToBlockDistanceMeters": 0.07357233764590702,
+        "phase": "grasp",
+        "plannerPhase": "LIFT",
+        "simulatorObject": "assist_medicine_box",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          -0.11,
+          -0.19,
+          0.767
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.05,
+          0.03,
+          0.015
+        ],
+        "blockPositionMujoco": [
+          -0.23998135317669617,
+          0.09942585603319777,
+          1.019762188428128
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.0010830961965374692,
+        "graspHorizontalToleranceMeters": 0.093,
+        "gripperPadPositionMujoco": [
+          -0.24075446551216673,
+          0.1001844037823192,
+          1.0932640099494386
+        ],
+        "gripperPositionMujoco": [
+          -0.24438047046966732,
+          0.09957729638398155,
+          1.2176458555244865
+        ],
+        "gripperToBlockDistanceMeters": 0.07350980114461982,
+        "phase": "carry",
+        "plannerPhase": "HOLD",
+        "simulatorObject": "assist_medicine_box",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          -0.11,
+          -0.19,
+          0.767
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.05,
+          0.03,
+          0.015
+        ],
+        "blockPositionMujoco": [
+          -0.11362437233169223,
+          -0.19235109817873886,
+          0.8042303181383781
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.006022953460907701,
+        "graspHorizontalToleranceMeters": 0.093,
+        "gripperPadPositionMujoco": [
+          -0.10846799534394717,
+          -0.18923858396150012,
+          0.8793735091033148
+        ],
+        "gripperPositionMujoco": [
+          -0.11179717314107036,
+          -0.19047494462550216,
+          1.0037589905209772
+        ],
+        "gripperToBlockDistanceMeters": 0.0753841834656661,
+        "phase": "place",
+        "plannerPhase": "PLACE_HOLD",
+        "simulatorObject": "assist_medicine_box",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          -0.11,
+          -0.19,
+          0.767
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.05,
+          0.03,
+          0.015
+        ],
+        "blockPositionMujoco": [
+          -0.11085068644753818,
+          -0.18849632661900012,
+          0.7668885338443471
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.004489357634758514,
+        "graspHorizontalToleranceMeters": 0.093,
+        "gripperPadPositionMujoco": [
+          -0.10653594701087511,
+          -0.1872564251848252,
+          0.8413780372245682
+        ],
+        "gripperPositionMujoco": [
+          -0.10999659551262016,
+          -0.18847665840927677,
+          0.9657600895585977
+        ],
+        "gripperToBlockDistanceMeters": 0.07462466379022913,
+        "phase": "release",
+        "plannerPhase": "DONE",
+        "simulatorObject": "assist_medicine_box",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          -0.11,
+          -0.19,
+          0.767
+        ]
+      }
+    ],
+    "verticalErrorMeters": 0.00010775542021701501
+  },
+  "scenarioId": "medicine-to-user-zone",
+  "selection": {
+    "orderedLogicalBlockIds": [
+      "block_assist_medicine_01",
+      "block_assist_user_zone_06"
+    ],
+    "orderedTargetIds": [
+      "assist_medicine_box",
+      "assist_user_zone"
+    ],
+    "queueFrequencyHz": [
+      7.2,
+      12.0
+    ],
+    "runtimeEvents": [
+      {
+        "event": "decode_request_accepted",
+        "pageEpoch": 0,
+        "selectionId": "m20-medicine-to-user-zone-01"
+      },
+      {
+        "ack": {
+          "accepted": true,
+          "messageType": "eeg_decode_ack",
+          "pageEpoch": 0,
+          "pageId": "m16-page-1",
+          "protocolVersion": 1,
+          "rejectionReason": "None",
+          "selectionId": "m20-medicine-to-user-zone-01",
+          "trialId": "m19-e2e-trial-01"
+        },
+        "event": "trigger_snapshot_frozen",
+        "request": {
+          "activeSlotCount": 3,
+          "contractId": "m19_decode_request_v1",
+          "createdUtc": "2026-09-27T07:41:21.188115+00:00",
+          "messageType": "eeg_decode_request",
+          "pageEpoch": 0,
+          "pageId": "m16-page-1",
+          "pageIndex": 0,
+          "presentationPolicy": "demo_preview",
+          "protocolVersion": 1,
+          "selectionId": "m20-medicine-to-user-zone-01",
+          "slots": [
+            {
+              "frequencyHz": 7.2,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "MEDICINE",
+              "slotIndex": 0,
+              "targetId": "assist_medicine_box"
+            },
+            {
+              "frequencyHz": 9.0,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "STORAGE",
+              "slotIndex": 1,
+              "targetId": "assist_storage_box"
+            },
+            {
+              "frequencyHz": 12.0,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "PHONE",
+              "slotIndex": 2,
+              "targetId": "assist_phone"
+            }
+          ],
+          "trialId": "m19-e2e-trial-01"
+        }
+      },
+      {
+        "accepted": true,
+        "classIndex": 0,
+        "decisionMade": true,
+        "event": "decode_result",
+        "evidence": {
+          "backend": "synthetic",
+          "injectedClassIndex": 0
+        },
+        "messageType": "eeg_decode_result",
+        "pageEpoch": 0,
+        "pageId": "m16-page-1",
+        "protocolVersion": 1,
+        "selectionId": "m20-medicine-to-user-zone-01",
+        "slotIndex": 0,
+        "trialId": "m19-e2e-trial-01"
+      },
+      {
+        "classIndex": 0,
+        "event": "queue_selection_committed",
+        "queue": [
+          "assist_medicine_box"
+        ],
+        "selectionId": "m20-medicine-to-user-zone-01",
+        "targetId": "assist_medicine_box"
+      },
+      {
+        "event": "page_navigation",
+        "pageEpoch": 3,
+        "pageId": "m16-page-2",
+        "pageIndex": 1
+      },
+      {
+        "event": "decode_request_accepted",
+        "pageEpoch": 3,
+        "selectionId": "m20-medicine-to-user-zone-02"
+      },
+      {
+        "ack": {
+          "accepted": true,
+          "messageType": "eeg_decode_ack",
+          "pageEpoch": 3,
+          "pageId": "m16-page-2",
+          "protocolVersion": 1,
+          "rejectionReason": "None",
+          "selectionId": "m20-medicine-to-user-zone-02",
+          "trialId": "m19-e2e-trial-02"
+        },
+        "event": "trigger_snapshot_frozen",
+        "request": {
+          "activeSlotCount": 3,
+          "contractId": "m19_decode_request_v1",
+          "createdUtc": "2026-09-27T07:41:21.189645+00:00",
+          "messageType": "eeg_decode_request",
+          "pageEpoch": 3,
+          "pageId": "m16-page-2",
+          "pageIndex": 1,
+          "presentationPolicy": "demo_preview",
+          "protocolVersion": 1,
+          "selectionId": "m20-medicine-to-user-zone-02",
+          "slots": [
+            {
+              "frequencyHz": 7.2,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "BUTTON",
+              "slotIndex": 0,
+              "targetId": "assist_button_switch"
+            },
+            {
+              "frequencyHz": 9.0,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "CHARGER",
+              "slotIndex": 1,
+              "targetId": "assist_wireless_charger"
+            },
+            {
+              "frequencyHz": 12.0,
+              "provenance": "m16_frozen_page_snapshot",
+              "semanticLabel": "USER ZONE",
+              "slotIndex": 2,
+              "targetId": "assist_user_zone"
+            }
+          ],
+          "trialId": "m19-e2e-trial-02"
+        }
+      },
+      {
+        "accepted": true,
+        "classIndex": 2,
+        "decisionMade": true,
+        "event": "decode_result",
+        "evidence": {
+          "backend": "synthetic",
+          "injectedClassIndex": 2
+        },
+        "messageType": "eeg_decode_result",
+        "pageEpoch": 3,
+        "pageId": "m16-page-2",
+        "protocolVersion": 1,
+        "selectionId": "m20-medicine-to-user-zone-02",
+        "slotIndex": 2,
+        "trialId": "m19-e2e-trial-02"
+      },
+      {
+        "classIndex": 2,
+        "event": "queue_selection_committed",
+        "queue": [
+          "assist_medicine_box",
+          "assist_user_zone"
+        ],
+        "selectionId": "m20-medicine-to-user-zone-02",
+        "targetId": "assist_user_zone"
+      },
+      {
+        "accepted": true,
+        "event": "queue_submit",
+        "orderedTargets": [
+          "assist_medicine_box",
+          "assist_user_zone"
+        ],
+        "reason": "submitted"
+      }
+    ],
+    "submitState": "executing",
+    "submittedBatchCount": 1,
+    "syntheticBackendCalls": [
+      {
+        "pageEpoch": 0,
+        "pageId": "m16-page-1",
+        "selectionId": "m20-medicine-to-user-zone-01",
+        "trialId": "m19-e2e-trial-01"
+      },
+      {
+        "pageEpoch": 3,
+        "pageId": "m16-page-2",
+        "selectionId": "m20-medicine-to-user-zone-02",
+        "trialId": "m19-e2e-trial-02"
+      }
+    ],
+    "triggerRequests": [
+      {
+        "decodedClassIndex": 0,
+        "pageEpoch": 0,
+        "pageId": "m16-page-1",
+        "slots": [
+          {
+            "frequencyHz": 7.2,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "MEDICINE",
+            "slotIndex": 0,
+            "targetId": "assist_medicine_box"
+          },
+          {
+            "frequencyHz": 9.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "STORAGE",
+            "slotIndex": 1,
+            "targetId": "assist_storage_box"
+          },
+          {
+            "frequencyHz": 12.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "PHONE",
+            "slotIndex": 2,
+            "targetId": "assist_phone"
+          }
+        ]
+      },
+      {
+        "decodedClassIndex": 2,
+        "pageEpoch": 3,
+        "pageId": "m16-page-2",
+        "slots": [
+          {
+            "frequencyHz": 7.2,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "BUTTON",
+            "slotIndex": 0,
+            "targetId": "assist_button_switch"
+          },
+          {
+            "frequencyHz": 9.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "CHARGER",
+            "slotIndex": 1,
+            "targetId": "assist_wireless_charger"
+          },
+          {
+            "frequencyHz": 12.0,
+            "provenance": "m16_frozen_page_snapshot",
+            "semanticLabel": "USER ZONE",
+            "slotIndex": 2,
+            "targetId": "assist_user_zone"
+          }
+        ]
+      }
+    ]
+  }
+}
