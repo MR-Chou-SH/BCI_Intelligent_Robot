@@ -213,7 +213,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             {
                 if (m_useM20AssistiveDeskProfile)
                 {
-                    m20SceneSpec = M20AssistiveDeskUnityScene.LoadFromResources();
+                    M20AssistiveDeskSceneSpec canonicalSpec = M20AssistiveDeskUnityScene.LoadFromResources();
+                    int seedOverride;
+                    bool hasSeedOverride = M20AssistiveDeskUnityScene.TryGetCommandLineSeedOverride(
+                        System.Environment.GetCommandLineArgs(), out seedOverride);
+                    m20SceneSpec = M20AssistiveDeskUnityScene.CreateRuntimeSceneSpec(
+                        canonicalSpec,
+                        hasSeedOverride ? (int?)seedOverride : null);
                     catalog = M20AssistiveDeskUnityScene.CreatePagedQueueCatalog(m20SceneSpec);
                 }
                 else
@@ -273,6 +279,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             BciSelectionTransportClient transport = GetComponent<BciSelectionTransportClient>();
             if (transport == null)
                 transport = gameObject.AddComponent<BciSelectionTransportClient>();
+            if (m20SceneSpec != null && !transport.ConfigureM20SceneLayoutSnapshot(
+                m20SceneSpec.runtimeSceneId, m20SceneSpec.layoutSnapshotJson))
+            {
+                Debug.LogError("M20_ASSISTIVE scene_snapshot_transport_configuration_failed scene_id=" +
+                    m20SceneSpec.runtimeSceneId, this);
+                return false;
+            }
             transport.Initialize(binding, m_selectionServerHost, m_selectionServerPort);
 
             if (m_selectionInteractionMode == BciSelectionInteractionMode.PagedQueueV1)

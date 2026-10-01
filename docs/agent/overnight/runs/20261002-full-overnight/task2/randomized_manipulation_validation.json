@@ -1,0 +1,419 @@
+{
+  "acceptanceThresholds": {
+    "horizontalPlacementErrorMeters": 0.08,
+    "releasedObjectMaximumSpeedMetersPerSecond": 0.05,
+    "snapshotToInitialMuJoCoPoseMeters": 0.005,
+    "verticalPlacementErrorMeters": 0.035
+  },
+  "executionEnvironment": "MuJoCo simulation only; no physical robot operated",
+  "negativeCoverage": {
+    "changedPoseForFrozenSceneRejectedBeforeAck": true,
+    "focusedTcpTestCommand": ".venv\\Scripts\\python.exe -B -m unittest integration.test_m20_quest_pc_acceptance",
+    "missingSnapshotRejectedBeforeAck": true,
+    "staleSceneRejected": true
+  },
+  "scenarios": [
+    {
+      "bilateralPhoneWeld": null,
+      "closePhaseObjectGripperContacts": 8,
+      "destinationTargetId": "assist_user_zone",
+      "dispatchSuccess": true,
+      "evidence": "e2e-run-03/attempt-01/medicine-to-user-zone.json",
+      "expectedPlacementCenterWorldMeters": [
+        -0.11,
+        -0.19,
+        0.767
+      ],
+      "finalLinearSpeedMetersPerSecond": 6.422892604852994e-11,
+      "finalObjectPoseWorldMeters": [
+        -0.1046638728290191,
+        -0.1906261104908785,
+        0.7668922445797829
+      ],
+      "graspDistanceMeters": 0.07352454405646314,
+      "graspDistanceToleranceMeters": 0.093,
+      "horizontalPlacementErrorMeters": 0.005372733711218972,
+      "m9ExecutionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+      "maxInitialSnapshotToMuJoCoPoseErrorMeters": 0.0001077554183332996,
+      "minimumGripperTableClearanceMeters": 0.007891005280461492,
+      "releaseAndSettling": true,
+      "run": "e2e-run-03",
+      "scenarioId": "medicine-to-user-zone",
+      "sceneId": "m20-e2e-190926",
+      "seed": 190926,
+      "sourcePoseTableLocalMeters": [
+        0.373142173995097,
+        0.04669829981815417,
+        0.015
+      ],
+      "sourceSemanticId": "assist_medicine_box",
+      "status": "PASS",
+      "verticalPlacementErrorMeters": 0.00010775542021712603
+    },
+    {
+      "bilateralPhoneWeld": {
+        "activated": true,
+        "activationAnchorErrorMeters": 8.883008075286997e-16,
+        "activationOrientationErrorRadians": 1.6593230851978133e-07,
+        "bilateralContactBodies": [
+          "umi_left_finger_holder",
+          "umi_right_finger_holder"
+        ],
+        "mechanism": "bilateral_contact_confirmed_runtime_body_weld",
+        "released": true
+      },
+      "closePhaseObjectGripperContacts": 4,
+      "destinationTargetId": "assist_user_zone",
+      "dispatchSuccess": true,
+      "evidence": "e2e-run-03/attempt-01/phone-to-user-zone.json",
+      "expectedPlacementCenterWorldMeters": [
+        0.1,
+        -0.19,
+        0.756
+      ],
+      "finalLinearSpeedMetersPerSecond": 7.059449402758317e-05,
+      "finalObjectPoseWorldMeters": [
+        0.0979536689836717,
+        -0.20346947565527526,
+        0.7523596615160867
+      ],
+      "graspDistanceMeters": 0.08308552011410461,
+      "graspDistanceToleranceMeters": 0.118,
+      "horizontalPlacementErrorMeters": 0.01362403189428299,
+      "m9ExecutionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+      "maxInitialSnapshotToMuJoCoPoseErrorMeters": 0.00010775542043162112,
+      "minimumGripperTableClearanceMeters": 0.005801253834859742,
+      "releaseAndSettling": true,
+      "run": "e2e-run-03",
+      "scenarioId": "phone-to-user-zone",
+      "sceneId": "m20-e2e-190926",
+      "seed": 190926,
+      "sourcePoseTableLocalMeters": [
+        -0.2919906742748496,
+        0.005606507390476613,
+        0.004
+      ],
+      "sourceSemanticId": "assist_phone",
+      "status": "PASS",
+      "verticalPlacementErrorMeters": 0.003640338483913319
+    },
+    {
+      "bilateralPhoneWeld": {
+        "activated": true,
+        "activationAnchorErrorMeters": 8.883008075286997e-16,
+        "activationOrientationErrorRadians": 1.6593230851978133e-07,
+        "bilateralContactBodies": [
+          "umi_left_finger_holder",
+          "umi_right_finger_holder"
+        ],
+        "mechanism": "bilateral_contact_confirmed_runtime_body_weld",
+        "released": true
+      },
+      "closePhaseObjectGripperContacts": 4,
+      "destinationTargetId": "assist_wireless_charger",
+      "dispatchSuccess": true,
+      "evidence": "e2e-run-03/attempt-01/phone-to-charger.json",
+      "expectedPlacementCenterWorldMeters": [
+        0.22139172841683719,
+        0.19984814566184114,
+        0.766
+      ],
+      "finalLinearSpeedMetersPerSecond": 0.00016935412211243454,
+      "finalObjectPoseWorldMeters": [
+        0.23328770306773625,
+        0.17730589345050143,
+        0.7631815758892723
+      ],
+      "graspDistanceMeters": 0.08308552011410461,
+      "graspDistanceToleranceMeters": 0.118,
+      "horizontalPlacementErrorMeters": 0.025488572883833317,
+      "m9ExecutionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+      "maxInitialSnapshotToMuJoCoPoseErrorMeters": 0.00010775542043162112,
+      "minimumGripperTableClearanceMeters": 0.007121190700257074,
+      "releaseAndSettling": true,
+      "run": "e2e-run-03",
+      "scenarioId": "phone-to-charger",
+      "sceneId": "m20-e2e-190926",
+      "seed": 190926,
+      "sourcePoseTableLocalMeters": [
+        -0.2919906742748496,
+        0.005606507390476613,
+        0.004
+      ],
+      "sourceSemanticId": "assist_phone",
+      "status": "PASS",
+      "verticalPlacementErrorMeters": 0.0028184241107277463
+    },
+    {
+      "bilateralPhoneWeld": null,
+      "closePhaseObjectGripperContacts": 8,
+      "destinationTargetId": "assist_user_zone",
+      "dispatchSuccess": true,
+      "evidence": "e2e-run-04/attempt-01/medicine-to-user-zone.json",
+      "expectedPlacementCenterWorldMeters": [
+        -0.11,
+        -0.19,
+        0.767
+      ],
+      "finalLinearSpeedMetersPerSecond": 2.1610548707871435e-10,
+      "finalObjectPoseWorldMeters": [
+        -0.10784072598779416,
+        -0.19064442489684516,
+        0.7668922445797828
+      ],
+      "graspDistanceMeters": 0.07387152792222522,
+      "graspDistanceToleranceMeters": 0.093,
+      "horizontalPlacementErrorMeters": 0.0022533858319119214,
+      "m9ExecutionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+      "maxInitialSnapshotToMuJoCoPoseErrorMeters": 0.0001077554183332996,
+      "minimumGripperTableClearanceMeters": 0.008500902947800813,
+      "releaseAndSettling": true,
+      "run": "e2e-run-04",
+      "scenarioId": "medicine-to-user-zone",
+      "sceneId": "m20-e2e-190927",
+      "seed": 190927,
+      "sourcePoseTableLocalMeters": [
+        0.05798367370129737,
+        0.00865735268431292,
+        0.015
+      ],
+      "sourceSemanticId": "assist_medicine_box",
+      "status": "PASS",
+      "verticalPlacementErrorMeters": 0.00010775542021723705
+    },
+    {
+      "bilateralPhoneWeld": {
+        "activated": true,
+        "activationAnchorErrorMeters": 1.1102230246251565e-16,
+        "activationOrientationErrorRadians": 9.884312124119402e-08,
+        "bilateralContactBodies": [
+          "umi_left_finger_holder",
+          "umi_right_finger_holder"
+        ],
+        "mechanism": "bilateral_contact_confirmed_runtime_body_weld",
+        "released": true
+      },
+      "closePhaseObjectGripperContacts": 4,
+      "destinationTargetId": "assist_user_zone",
+      "dispatchSuccess": true,
+      "evidence": "e2e-run-04/attempt-01/phone-to-user-zone.json",
+      "expectedPlacementCenterWorldMeters": [
+        0.1,
+        -0.19,
+        0.756
+      ],
+      "finalLinearSpeedMetersPerSecond": 7.442087715050285e-05,
+      "finalObjectPoseWorldMeters": [
+        0.09919865635269988,
+        -0.20163922079915753,
+        0.752371014831434
+      ],
+      "graspDistanceMeters": 0.08365325440637601,
+      "graspDistanceToleranceMeters": 0.118,
+      "horizontalPlacementErrorMeters": 0.011666773866524085,
+      "m9ExecutionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+      "maxInitialSnapshotToMuJoCoPoseErrorMeters": 0.00010775542043162112,
+      "minimumGripperTableClearanceMeters": 0.005830859527514054,
+      "releaseAndSettling": true,
+      "run": "e2e-run-04",
+      "scenarioId": "phone-to-user-zone",
+      "sceneId": "m20-e2e-190927",
+      "seed": 190927,
+      "sourcePoseTableLocalMeters": [
+        -0.10261565458096719,
+        0.08866598960576888,
+        0.004
+      ],
+      "sourceSemanticId": "assist_phone",
+      "status": "PASS",
+      "verticalPlacementErrorMeters": 0.0036289851685660235
+    },
+    {
+      "bilateralPhoneWeld": {
+        "activated": true,
+        "activationAnchorErrorMeters": 1.1102230246251565e-16,
+        "activationOrientationErrorRadians": 9.884312124119402e-08,
+        "bilateralContactBodies": [
+          "umi_left_finger_holder",
+          "umi_right_finger_holder"
+        ],
+        "mechanism": "bilateral_contact_confirmed_runtime_body_weld",
+        "released": true
+      },
+      "closePhaseObjectGripperContacts": 4,
+      "destinationTargetId": "assist_wireless_charger",
+      "dispatchSuccess": true,
+      "evidence": "e2e-run-04/attempt-01/phone-to-charger.json",
+      "expectedPlacementCenterWorldMeters": [
+        -0.24994384045724827,
+        0.024721964949384077,
+        0.766
+      ],
+      "finalLinearSpeedMetersPerSecond": 7.152766777574023e-05,
+      "finalObjectPoseWorldMeters": [
+        -0.25153708337311814,
+        0.013614325841182476,
+        0.7621334056968192
+      ],
+      "graspDistanceMeters": 0.08365325440637601,
+      "graspDistanceToleranceMeters": 0.118,
+      "horizontalPlacementErrorMeters": 0.011221322094433401,
+      "m9ExecutionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+      "maxInitialSnapshotToMuJoCoPoseErrorMeters": 0.00010775542043162112,
+      "minimumGripperTableClearanceMeters": 0.008303096551446563,
+      "releaseAndSettling": true,
+      "run": "e2e-run-04",
+      "scenarioId": "phone-to-charger",
+      "sceneId": "m20-e2e-190927",
+      "seed": 190927,
+      "sourcePoseTableLocalMeters": [
+        -0.10261565458096719,
+        0.08866598960576888,
+        0.004
+      ],
+      "sourceSemanticId": "assist_phone",
+      "status": "PASS",
+      "verticalPlacementErrorMeters": 0.0038665943031808148
+    },
+    {
+      "bilateralPhoneWeld": null,
+      "closePhaseObjectGripperContacts": 8,
+      "destinationTargetId": "assist_user_zone",
+      "dispatchSuccess": true,
+      "evidence": "e2e-run-05/attempt-01/medicine-to-user-zone.json",
+      "expectedPlacementCenterWorldMeters": [
+        -0.11,
+        -0.19,
+        0.767
+      ],
+      "finalLinearSpeedMetersPerSecond": 2.3291279194610606e-10,
+      "finalObjectPoseWorldMeters": [
+        -0.10988810789880701,
+        -0.18925917472608547,
+        0.766892244579783
+      ],
+      "graspDistanceMeters": 0.0731221913940985,
+      "graspDistanceToleranceMeters": 0.093,
+      "horizontalPlacementErrorMeters": 0.0007492275547388262,
+      "m9ExecutionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+      "maxInitialSnapshotToMuJoCoPoseErrorMeters": 0.0001077554183332996,
+      "minimumGripperTableClearanceMeters": 0.007836721503573174,
+      "releaseAndSettling": true,
+      "run": "e2e-run-05",
+      "scenarioId": "medicine-to-user-zone",
+      "sceneId": "m20-e2e-190928",
+      "seed": 190928,
+      "sourcePoseTableLocalMeters": [
+        -0.23614751899108363,
+        0.022082185881978536,
+        0.015
+      ],
+      "sourceSemanticId": "assist_medicine_box",
+      "status": "PASS",
+      "verticalPlacementErrorMeters": 0.00010775542021701501
+    },
+    {
+      "bilateralPhoneWeld": {
+        "activated": true,
+        "activationAnchorErrorMeters": 3.3335590258932494e-16,
+        "activationOrientationErrorRadians": 1.2990531157078367e-07,
+        "bilateralContactBodies": [
+          "umi_left_finger_holder",
+          "umi_right_finger_holder"
+        ],
+        "mechanism": "bilateral_contact_confirmed_runtime_body_weld",
+        "released": true
+      },
+      "closePhaseObjectGripperContacts": 4,
+      "destinationTargetId": "assist_user_zone",
+      "dispatchSuccess": true,
+      "evidence": "e2e-run-05/attempt-01/phone-to-user-zone.json",
+      "expectedPlacementCenterWorldMeters": [
+        0.1,
+        -0.19,
+        0.756
+      ],
+      "finalLinearSpeedMetersPerSecond": 9.482669700601436e-05,
+      "finalObjectPoseWorldMeters": [
+        0.10158196745647628,
+        -0.2041066878297698,
+        0.7523792071811427
+      ],
+      "graspDistanceMeters": 0.0837565903542887,
+      "graspDistanceToleranceMeters": 0.118,
+      "horizontalPlacementErrorMeters": 0.014195114038285323,
+      "m9ExecutionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+      "maxInitialSnapshotToMuJoCoPoseErrorMeters": 0.00010775542045249331,
+      "minimumGripperTableClearanceMeters": 0.005866466506295631,
+      "releaseAndSettling": true,
+      "run": "e2e-run-05",
+      "scenarioId": "phone-to-user-zone",
+      "sceneId": "m20-e2e-190928",
+      "seed": 190928,
+      "sourcePoseTableLocalMeters": [
+        0.17651221346388724,
+        0.07744852166811834,
+        0.004
+      ],
+      "sourceSemanticId": "assist_phone",
+      "status": "PASS",
+      "verticalPlacementErrorMeters": 0.003620792818857299
+    },
+    {
+      "bilateralPhoneWeld": {
+        "activated": true,
+        "activationAnchorErrorMeters": 3.3335590258932494e-16,
+        "activationOrientationErrorRadians": 1.2990531157078367e-07,
+        "bilateralContactBodies": [
+          "umi_left_finger_holder",
+          "umi_right_finger_holder"
+        ],
+        "mechanism": "bilateral_contact_confirmed_runtime_body_weld",
+        "released": true
+      },
+      "closePhaseObjectGripperContacts": 4,
+      "destinationTargetId": "assist_wireless_charger",
+      "dispatchSuccess": true,
+      "evidence": "e2e-run-05/attempt-01/phone-to-charger.json",
+      "expectedPlacementCenterWorldMeters": [
+        0.13982316723420118,
+        -0.03186058430752204,
+        0.766
+      ],
+      "finalLinearSpeedMetersPerSecond": 8.45157279966631e-05,
+      "finalObjectPoseWorldMeters": [
+        0.14156925984815044,
+        -0.04746795053727754,
+        0.7624049428752363
+      ],
+      "graspDistanceMeters": 0.0837565903542887,
+      "graspDistanceToleranceMeters": 0.118,
+      "horizontalPlacementErrorMeters": 0.015704735593005077,
+      "m9ExecutionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+      "maxInitialSnapshotToMuJoCoPoseErrorMeters": 0.00010775542045249331,
+      "minimumGripperTableClearanceMeters": 0.00847330444832428,
+      "releaseAndSettling": true,
+      "run": "e2e-run-05",
+      "scenarioId": "phone-to-charger",
+      "sceneId": "m20-e2e-190928",
+      "seed": 190928,
+      "sourcePoseTableLocalMeters": [
+        0.17651221346388724,
+        0.07744852166811834,
+        0.004
+      ],
+      "sourceSemanticId": "assist_phone",
+      "status": "PASS",
+      "verticalPlacementErrorMeters": 0.003595057124763712
+    }
+  ],
+  "schemaVersion": 1,
+  "seedCount": 3,
+  "seeds": [
+    190926,
+    190927,
+    190928
+  ],
+  "status": "PASS",
+  "successfulScenarioCount": 9
+}

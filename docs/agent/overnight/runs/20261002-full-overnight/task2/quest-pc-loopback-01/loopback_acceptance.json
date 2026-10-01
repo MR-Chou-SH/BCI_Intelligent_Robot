@@ -1,0 +1,612 @@
+{
+  "ack": {
+    "batchId": "m20-quest-pc-loopback-batch-1",
+    "messageType": "batch_ack",
+    "protocolVersion": 1
+  },
+  "batchId": "m20-quest-pc-loopback-batch-1",
+  "execution": {
+    "action": {
+      "destinationSemanticId": "assist_user_zone",
+      "destinationTargetId": "assist_user_zone",
+      "placementPositionTableLocalMeters": [
+        -0.11,
+        -0.19,
+        0.017
+      ],
+      "placementYawDegrees": 0.0,
+      "resolutionProvenance": "canonical_m20_source_placements_after_ordered_submit",
+      "sourceLogicalBlockId": "block_assist_medicine_01",
+      "sourceSemanticId": "assist_medicine_box",
+      "sourceTargetId": "assist_medicine_box"
+    },
+    "expectedCenterWorldMeters": [
+      -0.11,
+      -0.19,
+      0.767
+    ],
+    "finalLinearSpeedMetersPerSecond": 1.6752932942336418e-10,
+    "finalObjectPoseWorldMeters": [
+      -0.10723802073517853,
+      -0.19168578208718734,
+      0.7668922445797828
+    ],
+    "graspContactTrace": [
+      {
+        "contactPairs": [],
+        "entryZ": 0.765,
+        "maxObjectGripperContacts": 0,
+        "maxZ": 0.765,
+        "minZ": 0.7648248694727239,
+        "name": "HOME"
+      },
+      {
+        "contactPairs": [],
+        "entryZ": 0.7648922443628798,
+        "maxObjectGripperContacts": 0,
+        "maxZ": 0.7648922445816474,
+        "minZ": 0.7648922443628798,
+        "name": "APPROACH"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7648922445815722,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 0.7648922445815722,
+        "minZ": 0.761417447056488,
+        "name": "CLOSE"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7614172612303707,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 0.7614214714077524,
+        "minZ": 0.7614145952185128,
+        "name": "SETTLE"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.7614216261004098,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 1.0195092486867579,
+        "minZ": 0.7614216261004098,
+        "name": "LIFT"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 1.0198982751278296,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 1.0334119306125467,
+        "minZ": 1.0198982751278296,
+        "name": "HOLD"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 1.0335263139671906,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 1.039191371746818,
+        "minZ": 0.8055174717490409,
+        "name": "PLACE"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.8047682016295067,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 0.8047682016295067,
+        "minZ": 0.7692186289483137,
+        "name": "PLACE_HOLD"
+      },
+      {
+        "contactPairs": [
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_left_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          },
+          {
+            "body": "umi_right_finger_holder",
+            "geom": ""
+          }
+        ],
+        "entryZ": 0.76918728091919,
+        "maxObjectGripperContacts": 8,
+        "maxZ": 0.76918728091919,
+        "minZ": 0.7662872169458568,
+        "name": "RELEASE"
+      },
+      {
+        "contactPairs": [],
+        "entryZ": 0.7668922445797828,
+        "maxObjectGripperContacts": 0,
+        "maxZ": 0.7668922445797828,
+        "minZ": 0.7668922445797828,
+        "name": "DONE"
+      }
+    ],
+    "gripperTableClearance": {
+      "gripperGeom": null,
+      "minimumMeters": 0.008740297144602671,
+      "phase": "LIFT"
+    },
+    "horizontalErrorMeters": 0.003235798310276064,
+    "m9Dispatch": {
+      "accepted": true,
+      "acceptedSelectionIds": [
+        "m20-quest-pc-loopback-01"
+      ],
+      "batchId": "m20-resolved-action-assist_medicine_box-1",
+      "duplicateBatch": false,
+      "duplicateSelectionIds": [],
+      "executions": [
+        {
+          "backendExecutionId": "941c3cf7d3c0460ebbbf7c9daf215afe",
+          "completedUtc": "2026-10-01T21:47:58.141405Z",
+          "executionProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+          "executionState": "completed",
+          "failureCode": null,
+          "failureReason": null,
+          "logicalBlockId": "block_assist_medicine_01",
+          "requestId": "m20-request-assist_medicine_box",
+          "selectionId": "m20-quest-pc-loopback-01",
+          "simulatorObjectResolution": "resolved",
+          "startedUtc": "2026-10-01T21:47:56.525363Z",
+          "success": true,
+          "targetId": "assist_medicine_box"
+        }
+      ],
+      "failureCode": null,
+      "failureReason": null,
+      "state": "accepted"
+    },
+    "phoneGraspEvidence": null,
+    "placementStable": true,
+    "plannerProvenance": "fr3_umi_mujoco@a42a0876350f6c94747ce93fa640807b14b18bfd:GripperGraspPlanner:place_ok",
+    "sceneId": "m20-quest-pc-loopback-190926",
+    "sceneSnapshotSha256": "61603ecdb548211b4dc9ebeb50fc6f986a5a4f8ca4c3c45a8dca4463c09ebf4f",
+    "settlingSteps": 600,
+    "sideGraspIkErrors": null,
+    "sourceConfirmedBatch": {
+      "batchId": "m20-resolved-action-assist_medicine_box-1",
+      "confirmedBatch": {
+        "batchId": "m20-resolved-action-assist_medicine_box-1",
+        "groupId": "m16-paged-session",
+        "groupIndex": 0,
+        "provenance": "quest_confirmed_target_batch",
+        "sceneId": "m20-quest-pc-loopback-190926",
+        "sceneLayoutSnapshotJson": "{\"candidateOrderFarToNearLeftToRight\":[\"assist_phone\",\"assist_wireless_charger\",\"assist_button_switch\",\"assist_storage_box\",\"assist_medicine_box\",\"assist_user_zone\"],\"coordinateFrame\":{\"id\":\"m20_table_local_to_mujoco_v1\",\"mujocoWorldPositionAdapter\":\"(x, y, tableTopWorldZ + z)\",\"origin\":\"center of the tabletop top surface\",\"unit\":\"meter\",\"unityTableRootLocalPositionAdapter\":\"(-x, z, -y)\",\"x\":\"user visual right\",\"y\":\"away from user toward robot\",\"z\":\"up\"},\"createdUtc\":\"2026-10-02T00:00:00Z\",\"fallbackUsed\":false,\"objects\":[{\"affordanceTags\":[\"medicine_container\",\"small_rigid_box\",\"movable\"],\"dimensionsMeters\":{\"x\":0.1,\"y\":0.06,\"z\":0.03},\"fixedPose\":false,\"logicalBlockId\":\"block_assist_medicine_01\",\"objectType\":\"small_medicine_box\",\"positionMeters\":{\"x\":0.21705904982955349,\"y\":0.020775539731602507,\"z\":0.015},\"role\":\"movable_source\",\"selectable\":true,\"semanticId\":\"assist_medicine_box\",\"sourceKind\":\"virtual_block\",\"targetId\":\"assist_medicine_box\",\"yawDegrees\":0.0},{\"affordanceTags\":[\"storage_container\",\"hinged_lid\",\"stationary_context_object\"],\"dimensionsMeters\":{\"x\":0.18,\"y\":0.12,\"z\":0.075},\"fixedPose\":false,\"logicalBlockId\":\"block_assist_storage_02\",\"objectType\":\"hinged_storage_box\",\"positionMeters\":{\"x\":-0.08094549732709189,\"y\":0.022121963626045033,\"z\":0.0375},\"role\":\"articulated_context_object\",\"selectable\":true,\"semanticId\":\"assist_storage_box\",\"sourceKind\":\"virtual_block\",\"targetId\":\"assist_storage_box\",\"yawDegrees\":0.0},{\"affordanceTags\":[\"smartphone\",\"flat_rigid_object\",\"wireless_charging_source\",\"movable\"],\"dimensionsMeters\":{\"x\":0.15,\"y\":0.072,\"z\":0.008},\"fixedPose\":false,\"logicalBlockId\":\"block_assist_phone_03\",\"objectType\":\"smartphone\",\"positionMeters\":{\"x\":0.1346411898475654,\"y\":0.11628139460983494,\"z\":0.004},\"role\":\"movable_source\",\"selectable\":true,\"semanticId\":\"assist_phone\",\"sourceKind\":\"virtual_block\",\"targetId\":\"assist_phone\",\"yawDegrees\":0.0},{\"affordanceTags\":[\"button\",\"switch\",\"pressable\",\"stationary_context_object\"],\"dimensionsMeters\":{\"x\":0.11,\"y\":0.06,\"z\":0.022},\"fixedPose\":false,\"logicalBlockId\":\"block_assist_button_04\",\"objectType\":\"button_switch\",\"positionMeters\":{\"x\":-0.3872190738883525,\"y\":0.05284215202845363,\"z\":0.011},\"role\":\"articulated_context_object\",\"selectable\":true,\"semanticId\":\"assist_button_switch\",\"sourceKind\":\"virtual_block\",\"targetId\":\"assist_button_switch\",\"yawDegrees\":0.0},{\"affordanceTags\":[\"wireless_charger\",\"phone_destination\",\"fixed_surface\"],\"dimensionsMeters\":{\"x\":0.095,\"y\":0.095,\"z\":0.012},\"fixedPose\":false,\"logicalBlockId\":\"block_assist_charger_05\",\"objectType\":\"wireless_charging_pad\",\"positionMeters\":{\"x\":0.3348757541958076,\"y\":0.13495259533416556,\"z\":0.006},\"role\":\"fixed_destination\",\"selectable\":true,\"semanticId\":\"assist_wireless_charger\",\"sourceKind\":\"virtual_block\",\"targetId\":\"assist_wireless_charger\",\"yawDegrees\":0.0},{\"affordanceTags\":[\"user_zone\",\"placement_destination\",\"fixed_surface\"],\"dimensionsMeters\":{\"x\":0.46,\"y\":0.18,\"z\":0.002},\"fixedPose\":true,\"logicalBlockId\":\"block_assist_user_zone_06\",\"objectType\":\"user_zone\",\"positionMeters\":{\"x\":0.0,\"y\":-0.19,\"z\":0.001},\"role\":\"fixed_destination\",\"selectable\":true,\"semanticId\":\"assist_user_zone\",\"sourceKind\":\"virtual_block\",\"targetId\":\"assist_user_zone\",\"yawDegrees\":0.0},{\"affordanceTags\":[\"hinged_lid\"],\"dimensionsMeters\":{\"x\":0.18,\"y\":0.12,\"z\":0.008},\"fixedPose\":false,\"logicalBlockId\":\"\",\"objectType\":\"storage_lid\",\"positionMeters\":{\"x\":-0.08094549732709189,\"y\":0.02212196362604503,\"z\":0.079},\"role\":\"hinged_part\",\"selectable\":false,\"semanticId\":\"assist_storage_lid\",\"sourceKind\":\"articulated_part\",\"targetId\":\"\",\"yawDegrees\":0.0},{\"affordanceTags\":[\"button_cap\",\"sliding_part\"],\"dimensionsMeters\":{\"x\":0.028,\"y\":0.028,\"z\":0.012},\"fixedPose\":false,\"logicalBlockId\":\"\",\"objectType\":\"button_cap\",\"positionMeters\":{\"x\":-0.3872190738883525,\"y\":0.05284215202845363,\"z\":0.028},\"role\":\"sliding_part\",\"selectable\":false,\"semanticId\":\"assist_button_cap\",\"sourceKind\":\"articulated_part\",\"targetId\":\"\",\"yawDegrees\":0.0}],\"randomSeed\":190926,\"randomizationMethod\":\"bounded_uniform_rejection_v1\",\"sceneId\":\"m20-quest-pc-loopback-190926\",\"schemaVersion\":1,\"table\":{\"dimensionsMeters\":{\"x\":0.96,\"y\":0.56,\"z\":0.05},\"mujocoTopSurfaceWorldZMeters\":0.75},\"templateId\":\"m20_daily_assistive_desk\"}",
+        "selections": [
+          {
+            "buildSlotIndex": null,
+            "logicalBlockId": "block_assist_medicine_01",
+            "predictedClassIndex": 1,
+            "provenance": "quest_frozen_selection_snapshot",
+            "resolvedUtc": "2026-10-01T21:47:55.824673+00:00",
+            "selectionId": "m20-quest-pc-loopback-01",
+            "semanticLabel": "MEDICINE",
+            "slotIndex": 1,
+            "targetId": "assist_medicine_box"
+          }
+        ],
+        "submittedUtc": "2026-10-01T21:47:55.824673+00:00"
+      },
+      "messageType": "target_batch_confirmed",
+      "protocolVersion": 1
+    },
+    "status": "PASS",
+    "tableBottomClearanceMeters": 0.0018922445797827647,
+    "trajectoryEvidence": [
+      {
+        "blockHalfExtentsMujoco": [
+          0.05,
+          0.03,
+          0.015
+        ],
+        "blockPositionMujoco": [
+          0.21705904982877258,
+          0.02077553973159919,
+          0.764892244581555
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.006137035459462966,
+        "graspHorizontalToleranceMeters": 0.093,
+        "gripperPadPositionMujoco": [
+          0.21896952582209275,
+          0.014943448707819372,
+          0.8736660266679903
+        ],
+        "gripperPositionMujoco": [
+          0.21572444189302473,
+          0.01481111082953438,
+          0.9980598043137361
+        ],
+        "gripperToBlockDistanceMeters": 0.10894677082694107,
+        "phase": "pre_grasp",
+        "plannerPhase": "CLOSE",
+        "simulatorObject": "assist_medicine_box",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          -0.11,
+          -0.19,
+          0.767
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.05,
+          0.03,
+          0.015
+        ],
+        "blockPositionMujoco": [
+          0.2167284577156426,
+          0.020920453067081356,
+          0.7614214714077524
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.00138623305500328,
+        "graspHorizontalToleranceMeters": 0.093,
+        "gripperPadPositionMujoco": [
+          0.2162309153472503,
+          0.022214320786146304,
+          0.8357497976988567
+        ],
+        "gripperPositionMujoco": [
+          0.21311936316202165,
+          0.021655943733910183,
+          0.960145804299013
+        ],
+        "gripperToBlockDistanceMeters": 0.07434125188157414,
+        "phase": "grasp",
+        "plannerPhase": "LIFT",
+        "simulatorObject": "assist_medicine_box",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          -0.11,
+          -0.19,
+          0.767
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.05,
+          0.03,
+          0.015
+        ],
+        "blockPositionMujoco": [
+          0.21306283587881103,
+          0.01803822618329748,
+          1.0195092486867579
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.0036972729728539217,
+        "graspHorizontalToleranceMeters": 0.093,
+        "gripperPadPositionMujoco": [
+          0.21570741888611683,
+          0.020622023418621002,
+          1.0931542771632268
+        ],
+        "gripperPositionMujoco": [
+          0.2131576802602779,
+          0.019932612516609875,
+          1.217562410119027
+        ],
+        "gripperToBlockDistanceMeters": 0.07373777896530187,
+        "phase": "carry",
+        "plannerPhase": "HOLD",
+        "simulatorObject": "assist_medicine_box",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          -0.11,
+          -0.19,
+          0.767
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.05,
+          0.03,
+          0.015
+        ],
+        "blockPositionMujoco": [
+          -0.11040774358803897,
+          -0.19521112788859007,
+          0.8055174717490409
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.006350377110930792,
+        "graspHorizontalToleranceMeters": 0.093,
+        "gripperPadPositionMujoco": [
+          -0.10873511903455468,
+          -0.18908498582738098,
+          0.8796562457076632
+        ],
+        "gripperPositionMujoco": [
+          -0.11207102091130948,
+          -0.19026580186715691,
+          1.0040420866709692
+        ],
+        "gripperToBlockDistanceMeters": 0.0744102485786651,
+        "phase": "place",
+        "plannerPhase": "PLACE_HOLD",
+        "simulatorObject": "assist_medicine_box",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          -0.11,
+          -0.19,
+          0.767
+        ]
+      },
+      {
+        "blockHalfExtentsMujoco": [
+          0.05,
+          0.03,
+          0.015
+        ],
+        "blockPositionMujoco": [
+          -0.10723712909584454,
+          -0.19168329354004598,
+          0.7668566051985284
+        ],
+        "graspAlignmentWithinSizeTolerance": true,
+        "graspHorizontalErrorMeters": 0.0047344682884578135,
+        "graspHorizontalToleranceMeters": 0.093,
+        "gripperPadPositionMujoco": [
+          -0.1066994931719892,
+          -0.18697945068682556,
+          0.8414054074435156
+        ],
+        "gripperPositionMujoco": [
+          -0.11018976726278469,
+          -0.18821361016913524,
+          0.9657864945795561
+        ],
+        "gripperToBlockDistanceMeters": 0.07469898999408638,
+        "phase": "release",
+        "plannerPhase": "DONE",
+        "simulatorObject": "assist_medicine_box",
+        "tableBoundsMujoco": null,
+        "targetPositionMujoco": [
+          -0.11,
+          -0.19,
+          0.767
+        ]
+      }
+    ],
+    "verticalErrorMeters": 0.00010775542021723705
+  },
+  "listener": "production receive_and_execute_one_batch / consume_one_batch",
+  "nd8Opened": false,
+  "orderedTargetIds": [
+    "assist_medicine_box",
+    "assist_user_zone"
+  ],
+  "physicalRobotOperated": false,
+  "questBuildRun": false,
+  "randomSeed": 190926,
+  "receiverEvidenceDirectory": "agent/overnight/runs/20261002-full-overnight/task2/quest-pc-loopback-01/receiver/attempt-01",
+  "sceneId": "m20-quest-pc-loopback-190926",
+  "sceneSnapshotValidatedBeforeAck": true,
+  "schemaVersion": 1,
+  "status": "PASS",
+  "syntheticQuestTcpSender": true
+}

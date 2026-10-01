@@ -1,0 +1,1406 @@
+{
+  "allMuJoCoPoseRowsPass": true,
+  "canonicalSpecSha256": "dad6e32b198d5d6f41cbea8b22f35b7fb46a617e0c6a26ec1e4b02d4f3aa57b3",
+  "fallbackCount": 0,
+  "m9IkReachableForAllGraspableSourcesAndSeeds": true,
+  "perObjectDistinctPoseCounts": {
+    "assist_button_switch": 20,
+    "assist_medicine_box": 20,
+    "assist_phone": 20,
+    "assist_storage_box": 20,
+    "assist_wireless_charger": 20
+  },
+  "poseSyncToleranceMeters": 0.005,
+  "questPoseEvidenceBoundary": "Quest coordinates are read from the exact runtime snapshot contract shape; physical Unity Transform values require Quest runtime evidence.",
+  "sameSeedReplayExactForAllSeeds": true,
+  "schemaVersion": 1,
+  "scope": "20 deterministic M20 layout seeds, frozen-snapshot page/Submit behavior, existing M9 IK, compiled MuJoCo pose parity",
+  "seedCount": 20,
+  "seedResults": [
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_button_switch",
+        "assist_medicine_box",
+        "assist_phone",
+        "assist_storage_box",
+        "assist_wireless_charger",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "22ae856f6c541330e47cb61fbf23d06bbfbcffb10d0836597392aa6dec81c401",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.19045488217449166,
+            0.12483828341306662,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.19045488217449166,
+            0.12483828341306662,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            0.19621030834196906,
+            0.051864560520791574,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.19621030834196906,
+            0.051864560520791574,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261002",
+      "seed": 20261002,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "e234b92f1f019debbace48e4e3b56685c9a3a0c9b79efb2be126963a5589b046",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_storage_box",
+        "assist_medicine_box",
+        "assist_button_switch",
+        "assist_wireless_charger",
+        "assist_phone",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "325bc0281f1be8a8deacc2029c1e6fee717562365e6ea4cc8a5db30a27c78f55",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.06216389118274507,
+            0.11096140367823107,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.06216389118274507,
+            0.11096140367823107,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            -0.0803575511660817,
+            0.02007677151142694,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.0803575511660817,
+            0.02007677151142694,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261003",
+      "seed": 20261003,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "08c8f0388feef401337deb4fcc74938ec56d9dbe1fdcf616b540a09a8a852c50",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_storage_box",
+        "assist_button_switch",
+        "assist_phone",
+        "assist_medicine_box",
+        "assist_wireless_charger",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "dc4f4657ee6d1ecb4a82b263caf5956c5c96a89f61a27497505aee29fe2e07c3",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            0.156718580509907,
+            0.020737813405050157,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.156718580509907,
+            0.020737813405050157,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            -0.05443190047350782,
+            0.07324088921174765,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.05443190047350782,
+            0.07324088921174765,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261004",
+      "seed": 20261004,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "779d0012418a7ffc95acc038f014ab31810cc4befe01931799f15f91a3e230bc",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_button_switch",
+        "assist_phone",
+        "assist_storage_box",
+        "assist_medicine_box",
+        "assist_wireless_charger",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "044088516d47b8f44e24a9bd85f05e35f7aea462983fbbbaa5020fa7fcbdcf93",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            0.014687993146288329,
+            0.0019655805703690057,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.014687993146288329,
+            0.0019655805703690057,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            0.18113218060300723,
+            0.08971282435847411,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.18113218060300723,
+            0.08971282435847411,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261005",
+      "seed": 20261005,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "b4a9395b1a98a0596e5360c8854cbe077459035e1ac370f49e0ac9a339ef5814",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_button_switch",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_wireless_charger",
+        "assist_medicine_box",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "fa940f3af3c59c6ac2389afb7acd91cce96857bef604d35df012659b4a010677",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.19128881259627467,
+            0.032945902916113726,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.19128881259627467,
+            0.032945902916113726,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            0.1972406798196828,
+            0.07137544682323778,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.1972406798196828,
+            0.07137544682323778,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261006",
+      "seed": 20261006,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "e004831e2f334fa093c1d2737142b5184b7491174755673d91d46be598203005",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_phone",
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_wireless_charger",
+        "assist_button_switch",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "3fe923a901316d1bc49cd0f3dd8db8f2eaba21db9cafa281170015a08e01b650",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.15342013119201137,
+            0.08900124066340628,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.15342013119201137,
+            0.08900124066340628,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            0.21587229677410147,
+            0.11850555517610616,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.21587229677410147,
+            0.11850555517610616,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261007",
+      "seed": 20261007,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "059ca71aad8f19ea04f4e7b49950e64e02e733a37ec60a966faaa2b8b71fddb8",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_button_switch",
+        "assist_wireless_charger",
+        "assist_storage_box",
+        "assist_medicine_box",
+        "assist_phone",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "d33e8d59ef58f3abf563657413cf08a2ceef6257f8e2eb2a9f3aadfb1c202fb4",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            0.04898730135173712,
+            0.0444493558858968,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.04898730135173712,
+            0.0444493558858968,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            0.2226700807331416,
+            0.03917290298440508,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.2226700807331416,
+            0.03917290298440508,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261008",
+      "seed": 20261008,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "01552bcdb1ce75dca4ab1c0b45f166a32579805f39cbd56ebf048a84e2096a29",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_button_switch",
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_wireless_charger",
+        "assist_phone",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "4a2443ebef03b2c3fdd64a09b6158b7a6a0c2dfc71f75d127419c21a8ee176af",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.07895952164802608,
+            0.12933630254988007,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.07895952164802608,
+            0.12933630254988007,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            0.15905709979961785,
+            0.019470322480831085,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.15905709979961785,
+            0.019470322480831085,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261009",
+      "seed": 20261009,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "202e0d79c320a7be5782bc522aa2899bd0f500e3319872fba0c440ada3ab441a",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_medicine_box",
+        "assist_wireless_charger",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "f7dfa087e26b596759334df2bdd78a1c9cbf1d1be32828f168bca295882693ef",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.19491723234070527,
+            0.0016387875997901948,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.19491723234070527,
+            0.0016387875997901948,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            0.12064952478114332,
+            0.09515191397227178,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.12064952478114332,
+            0.09515191397227178,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261010",
+      "seed": 20261010,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "fb1650e290c3c79ad9794ed32663bec978629d5cdacb96edb309c6ccefc14f13",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_wireless_charger",
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "6d3aba96c694a5761cda354df84f741876c575d2a23192b7a7da09f0d04de321",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.19748758036276576,
+            0.10367400256733152,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.19748758036276576,
+            0.10367400256733152,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            0.18737334971058534,
+            0.09970376255849726,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.18737334971058534,
+            0.09970376255849726,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261011",
+      "seed": 20261011,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "8be170b9b75fdc66cf6715517086048bd24810cfb1870959e2d32cdc22914abc",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_storage_box",
+        "assist_button_switch",
+        "assist_phone",
+        "assist_medicine_box",
+        "assist_wireless_charger",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "f4f080b17095f19da14bed10726115920be27eec44989ceb6fd15ee4d34a3355",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            0.11014150049549415,
+            0.017887167868357992,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.11014150049549415,
+            0.017887167868357992,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            -0.24231707392553628,
+            0.006039231558624677,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.24231707392553628,
+            0.006039231558624677,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261012",
+      "seed": 20261012,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "8289a324a5b26f83ba44c8d9fc37a83adb4820cbd241c669a9b05e595624ad02",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_wireless_charger",
+        "assist_button_switch",
+        "assist_medicine_box",
+        "assist_phone",
+        "assist_storage_box",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "d832c3ac18746a51449f9319490a3948dea5b76daacaf0019a8da4f017f3c677",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.0961421184169465,
+            0.11749002442320342,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.0961421184169465,
+            0.11749002442320342,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            -0.20764450829488007,
+            0.030972893392446844,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.20764450829488007,
+            0.030972893392446844,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261013",
+      "seed": 20261013,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "2eb2d9ec7747ee4763081ce11e8cbc8ac9582b8fbb1ac9d6491fb14632bfcae4",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_button_switch",
+        "assist_medicine_box",
+        "assist_phone",
+        "assist_storage_box",
+        "assist_wireless_charger",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "9795a4b07d3c56f680d9ba706174b12f31144775991dda60a38d3592ad33052d",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            0.09545138423753169,
+            0.13652774373085003,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.09545138423753169,
+            0.13652774373085003,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            -0.07119516306109397,
+            0.07367421351098401,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.07119516306109397,
+            0.07367421351098401,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261014",
+      "seed": 20261014,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "79e9acbf8299125699c8d76158906b7c9a29a6a002384fe08e53fa4a80b10d69",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_wireless_charger",
+        "assist_button_switch",
+        "assist_phone",
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "d7d1f4b56c734a8c7f4becb8016bbc22c5d02317597a5445bd1cb4e4eab80512",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.21512080840291276,
+            0.032782944867376825,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.21512080840291276,
+            0.032782944867376825,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            -0.01212957783768073,
+            0.11479436408961421,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.01212957783768073,
+            0.11479436408961421,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261015",
+      "seed": 20261015,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "5bf158121c1ccb8281e66857168fb6b3bf5541b59d465756cb2c7c4be9beb93a",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_button_switch",
+        "assist_wireless_charger",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_medicine_box",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "3ce9aeddb4839cfec146981b38614c8c8c84de1dea61f1774ac5aebc87fb41c3",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.10632347650012253,
+            0.019149719481692352,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.10632347650012253,
+            0.019149719481692352,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            0.07569049673467876,
+            0.057429382627353254,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.07569049673467876,
+            0.057429382627353254,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261016",
+      "seed": 20261016,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "ec6d66b89479f41b7add31d50e2c205a8cf2473e527e3a80ca8f963bc16098b5",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_button_switch",
+        "assist_wireless_charger",
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "590ea014b9c9e95880f78c5e7aae3560d0c0b700d5d2ec289b9519b4b7290b25",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            0.22597587124631813,
+            0.11183748335949999,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.22597587124631813,
+            0.11183748335949999,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            0.07546907659127033,
+            0.06783091965996399,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.07546907659127033,
+            0.06783091965996399,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261017",
+      "seed": 20261017,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "1cb5d65f0d39b4bcfd8135004823b812e620d8f78f8aed4418328e86fe128a90",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_wireless_charger",
+        "assist_medicine_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_storage_box",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "9cb82c9c74cd3e39e8d0c94880be994b33f818436bf16f16c5443bde057f9cf5",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.1538669266760581,
+            0.07555477135721397,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.1538669266760581,
+            0.07555477135721397,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            -0.0018835717952861127,
+            0.07630235635315068,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.0018835717952861127,
+            0.07630235635315068,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261018",
+      "seed": 20261018,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "825d0f58ade098d0908cd624a69b37abedc616f5463d18d3897b73942eaf5146",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_storage_box",
+        "assist_wireless_charger",
+        "assist_medicine_box",
+        "assist_button_switch",
+        "assist_phone",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "84f18dcca4165714a7f61fee6f38a1a0f94dddf8e58c9e48546ebe1b1196e618",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.22970928115103575,
+            0.0192896427271935,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.22970928115103575,
+            0.0192896427271935,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            0.21448902125461666,
+            0.02967238043107401,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.21448902125461666,
+            0.02967238043107401,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261019",
+      "seed": 20261019,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "c7ead833105aec1140ed4ca6105d51410dc99a39ecf19e77aa2b4f2d41a8560b",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_phone",
+        "assist_storage_box",
+        "assist_medicine_box",
+        "assist_wireless_charger",
+        "assist_button_switch",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "638c9b585ac069d082cfbdfb729d3bdf1f289451f518f8f0e3a39db4c662aca1",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            -0.14043889634468917,
+            0.007066779773379567,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.14043889634468917,
+            0.007066779773379567,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            -0.21306529694525528,
+            0.12030466311729444,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.21306529694525528,
+            0.12030466311729444,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261020",
+      "seed": 20261020,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "bb08fc705bd9cbe4935b2267e097fe0589317303f0427580dfa1a29d6a9eb6df",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    },
+    {
+      "boundsOverlapAndPlacementValidation": "PASS",
+      "candidateOrder": [
+        "assist_button_switch",
+        "assist_phone",
+        "assist_storage_box",
+        "assist_medicine_box",
+        "assist_wireless_charger",
+        "assist_user_zone"
+      ],
+      "differentFromCanonicalPositions": [
+        "assist_medicine_box",
+        "assist_storage_box",
+        "assist_phone",
+        "assist_button_switch",
+        "assist_wireless_charger"
+      ],
+      "fallbackUsed": false,
+      "layoutSha256": "63a1372a74f62025b59f6adcc3f3e05c0399b72ac578487ae4019fc4e25c15e3",
+      "m9GraspReachability": [
+        {
+          "graspPositionMeters": [
+            0.2227044567447269,
+            0.05933857316899875,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            0.2227044567447269,
+            0.05933857316899875,
+            1.111
+          ],
+          "sourceId": "assist_medicine_box"
+        },
+        {
+          "graspPositionMeters": [
+            -0.23429501919545234,
+            0.09537915503572651,
+            0.961
+          ],
+          "ikReachable": true,
+          "planner": "GripperGraspPlanner",
+          "preGraspPositionMeters": [
+            -0.23429501919545234,
+            0.09537915503572651,
+            1.111
+          ],
+          "sourceId": "assist_phone"
+        }
+      ],
+      "maxMuJoCoPoseErrorMeters": 0.0,
+      "mujocoGeometryAndPoseValidation": "PASS",
+      "pagingSubmitKeepsSnapshot": true,
+      "queuePageCount": 2,
+      "sameSeedExactReplay": true,
+      "sceneId": "m20-random-validation-20261021",
+      "seed": 20261021,
+      "slotFrequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "snapshotSha256": "71062f7676111fba661d13112e3da1128bdba484bfe3ab9b40477abc503d7403",
+      "spatialOrderMatchesSnapshot": true,
+      "submittedSelections": 1,
+      "userZoneFixed": true
+    }
+  ],
+  "seeds": [
+    20261002,
+    20261003,
+    20261004,
+    20261005,
+    20261006,
+    20261007,
+    20261008,
+    20261009,
+    20261010,
+    20261011,
+    20261012,
+    20261013,
+    20261014,
+    20261015,
+    20261016,
+    20261017,
+    20261018,
+    20261019,
+    20261020,
+    20261021
+  ],
+  "status": "PASS",
+  "uniqueRandomizedLayouts": 20,
+  "userZoneFixedForAllSeeds": true
+}

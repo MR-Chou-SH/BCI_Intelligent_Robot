@@ -8,6 +8,7 @@ MuJoCo planner. The only synthetic element is the injected EEG class sequence.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -42,7 +43,13 @@ from integration.m20_assistive_scene_contract import (
     DEFAULT_SPEC_PATH,
     build_mujoco_scene,
     load_spec,
+    M20AssistiveSceneError,
     validate_spec,
+)
+from integration.m20_scene_layout_snapshot import (
+    M20SceneSnapshotRegistry,
+    create_scene_layout_snapshot,
+    serialize_scene_layout_snapshot,
 )
 
 
@@ -75,8 +82,8 @@ def _entities(spec: dict[str, Any]) -> dict[str, dict[str, Any]]:
 def candidates_from_spec(spec: dict[str, Any]) -> tuple[Candidate, ...]:
     entities = _entities(spec)
     order = tuple(spec.get("candidateOrderFarToNearLeftToRight", ()))
-    if order != EXPECTED_ORDER:
-        raise ValueError("M20 candidate ordering changed from the frozen visual order")
+    if len(order) != len(EXPECTED_ORDER) or set(order) != set(EXPECTED_ORDER):
+        raise ValueError("M20 candidate ordering must contain every stable target exactly once")
     candidates = []
     for semantic_id in order:
         item = entities[semantic_id]
@@ -413,7 +420,10 @@ def selection_regression(spec: dict[str, Any]) -> dict[str, Any]:
 
 
 def _select_pair(spec, source_target, destination_target, decisions, prefix):
-    queue, backend, session, events = _make_session(spec, decisions, prefix)
+    queue = PagedSelectionQueue(
+        candidates_from_spec(spec),
+        selection_id_factory=(lambda sequence=iter(range(1, 100)): "{}-selection-{:02d}".format(prefix, next(sequence))),
+    )
     source_page_index = next(
         page_index for page_index in range(queue.page_count)
         if any(item.target_id == source_target for item in _page_for(queue, page_index).candidates)
@@ -422,31 +432,42 @@ def _select_pair(spec, source_target, destination_target, decisions, prefix):
         item.slot_index for item in _page_for(queue, source_page_index).candidates
         if item.target_id == source_target
     )
+    destination_page_index = next(
+        page_index for page_index in range(queue.page_count)
+        if any(item.target_id == destination_target for item in _page_for(queue, page_index).candidates)
+    )
+    destination_slot = next(
+        item.slot_index for item in _page_for(queue, destination_page_index).candidates
+        if item.target_id == destination_target
+    )
+    event_trace = []
+    backend = M19SyntheticEegBackend((source_slot, destination_slot))
+    session = M19InProcessQuestSession(
+        queue,
+        backend,
+        event_sink=lambda event, payload: event_trace.append({"event": event, **payload}),
+        selection_prefix=prefix,
+    )
     if source_page_index != queue.page_index:
         _assert(queue.navigate_next(), "source page navigation failed")
         while queue.page_index < source_page_index:
             _assert(queue.navigate_next(), "source page navigation failed")
     source_result = session.trigger()
     _assert(source_result["result"].get("accepted"), "synthetic source selection failed")
-    destination_page_index = next(
-        page_index for page_index in range(queue.page_count)
-        if any(item.target_id == destination_target for item in _page_for(queue, page_index).candidates)
-    )
     while queue.page_index < destination_page_index:
         _assert(session.navigate_next(), "destination page navigation failed")
-    destination_slot = next(
-        item.slot_index for item in queue.current_page.candidates
-        if item.target_id == destination_target
-    )
+    while queue.page_index > destination_page_index:
+        _assert(session.navigate_previous(), "destination previous-page navigation failed")
     destination_result = session.trigger()
     _assert(destination_result["result"].get("accepted"), "synthetic destination selection failed")
     submitted = session.submit()
     _assert(submitted.accepted and submitted.plan is not None, "pair Submit failed")
     actual = tuple(item.target_id for item in submitted.plan.ordered_selections)
     _assert(actual == (source_target, destination_target), "pair Submit changed source/destination order")
-    return queue, backend, session, events, submitted.plan, {
+    return queue, backend, session, event_trace, submitted.plan, {
         "sourceClassIndex": source_slot,
         "destinationClassIndex": destination_slot,
+        "actualSyntheticClassSequence": [source_slot, destination_slot],
         "sourceTrigger": source_result,
         "destinationTrigger": destination_result,
     }
@@ -762,7 +783,15 @@ def _make_mujoco_dispatcher(spec, action, model_data_holder):
     return dispatcher
 
 
-def _execute_action(plan: CommitPlan, action: dict[str, Any], spec: dict[str, Any], output_dir: Path) -> dict[str, Any]:
+def _execute_action(
+    plan: CommitPlan,
+    action: dict[str, Any],
+    spec: dict[str, Any],
+    output_dir: Path,
+    snapshot: dict[str, Any],
+    snapshot_registry: M20SceneSnapshotRegistry,
+    canonical_spec: dict[str, Any],
+) -> dict[str, Any]:
     source_entry = plan.ordered_selections[0]
     source_only_plan = CommitPlan(
         ordered_selections=(source_entry,),
@@ -771,9 +800,19 @@ def _execute_action(plan: CommitPlan, action: dict[str, Any], spec: dict[str, An
     source_payload = confirmed_batch_payloads(
         source_only_plan, batch_id_prefix="m20-resolved-action-" + action["sourceSemanticId"]
     )[0]
+    source_batch = source_payload["confirmedBatch"]
+    source_batch["sceneId"] = snapshot["sceneId"]
+    source_batch["sceneLayoutSnapshotJson"] = serialize_scene_layout_snapshot(snapshot)
     receipt = BatchIdempotentConsumer().accept(source_payload)
+    accepted_snapshot, accepted_spec = snapshot_registry.accept_confirmed_batch(receipt.batch, canonical_spec)
+    _assert(accepted_snapshot["sceneId"] == snapshot["sceneId"], "PC accepted a different Quest scene ID")
+    _assert(
+        _entities(accepted_spec)[action["sourceSemanticId"]]["positionMeters"] ==
+        _entities(spec)[action["sourceSemanticId"]]["positionMeters"],
+        "PC MuJoCo spec did not use the Quest source pose",
+    )
     holder: dict[str, Any] = {}
-    dispatcher = _make_mujoco_dispatcher(spec, action, holder)
+    dispatcher = _make_mujoco_dispatcher(accepted_spec, action, holder)
     dispatched = dispatcher.dispatch(receipt)
     world_evidence = dispatcher._robot_adapter.world_state_evidence()
     attempt = dispatched.executions[0] if dispatched.executions else None
@@ -865,6 +904,10 @@ def _execute_action(plan: CommitPlan, action: dict[str, Any], spec: dict[str, An
     _assert(speed <= 0.05, "placed object did not settle after release")
     return {
         "status": "PASS",
+        "sceneId": accepted_snapshot["sceneId"],
+        "sceneSnapshotSha256": hashlib.sha256(
+            serialize_scene_layout_snapshot(accepted_snapshot).encode("utf-8")
+        ).hexdigest(),
         "action": action,
         "sourceConfirmedBatch": source_payload,
         "m9Dispatch": dispatched.to_public_dict(),
@@ -890,18 +933,33 @@ def source_entity_dimensions(spec, semantic_id):
     return tuple(float(item["dimensionsMeters"][axis]) for axis in ("x", "y", "z"))
 
 
-def run_all_scenarios(spec_path: Path, output_dir: Path) -> dict[str, Any]:
-    spec, spec_sha256 = load_spec(spec_path)
+def run_all_scenarios(spec_path: Path, output_dir: Path, seed: int = 190926) -> dict[str, Any]:
+    canonical_spec, spec_sha256 = load_spec(spec_path)
+    validate_spec(canonical_spec)
+    snapshot, spec = create_scene_layout_snapshot(
+        canonical_spec,
+        seed,
+        scene_id="m20-e2e-{}".format(seed),
+    )
+    spec["runtimeSceneId"] = snapshot["sceneId"]
+    spec["layoutSeed"] = seed
     validate_spec(spec)
     attempt_dir = _new_attempt_dir(output_dir)
-    selection = selection_regression(spec)
-    context = context_affordance_evidence(spec)
+    snapshot_registry = M20SceneSnapshotRegistry()
+    _write_json(attempt_dir / "scene_layout_snapshot.json", snapshot)
+    selection = selection_regression(canonical_spec)
+    context = context_affordance_evidence(canonical_spec)
     _assert(context["status"] == "PASS", "M20 Context/affordance regression failed")
     _write_json(attempt_dir / "candidate-order-and-paging.json", {
         "status": "PASS",
-        "candidateOrder": list(EXPECTED_ORDER),
+        "sceneId": snapshot["sceneId"],
+        "randomSeed": seed,
+        "candidateOrder": list(spec["candidateOrderFarToNearLeftToRight"]),
         "pageSize": 3,
-        "pages": [list(EXPECTED_ORDER[:3]), list(EXPECTED_ORDER[3:])],
+        "pages": [
+            list(spec["candidateOrderFarToNearLeftToRight"][:3]),
+            list(spec["candidateOrderFarToNearLeftToRight"][3:]),
+        ],
         "slotFrequencyHz": [7.2, 9.0, 12.0],
     })
     _write_json(attempt_dir / "selection-regression.json", selection)
@@ -920,11 +978,14 @@ def run_all_scenarios(spec_path: Path, output_dir: Path) -> dict[str, Any]:
         )
         action = resolve_source_destination(plan.ordered_selections, spec)
         action["scenarioId"] = scenario_id
-        action["syntheticSlotSequence"] = list(decisions)
+        action["syntheticSlotSequence"] = list(trigger_info["actualSyntheticClassSequence"])
         action["syntheticFrequenciesHz"] = [
-            (7.2, 9.0, 12.0)[index] for index in decisions
+            (7.2, 9.0, 12.0)[index]
+            for index in trigger_info["actualSyntheticClassSequence"]
         ]
-        execution = _execute_action(plan, action, spec, attempt_dir)
+        execution = _execute_action(
+            plan, action, spec, attempt_dir, snapshot, snapshot_registry, canonical_spec
+        )
         trace = {
             "scenarioId": scenario_id,
             "selection": {
@@ -937,6 +998,7 @@ def run_all_scenarios(spec_path: Path, output_dir: Path) -> dict[str, Any]:
                     "slots": trigger_info[key]["request"]["slots"],
                     "decodedClassIndex": trigger_info[key]["decoder"].get("classIndex"),
                 } for key in ("sourceTrigger", "destinationTrigger")],
+                "actualClassSequence": trigger_info["actualSyntheticClassSequence"],
                 "submittedBatchCount": len(plan.batches),
                 "submitState": queue.state,
                 "syntheticBackendCalls": backend.calls,
@@ -957,16 +1019,43 @@ def run_all_scenarios(spec_path: Path, output_dir: Path) -> dict[str, Any]:
             "finalObjectPoseWorldMeters": execution["finalObjectPoseWorldMeters"],
             "finalLinearSpeedMetersPerSecond": execution["finalLinearSpeedMetersPerSecond"],
         })
+    stale_snapshot, _stale_spec = create_scene_layout_snapshot(
+        canonical_spec,
+        (seed + 1) & 0x7FFFFFFF,
+        scene_id="m20-stale-{}".format(seed),
+        created_utc="2026-10-02T00:00:00Z",
+    )
+    stale_batch = {
+        "sceneId": stale_snapshot["sceneId"],
+        "sceneLayoutSnapshotJson": serialize_scene_layout_snapshot(stale_snapshot),
+        "selections": [{"targetId": "assist_phone", "slotIndex": 0}],
+    }
+    try:
+        snapshot_registry.accept_confirmed_batch(stale_batch, canonical_spec)
+        stale_scene_rejected = False
+    except M20AssistiveSceneError:
+        stale_scene_rejected = True
+    _assert(stale_scene_rejected, "stale scene command was not rejected")
     acceptance = {
         "schemaVersion": 1,
-        "task": "M20 Task 2 - synthetic paged selection, Context, and MuJoCo full chain",
+        "task": "M20 Task 2 - randomized Quest snapshot, M16 selection, PC receipt, and MuJoCo full chain",
         "status": "PASS" if all(item["status"] == "PASS" for item in scenario_reports) else "FAIL",
-        "sourceHead": "ea497b26587a877605874d8109d809ae17c50d61",
+        "sourceHead": "f9cd64d114a7bec6822ec6ccb6d8e9727ef1a7be",
         "canonicalSpecSha256": spec_sha256,
+        "sceneId": snapshot["sceneId"],
+        "randomSeed": seed,
+        "randomizationMethod": snapshot["randomizationMethod"],
+        "fallbackUsed": snapshot["fallbackUsed"],
         "syntheticEegOnly": True,
         "nd8Opened": False,
         "questBuildRun": False,
         "candidateOrderingAndSlotMapping": "PASS",
+        "confirmedBatchContainsExactQuestSnapshot": True,
+        "sameSceneIdBoundAcrossAllActions": all(item["sceneId"] == snapshot["sceneId"] for item in [
+            json.loads((attempt_dir / (item["scenarioId"] + ".json")).read_text(encoding="utf-8"))["execution"]
+            for item in scenario_reports
+        ]),
+        "staleSceneCommandRejected": stale_scene_rejected,
         "previousNextUndoSubmitAndStaleFailClosed": selection["status"],
         "contextAffordanceAndStrongEegOverride": context["status"],
         "pickPlaceScenarios": scenario_reports,
@@ -986,10 +1075,11 @@ def main(argv=None) -> int:
     parser.add_argument("--synthetic-eeg", action="store_true", required=True)
     parser.add_argument("--spec", type=Path, default=DEFAULT_SPEC_PATH)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--seed", type=int, default=190926)
     args = parser.parse_args(argv)
     output_dir = args.output_dir if args.output_dir.is_absolute() else ROOT / args.output_dir
     try:
-        report = run_all_scenarios(args.spec, output_dir)
+        report = run_all_scenarios(args.spec, output_dir, seed=args.seed)
         print(json.dumps(report, indent=2, sort_keys=True))
         print("M20_TASK2_STATUS={}".format(report["status"]))
         return 0 if report["status"] == "PASS" else 1

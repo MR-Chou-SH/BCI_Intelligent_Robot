@@ -67,8 +67,14 @@ class M20AssistiveSceneContractTests(unittest.TestCase):
         self.assertIn("m_useM20AssistiveDeskProfile: 1", m20_text)
         self.assertIn("path: Assets/PassthroughCameraApiSamples/MultiObjectDetection/M9VirtualManipulation.unity\n    guid:", build_text)
         self.assertIn("path: Assets/PassthroughCameraApiSamples/MultiObjectDetection/M20DailyAssistiveDesk.unity\n", build_text)
-        m20_entry = build_text.split("path: Assets/PassthroughCameraApiSamples/MultiObjectDetection/M20DailyAssistiveDesk.unity\n", 1)[0]
-        self.assertIn("- enabled: 0\n", m20_entry[-24:])
+        legacy_entry = build_text.split(
+            "path: Assets/PassthroughCameraApiSamples/MultiObjectDetection/M9VirtualManipulation.unity\n", 1
+        )[0].rsplit("  - enabled:", 1)[-1]
+        self.assertTrue(legacy_entry.startswith(" 0\n"))
+        m20_entry = build_text.split(
+            "path: Assets/PassthroughCameraApiSamples/MultiObjectDetection/M20DailyAssistiveDesk.unity\n", 1
+        )[0].rsplit("  - enabled:", 1)[-1]
+        self.assertTrue(m20_entry.startswith(" 1\n"))
 
     def test_compiled_mujoco_scene_matches_shared_entities_and_articulations(self) -> None:
         spec, _ = load_spec(DEFAULT_SPEC_PATH)

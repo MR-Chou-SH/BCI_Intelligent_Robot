@@ -17,12 +17,18 @@ namespace BCIIntelligentRobot.VirtualManipulation
         public int candidatePageSize;
         public M20AssistiveDeskEntity[] entities;
         public M20AssistiveDeskArticulation[] articulations;
+        public M20AssistiveDeskRobot robot;
+        public string runtimeSceneId;
+        public int layoutSeed;
+        public string layoutSnapshotJson;
     }
 
     [Serializable]
     public sealed class M20AssistiveDeskTable
     {
         public Vector3 dimensionsMeters;
+        public float mujocoTopSurfaceWorldZMeters;
+        public float topSurfaceAtTableLocalZMeters;
     }
 
     [Serializable]
@@ -39,11 +45,83 @@ namespace BCIIntelligentRobot.VirtualManipulation
         public bool active;
         public bool slotEligible;
         public string geometry;
+        public string[] affordanceTags;
         public Vector3 positionMeters;
         public Vector3 dimensionsMeters;
         public float yawDegrees;
         public Color color;
         public M20AssistiveDeskConstruction construction;
+        public M20AssistiveDeskPlacement[] placements;
+    }
+
+    [Serializable]
+    public sealed class M20AssistiveDeskRobot
+    {
+        public string entityId;
+        public string modelSource;
+        public Vector3 basePositionMeters;
+        public bool identityPreserved;
+    }
+
+    [Serializable]
+    public sealed class M20AssistiveDeskPlacement
+    {
+        public string targetId;
+        public Vector3 positionMeters;
+        public float yawDegrees;
+    }
+
+    [Serializable]
+    public sealed class M20SceneLayoutSnapshot
+    {
+        public int schemaVersion;
+        public string sceneId;
+        public string templateId;
+        public int randomSeed;
+        public string createdUtc;
+        public string randomizationMethod;
+        public bool fallbackUsed;
+        public M20SceneCoordinateFrame coordinateFrame;
+        public M20SceneLayoutTable table;
+        public string[] candidateOrderFarToNearLeftToRight;
+        public M20SceneLayoutObject[] objects;
+    }
+
+    [Serializable]
+    public sealed class M20SceneCoordinateFrame
+    {
+        public string id;
+        public string unit;
+        public string origin;
+        public string x;
+        public string y;
+        public string z;
+        public string unityTableRootLocalPositionAdapter;
+        public string mujocoWorldPositionAdapter;
+    }
+
+    [Serializable]
+    public sealed class M20SceneLayoutTable
+    {
+        public Vector3 dimensionsMeters;
+        public float mujocoTopSurfaceWorldZMeters;
+    }
+
+    [Serializable]
+    public sealed class M20SceneLayoutObject
+    {
+        public string semanticId;
+        public string targetId;
+        public string logicalBlockId;
+        public string objectType;
+        public string role;
+        public string sourceKind;
+        public bool selectable;
+        public bool fixedPose;
+        public Vector3 positionMeters;
+        public Vector3 dimensionsMeters;
+        public float yawDegrees;
+        public string[] affordanceTags;
     }
 
     [Serializable]
@@ -97,6 +175,34 @@ namespace BCIIntelligentRobot.VirtualManipulation
             "assist_user_zone"
         };
 
+        private static readonly string[] RandomizedObjectIds =
+        {
+            "assist_storage_box",
+            "assist_phone",
+            "assist_button_switch",
+            "assist_medicine_box",
+            "assist_wireless_charger"
+        };
+
+        private static readonly Vector2[] FallbackPositions =
+        {
+            new Vector2(-0.28f, 0.13f),
+            new Vector2(0.00f, 0.12f),
+            new Vector2(0.28f, 0.03f),
+            new Vector2(-0.24f, 0.015f),
+            new Vector2(0.25f, 0.17f)
+        };
+
+        private const float LayoutEdgeClearanceMeters = 0.025f;
+        private const float ObjectClearanceMeters = 0.02f;
+        private const float RobotBaseKeepOutRadiusMeters = 0.085f;
+        private const float GraspSourceMinX = -0.24f;
+        private const float GraspSourceMaxX = 0.24f;
+        private const float GraspSourceMinY = 0f;
+        private const float GraspSourceMaxY = 0.14f;
+        private const int MaximumLayoutAttempts = 96;
+        private const int MaximumPositionAttempts = 256;
+
         public static M20AssistiveDeskSceneSpec LoadFromResources()
         {
             TextAsset asset = Resources.Load<TextAsset>(ResourcesPath);
@@ -127,12 +233,12 @@ namespace BCIIntelligentRobot.VirtualManipulation
                     spec.table.dimensionsMeters.y),
                 blockSizeMeters = Vector3.one * 0.01f,
                 slots = spec.slots,
-                blocks = new M9VirtualBlockDefinition[ExpectedCandidateOrder.Length]
+                blocks = new M9VirtualBlockDefinition[spec.candidateOrderFarToNearLeftToRight.Length]
             };
 
-            for (int index = 0; index < ExpectedCandidateOrder.Length; index++)
+            for (int index = 0; index < spec.candidateOrderFarToNearLeftToRight.Length; index++)
             {
-                M20AssistiveDeskEntity entity = entityById[ExpectedCandidateOrder[index]];
+                M20AssistiveDeskEntity entity = entityById[spec.candidateOrderFarToNearLeftToRight[index]];
                 catalog.blocks[index] = new M9VirtualBlockDefinition
                 {
                     targetId = entity.targetId,
@@ -172,9 +278,9 @@ namespace BCIIntelligentRobot.VirtualManipulation
             foreach (M9VirtualBlockDefinition definition in catalog.blocks)
                 definitionById.Add(definition.targetId, definition);
 
-            targetRoots = new List<GameObject>(ExpectedCandidateOrder.Length);
-            var candidates = new List<StableWorldAnchorSnapshot>(ExpectedCandidateOrder.Length);
-            foreach (string semanticId in ExpectedCandidateOrder)
+            targetRoots = new List<GameObject>(spec.candidateOrderFarToNearLeftToRight.Length);
+            var candidates = new List<StableWorldAnchorSnapshot>(spec.candidateOrderFarToNearLeftToRight.Length);
+            foreach (string semanticId in spec.candidateOrderFarToNearLeftToRight)
             {
                 M20AssistiveDeskEntity entity = entityById[semanticId];
                 GameObject target = new GameObject("M20_" + semanticId);
@@ -203,6 +309,89 @@ namespace BCIIntelligentRobot.VirtualManipulation
             return candidates;
         }
 
+        public static M20AssistiveDeskSceneSpec CreateRuntimeSceneSpec(
+            M20AssistiveDeskSceneSpec canonicalSpec,
+            int? deterministicSeed = null,
+            string sceneId = null)
+        {
+            Validate(canonicalSpec);
+            int seed = deterministicSeed.HasValue ? deterministicSeed.Value : CreateFreshSeed();
+            if (seed < 0)
+                throw new ArgumentOutOfRangeException(nameof(deterministicSeed), "M20 layout seed must be non-negative.");
+
+            string runtimeSceneId = string.IsNullOrWhiteSpace(sceneId)
+                ? "m20-" + Guid.NewGuid().ToString("N")
+                : sceneId.Trim();
+            if (runtimeSceneId == canonicalSpec.sceneId)
+                throw new InvalidOperationException("Runtime M20 sceneId must differ from the template ID.");
+
+            System.Random random = new System.Random(seed);
+            M20AssistiveDeskSceneSpec runtimeSpec = null;
+            for (int layoutAttempt = 0; layoutAttempt < MaximumLayoutAttempts; layoutAttempt++)
+            {
+                M20AssistiveDeskSceneSpec candidate = CloneSpec(canonicalSpec);
+                if (!TryRandomizePositions(candidate, random))
+                    continue;
+                candidate.candidateOrderFarToNearLeftToRight = ComputeSpatialOrder(candidate);
+                try
+                {
+                    Validate(candidate);
+                    runtimeSpec = candidate;
+                    break;
+                }
+                catch (InvalidOperationException)
+                {
+                    // Reject the entire candidate layout; never accept a
+                    // partial or silently invalid sample.
+                }
+            }
+
+            bool fallbackUsed = runtimeSpec == null;
+            if (fallbackUsed)
+            {
+                runtimeSpec = CloneSpec(canonicalSpec);
+                var entityById = BuildEntityMap(runtimeSpec);
+                for (int index = 0; index < RandomizedObjectIds.Length; index++)
+                {
+                    Vector3 position = entityById[RandomizedObjectIds[index]].positionMeters;
+                    Vector2 fallback = FallbackPositions[index];
+                    entityById[RandomizedObjectIds[index]].positionMeters = new Vector3(fallback.x, fallback.y, position.z);
+                }
+                TranslateArticulatedPartsAndPlacements(runtimeSpec, canonicalSpec);
+                runtimeSpec.candidateOrderFarToNearLeftToRight = ComputeSpatialOrder(runtimeSpec);
+                Validate(runtimeSpec);
+                Debug.LogWarning("M20_SCENE_LAYOUT bounded_sampling_fallback seed=" + seed +
+                    " fallback=validated_fixed_positions", null);
+            }
+
+            runtimeSpec.runtimeSceneId = runtimeSceneId;
+            runtimeSpec.layoutSeed = seed;
+            M20SceneLayoutSnapshot snapshot = BuildSnapshot(runtimeSpec, seed, runtimeSceneId, fallbackUsed);
+            runtimeSpec.layoutSnapshotJson = JsonUtility.ToJson(snapshot);
+            Debug.Log("M20_SCENE_LAYOUT_SNAPSHOT " + runtimeSpec.layoutSnapshotJson);
+            Debug.Log("M20_SCENE_LAYOUT frozen scene_id=" + runtimeSceneId + " seed=" + seed +
+                " objects=" + snapshot.objects.Length + " fallback=" + fallbackUsed +
+                " order=" + string.Join(",", runtimeSpec.candidateOrderFarToNearLeftToRight));
+            return runtimeSpec;
+        }
+
+        public static bool TryGetCommandLineSeedOverride(string[] arguments, out int seed)
+        {
+            seed = 0;
+            if (arguments == null)
+                return false;
+            for (int index = 0; index < arguments.Length - 1; index++)
+            {
+                if (!string.Equals(arguments[index], "-m20-layout-seed", StringComparison.Ordinal))
+                    continue;
+                if (!int.TryParse(arguments[index + 1], System.Globalization.NumberStyles.Integer,
+                    System.Globalization.CultureInfo.InvariantCulture, out seed) || seed < 0)
+                    throw new ArgumentException("-m20-layout-seed must be a non-negative integer.");
+                return true;
+            }
+            return false;
+        }
+
         public static Vector3 ToUnityWorkspacePosition(Vector3 canonicalPositionMeters)
         {
             return new Vector3(-canonicalPositionMeters.x, canonicalPositionMeters.z, -canonicalPositionMeters.y);
@@ -213,11 +402,236 @@ namespace BCIIntelligentRobot.VirtualManipulation
             return new Vector3(canonicalDimensionsMeters.x, canonicalDimensionsMeters.z, canonicalDimensionsMeters.y);
         }
 
+        private static int CreateFreshSeed()
+        {
+            unchecked
+            {
+                return (int)(DateTime.UtcNow.Ticks ^ Guid.NewGuid().GetHashCode()) & 0x7fffffff;
+            }
+        }
+
+        private static M20AssistiveDeskSceneSpec CloneSpec(M20AssistiveDeskSceneSpec source)
+        {
+            M20AssistiveDeskSceneSpec clone = JsonUtility.FromJson<M20AssistiveDeskSceneSpec>(JsonUtility.ToJson(source));
+            if (clone == null)
+                throw new InvalidOperationException("Unable to clone the canonical M20 scene spec.");
+            return clone;
+        }
+
+        private static bool TryRandomizePositions(M20AssistiveDeskSceneSpec spec, System.Random random)
+        {
+            var entityById = BuildEntityMap(spec);
+            M20AssistiveDeskEntity zone = entityById["assist_user_zone"];
+            Vector3 tableSize = spec.table.dimensionsMeters;
+            Vector3 robotBase = spec.robot != null ? spec.robot.basePositionMeters : new Vector3(0f, 0.4f, 0f);
+            var occupiedCenters = new List<Vector3> { zone.positionMeters };
+            var occupiedSizes = new List<Vector3> { zone.dimensionsMeters };
+
+            foreach (string semanticId in RandomizedObjectIds)
+            {
+                M20AssistiveDeskEntity entity = entityById[semanticId];
+                Vector3 size = entity.dimensionsMeters;
+                float minX = -tableSize.x * 0.5f + size.x * 0.5f + LayoutEdgeClearanceMeters;
+                float maxX = tableSize.x * 0.5f - size.x * 0.5f - LayoutEdgeClearanceMeters;
+                float minY = Mathf.Max(
+                    -tableSize.y * 0.5f + size.y * 0.5f + LayoutEdgeClearanceMeters,
+                    zone.positionMeters.y + zone.dimensionsMeters.y * 0.5f + size.y * 0.5f + ObjectClearanceMeters);
+                float maxY = tableSize.y * 0.5f - size.y * 0.5f - LayoutEdgeClearanceMeters;
+                if (semanticId == "assist_medicine_box" || semanticId == "assist_phone")
+                {
+                    minX = Mathf.Max(minX, GraspSourceMinX);
+                    maxX = Mathf.Min(maxX, GraspSourceMaxX);
+                    minY = Mathf.Max(minY, GraspSourceMinY);
+                    maxY = Mathf.Min(maxY, GraspSourceMaxY);
+                }
+                if (minX > maxX || minY > maxY)
+                    return false;
+
+                bool placed = false;
+                for (int attempt = 0; attempt < MaximumPositionAttempts; attempt++)
+                {
+                    float x = minX + (float)random.NextDouble() * (maxX - minX);
+                    float y = minY + (float)random.NextDouble() * (maxY - minY);
+                    Vector3 candidate = new Vector3(x, y, entity.positionMeters.z);
+                    if (!HasObjectClearance(candidate, size, zone.positionMeters, zone.dimensionsMeters) ||
+                        !IsClearOfRobotBase(candidate, size, robotBase))
+                        continue;
+
+                    bool clear = true;
+                    for (int index = 0; index < occupiedCenters.Count; index++)
+                    {
+                        if (HasObjectClearance(candidate, size, occupiedCenters[index], occupiedSizes[index]))
+                            continue;
+                        clear = false;
+                        break;
+                    }
+                    if (!clear)
+                        continue;
+
+                    entity.positionMeters = candidate;
+                    occupiedCenters.Add(candidate);
+                    occupiedSizes.Add(size);
+                    placed = true;
+                    break;
+                }
+                if (!placed)
+                    return false;
+            }
+
+            TranslateArticulatedPartsAndPlacements(spec, null);
+            return true;
+        }
+
+        private static void TranslateArticulatedPartsAndPlacements(
+            M20AssistiveDeskSceneSpec runtimeSpec,
+            M20AssistiveDeskSceneSpec canonicalSpec)
+        {
+            var runtimeEntities = BuildEntityMap(runtimeSpec);
+            var canonicalEntities = canonicalSpec != null ? BuildEntityMap(canonicalSpec) : null;
+            Vector3 storageDelta = runtimeEntities["assist_storage_box"].positionMeters -
+                (canonicalEntities != null
+                    ? canonicalEntities["assist_storage_box"].positionMeters
+                    : new Vector3(0f, 0.10f, 0.0375f));
+            Vector3 buttonDelta = runtimeEntities["assist_button_switch"].positionMeters -
+                (canonicalEntities != null
+                    ? canonicalEntities["assist_button_switch"].positionMeters
+                    : new Vector3(-0.24f, -0.03f, 0.011f));
+            M20AssistiveDeskEntity storageLid = runtimeEntities["assist_storage_lid"];
+            M20AssistiveDeskEntity buttonCap = runtimeEntities["assist_button_cap"];
+            storageLid.positionMeters += storageDelta;
+            buttonCap.positionMeters += buttonDelta;
+
+            foreach (M20AssistiveDeskArticulation articulation in runtimeSpec.articulations)
+            {
+                if (articulation.jointId == "assist_storage_lid_hinge")
+                    articulation.pivotPositionMeters += storageDelta;
+            }
+
+            foreach (M20AssistiveDeskEntity entity in runtimeSpec.entities)
+            {
+                if (entity.placements == null)
+                    continue;
+                for (int index = 0; index < entity.placements.Length; index++)
+                {
+                    M20AssistiveDeskPlacement placement = entity.placements[index];
+                    Vector3 targetDelta = Vector3.zero;
+                    if (placement.targetId == "assist_storage_box")
+                        targetDelta = storageDelta;
+                    else if (placement.targetId == "assist_phone")
+                        targetDelta = runtimeEntities["assist_phone"].positionMeters -
+                            (canonicalEntities != null
+                                ? canonicalEntities["assist_phone"].positionMeters
+                                : new Vector3(0.24f, 0.10f, 0.004f));
+                    else if (placement.targetId == "assist_button_switch")
+                        targetDelta = buttonDelta;
+                    else if (placement.targetId == "assist_wireless_charger")
+                        targetDelta = runtimeEntities["assist_wireless_charger"].positionMeters -
+                            (canonicalEntities != null
+                                ? canonicalEntities["assist_wireless_charger"].positionMeters
+                                : new Vector3(0.24f, -0.03f, 0.006f));
+                    placement.positionMeters += targetDelta;
+                }
+            }
+        }
+
+        private static string[] ComputeSpatialOrder(M20AssistiveDeskSceneSpec spec)
+        {
+            var entities = BuildEntityMap(spec);
+            var sorted = new List<M20AssistiveDeskEntity>(ExpectedCandidateOrder.Length);
+            foreach (string semanticId in ExpectedCandidateOrder)
+                sorted.Add(entities[semanticId]);
+            sorted.Sort((left, right) =>
+            {
+                int byY = right.positionMeters.y.CompareTo(left.positionMeters.y);
+                if (byY != 0)
+                    return byY;
+                int byX = left.positionMeters.x.CompareTo(right.positionMeters.x);
+                return byX != 0 ? byX : string.CompareOrdinal(left.semanticId, right.semanticId);
+            });
+
+            var ordered = new List<string>(sorted.Count);
+            int start = 0;
+            while (start < sorted.Count)
+            {
+                float rowAnchorY = sorted[start].positionMeters.y;
+                int end = start + 1;
+                while (end < sorted.Count && Mathf.Abs(sorted[end].positionMeters.y - rowAnchorY) <= 0.02f)
+                    end++;
+                sorted.Sort(start, end - start, Comparer<M20AssistiveDeskEntity>.Create((left, right) =>
+                {
+                    int byX = left.positionMeters.x.CompareTo(right.positionMeters.x);
+                    return byX != 0 ? byX : string.CompareOrdinal(left.semanticId, right.semanticId);
+                }));
+                for (int index = start; index < end; index++)
+                    ordered.Add(sorted[index].semanticId);
+                start = end;
+            }
+            return ordered.ToArray();
+        }
+
+        private static M20SceneLayoutSnapshot BuildSnapshot(
+            M20AssistiveDeskSceneSpec spec,
+            int seed,
+            string runtimeSceneId,
+            bool fallbackUsed)
+        {
+            var objects = new M20SceneLayoutObject[spec.entities.Length];
+            for (int index = 0; index < spec.entities.Length; index++)
+            {
+                M20AssistiveDeskEntity entity = spec.entities[index];
+                objects[index] = new M20SceneLayoutObject
+                {
+                    semanticId = entity.semanticId,
+                    targetId = entity.targetId ?? string.Empty,
+                    logicalBlockId = entity.logicalBlockId ?? string.Empty,
+                    objectType = string.IsNullOrWhiteSpace(entity.semanticLabel) ? entity.sourceKind : entity.semanticLabel,
+                    role = entity.role,
+                    sourceKind = entity.sourceKind,
+                    selectable = entity.selectable,
+                    fixedPose = entity.semanticId == "assist_user_zone",
+                    positionMeters = entity.positionMeters,
+                    dimensionsMeters = entity.dimensionsMeters,
+                    yawDegrees = entity.yawDegrees,
+                    affordanceTags = entity.affordanceTags ?? new string[0]
+                };
+            }
+            return new M20SceneLayoutSnapshot
+            {
+                schemaVersion = 1,
+                sceneId = runtimeSceneId,
+                templateId = spec.sceneId,
+                randomSeed = seed,
+                createdUtc = DateTime.UtcNow.ToString("O"),
+                randomizationMethod = fallbackUsed ? "validated_fallback_v1" : "bounded_uniform_rejection_v1",
+                fallbackUsed = fallbackUsed,
+                coordinateFrame = new M20SceneCoordinateFrame
+                {
+                    id = "m20_table_local_to_mujoco_v1",
+                    unit = "meter",
+                    origin = "center of the tabletop top surface",
+                    x = "user visual right",
+                    y = "away from user toward robot",
+                    z = "up",
+                    unityTableRootLocalPositionAdapter = "(-x, z, -y)",
+                    mujocoWorldPositionAdapter = "(x, y, tableTopWorldZ + z)"
+                },
+                table = new M20SceneLayoutTable
+                {
+                    dimensionsMeters = spec.table.dimensionsMeters,
+                    mujocoTopSurfaceWorldZMeters = spec.table.mujocoTopSurfaceWorldZMeters
+                },
+                candidateOrderFarToNearLeftToRight = spec.candidateOrderFarToNearLeftToRight,
+                objects = objects
+            };
+        }
+
         private static void Validate(M20AssistiveDeskSceneSpec spec)
         {
             if (spec == null || spec.schemaVersion != 1 || spec.sceneId != "m20_daily_assistive_desk")
                 throw new InvalidOperationException("Unsupported canonical M20 scene schema or sceneId.");
-            if (spec.table == null || !IsPositive(spec.table.dimensionsMeters))
+            if (spec.table == null || !IsPositive(spec.table.dimensionsMeters) ||
+                !IsFinite(spec.table.mujocoTopSurfaceWorldZMeters) || spec.robot == null ||
+                !IsFinite(spec.robot.basePositionMeters))
                 throw new InvalidOperationException("Canonical M20 table dimensions must be positive.");
             if (spec.candidatePageSize != 3 || spec.slots == null || spec.slots.Length != 3)
                 throw new InvalidOperationException("M20 must preserve three slots and the M16 page size of three.");
@@ -234,10 +648,48 @@ namespace BCIIntelligentRobot.VirtualManipulation
             if (spec.candidateOrderFarToNearLeftToRight == null ||
                 spec.candidateOrderFarToNearLeftToRight.Length != ExpectedCandidateOrder.Length)
                 throw new InvalidOperationException("M20 candidate order must define the six canonical targets.");
-            for (int index = 0; index < ExpectedCandidateOrder.Length; index++)
-                if (spec.candidateOrderFarToNearLeftToRight[index] != ExpectedCandidateOrder[index])
-                    throw new InvalidOperationException("M20 candidate order changed at index " + index + ".");
-            BuildEntityMap(spec);
+            var expectedIds = new HashSet<string>(ExpectedCandidateOrder, StringComparer.Ordinal);
+            if (new HashSet<string>(spec.candidateOrderFarToNearLeftToRight, StringComparer.Ordinal).SetEquals(expectedIds) == false)
+                throw new InvalidOperationException("M20 candidate order must contain each canonical target exactly once.");
+            var entities = BuildEntityMap(spec);
+            Vector3 zonePosition = entities["assist_user_zone"].positionMeters;
+            if ((zonePosition - new Vector3(0f, -0.19f, 0.001f)).sqrMagnitude > 0.0000000001f)
+                throw new InvalidOperationException("M20 USER ZONE pose is fixed and may not be randomized.");
+
+            Vector3 tableSize = spec.table.dimensionsMeters;
+            var candidateCenters = new List<Vector3>(ExpectedCandidateOrder.Length);
+            var candidateSizes = new List<Vector3>(ExpectedCandidateOrder.Length);
+            foreach (string semanticId in ExpectedCandidateOrder)
+            {
+                M20AssistiveDeskEntity entity = entities[semanticId];
+                Vector3 center = entity.positionMeters;
+                Vector3 size = entity.dimensionsMeters;
+                bool zone = semanticId == "assist_user_zone";
+                if (Mathf.Abs(center.x) + size.x / 2f > tableSize.x / 2f + 0.000001f ||
+                    Mathf.Abs(center.y) + size.y / 2f > tableSize.y / 2f + 0.000001f)
+                    throw new InvalidOperationException("M20 candidate exceeds table bounds: " + semanticId + ".");
+                if (!zone && (Mathf.Abs(center.x) + size.x / 2f > tableSize.x / 2f - LayoutEdgeClearanceMeters + 0.000001f ||
+                    Mathf.Abs(center.y) + size.y / 2f > tableSize.y / 2f - LayoutEdgeClearanceMeters + 0.000001f))
+                    throw new InvalidOperationException("M20 candidate violates tabletop edge clearance: " + semanticId + ".");
+                if ((semanticId == "assist_medicine_box" || semanticId == "assist_phone") &&
+                    (center.x < GraspSourceMinX - 0.000001f || center.x > GraspSourceMaxX + 0.000001f ||
+                     center.y < GraspSourceMinY - 0.000001f || center.y > GraspSourceMaxY + 0.000001f))
+                    throw new InvalidOperationException("M20 grasp source lies outside the tested M9 reachability envelope: " + semanticId + ".");
+                if (!zone && !IsClearOfRobotBase(center, size, spec.robot.basePositionMeters))
+                    throw new InvalidOperationException("M20 candidate overlaps the robot base exclusion region: " + semanticId + ".");
+                candidateCenters.Add(center);
+                candidateSizes.Add(size);
+            }
+            for (int left = 0; left < candidateCenters.Count; left++)
+                for (int right = left + 1; right < candidateCenters.Count; right++)
+                    if (!HasObjectClearance(candidateCenters[left], candidateSizes[left], candidateCenters[right], candidateSizes[right]))
+                        throw new InvalidOperationException("M20 candidates overlap or violate clearance: " +
+                            ExpectedCandidateOrder[left] + " / " + ExpectedCandidateOrder[right] + ".");
+
+            string[] spatialOrder = ComputeSpatialOrder(spec);
+            for (int index = 0; index < spatialOrder.Length; index++)
+                if (spec.candidateOrderFarToNearLeftToRight[index] != spatialOrder[index])
+                    throw new InvalidOperationException("M20 candidate order does not match randomized spatial positions.");
         }
 
         private static Dictionary<string, M20AssistiveDeskEntity> BuildEntityMap(M20AssistiveDeskSceneSpec spec)
@@ -462,6 +914,22 @@ namespace BCIIntelligentRobot.VirtualManipulation
         private static bool IsFinite(float value)
         {
             return !float.IsNaN(value) && !float.IsInfinity(value);
+        }
+
+        private static bool HasObjectClearance(Vector3 center, Vector3 size, Vector3 otherCenter, Vector3 otherSize)
+        {
+            return Mathf.Abs(center.x - otherCenter.x) >= (size.x + otherSize.x) / 2f + ObjectClearanceMeters ||
+                   Mathf.Abs(center.y - otherCenter.y) >= (size.y + otherSize.y) / 2f + ObjectClearanceMeters ||
+                   Mathf.Abs(center.z - otherCenter.z) >= (size.z + otherSize.z) / 2f + ObjectClearanceMeters;
+        }
+
+        private static bool IsClearOfRobotBase(Vector3 center, Vector3 size, Vector3 robotBase)
+        {
+            float objectRadius = Mathf.Sqrt(size.x * size.x + size.y * size.y) / 2f;
+            float requiredDistance = RobotBaseKeepOutRadiusMeters + objectRadius + ObjectClearanceMeters;
+            float deltaX = center.x - robotBase.x;
+            float deltaY = center.y - robotBase.y;
+            return deltaX * deltaX + deltaY * deltaY >= requiredDistance * requiredDistance;
         }
     }
 

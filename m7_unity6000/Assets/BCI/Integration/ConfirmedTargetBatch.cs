@@ -55,6 +55,8 @@ namespace BCIIntelligentRobot.Integration
         public int groupIndex;
         public string submittedUtc;
         public string provenance;
+        public string sceneId;
+        public string sceneLayoutSnapshotJson;
         public ConfirmedTargetSelectionPayload[] selections;
 
         public static ConfirmedTargetBatchPayload From(ConfirmedTargetBatch batch)

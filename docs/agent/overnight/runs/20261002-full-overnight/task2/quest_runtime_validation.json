@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "status": "PENDING_INTERACTIVE_QUEST_VALIDATION",
+  "scope": "Quest Editor build/install/launch, cold launches, rendered scene, and real device transport",
+  "device": {
+    "adbState": "device",
+    "adbSerial": "192.168.43.110:5555",
+    "model": "Quest_3",
+    "transport": "network ADB",
+    "usbRequiredForCurrentConnection": false
+  },
+  "unityEditor": {
+    "alreadyRunning": true,
+    "processId": 44708,
+    "editorVersion": "6000.0.66f2",
+    "windowTitle": "m7_unity6000 - M20DailyAssistiveDesk - Android - Unity 6.0 (6000.0.66f2) <DX11>",
+    "responding": true,
+    "secondEditorStarted": false
+  },
+  "csharpCompile": {
+    "runtimeAssembly": "PASS",
+    "editorAssembly": "PASS",
+    "method": "project-generated Assembly-CSharp.csproj and Assembly-CSharp-Editor.csproj built with dotnet msbuild to a temporary directory outside the repository",
+    "unityEditorConsole": "NOT_VERIFIED",
+    "unityEditorLogNote": "The live Editor log had not refreshed after the latest source edits; its older empty C# error scan is not treated as current compile proof."
+  },
+  "questBuildInstallLaunch": {
+    "status": "NOT_ATTEMPTED",
+    "reason": "The available computer-use surface exposes browser control only and cannot activate the already-open native Unity Editor. A second Unity process was not started because this project is already open in the existing Editor.",
+    "installedM20BuildVerified": false
+  },
+  "coldLaunches": {
+    "required": 3,
+    "completed": 0,
+    "sceneIdsAndSeedsDiffer": "NOT_VERIFIED",
+    "userZoneFixed": "SOFTWARE_VERIFIED; DEVICE_NOT_VERIFIED",
+    "labelsAndBlackWhitePatches": "SOFTWARE_PATH_PRESERVED; DEVICE_NOT_VERIFIED",
+    "pagesAndSubmit": "PYTHON_SYNTHETIC_REGRESSION_PASS; DEVICE_NOT_VERIFIED",
+    "visualEvidence": "NOT_CAPTURED; Quest was on the system Library activity, not the M20 app"
+  },
+  "questTcpTransport": "SYNTHETIC_LOOPBACK_PASS; REAL_QUEST_TRANSPORT_NOT_VERIFIED",
+  "hardwareBoundary": {
+    "nd8Opened": false,
+    "comPortOpened": false,
+    "physicalRobotOperated": false,
+    "questAppLaunched": false
+  },
+  "nextAction": "Use the already-open Unity Editor to refresh/confirm the Console and Build & Run M20DailyAssistiveDesk to the network-connected Quest; capture SceneLayoutSnapshot logs and visual evidence across three cold launches, then verify page/Submit and real Quest-to-PC ACK.",
+  "evidence": {
+    "randomization": "randomization_validation.json",
+    "muJoCoPoseParity": "quest_mujoco_pose_sync.csv",
+    "syntheticQuestPcLoopback": "quest-pc-loopback-01/loopback_acceptance.json",
+    "csharpCompile": "external temporary output from project-generated Unity MSBuild projects; no repository build cache added"
+  }
+}

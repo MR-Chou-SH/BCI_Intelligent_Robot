@@ -197,7 +197,7 @@ class M9VirtualBlockContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not registered"):
             confirmed_batch_to_robot_requests(message, {"different-target": "block_red_01"})
 
-    def test_dedicated_default_scene_keeps_real_target_scene_and_disables_real_detector_roots(self):
+    def test_m9_scene_is_preserved_as_regression_scene_while_m20_is_build_default(self):
         scene = UNITY_SCENE_PATH.read_text(encoding="utf-8")
         settings = UNITY_BUILD_SETTINGS_PATH.read_text(encoding="utf-8")
         self.assertIn("guid: 03b7794c49a34c82bc0358c66c3da451", scene)
@@ -222,12 +222,18 @@ class M9VirtualBlockContractTests(unittest.TestCase):
             (enabled, path)
             for enabled, path in re.findall(r"- enabled: ([01])\s+path: ([^\r\n]+)", settings)
         ]
+        enabled_scenes = [path for enabled, path in scene_entries if enabled == "1"]
+        self.assertTrue(enabled_scenes)
         self.assertEqual(
-            ("1", "Assets/PassthroughCameraApiSamples/MultiObjectDetection/M9VirtualManipulation.unity"),
-            scene_entries[0],
+            "Assets/PassthroughCameraApiSamples/MultiObjectDetection/M20DailyAssistiveDesk.unity",
+            enabled_scenes[0],
         )
         self.assertIn(
-            ("1", "Assets/PassthroughCameraApiSamples/MultiObjectDetection/MultiObjectDetection.unity"),
+            ("0", "Assets/PassthroughCameraApiSamples/MultiObjectDetection/M9VirtualManipulation.unity"),
+            scene_entries,
+        )
+        self.assertIn(
+            ("0", "Assets/PassthroughCameraApiSamples/MultiObjectDetection/MultiObjectDetection.unity"),
             scene_entries,
         )
 

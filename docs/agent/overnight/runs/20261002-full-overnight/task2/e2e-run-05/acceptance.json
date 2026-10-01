@@ -1,0 +1,66 @@
+{
+  "candidateOrderingAndSlotMapping": "PASS",
+  "canonicalSpecSha256": "dad6e32b198d5d6f41cbea8b22f35b7fb46a617e0c6a26ec1e4b02d4f3aa57b3",
+  "confirmedBatchContainsExactQuestSnapshot": true,
+  "contextAffordanceAndStrongEegOverride": "PASS",
+  "evidenceDirectory": "docs/agent/overnight/runs/20261002-full-overnight/task2/e2e-run-05/attempt-01",
+  "fallbackUsed": false,
+  "focusedRegressionCommands": [
+    ".venv\\Scripts\\python.exe -m pytest integration\\test_m20_assistive_desk_e2e.py",
+    ".venv\\Scripts\\python.exe -m pytest integration\\test_m16_paged_queue.py integration\\test_m16_paged_queue_orchestration.py integration\\test_m19_paged_live_eeg_demo.py integration\\test_m9_batch_dispatch.py integration\\test_m9_mujoco_execution.py"
+  ],
+  "nd8Opened": false,
+  "pickPlaceScenarios": [
+    {
+      "destinationTargetId": "assist_user_zone",
+      "executionEvidence": "attempt-01/medicine-to-user-zone.json",
+      "finalLinearSpeedMetersPerSecond": 2.3291279194610606e-10,
+      "finalObjectPoseWorldMeters": [
+        -0.10988810789880701,
+        -0.18925917472608547,
+        0.766892244579783
+      ],
+      "scenarioId": "medicine-to-user-zone",
+      "sourceTargetId": "assist_medicine_box",
+      "status": "PASS"
+    },
+    {
+      "destinationTargetId": "assist_user_zone",
+      "executionEvidence": "attempt-01/phone-to-user-zone.json",
+      "finalLinearSpeedMetersPerSecond": 9.482669700601436e-05,
+      "finalObjectPoseWorldMeters": [
+        0.10158196745647628,
+        -0.2041066878297698,
+        0.7523792071811427
+      ],
+      "scenarioId": "phone-to-user-zone",
+      "sourceTargetId": "assist_phone",
+      "status": "PASS"
+    },
+    {
+      "destinationTargetId": "assist_wireless_charger",
+      "executionEvidence": "attempt-01/phone-to-charger.json",
+      "finalLinearSpeedMetersPerSecond": 8.45157279966631e-05,
+      "finalObjectPoseWorldMeters": [
+        0.14156925984815044,
+        -0.04746795053727754,
+        0.7624049428752363
+      ],
+      "scenarioId": "phone-to-charger",
+      "sourceTargetId": "assist_phone",
+      "status": "PASS"
+    }
+  ],
+  "previousNextUndoSubmitAndStaleFailClosed": "PASS",
+  "questBuildRun": false,
+  "randomSeed": 190928,
+  "randomizationMethod": "bounded_uniform_rejection_v1",
+  "sameSceneIdBoundAcrossAllActions": true,
+  "sceneId": "m20-e2e-190928",
+  "schemaVersion": 1,
+  "sourceHead": "f9cd64d114a7bec6822ec6ccb6d8e9727ef1a7be",
+  "staleSceneCommandRejected": true,
+  "status": "PASS",
+  "syntheticEegOnly": true,
+  "task": "M20 Task 2 - randomized Quest snapshot, M16 selection, PC receipt, and MuJoCo full chain"
+}

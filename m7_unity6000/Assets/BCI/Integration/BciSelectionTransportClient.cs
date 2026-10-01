@@ -131,6 +131,20 @@ namespace BCIIntelligentRobot.Integration
         private int m_serverPort;
         private string m_retryLine;
         private long m_nextConnectionId;
+        private string m_sceneId;
+        private string m_sceneLayoutSnapshotJson;
+
+        public bool ConfigureM20SceneLayoutSnapshot(string sceneId, string snapshotJson)
+        {
+            if (string.IsNullOrWhiteSpace(sceneId) || string.IsNullOrWhiteSpace(snapshotJson) ||
+                !snapshotJson.Contains("\"sceneId\":\"" + sceneId + "\""))
+                return false;
+            if (!string.IsNullOrWhiteSpace(m_sceneId) && !string.Equals(m_sceneId, sceneId, StringComparison.Ordinal))
+                return false;
+            m_sceneId = sceneId;
+            m_sceneLayoutSnapshotJson = snapshotJson;
+            return true;
+        }
 
         /// <summary>
         /// Downstream boundary for a resolved target. Subscribers receive only
@@ -442,6 +456,11 @@ namespace BCIIntelligentRobot.Integration
                 confirmedBatch = ConfirmedTargetBatchPayload.From(batch),
                 questUtc = DateTime.UtcNow.ToString("O")
             };
+            if (!string.IsNullOrWhiteSpace(m_sceneId))
+            {
+                message.confirmedBatch.sceneId = m_sceneId;
+                message.confirmedBatch.sceneLayoutSnapshotJson = m_sceneLayoutSnapshotJson;
+            }
             if (!m_pendingBatchDelivery.Queue(batch.BatchId, JsonUtility.ToJson(message) + "\n"))
                 return false;
             m_workAvailable.Set();

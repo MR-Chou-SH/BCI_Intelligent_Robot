@@ -1,0 +1,80 @@
+{
+  "chain": [
+    "randomized frozen Quest layout snapshot",
+    "dynamic spatial target order and M16 paging",
+    "synthetic M19 selection and Submit",
+    "M8 confirmed-batch validation and PC receipt",
+    "scene ID and exact snapshot validation",
+    "M9 logical object resolution and GripperGraspPlanner dispatch",
+    "MuJoCo current-pose grasp, placement, release and settling",
+    "batch_ack after scene snapshot validation"
+  ],
+  "multiSeedMujocoRuns": [
+    {
+      "evidenceDirectory": "e2e-run-03",
+      "fallbackUsed": false,
+      "scenarioIds": [
+        "medicine-to-user-zone",
+        "phone-to-user-zone",
+        "phone-to-charger"
+      ],
+      "seed": 190926,
+      "staleSceneCommandRejected": true,
+      "status": "PASS"
+    },
+    {
+      "evidenceDirectory": "e2e-run-04",
+      "fallbackUsed": false,
+      "scenarioIds": [
+        "medicine-to-user-zone",
+        "phone-to-user-zone",
+        "phone-to-charger"
+      ],
+      "seed": 190927,
+      "staleSceneCommandRejected": true,
+      "status": "PASS"
+    },
+    {
+      "evidenceDirectory": "e2e-run-05",
+      "fallbackUsed": false,
+      "scenarioIds": [
+        "medicine-to-user-zone",
+        "phone-to-user-zone",
+        "phone-to-charger"
+      ],
+      "seed": 190928,
+      "staleSceneCommandRejected": true,
+      "status": "PASS"
+    }
+  ],
+  "nd8Opened": false,
+  "negativeStaleAndWrongPoseChecks": "PASS; see randomized_manipulation_validation.json and integration.test_m20_quest_pc_acceptance",
+  "physicalRobotOperated": false,
+  "productionReceiverTcpLoopback": {
+    "ack": {
+      "batchId": "m20-quest-pc-loopback-batch-1",
+      "messageType": "batch_ack",
+      "protocolVersion": 1
+    },
+    "batchId": "m20-quest-pc-loopback-batch-1",
+    "evidence": "quest-pc-loopback-01/loopback_acceptance.json",
+    "executionStatus": "PASS",
+    "orderedTargetIds": [
+      "assist_medicine_box",
+      "assist_user_zone"
+    ],
+    "sceneId": "m20-quest-pc-loopback-190926",
+    "sceneSnapshotValidatedBeforeAck": true,
+    "status": "PASS",
+    "syntheticQuestTcpSender": true
+  },
+  "pythonFocusedTests": {
+    "command": ".venv\\Scripts\\python.exe -B -m unittest integration.test_m20_scene_layout_snapshot integration.test_m20_assistive_scene_contract integration.test_m20_assistive_desk_e2e integration.test_m20_quest_pc_acceptance",
+    "passed": 14,
+    "status": "PASS"
+  },
+  "questRuntimeBoundary": "Unity/Quest app build, install, cold-launch, Quest visual and real TCP transport are pending interactive validation; no hardware result is claimed.",
+  "questRuntimeBuildOrLaunch": false,
+  "schemaVersion": 1,
+  "status": "PASS"
+}

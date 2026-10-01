@@ -40,6 +40,11 @@ EXPECTED_CANDIDATE_ORDER = (
 EXPECTED_SLOTS = ((0, 7.2, 5), (1, 9.0, 4), (2, 12.0, 3))
 GEOMETRY_TOLERANCE_METERS = 0.005
 YAW_TOLERANCE_DEGREES = 2.0
+LAYOUT_EDGE_CLEARANCE_METERS = 0.025
+LAYOUT_ROW_TOLERANCE_METERS = 0.02
+M9_GRASP_SOURCE_IDS = ("assist_medicine_box", "assist_phone")
+M9_GRASP_REACHABLE_X_BOUNDS_METERS = (-0.24, 0.24)
+M9_GRASP_REACHABLE_Y_BOUNDS_METERS = (0.0, 0.14)
 
 
 class M20AssistiveSceneError(ValueError):
@@ -103,6 +108,37 @@ def _entity_map(spec: dict) -> dict[str, dict]:
     return result
 
 
+def spatial_candidate_order(spec: dict) -> tuple[str, ...]:
+    """Return far-to-near rows, with each existing row sorted left-to-right.
+
+    Rows retain the M20 acceptance rule: objects no more than 2 cm apart in
+    table-local Y share a row; row membership is anchored to the farthest
+    remaining candidate so the ordering is deterministic and transitive.
+    """
+    entities = _entity_map(spec)
+    candidates = [entities[target_id] for target_id in EXPECTED_CANDIDATE_ORDER]
+    candidates.sort(key=lambda item: (
+        -_vector(item.get("positionMeters"), item["semanticId"] + ".positionMeters")[1],
+        _vector(item.get("positionMeters"), item["semanticId"] + ".positionMeters")[0],
+        item["semanticId"],
+    ))
+    rows: list[tuple[float, list[dict]]] = []
+    for entity in candidates:
+        y = _vector(entity["positionMeters"], entity["semanticId"] + ".positionMeters")[1]
+        if not rows or abs(rows[-1][0] - y) > LAYOUT_ROW_TOLERANCE_METERS:
+            rows.append((y, [entity]))
+        else:
+            rows[-1][1].append(entity)
+    ordered: list[str] = []
+    for _anchor_y, row in rows:
+        row.sort(key=lambda item: (
+            _vector(item["positionMeters"], item["semanticId"] + ".positionMeters")[0],
+            item["semanticId"],
+        ))
+        ordered.extend(item["semanticId"] for item in row)
+    return tuple(ordered)
+
+
 def validate_spec(spec: dict) -> dict:
     """Validate IDs, dimensions, ordering, mirroring, bounds, and articulation."""
     errors: list[str] = []
@@ -144,8 +180,8 @@ def validate_spec(spec: dict) -> dict:
 
     entities = _entity_map(spec)
     order = tuple(spec.get("candidateOrderFarToNearLeftToRight", ()))
-    if order != EXPECTED_CANDIDATE_ORDER:
-        errors.append("candidate order must preserve the required six semantic objects")
+    if len(order) != len(EXPECTED_CANDIDATE_ORDER) or set(order) != set(EXPECTED_CANDIDATE_ORDER):
+        errors.append("candidate order must contain each required semantic object exactly once")
     selectable = {
         semantic_id: entity
         for semantic_id, entity in entities.items()
@@ -217,23 +253,20 @@ def validate_spec(spec: dict) -> dict:
                 errors.append("{} exceeds the table left/right boundary".format(semantic_id))
             if abs(center[1]) + size[1] / 2.0 > table_size[1] / 2.0 + 1e-6:
                 errors.append("{} exceeds the table near/far boundary".format(semantic_id))
+            if semantic_id != "assist_user_zone" and (
+                abs(center[0]) + size[0] / 2.0 > table_size[0] / 2.0 - LAYOUT_EDGE_CLEARANCE_METERS + 1e-6
+                or abs(center[1]) + size[1] / 2.0 > table_size[1] / 2.0 - LAYOUT_EDGE_CLEARANCE_METERS + 1e-6
+            ):
+                errors.append("{} violates the tabletop safe edge clearance".format(semantic_id))
+            if semantic_id in M9_GRASP_SOURCE_IDS and (
+                center[0] < M9_GRASP_REACHABLE_X_BOUNDS_METERS[0] - 1e-6
+                or center[0] > M9_GRASP_REACHABLE_X_BOUNDS_METERS[1] + 1e-6
+                or center[1] < M9_GRASP_REACHABLE_Y_BOUNDS_METERS[0] - 1e-6
+                or center[1] > M9_GRASP_REACHABLE_Y_BOUNDS_METERS[1] + 1e-6
+            ):
+                errors.append("{} lies outside the tested M9 grasp-reachable layout envelope".format(semantic_id))
 
-    medicine = centers.get("assist_medicine_box")
-    storage = centers.get("assist_storage_box")
-    phone = centers.get("assist_phone")
-    button = centers.get("assist_button_switch")
-    charger = centers.get("assist_wireless_charger")
     zone = centers.get("assist_user_zone")
-    if medicine is None or medicine[0] >= 0:
-        errors.append("medicine box must be left of the centerline (X < 0)")
-    if button is None or button[0] >= 0:
-        errors.append("button must be left of the centerline (X < 0)")
-    if phone is None or phone[0] <= 0:
-        errors.append("phone must be right of the centerline (X > 0)")
-    if charger is None or charger[0] <= 0:
-        errors.append("wireless charger must be right of the centerline (X > 0)")
-    if storage is None or abs(storage[0]) > 0.005:
-        errors.append("storage box must remain centered")
     if zone is None or zone[1] >= 0:
         errors.append("USER ZONE must stay on the front/user side (smaller Y)")
     robot = spec.get("robot", {})
@@ -258,14 +291,11 @@ def validate_spec(spec: dict) -> dict:
             if overlaps:
                 errors.append("initial candidates interpenetrate: {} / {}".format(left_id, right_id))
 
-    # Candidate order must sort far-to-near, and each aligned row left-to-right.
-    for previous_id, current_id in zip(order_ids, order_ids[1:]):
-        previous = centers[previous_id]
-        current = centers[current_id]
-        if previous[1] < current[1] - 0.02:
-            errors.append("candidate ordering moves from near to far: {} / {}".format(previous_id, current_id))
-        if abs(previous[1] - current[1]) <= 0.02 and previous[0] > current[0] + 1e-6:
-            errors.append("same-row candidate order is not left-to-right: {} / {}".format(previous_id, current_id))
+    # Preserve the established far-to-near row and left-to-right row semantics
+    # while deriving the order from the actual frozen positions.
+    expected_spatial_order = spatial_candidate_order(spec)
+    if order != expected_spatial_order:
+        errors.append("candidateOrderFarToNearLeftToRight does not match the actual spatial order")
 
     placement_checks = []
     table_size = _vector(table.get("dimensionsMeters"), "table.dimensionsMeters")
@@ -419,12 +449,13 @@ def validate_spec(spec: dict) -> dict:
         "geometryDimensionToleranceRelative": 0.02,
         "yawToleranceDegrees": YAW_TOLERANCE_DEGREES,
         "mirrorChecks": {
-            "medicineXNegative": medicine[0] < 0,
-            "buttonXNegative": button[0] < 0,
-            "phoneXPositive": phone[0] > 0,
-            "chargerXPositive": charger[0] > 0,
-            "storageCentered": abs(storage[0]) <= 0.005,
+            "candidateOrderMatchesSpatialPositions": order == expected_spatial_order,
             "userZoneInFront": zone[1] < 0,
+            "userZoneCanonicalPosition": (
+                abs(zone[0]) <= 1e-9
+                and abs(zone[1] + 0.19) <= 1e-9
+                and abs(zone[2] - 0.001) <= 1e-9
+            ),
             "robotBehindCandidates": robot_position[1] > max(value[1] for value in centers.values()),
         },
         "articulations": {
