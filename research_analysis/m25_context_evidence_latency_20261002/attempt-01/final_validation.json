@@ -1,0 +1,156 @@
+{
+  "recordType": "m25_final_invariant_validation",
+  "status": "PASS",
+  "runId": "m25-context-evidence-latency-20261002",
+  "generatedAtUtc": "2026-10-01T20:31:26Z",
+  "sourceHead": "f9cd64d114a7bec6822ec6ccb6d8e9727ef1a7be",
+  "inputManifestSha256": "0bc5b2032df564342562d3af085a174d81f707db42dfc161c14db4715d5fec5a",
+  "checks": {
+    "cohort88AndSessions": {
+      "formalN88": true,
+      "sessionCountsA30B129B229": true,
+      "b1Trial011Excluded": true,
+      "b2Trial023Excluded": true,
+      "sourceRate250HzProvenance": true,
+      "operatingPointHashMatchesSidecar": true,
+      "rawWaveformNotRead": true
+    },
+    "m23HeldOutBaselineReproduced": true,
+    "continuousEvidenceExpectedRows": true,
+    "continuousFixedTimeRows": true,
+    "allPureEvidenceVectorsNormalized": true,
+    "sub070CounterfactualsExplicit": true,
+    "authorizedM23M24ExactReplays": true,
+    "allSharedLatencyNoDelay": true,
+    "allSharedLatencyNoRerank": true,
+    "foldSelectionExcludesHeldOut": true,
+    "candidateGridValidityAndAccuracyFloor": true,
+    "selectedThresholdSharedAcrossAllStrengths": true,
+    "M23AssignmentsReused": true,
+    "sensitivityNoRefit": true,
+    "wrongContextExcludedFromSelection": true,
+    "availabilityUsesPrimaryThreshold": true,
+    "availabilitySummaryHasExpectedSessionCounts": true,
+    "precisionSurfaceExpectedRows": true,
+    "wrongContextExpectedRows": true,
+    "availabilityExpectedRows": true,
+    "sensitivityExpectedRows": true,
+    "allRequiredArtifactsPresent": true,
+    "allRequiredPlotsPresent": true,
+    "atLeast12Plots": true,
+    "inputHashesUnchanged": true,
+    "rawEegWaveformNotReadOrModified": true,
+    "hardwareNotAccessed": true
+  },
+  "failedChecks": [],
+  "missingRequiredArtifacts": [],
+  "formalN": 88,
+  "sessionCounts": {
+    "A": 30,
+    "B1": 29,
+    "B2": 29
+  },
+  "fixedEvidenceTimesSeconds": [
+    0.5,
+    0.7,
+    0.9,
+    1.1,
+    1.3,
+    1.5
+  ],
+  "strengths": [
+    "0.333333",
+    "0.50",
+    "0.60",
+    "0.70",
+    "0.80",
+    "0.90",
+    "0.95",
+    "0.98",
+    "0.99",
+    "1.00"
+  ],
+  "primaryGrid": "0.10",
+  "sensitivityGrid": "0.04",
+  "baselineFoldMatchN": 264,
+  "continuousEvidenceRows": 13200,
+  "continuousPrimaryFixedRows": 5280,
+  "authorizedEvidenceRows": 39600,
+  "authorizedStopReplayRows": 2376,
+  "M23M24Replay": {
+    "historicalHelperReplayRows": 2376,
+    "m23SourceComparisonRows": 1584,
+    "m24ComparisonRows": 2376,
+    "m23HelperMismatchN": 0,
+    "m24ExactReuseReplayMismatchN": 0
+  },
+  "candidateGridRows": 1080,
+  "sharedLatencyHeldOutRows": 5280,
+  "precisionSurfaceRows": 120,
+  "precisionSurfacePerTrialRows": 10560,
+  "wrongContextRows": 1602,
+  "contextAvailabilitySummaryRows": 600,
+  "resolutionStabilityRows": 1080,
+  "headroomRows": 300,
+  "strengthSeparatedTrials": [
+    {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "operatingPoint": "FAST",
+      "N": 88,
+      "strengthSeparatedTrialN": 50,
+      "strengthSeparatedTrialFraction": 0.5681818181818182
+    },
+    {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "operatingPoint": "MEDIUM",
+      "N": 88,
+      "strengthSeparatedTrialN": 65,
+      "strengthSeparatedTrialFraction": 0.7386363636363636
+    },
+    {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "operatingPoint": "CONSERVATIVE",
+      "N": 88,
+      "strengthSeparatedTrialN": 83,
+      "strengthSeparatedTrialFraction": 0.9431818181818182
+    },
+    {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "operatingPoint": "FAST",
+      "N": 88,
+      "strengthSeparatedTrialN": 50,
+      "strengthSeparatedTrialFraction": 0.5681818181818182
+    },
+    {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "operatingPoint": "MEDIUM",
+      "N": 88,
+      "strengthSeparatedTrialN": 50,
+      "strengthSeparatedTrialFraction": 0.5681818181818182
+    },
+    {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "operatingPoint": "CONSERVATIVE",
+      "N": 88,
+      "strengthSeparatedTrialN": 50,
+      "strengthSeparatedTrialFraction": 0.5681818181818182
+    }
+  ],
+  "plots": [
+    "01_strength_fused_top.svg",
+    "02_strength_fused_margin.svg",
+    "03_strength_fused_entropy.svg",
+    "04_strength_by_op_heatmap.svg",
+    "05_shared_threshold_gain.svg",
+    "06_strength_precision_gain_heatmap.svg",
+    "07_strength_precision_wrongstop_heatmap.svg",
+    "08_context_arrival_gain.svg",
+    "09_eeg_only_headroom_gain.svg",
+    "10_grid_resolution_comparison.svg",
+    "11_stability_sensitivity.svg",
+    "12_per_session_strength_curves.svg"
+  ],
+  "runSeconds": 71.07368326187134,
+  "noRawEegWaveformRead": true,
+  "noHardwareAccess": true
+}

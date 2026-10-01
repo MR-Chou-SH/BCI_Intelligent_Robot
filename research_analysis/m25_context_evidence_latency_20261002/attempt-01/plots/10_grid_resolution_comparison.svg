@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="580" viewBox="0 0 960 580">
+<rect width="100%" height="100%" fill="white"/>
+<text x="90" y="35" font-size="20" font-family="Arial" font-weight="bold">0.10 s primary versus 0.04 s sensitivity</text>
+<line x1="90" y1="475.0" x2="700" y2="475.0" stroke="#dddddd"/>
+<text x="78" y="479.0" text-anchor="end" font-size="12" font-family="Arial">-0.030</text>
+<line x1="90" y1="394.0" x2="700" y2="394.0" stroke="#dddddd"/>
+<text x="78" y="398.0" text-anchor="end" font-size="12" font-family="Arial">0.056</text>
+<line x1="90" y1="313.0" x2="700" y2="313.0" stroke="#dddddd"/>
+<text x="78" y="317.0" text-anchor="end" font-size="12" font-family="Arial">0.142</text>
+<line x1="90" y1="232.0" x2="700" y2="232.0" stroke="#dddddd"/>
+<text x="78" y="236.0" text-anchor="end" font-size="12" font-family="Arial">0.227</text>
+<line x1="90" y1="151.0" x2="700" y2="151.0" stroke="#dddddd"/>
+<text x="78" y="155.0" text-anchor="end" font-size="12" font-family="Arial">0.313</text>
+<line x1="90" y1="70.0" x2="700" y2="70.0" stroke="#dddddd"/>
+<text x="78" y="74.0" text-anchor="end" font-size="12" font-family="Arial">0.398</text>
+<line x1="90" y1="70" x2="90" y2="475" stroke="#333"/>
+<line x1="90" y1="475" x2="700" y2="475" stroke="#333"/>
+<line x1="90.0" y1="475" x2="90.0" y2="480" stroke="#333"/>
+<text x="90.0" y="498" text-anchor="middle" font-size="11" font-family="Arial">0.333</text>
+<line x1="242.5" y1="475" x2="242.5" y2="480" stroke="#333"/>
+<text x="242.5" y="498" text-anchor="middle" font-size="11" font-family="Arial">0.500</text>
+<line x1="334.0" y1="475" x2="334.0" y2="480" stroke="#333"/>
+<text x="334.0" y="498" text-anchor="middle" font-size="11" font-family="Arial">0.600</text>
+<line x1="425.5" y1="475" x2="425.5" y2="480" stroke="#333"/>
+<text x="425.5" y="498" text-anchor="middle" font-size="11" font-family="Arial">0.700</text>
+<line x1="517.0" y1="475" x2="517.0" y2="480" stroke="#333"/>
+<text x="517.0" y="498" text-anchor="middle" font-size="11" font-family="Arial">0.800</text>
+<line x1="608.5" y1="475" x2="608.5" y2="480" stroke="#333"/>
+<text x="608.5" y="498" text-anchor="middle" font-size="11" font-family="Arial">0.900</text>
+<line x1="654.2" y1="475" x2="654.2" y2="480" stroke="#333"/>
+<text x="654.2" y="498" text-anchor="middle" font-size="11" font-family="Arial">0.950</text>
+<line x1="681.7" y1="475" x2="681.7" y2="480" stroke="#333"/>
+<text x="681.7" y="498" text-anchor="middle" font-size="11" font-family="Arial">0.980</text>
+<line x1="690.9" y1="475" x2="690.9" y2="480" stroke="#333"/>
+<text x="690.9" y="498" text-anchor="middle" font-size="11" font-family="Arial">0.990</text>
+<line x1="700.0" y1="475" x2="700.0" y2="480" stroke="#333"/>
+<text x="700.0" y="498" text-anchor="middle" font-size="11" font-family="Arial">1.000</text>
+<text x="395.0" y="552" text-anchor="middle" font-size="14" font-family="Arial">Context prior strength</text>
+<text x="22" y="272.5" transform="rotate(-90 22 272.5)" text-anchor="middle" font-size="14" font-family="Arial">Mean held-out paired gain (s)</text>
+<polyline points="90.0,447.1 242.5,447.1 334.0,447.1 425.5,104.7 517.0,104.7 608.5,104.7 654.2,104.7 681.7,104.7 690.9,104.7 700.0,104.7" fill="none" stroke="#1565c0" stroke-width="2.5"/>
+<circle cx="90.0" cy="447.1" r="3.8" fill="#1565c0"/>
+<circle cx="242.5" cy="447.1" r="3.8" fill="#1565c0"/>
+<circle cx="334.0" cy="447.1" r="3.8" fill="#1565c0"/>
+<circle cx="425.5" cy="104.7" r="3.8" fill="#1565c0"/>
+<circle cx="517.0" cy="104.7" r="3.8" fill="#1565c0"/>
+<circle cx="608.5" cy="104.7" r="3.8" fill="#1565c0"/>
+<circle cx="654.2" cy="104.7" r="3.8" fill="#1565c0"/>
+<circle cx="681.7" cy="104.7" r="3.8" fill="#1565c0"/>
+<circle cx="690.9" cy="104.7" r="3.8" fill="#1565c0"/>
+<circle cx="700.0" cy="104.7" r="3.8" fill="#1565c0"/>
+<line x1="724" y1="86" x2="746" y2="86" stroke="#1565c0" stroke-width="3"/>
+<text x="754" y="90" font-size="12" font-family="Arial">grid 0.10</text>
+<polyline points="90.0,447.1 242.5,447.1 334.0,447.1 425.5,97.9 517.0,97.9 608.5,97.9 654.2,97.9 681.7,97.9 690.9,97.9 700.0,97.9" fill="none" stroke="#d84315" stroke-width="2.5"/>
+<circle cx="90.0" cy="447.1" r="3.8" fill="#d84315"/>
+<circle cx="242.5" cy="447.1" r="3.8" fill="#d84315"/>
+<circle cx="334.0" cy="447.1" r="3.8" fill="#d84315"/>
+<circle cx="425.5" cy="97.9" r="3.8" fill="#d84315"/>
+<circle cx="517.0" cy="97.9" r="3.8" fill="#d84315"/>
+<circle cx="608.5" cy="97.9" r="3.8" fill="#d84315"/>
+<circle cx="654.2" cy="97.9" r="3.8" fill="#d84315"/>
+<circle cx="681.7" cy="97.9" r="3.8" fill="#d84315"/>
+<circle cx="690.9" cy="97.9" r="3.8" fill="#d84315"/>
+<circle cx="700.0" cy="97.9" r="3.8" fill="#d84315"/>
+<line x1="724" y1="110" x2="746" y2="110" stroke="#d84315" stroke-width="3"/>
+<text x="754" y="114" font-size="12" font-family="Arial">grid 0.04</text>
+</svg>

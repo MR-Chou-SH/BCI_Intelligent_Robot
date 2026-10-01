@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520">
+<rect width="100%" height="100%" fill="white"/>
+<text x="190" y="36" font-size="20" font-family="Arial" font-weight="bold">Strength by EEG operating point: fused top at 0.90 s</text>
+<text x="180" y="118.6" text-anchor="end" font-size="12" font-family="Arial">FAST</text>
+<rect x="190.0" y="90.0" width="60.0" height="42.0" fill="rgb(245,248,255)" stroke="white"/>
+<text x="221.0" y="118.6" text-anchor="middle" font-size="10" font-family="Arial">0.440</text>
+<rect x="252.0" y="90.0" width="60.0" height="42.0" fill="rgb(192,214,247)" stroke="white"/>
+<text x="283.0" y="118.6" text-anchor="middle" font-size="10" font-family="Arial">0.609</text>
+<rect x="314.0" y="90.0" width="60.0" height="42.0" fill="rgb(163,197,243)" stroke="white"/>
+<text x="345.0" y="118.6" text-anchor="middle" font-size="10" font-family="Arial">0.699</text>
+<rect x="376.0" y="90.0" width="60.0" height="42.0" fill="rgb(137,180,239)" stroke="white"/>
+<text x="407.0" y="118.6" text-anchor="middle" font-size="10" font-family="Arial">0.783</text>
+<rect x="438.0" y="90.0" width="60.0" height="42.0" fill="rgb(113,165,236)" stroke="white"/>
+<text x="469.0" y="118.6" text-anchor="middle" font-size="10" font-family="Arial">0.860</text>
+<rect x="500.0" y="90.0" width="60.0" height="42.0" fill="rgb(91,151,233)" stroke="white"/>
+<text x="531.0" y="118.6" text-anchor="middle" font-size="10" font-family="Arial">0.933</text>
+<rect x="562.0" y="90.0" width="60.0" height="42.0" fill="rgb(80,144,231)" stroke="white"/>
+<text x="593.0" y="118.6" text-anchor="middle" font-size="10" font-family="Arial">0.967</text>
+<rect x="624.0" y="90.0" width="60.0" height="42.0" fill="rgb(74,140,230)" stroke="white"/>
+<text x="655.0" y="118.6" text-anchor="middle" font-size="10" font-family="Arial">0.987</text>
+<rect x="686.0" y="90.0" width="60.0" height="42.0" fill="rgb(72,139,230)" stroke="white"/>
+<text x="717.0" y="118.6" text-anchor="middle" font-size="10" font-family="Arial">0.993</text>
+<rect x="748.0" y="90.0" width="60.0" height="42.0" fill="rgb(70,138,230)" stroke="white"/>
+<text x="779.0" y="118.6" text-anchor="middle" font-size="10" font-family="Arial">1.000</text>
+<text x="180" y="162.6" text-anchor="end" font-size="12" font-family="Arial">MEDIUM</text>
+<rect x="190.0" y="134.0" width="60.0" height="42.0" fill="rgb(245,248,255)" stroke="white"/>
+<text x="221.0" y="162.6" text-anchor="middle" font-size="10" font-family="Arial">0.440</text>
+<rect x="252.0" y="134.0" width="60.0" height="42.0" fill="rgb(192,214,247)" stroke="white"/>
+<text x="283.0" y="162.6" text-anchor="middle" font-size="10" font-family="Arial">0.609</text>
+<rect x="314.0" y="134.0" width="60.0" height="42.0" fill="rgb(163,197,243)" stroke="white"/>
+<text x="345.0" y="162.6" text-anchor="middle" font-size="10" font-family="Arial">0.699</text>
+<rect x="376.0" y="134.0" width="60.0" height="42.0" fill="rgb(137,180,239)" stroke="white"/>
+<text x="407.0" y="162.6" text-anchor="middle" font-size="10" font-family="Arial">0.783</text>
+<rect x="438.0" y="134.0" width="60.0" height="42.0" fill="rgb(113,165,236)" stroke="white"/>
+<text x="469.0" y="162.6" text-anchor="middle" font-size="10" font-family="Arial">0.860</text>
+<rect x="500.0" y="134.0" width="60.0" height="42.0" fill="rgb(91,151,233)" stroke="white"/>
+<text x="531.0" y="162.6" text-anchor="middle" font-size="10" font-family="Arial">0.933</text>
+<rect x="562.0" y="134.0" width="60.0" height="42.0" fill="rgb(80,144,231)" stroke="white"/>
+<text x="593.0" y="162.6" text-anchor="middle" font-size="10" font-family="Arial">0.967</text>
+<rect x="624.0" y="134.0" width="60.0" height="42.0" fill="rgb(74,140,230)" stroke="white"/>
+<text x="655.0" y="162.6" text-anchor="middle" font-size="10" font-family="Arial">0.987</text>
+<rect x="686.0" y="134.0" width="60.0" height="42.0" fill="rgb(72,139,230)" stroke="white"/>
+<text x="717.0" y="162.6" text-anchor="middle" font-size="10" font-family="Arial">0.993</text>
+<rect x="748.0" y="134.0" width="60.0" height="42.0" fill="rgb(70,138,230)" stroke="white"/>
+<text x="779.0" y="162.6" text-anchor="middle" font-size="10" font-family="Arial">1.000</text>
+<text x="180" y="206.6" text-anchor="end" font-size="12" font-family="Arial">CONSERVATIVE</text>
+<rect x="190.0" y="178.0" width="60.0" height="42.0" fill="rgb(245,248,255)" stroke="white"/>
+<text x="221.0" y="206.6" text-anchor="middle" font-size="10" font-family="Arial">0.440</text>
+<rect x="252.0" y="178.0" width="60.0" height="42.0" fill="rgb(192,214,247)" stroke="white"/>
+<text x="283.0" y="206.6" text-anchor="middle" font-size="10" font-family="Arial">0.609</text>
+<rect x="314.0" y="178.0" width="60.0" height="42.0" fill="rgb(163,197,243)" stroke="white"/>
+<text x="345.0" y="206.6" text-anchor="middle" font-size="10" font-family="Arial">0.699</text>
+<rect x="376.0" y="178.0" width="60.0" height="42.0" fill="rgb(137,180,239)" stroke="white"/>
+<text x="407.0" y="206.6" text-anchor="middle" font-size="10" font-family="Arial">0.783</text>
+<rect x="438.0" y="178.0" width="60.0" height="42.0" fill="rgb(113,165,236)" stroke="white"/>
+<text x="469.0" y="206.6" text-anchor="middle" font-size="10" font-family="Arial">0.860</text>
+<rect x="500.0" y="178.0" width="60.0" height="42.0" fill="rgb(91,151,233)" stroke="white"/>
+<text x="531.0" y="206.6" text-anchor="middle" font-size="10" font-family="Arial">0.933</text>
+<rect x="562.0" y="178.0" width="60.0" height="42.0" fill="rgb(80,144,231)" stroke="white"/>
+<text x="593.0" y="206.6" text-anchor="middle" font-size="10" font-family="Arial">0.967</text>
+<rect x="624.0" y="178.0" width="60.0" height="42.0" fill="rgb(74,140,230)" stroke="white"/>
+<text x="655.0" y="206.6" text-anchor="middle" font-size="10" font-family="Arial">0.987</text>
+<rect x="686.0" y="178.0" width="60.0" height="42.0" fill="rgb(72,139,230)" stroke="white"/>
+<text x="717.0" y="206.6" text-anchor="middle" font-size="10" font-family="Arial">0.993</text>
+<rect x="748.0" y="178.0" width="60.0" height="42.0" fill="rgb(70,138,230)" stroke="white"/>
+<text x="779.0" y="206.6" text-anchor="middle" font-size="10" font-family="Arial">1.000</text>
+<text x="221.0" y="78" text-anchor="middle" font-size="10" font-family="Arial">0.333333</text>
+<text x="283.0" y="78" text-anchor="middle" font-size="10" font-family="Arial">0.50</text>
+<text x="345.0" y="78" text-anchor="middle" font-size="10" font-family="Arial">0.60</text>
+<text x="407.0" y="78" text-anchor="middle" font-size="10" font-family="Arial">0.70</text>
+<text x="469.0" y="78" text-anchor="middle" font-size="10" font-family="Arial">0.80</text>
+<text x="531.0" y="78" text-anchor="middle" font-size="10" font-family="Arial">0.90</text>
+<text x="593.0" y="78" text-anchor="middle" font-size="10" font-family="Arial">0.95</text>
+<text x="655.0" y="78" text-anchor="middle" font-size="10" font-family="Arial">0.98</text>
+<text x="717.0" y="78" text-anchor="middle" font-size="10" font-family="Arial">0.99</text>
+<text x="779.0" y="78" text-anchor="middle" font-size="10" font-family="Arial">1.00</text>
+<text x="190" y="257" font-size="12" font-family="Arial">Mean fused top range 0.440 to 1.000</text>
+</svg>

@@ -1,0 +1,179 @@
+{
+  "recordType": "m25_context_evidence_latency_input_manifest",
+  "createdAtUtc": "2026-10-01T19:38:47.490152+00:00",
+  "sourceBranch": "feature/m9-virtual-manipulation",
+  "sourceHead": "f9cd64d114a7bec6822ec6ccb6d8e9727ef1a7be",
+  "analysisOnly": true,
+  "productionM19Modified": false,
+  "questUnityModified": false,
+  "nd8Accessed": false,
+  "com11Accessed": false,
+  "rawEegWaveformRead": false,
+  "rawEegModified": false,
+  "featureProvenance": {
+    "sourceArtifact": "research_analysis/m21_context_algorithm_search_20260928/attempt-01/per_trial_feature_table.csv",
+    "analysisRateHz": 250,
+    "sourceRateHz": 1000,
+    "cachedFeatureTableSha256": "458cc6a79f8bd3e4e38d79ac7163cd8636039eb0698c74d9cad98ee59d9b2309",
+    "rows": 5251,
+    "formalTrials": 88,
+    "sessions": {
+      "A": 30,
+      "B1": 29,
+      "B2": 29
+    },
+    "m21ManifestPath": "research_analysis/m21_context_algorithm_search_20260928/attempt-01/INPUT_MANIFEST.json",
+    "m21ManifestSha256": "20d343744be5ad7b6cc6a0723c5614f3e10babf3d2c1337dbec730801e5ed4e4",
+    "decisionGridsSeconds": [
+      "0.20",
+      "0.10",
+      "0.04"
+    ],
+    "rawEegWaveformDecoded": false
+  },
+  "frozenOperatingPoints": {
+    "path": "research_analysis/m23_high_information_context_20260929/attempt-01/eeg_operating_point_parameters.json",
+    "sha256": "1ff7690941778c0a58f3ac1976cc111054b4fecf5dcec1f5d2c1c2d56e3f0513",
+    "expectedSha256": "1ff7690941778c0a58f3ac1976cc111054b4fecf5dcec1f5d2c1c2d56e3f0513",
+    "matchesFrozenSidecar": true,
+    "names": [
+      "FAST",
+      "MEDIUM",
+      "CONSERVATIVE"
+    ],
+    "recalibratedFromContext": false
+  },
+  "formalCohort": {
+    "N": 88,
+    "sessions": {
+      "A": 30,
+      "B1": 29,
+      "B2": 29
+    },
+    "B1Trial011Excluded": true,
+    "B2Trial023ExploratoryExcluded": true,
+    "classOrder": [
+      "target_left",
+      "target_center",
+      "target_right"
+    ],
+    "slotFrequencyHz": [
+      7.2,
+      9.0,
+      12.0
+    ]
+  },
+  "frozenAssignment": {
+    "path": "research_analysis/m23_high_information_context_20260929/attempt-01/context_active_trial_assignments.csv",
+    "sha256": "5dabf7ed921d95ebc1933f7a0ebff93a702cf92fc6fb9cb41a1629786f32ae43",
+    "seed": 230929,
+    "reusedForPrecisionSurface": true
+  },
+  "upstreamM23": {
+    "manifestPath": "research_analysis/m23_high_information_context_20260929/attempt-01/INPUT_MANIFEST.json",
+    "sha256": "71b8de216615e65dc8a62d28c0c49f19ff19b106b51a776c0ea87b35a23435b7",
+    "finalValidationPath": "research_analysis/m23_high_information_context_20260929/attempt-01/final_validation.json"
+  },
+  "upstreamM24": {
+    "manifestPath": "research_analysis/m24_context_strength_response_20260929/attempt-01/INPUT_MANIFEST.json",
+    "sha256": "d616b3a688d78a3a98634989fcc24cacc57907d99e3ae002b4ad329f3b02051d",
+    "finalValidationPath": "research_analysis/m24_context_strength_response_20260929/attempt-01/final_validation.json"
+  },
+  "m24ForensicAnchor": {
+    "path": "research_analysis/m24_context_strength_audit_20260929/attempt-01/audit_verdict.json",
+    "sha256": "186ddfc8ae28253e753a1043d60577c383a895fb09799951bc5cb63ca994b205",
+    "diagnosis": "TRUE_STOPPING_SATURATION"
+  },
+  "inputs": [
+    {
+      "path": "research_analysis/m21_context_algorithm_search.py",
+      "sizeBytes": 164190,
+      "sha256": "c39a59ab186b59e3390b2d6287611926e4f3387b98aaf0a776f953b40373c66e"
+    },
+    {
+      "path": "research_analysis/m21_context_algorithm_search_20260928/attempt-01/INPUT_MANIFEST.json",
+      "sizeBytes": 11523,
+      "sha256": "20d343744be5ad7b6cc6a0723c5614f3e10babf3d2c1337dbec730801e5ed4e4"
+    },
+    {
+      "path": "research_analysis/m21_context_algorithm_search_20260928/attempt-01/final_validation.json",
+      "sizeBytes": 3487,
+      "sha256": "01f4b6584d48a1c7a1ee2d9f8f7652195858e2cd9b452bdd3729d1b5b7a693af"
+    },
+    {
+      "path": "research_analysis/m21_context_algorithm_search_20260928/attempt-01/per_trial_feature_table.csv",
+      "sizeBytes": 3167840,
+      "sha256": "458cc6a79f8bd3e4e38d79ac7163cd8636039eb0698c74d9cad98ee59d9b2309"
+    },
+    {
+      "path": "research_analysis/m23_high_information_context.py",
+      "sizeBytes": 105511,
+      "sha256": "40de681644e74283ecd1a0f8f27499c586bea7304959a35e7d5e71c6e678365d"
+    },
+    {
+      "path": "research_analysis/m23_high_information_context_20260929/attempt-01/INPUT_MANIFEST.json",
+      "sizeBytes": 4735,
+      "sha256": "71b8de216615e65dc8a62d28c0c49f19ff19b106b51a776c0ea87b35a23435b7"
+    },
+    {
+      "path": "research_analysis/m23_high_information_context_20260929/attempt-01/final_validation.json",
+      "sizeBytes": 3755,
+      "sha256": "1311e05c8864b504830c1151400454c8beb27403996162c7f91f5ce907aa4a90"
+    },
+    {
+      "path": "research_analysis/m23_high_information_context_20260929/attempt-01/eeg_operating_point_parameters.json",
+      "sizeBytes": 8980,
+      "sha256": "1ff7690941778c0a58f3ac1976cc111054b4fecf5dcec1f5d2c1c2d56e3f0513"
+    },
+    {
+      "path": "research_analysis/m23_high_information_context_20260929/attempt-01/EEG_OPERATING_POINT_PARAMETERS.sha256.json",
+      "sizeBytes": 260,
+      "sha256": "ef266a249ed9e2ce25b402cf342672c4f7418c66f905da2f18d3f6a6fb2cb6e4"
+    },
+    {
+      "path": "research_analysis/m23_high_information_context_20260929/attempt-01/eeg_operating_point_per_trial.csv",
+      "sizeBytes": 50697,
+      "sha256": "bc3288ccd4c4400547b551004c12a8f01b7df199754e8b7fba6766769a91e8eb"
+    },
+    {
+      "path": "research_analysis/m23_high_information_context_20260929/attempt-01/context_active_trial_assignments.csv",
+      "sizeBytes": 473812,
+      "sha256": "5dabf7ed921d95ebc1933f7a0ebff93a702cf92fc6fb9cb41a1629786f32ae43"
+    },
+    {
+      "path": "research_analysis/m24_context_strength_response.py",
+      "sizeBytes": 107801,
+      "sha256": "834228ffd553429e2a03a7f638f51c7c79a4850f56d75dc2cdeedcd9ae4d3327"
+    },
+    {
+      "path": "research_analysis/m24_context_strength_response_20260929/attempt-01/M24_EXPERIMENT_SPEC.md",
+      "sizeBytes": 4925,
+      "sha256": "1e4d744d9d576c60c0c286a851c25529124318377f3a326c5f11ff27c5e48992"
+    },
+    {
+      "path": "research_analysis/m24_context_strength_response_20260929/attempt-01/INPUT_MANIFEST.json",
+      "sizeBytes": 6328,
+      "sha256": "d616b3a688d78a3a98634989fcc24cacc57907d99e3ae002b4ad329f3b02051d"
+    },
+    {
+      "path": "research_analysis/m24_context_strength_response_20260929/attempt-01/final_validation.json",
+      "sizeBytes": 4884,
+      "sha256": "85e80513181db3a816813173d79c366d2ea344d7eecd9abca31b64b48cbb6b7e"
+    },
+    {
+      "path": "research_analysis/m24_context_strength_response_20260929/attempt-01/strength_response_per_trial.csv",
+      "sizeBytes": 5089966,
+      "sha256": "ed89d188be009bc5810235e0e6085a3083c0bdbd6c52121ce600fb47dc8ee40c"
+    },
+    {
+      "path": "research_analysis/m24_context_strength_audit_20260929/attempt-01/audit_verdict.json",
+      "sizeBytes": 17555,
+      "sha256": "186ddfc8ae28253e753a1043d60577c383a895fb09799951bc5cb63ca994b205"
+    },
+    {
+      "path": "research_analysis/m25_context_evidence_latency_20261002/attempt-01/M25_EXPERIMENT_SPEC.md",
+      "sizeBytes": 9352,
+      "sha256": "4ff64b4c493cd253412b2ec01fafe9fddf9328345ace108782881d0faa6dfc54"
+    }
+  ]
+}

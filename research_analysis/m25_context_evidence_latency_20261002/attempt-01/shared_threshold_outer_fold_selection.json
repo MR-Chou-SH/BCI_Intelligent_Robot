@@ -1,0 +1,655 @@
+{
+  "recordType": "m25_shared_threshold_outer_fold_selection",
+  "analysisBranches": [
+    "FROZEN_GATE_SHARED_THRESHOLD",
+    "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE"
+  ],
+  "candidateGrid": {
+    "topThreshold": [
+      0.4,
+      0.45,
+      0.5,
+      0.55
+    ],
+    "marginThreshold": [
+      0.01,
+      0.05,
+      0.1,
+      0.15,
+      0.2
+    ],
+    "minimumEvidenceSeconds": [
+      0.5,
+      0.7,
+      0.9
+    ],
+    "stabilitySeconds": 0.4
+  },
+  "strengthGrid": [
+    "0.333333",
+    "0.50",
+    "0.60",
+    "0.70",
+    "0.80",
+    "0.90",
+    "0.95",
+    "0.98",
+    "0.99",
+    "1.00"
+  ],
+  "selectionUsesHeldOutSession": false,
+  "folds": {
+    "FROZEN_GATE_SHARED_THRESHOLD|A|FAST": {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "heldOutSession": "A",
+      "trainingSessions": [
+        "B1",
+        "B2"
+      ],
+      "trainingN": 58,
+      "operatingPoint": "FAST",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.55,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.13275862068965516,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE|A|FAST": {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "heldOutSession": "A",
+      "trainingSessions": [
+        "B1",
+        "B2"
+      ],
+      "trainingN": 58,
+      "operatingPoint": "FAST",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.5,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.1706896551724138,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "FROZEN_GATE_SHARED_THRESHOLD|A|MEDIUM": {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "heldOutSession": "A",
+      "trainingSessions": [
+        "B1",
+        "B2"
+      ],
+      "trainingN": 58,
+      "operatingPoint": "MEDIUM",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.1,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.55,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.1882758620689655,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE|A|MEDIUM": {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "heldOutSession": "A",
+      "trainingSessions": [
+        "B1",
+        "B2"
+      ],
+      "trainingN": 58,
+      "operatingPoint": "MEDIUM",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.1,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.25,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "FROZEN_GATE_SHARED_THRESHOLD|A|CONSERVATIVE": {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "heldOutSession": "A",
+      "trainingSessions": [
+        "B1",
+        "B2"
+      ],
+      "trainingN": 58,
+      "operatingPoint": "CONSERVATIVE",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.15,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.55,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.35120689655172416,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE|A|CONSERVATIVE": {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "heldOutSession": "A",
+      "trainingSessions": [
+        "B1",
+        "B2"
+      ],
+      "trainingN": 58,
+      "operatingPoint": "CONSERVATIVE",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.15,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.4827586206896552,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "FROZEN_GATE_SHARED_THRESHOLD|B1|FAST": {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "heldOutSession": "B1",
+      "trainingSessions": [
+        "A",
+        "B2"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "FAST",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.55,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.1447457627118644,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE|B1|FAST": {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "heldOutSession": "B1",
+      "trainingSessions": [
+        "A",
+        "B2"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "FAST",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.5,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.18610169491525425,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "FROZEN_GATE_SHARED_THRESHOLD|B1|MEDIUM": {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "heldOutSession": "B1",
+      "trainingSessions": [
+        "A",
+        "B2"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "MEDIUM",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.1,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.55,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.23847457627118643,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE|B1|MEDIUM": {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "heldOutSession": "B1",
+      "trainingSessions": [
+        "A",
+        "B2"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "MEDIUM",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.1,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.31999999999999995,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "FROZEN_GATE_SHARED_THRESHOLD|B1|CONSERVATIVE": {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "heldOutSession": "B1",
+      "trainingSessions": [
+        "A",
+        "B2"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "CONSERVATIVE",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.45,
+        "marginThreshold": 0.1,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.55,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.39033898305084735,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE|B1|CONSERVATIVE": {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "heldOutSession": "B1",
+      "trainingSessions": [
+        "A",
+        "B2"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "CONSERVATIVE",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.45,
+        "marginThreshold": 0.1,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.5369491525423729,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "FROZEN_GATE_SHARED_THRESHOLD|B2|FAST": {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "heldOutSession": "B2",
+      "trainingSessions": [
+        "A",
+        "B1"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "FAST",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.55,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.17559322033898303,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE|B2|FAST": {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "heldOutSession": "B2",
+      "trainingSessions": [
+        "A",
+        "B1"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "FAST",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.5,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.22576271186440677,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "FROZEN_GATE_SHARED_THRESHOLD|B2|MEDIUM": {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "heldOutSession": "B2",
+      "trainingSessions": [
+        "A",
+        "B1"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "MEDIUM",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.1,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.55,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.26220338983050845,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE|B2|MEDIUM": {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "heldOutSession": "B2",
+      "trainingSessions": [
+        "A",
+        "B1"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "MEDIUM",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.1,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.3494915254237288,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "FROZEN_GATE_SHARED_THRESHOLD|B2|CONSERVATIVE": {
+      "branch": "FROZEN_GATE_SHARED_THRESHOLD",
+      "heldOutSession": "B2",
+      "trainingSessions": [
+        "A",
+        "B1"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "CONSERVATIVE",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.45,
+        "marginThreshold": 0.1,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.55,
+        "marginThreshold": 0.2,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.41169491525423724,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    },
+    "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE|B2|CONSERVATIVE": {
+      "branch": "NONDEPLOYABLE_DECOUPLED_STRENGTH_GATE",
+      "heldOutSession": "B2",
+      "trainingSessions": [
+        "A",
+        "B1"
+      ],
+      "trainingN": 59,
+      "operatingPoint": "CONSERVATIVE",
+      "frozenM23OuterFoldParameters": {
+        "topThreshold": 0.45,
+        "marginThreshold": 0.1,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedSharedContextParameters": {
+        "topThreshold": 0.4,
+        "marginThreshold": 0.01,
+        "minimumEvidenceSeconds": 0.5,
+        "stabilitySeconds": 0.4
+      },
+      "selectedTrainingMeanGainSeconds": 0.5630508474576271,
+      "selectedTrainingAccuracy": 1.0,
+      "trainingWrongEarlyStopN": 0,
+      "candidateCount": 60,
+      "validCandidateCount": 60,
+      "selectionOrder": [
+        "maximize_training_mean_gain_over_all_strengths",
+        "higher_top_threshold",
+        "higher_margin_threshold",
+        "later_minimum_evidence"
+      ],
+      "heldOutSessionUsedDuringSelection": false
+    }
+  }
+}
