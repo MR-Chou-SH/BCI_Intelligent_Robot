@@ -3,17 +3,17 @@
   "runId": "m30_m31_longrun_20261003",
   "status": "IN_PROGRESS",
   "startedAtUtc": "2026-10-02T20:21:55Z",
-  "updatedAtUtc": "2026-10-02T23:48:45Z",
+  "updatedAtUtc": "2026-10-02T23:56:21Z",
   "repository": {
     "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot",
     "branch": "codex/m30-m31-nextgen-semantic-context-vla-bridge",
-    "head": "e564ca093d48692879853d493135071316e34a52",
+    "head": "570f0dc7694d1bc12a434e59329a084ebcc6ee4e",
     "origin": "https://github.com/MR-Chou-SH/BCI_Intelligent_Robot.git",
-    "upstream": null,
+    "upstream": "origin/codex/m30-m31-nextgen-semantic-context-vla-bridge",
     "workingTreeClean": false,
     "preflight": "docs\\agent\\m30_m31_longrun_20261003\\preflight\\preflight.json"
   },
-  "phase": "M30_M31_CHECKPOINT",
+  "phase": "M30_M31_CHECKPOINT_RECORD",
   "completedSteps": [
     "preflight_recorded",
     "full_goal_contract_read",
@@ -36,9 +36,13 @@
     "m30_final_readonly_validation_gzip_pass",
     "m30_m31_focused_regressions_final_pass",
     "m31_final_benchmark_and_requirement_audit_pass",
-    "m30_m31_selective_checkpoint_pending"
+    "m30_m31_selective_checkpoint_pending",
+    "m30_m31_implementation_commit_created",
+    "m30_m31_implementation_branch_pushed",
+    "remote_sha_verified",
+    "pre_m32_checkpoint_record_created"
   ],
-  "nextStep": "selectively stage the audited M30/M31 source and experiment artifacts, commit and push the current branch, verify the remote SHA, record it in M30_M31_PRE_M32_CHECKPOINT.md; do not start M32 before this checkpoint is pushed",
+  "nextStep": "commit and push M30_M31_PRE_M32_CHECKPOINT.md with the updated state/worklog, verify remote branch SHA; only then reread the full goal contract and begin M32",
   "lastGreenVerification": {
     "recordedAtUtc": "2026-10-02T23:48:45Z",
     "m30FinalValidation": "PASS (read-only; gzip transfer table verified; 467280 rows; 14 valid SVG plots; M25 inputs unchanged)",
@@ -68,9 +72,13 @@
     "pushed": false,
     "sourceCheckpointPushed": true,
     "m30M31": {
-      "status": "verification_complete_checkpoint_pending",
-      "commit": null,
-      "pushed": false
+      "status": "implementation_pushed",
+      "commit": "570f0dc7694d1bc12a434e59329a084ebcc6ee4e",
+      "pushed": true,
+      "remoteRef": "refs/heads/codex/m30-m31-nextgen-semantic-context-vla-bridge",
+      "remoteSha": "570f0dc7694d1bc12a434e59329a084ebcc6ee4e",
+      "recordFile": "docs/agent/m30_m31_longrun_20261003/M30_M31_PRE_M32_CHECKPOINT.md",
+      "recordCommitPending": true
     }
   },
   "blocker": null,
