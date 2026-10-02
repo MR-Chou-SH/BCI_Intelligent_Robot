@@ -1,0 +1,8 @@
+{
+  "benchmark_id": "m28-real-semantic-context-v1",
+  "path": "research_analysis/m28_real_semantic_context_20261002/attempt-01/semantic_context_benchmark_v1.json",
+  "sha256": "41310ac326c33950982dd820a7b2235b144e2bc610dd58b95e36ea62c492da8e",
+  "case_count": 40,
+  "frozen_at_utc": "2026-10-02T09:55:01Z",
+  "evaluated_before_freeze": false
+}

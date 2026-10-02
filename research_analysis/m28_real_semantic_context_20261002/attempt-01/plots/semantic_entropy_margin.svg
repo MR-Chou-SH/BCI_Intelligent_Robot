@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="110" y="34" font-family="Arial,sans-serif" font-size="23" font-weight="bold">Semantic entropy and score margin</text>
+<text x="110" y="61" font-family="Arial,sans-serif" font-size="13" fill="#444">One point per frozen M28 case. Scores are ordinal; the softmax prior is uncalibrated.</text>
+<line x1="110.0" y1="110" x2="110.0" y2="500" stroke="#e6e8eb"/>
+<text x="110.0" y="524" text-anchor="middle" font-family="Arial" font-size="12">0</text>
+<line x1="268.0" y1="110" x2="268.0" y2="500" stroke="#e6e8eb"/>
+<text x="268.0" y="524" text-anchor="middle" font-family="Arial" font-size="12">0.21</text>
+<line x1="426.0" y1="110" x2="426.0" y2="500" stroke="#e6e8eb"/>
+<text x="426.0" y="524" text-anchor="middle" font-family="Arial" font-size="12">0.42</text>
+<line x1="584.0" y1="110" x2="584.0" y2="500" stroke="#e6e8eb"/>
+<text x="584.0" y="524" text-anchor="middle" font-family="Arial" font-size="12">0.63</text>
+<line x1="742.0" y1="110" x2="742.0" y2="500" stroke="#e6e8eb"/>
+<text x="742.0" y="524" text-anchor="middle" font-family="Arial" font-size="12">0.84</text>
+<line x1="900.0" y1="110" x2="900.0" y2="500" stroke="#e6e8eb"/>
+<text x="900.0" y="524" text-anchor="middle" font-family="Arial" font-size="12">1.1</text>
+<line x1="110" y1="500.0" x2="900" y2="500.0" stroke="#e6e8eb"/>
+<text x="98" y="504.0" text-anchor="end" font-family="Arial" font-size="12">0</text>
+<line x1="110" y1="422.0" x2="900" y2="422.0" stroke="#e6e8eb"/>
+<text x="98" y="426.0" text-anchor="end" font-family="Arial" font-size="12">0.21</text>
+<line x1="110" y1="344.0" x2="900" y2="344.0" stroke="#e6e8eb"/>
+<text x="98" y="348.0" text-anchor="end" font-family="Arial" font-size="12">0.42</text>
+<line x1="110" y1="266.0" x2="900" y2="266.0" stroke="#e6e8eb"/>
+<text x="98" y="270.0" text-anchor="end" font-family="Arial" font-size="12">0.63</text>
+<line x1="110" y1="188.0" x2="900" y2="188.0" stroke="#e6e8eb"/>
+<text x="98" y="192.0" text-anchor="end" font-family="Arial" font-size="12">0.84</text>
+<line x1="110" y1="110.0" x2="900" y2="110.0" stroke="#e6e8eb"/>
+<text x="98" y="114.0" text-anchor="end" font-family="Arial" font-size="12">1.1</text>
+<line x1="110" y1="500" x2="900" y2="500" stroke="#222"/>
+<line x1="110" y1="110" x2="110" y2="500" stroke="#222"/>
+<text x="505.0" y="575" text-anchor="middle" font-family="Arial" font-size="15">Normalized entropy</text>
+<text x="25" y="305.0" text-anchor="middle" transform="rotate(-90 25 305.0)" font-family="Arial" font-size="15">Raw top-score margin</text>
+<circle cx="178.6" cy="154.6" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="240.1" cy="240.0" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="187.4" cy="165.7" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="259.3" cy="240.0" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="201.0" cy="184.3" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="164.7" cy="128.6" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="244.2" cy="221.4" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="233.6" cy="221.4" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="233.6" cy="221.4" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="220.8" cy="202.9" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="220.8" cy="202.9" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="233.6" cy="221.4" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="233.6" cy="221.4" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="233.6" cy="221.4" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="220.8" cy="202.9" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="201.0" cy="184.3" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="201.0" cy="184.3" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="192.0" cy="165.7" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="201.0" cy="184.3" r="5" fill="#16a34a" opacity="0.82"/>
+<circle cx="120" cy="124" r="5" fill="#16a34a"/>
+<text x="132" y="128" font-family="Arial" font-size="12">informative</text>
+<circle cx="680.1" cy="425.7" r="5" fill="#d97706" opacity="0.82"/>
+<circle cx="657.8" cy="462.9" r="5" fill="#d97706" opacity="0.82"/>
+<circle cx="642.7" cy="462.9" r="5" fill="#d97706" opacity="0.82"/>
+<circle cx="575.7" cy="388.6" r="5" fill="#d97706" opacity="0.82"/>
+<circle cx="680.1" cy="425.7" r="5" fill="#d97706" opacity="0.82"/>
+<circle cx="505.3" cy="388.6" r="5" fill="#d97706" opacity="0.82"/>
+<circle cx="675.0" cy="462.9" r="5" fill="#d97706" opacity="0.82"/>
+<circle cx="120" cy="146" r="5" fill="#d97706"/>
+<text x="132" y="150" font-family="Arial" font-size="12">ambiguous</text>
+<circle cx="120" cy="168" r="5" fill="#64748b"/>
+<text x="132" y="172" font-family="Arial" font-size="12">context_off</text>
+<circle cx="862.4" cy="500.0" r="5" fill="#dc2626" opacity="0.82"/>
+<circle cx="120" cy="190" r="5" fill="#dc2626"/>
+<text x="132" y="194" font-family="Arial" font-size="12">invalid</text>
+</svg>

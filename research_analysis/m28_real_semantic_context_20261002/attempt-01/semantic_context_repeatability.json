@@ -1,0 +1,160 @@
+{
+  "repeat_case_count": 8,
+  "repeat_call_count": 16,
+  "all_structures_consistent": false,
+  "consistent_case_count": 7,
+  "cases": {
+    "adversarial_book_wrong_surface": {
+      "calls": 3,
+      "structural_consistency": true,
+      "top_candidate_sequence": [
+        "bookshelf_01",
+        "bookshelf_01",
+        "bookshelf_01"
+      ],
+      "status_sequence": [
+        "informative",
+        "informative",
+        "informative"
+      ],
+      "api_latency_ms": [
+        983.846,
+        1109.461,
+        681.313
+      ]
+    },
+    "adversarial_two_containers": {
+      "calls": 3,
+      "structural_consistency": true,
+      "top_candidate_sequence": [
+        null,
+        null,
+        null
+      ],
+      "status_sequence": [
+        "ambiguous",
+        "ambiguous",
+        "ambiguous"
+      ],
+      "api_latency_ms": [
+        1175.407,
+        825.926,
+        800.65
+      ]
+    },
+    "book_shelve_after_reading": {
+      "calls": 3,
+      "structural_consistency": true,
+      "top_candidate_sequence": [
+        "bookshelf_01",
+        "bookshelf_01",
+        "bookshelf_01"
+      ],
+      "status_sequence": [
+        "informative",
+        "informative",
+        "informative"
+      ],
+      "api_latency_ms": [
+        1217.413,
+        947.516,
+        725.697
+      ]
+    },
+    "cup_to_sink_for_rinsing": {
+      "calls": 3,
+      "structural_consistency": true,
+      "top_candidate_sequence": [
+        "sink_01",
+        "sink_01",
+        "sink_01"
+      ],
+      "status_sequence": [
+        "informative",
+        "informative",
+        "informative"
+      ],
+      "api_latency_ms": [
+        745.349,
+        934.84,
+        726.685
+      ]
+    },
+    "m20_medicine_handover": {
+      "calls": 3,
+      "structural_consistency": true,
+      "top_candidate_sequence": [
+        "assist_user_zone",
+        "assist_user_zone",
+        "assist_user_zone"
+      ],
+      "status_sequence": [
+        "informative",
+        "informative",
+        "informative"
+      ],
+      "api_latency_ms": [
+        2188.271,
+        2017.897,
+        1948.732
+      ]
+    },
+    "m20_phone_charge": {
+      "calls": 3,
+      "structural_consistency": true,
+      "top_candidate_sequence": [
+        "assist_wireless_charger",
+        "assist_wireless_charger",
+        "assist_wireless_charger"
+      ],
+      "status_sequence": [
+        "informative",
+        "informative",
+        "informative"
+      ],
+      "api_latency_ms": [
+        884.109,
+        670.985,
+        1035.16
+      ]
+    },
+    "m20_phone_vague_destination": {
+      "calls": 3,
+      "structural_consistency": false,
+      "top_candidate_sequence": [
+        null,
+        null,
+        null
+      ],
+      "status_sequence": [
+        "ambiguous",
+        "ambiguous",
+        "ambiguous"
+      ],
+      "api_latency_ms": [
+        1004.317,
+        1068.04,
+        1160.431
+      ]
+    },
+    "pen_in_stand": {
+      "calls": 3,
+      "structural_consistency": true,
+      "top_candidate_sequence": [
+        "pen_stand_01",
+        "pen_stand_01",
+        "pen_stand_01"
+      ],
+      "status_sequence": [
+        "informative",
+        "informative",
+        "informative"
+      ],
+      "api_latency_ms": [
+        919.605,
+        1071.773,
+        1099.073
+      ]
+    }
+  }
+}

@@ -1,0 +1,292 @@
+{
+  "n": 56,
+  "mean_ms": 833.83625,
+  "median_ms": 901.129,
+  "p90_ms": 1550.79,
+  "p95_ms": 2017.897,
+  "active_n": 31,
+  "active_mean_ms": 1118.085129032258,
+  "precompute_before_trial_recommended": true,
+  "per_call_ms": [
+    {
+      "case_id": "m20_phone_charge",
+      "call_kind": "primary",
+      "ms": 884.109
+    },
+    {
+      "case_id": "m20_medicine_store_closed",
+      "call_kind": "primary",
+      "ms": 947.857
+    },
+    {
+      "case_id": "m20_medicine_handover",
+      "call_kind": "primary",
+      "ms": 2188.271
+    },
+    {
+      "case_id": "m20_phone_user_side",
+      "call_kind": "primary",
+      "ms": 884.102
+    },
+    {
+      "case_id": "m20_phone_vague_destination",
+      "call_kind": "primary",
+      "ms": 1004.317
+    },
+    {
+      "case_id": "m20_medicine_vague_destination",
+      "call_kind": "primary",
+      "ms": 899.83
+    },
+    {
+      "case_id": "m20_phone_store_open_box",
+      "call_kind": "primary",
+      "ms": 1738.976
+    },
+    {
+      "case_id": "m20_completed_charge",
+      "call_kind": "primary",
+      "ms": 0.45
+    },
+    {
+      "case_id": "m20_absent_pixel_dock",
+      "call_kind": "primary",
+      "ms": 1.719
+    },
+    {
+      "case_id": "m20_unknown_candidate",
+      "call_kind": "primary",
+      "ms": 0.402
+    },
+    {
+      "case_id": "m20_medicine_cannot_charge",
+      "call_kind": "primary",
+      "ms": 0.603
+    },
+    {
+      "case_id": "m20_press_switch",
+      "call_kind": "primary",
+      "ms": 1008.129
+    },
+    {
+      "case_id": "book_shelve_after_reading",
+      "call_kind": "primary",
+      "ms": 1217.413
+    },
+    {
+      "case_id": "book_ready_on_tray",
+      "call_kind": "primary",
+      "ms": 1092.541
+    },
+    {
+      "case_id": "book_store_in_box",
+      "call_kind": "primary",
+      "ms": 902.428
+    },
+    {
+      "case_id": "book_put_away_ambiguous",
+      "call_kind": "primary",
+      "ms": 775.394
+    },
+    {
+      "case_id": "book_reading_complete",
+      "call_kind": "primary",
+      "ms": 0.45
+    },
+    {
+      "case_id": "book_missing_wall_hook",
+      "call_kind": "primary",
+      "ms": 1.47
+    },
+    {
+      "case_id": "cup_on_serving_tray",
+      "call_kind": "primary",
+      "ms": 835.522
+    },
+    {
+      "case_id": "cup_to_sink_for_rinsing",
+      "call_kind": "primary",
+      "ms": 745.349
+    },
+    {
+      "case_id": "cup_store_cupboard",
+      "call_kind": "primary",
+      "ms": 2230.799
+    },
+    {
+      "case_id": "cup_put_away_ambiguous",
+      "call_kind": "primary",
+      "ms": 1550.79
+    },
+    {
+      "case_id": "cup_charging_conflict",
+      "call_kind": "primary",
+      "ms": 0.672
+    },
+    {
+      "case_id": "cup_rinsing_complete",
+      "call_kind": "primary",
+      "ms": 0.381
+    },
+    {
+      "case_id": "pen_store_closed_drawer",
+      "call_kind": "primary",
+      "ms": 1108.559
+    },
+    {
+      "case_id": "pen_in_stand",
+      "call_kind": "primary",
+      "ms": 919.605
+    },
+    {
+      "case_id": "pen_ready_on_desk",
+      "call_kind": "primary",
+      "ms": 1069.864
+    },
+    {
+      "case_id": "pen_organize_ambiguous",
+      "call_kind": "primary",
+      "ms": 790.463
+    },
+    {
+      "case_id": "pen_missing_socket",
+      "call_kind": "primary",
+      "ms": 0.857
+    },
+    {
+      "case_id": "pen_writing_complete",
+      "call_kind": "primary",
+      "ms": 0.465
+    },
+    {
+      "case_id": "toy_tidy_in_bin",
+      "call_kind": "primary",
+      "ms": 1004.657
+    },
+    {
+      "case_id": "toy_handover",
+      "call_kind": "primary",
+      "ms": 1209.192
+    },
+    {
+      "case_id": "toy_display",
+      "call_kind": "primary",
+      "ms": 778.88
+    },
+    {
+      "case_id": "toy_put_away_ambiguous",
+      "call_kind": "primary",
+      "ms": 865.357
+    },
+    {
+      "case_id": "toy_bin_full",
+      "call_kind": "primary",
+      "ms": 0.737
+    },
+    {
+      "case_id": "toy_play_complete",
+      "call_kind": "primary",
+      "ms": 0.398
+    },
+    {
+      "case_id": "adversarial_two_containers",
+      "call_kind": "primary",
+      "ms": 1175.407
+    },
+    {
+      "case_id": "adversarial_charger_salience",
+      "call_kind": "primary",
+      "ms": 1049.967
+    },
+    {
+      "case_id": "adversarial_book_wrong_surface",
+      "call_kind": "primary",
+      "ms": 983.846
+    },
+    {
+      "case_id": "adversarial_hallucinated_candidate",
+      "call_kind": "primary",
+      "ms": 0.423
+    },
+    {
+      "case_id": "m20_phone_charge",
+      "call_kind": "repeat",
+      "ms": 670.985
+    },
+    {
+      "case_id": "m20_phone_charge",
+      "call_kind": "repeat",
+      "ms": 1035.16
+    },
+    {
+      "case_id": "m20_phone_vague_destination",
+      "call_kind": "repeat",
+      "ms": 1068.04
+    },
+    {
+      "case_id": "m20_phone_vague_destination",
+      "call_kind": "repeat",
+      "ms": 1160.431
+    },
+    {
+      "case_id": "m20_medicine_handover",
+      "call_kind": "repeat",
+      "ms": 2017.897
+    },
+    {
+      "case_id": "m20_medicine_handover",
+      "call_kind": "repeat",
+      "ms": 1948.732
+    },
+    {
+      "case_id": "book_shelve_after_reading",
+      "call_kind": "repeat",
+      "ms": 947.516
+    },
+    {
+      "case_id": "book_shelve_after_reading",
+      "call_kind": "repeat",
+      "ms": 725.697
+    },
+    {
+      "case_id": "cup_to_sink_for_rinsing",
+      "call_kind": "repeat",
+      "ms": 934.84
+    },
+    {
+      "case_id": "cup_to_sink_for_rinsing",
+      "call_kind": "repeat",
+      "ms": 726.685
+    },
+    {
+      "case_id": "pen_in_stand",
+      "call_kind": "repeat",
+      "ms": 1071.773
+    },
+    {
+      "case_id": "pen_in_stand",
+      "call_kind": "repeat",
+      "ms": 1099.073
+    },
+    {
+      "case_id": "adversarial_two_containers",
+      "call_kind": "repeat",
+      "ms": 825.926
+    },
+    {
+      "case_id": "adversarial_two_containers",
+      "call_kind": "repeat",
+      "ms": 800.65
+    },
+    {
+      "case_id": "adversarial_book_wrong_surface",
+      "call_kind": "repeat",
+      "ms": 1109.461
+    },
+    {
+      "case_id": "adversarial_book_wrong_surface",
+      "call_kind": "repeat",
+      "ms": 681.313
+    }
+  ]
+}

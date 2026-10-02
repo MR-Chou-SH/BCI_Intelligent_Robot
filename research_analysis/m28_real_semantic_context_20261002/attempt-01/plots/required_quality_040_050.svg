@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="110" y="34" font-family="Arial,sans-serif" font-size="23" font-weight="bold">Synthetic quality required for 0.4 / 0.5 s</text>
+<text x="110" y="61" font-family="Arial,sans-serif" font-size="13" fill="#444">Minimum coverage among safe Conservative frontier combinations; assumptions are not measured engine performance.</text>
+<line x1="110.0" y1="110" x2="110.0" y2="500" stroke="#e6e8eb"/>
+<text x="110.0" y="524" text-anchor="middle" font-family="Arial" font-size="12">0</text>
+<line x1="302.7" y1="110" x2="302.7" y2="500" stroke="#e6e8eb"/>
+<text x="302.7" y="524" text-anchor="middle" font-family="Arial" font-size="12">0.2</text>
+<line x1="495.4" y1="110" x2="495.4" y2="500" stroke="#e6e8eb"/>
+<text x="495.4" y="524" text-anchor="middle" font-family="Arial" font-size="12">0.4</text>
+<line x1="688.0" y1="110" x2="688.0" y2="500" stroke="#e6e8eb"/>
+<text x="688.0" y="524" text-anchor="middle" font-family="Arial" font-size="12">0.6</text>
+<line x1="880.7" y1="110" x2="880.7" y2="500" stroke="#e6e8eb"/>
+<text x="880.7" y="524" text-anchor="middle" font-family="Arial" font-size="12">0.8</text>
+<line x1="110" y1="500.0" x2="900" y2="500.0" stroke="#e6e8eb"/>
+<text x="98" y="504.0" text-anchor="end" font-family="Arial" font-size="12">0</text>
+<line x1="110" y1="407.1" x2="900" y2="407.1" stroke="#e6e8eb"/>
+<text x="98" y="411.1" text-anchor="end" font-family="Arial" font-size="12">0.25</text>
+<line x1="110" y1="314.3" x2="900" y2="314.3" stroke="#e6e8eb"/>
+<text x="98" y="318.3" text-anchor="end" font-family="Arial" font-size="12">0.5</text>
+<line x1="110" y1="221.4" x2="900" y2="221.4" stroke="#e6e8eb"/>
+<text x="98" y="225.4" text-anchor="end" font-family="Arial" font-size="12">0.75</text>
+<line x1="110" y1="128.6" x2="900" y2="128.6" stroke="#e6e8eb"/>
+<text x="98" y="132.6" text-anchor="end" font-family="Arial" font-size="12">1</text>
+<line x1="110" y1="500" x2="900" y2="500" stroke="#222"/>
+<line x1="110" y1="110" x2="110" y2="500" stroke="#222"/>
+<text x="505.0" y="575" text-anchor="middle" font-family="Arial" font-size="15">Context availability (s)</text>
+<text x="25" y="305.0" text-anchor="middle" transform="rotate(-90 25 305.0)" font-family="Arial" font-size="15">Minimum coverage assumption</text>
+<polyline points="110.0,221.4 302.7,221.4 495.4,221.4 688.0,128.6" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+<circle cx="110.0" cy="221.4" r="4" fill="#2563eb" opacity="0.82"/>
+<circle cx="302.7" cy="221.4" r="4" fill="#2563eb" opacity="0.82"/>
+<circle cx="495.4" cy="221.4" r="4" fill="#2563eb" opacity="0.82"/>
+<circle cx="688.0" cy="128.6" r="4" fill="#2563eb" opacity="0.82"/>
+<circle cx="120" cy="124" r="5" fill="#2563eb"/>
+<text x="132" y="128" font-family="Arial" font-size="12">0.40 s synthetic minimum coverage</text>
+<polyline points="110.0,128.6 302.7,128.6 495.4,128.6" fill="none" stroke="#dc2626" stroke-width="2.5"/>
+<circle cx="110.0" cy="128.6" r="4" fill="#dc2626" opacity="0.82"/>
+<circle cx="302.7" cy="128.6" r="4" fill="#dc2626" opacity="0.82"/>
+<circle cx="495.4" cy="128.6" r="4" fill="#dc2626" opacity="0.82"/>
+<circle cx="120" cy="146" r="5" fill="#dc2626"/>
+<text x="132" y="150" font-family="Arial" font-size="12">0.50 s synthetic minimum coverage</text>
+</svg>

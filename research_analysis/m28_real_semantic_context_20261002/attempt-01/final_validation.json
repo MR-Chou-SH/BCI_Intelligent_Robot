@@ -1,0 +1,94 @@
+{
+  "recordType": "M28_SOFTWARE_VALIDATION",
+  "generatedAtUtc": "2026-10-02T10:55:27Z",
+  "benchmarkSha256": "41310ac326c33950982dd820a7b2235b144e2bc610dd58b95e36ea62c492da8e",
+  "m25ManifestSha256Before": "0bc5b2032df564342562d3af085a174d81f707db42dfc161c14db4715d5fec5a",
+  "m25ManifestSha256After": "0bc5b2032df564342562d3af085a174d81f707db42dfc161c14db4715d5fec5a",
+  "m25SourceHashesUnchanged": true,
+  "semanticBenchmarkCaseCount": 40,
+  "activePrecision": {
+    "count": 19,
+    "denominator": 19,
+    "rate": 1.0
+  },
+  "activeCoverage": {
+    "count": 19,
+    "denominator": 40,
+    "rate": 0.475
+  },
+  "ambiguityAccuracy": {
+    "count": 7,
+    "denominator": 7,
+    "rate": 1.0
+  },
+  "invalidRejection": {
+    "count": 8,
+    "denominator": 8,
+    "rate": 1.0
+  },
+  "heldOutTop1": {
+    "count": 11,
+    "denominator": 12,
+    "rate": 0.9166666666666666
+  },
+  "activeApiLatencySeconds": {
+    "n": 19,
+    "mean": 1.1416582631578949,
+    "median": 1.0046570000000001,
+    "p90": 1.8288349999999998
+  },
+  "transferSeedCount": 100,
+  "syntheticFrontierSafeCombinationCounts": {
+    "0.30": 60,
+    "0.40": 29,
+    "0.50": 13
+  },
+  "measuredCoverageFrontierSupportCounts": {
+    "0.40": 0,
+    "0.50": 0
+  },
+  "illustrativeSyntheticFrontierConditions": {
+    "0.40": {
+      "precision": 1.0,
+      "coverage": 0.75,
+      "priorTopMass": 0.9,
+      "availabilitySeconds": 0.0,
+      "meanAllTrialGainSeconds": 0.413873106060606
+    },
+    "0.50": {
+      "precision": 1.0,
+      "coverage": 1.0,
+      "priorTopMass": 0.9,
+      "availabilitySeconds": 0.0,
+      "meanAllTrialGainSeconds": 0.5443181818181818
+    }
+  },
+  "plotFiles": [
+    "semantic_precision_coverage.svg",
+    "semantic_entropy_margin.svg",
+    "heldout_scene_performance.svg",
+    "semantic_api_latency.svg",
+    "eeg_gain_by_operating_point.svg",
+    "gain_risk_curve.svg",
+    "required_quality_040_050.svg",
+    "context_arrival_vs_gain.svg",
+    "measured_vs_required_frontier.svg"
+  ],
+  "checks": {
+    "frozenBenchmarkHashMatches": true,
+    "allRequiredPlotsGenerated": true,
+    "m25ManifestUnchanged": true,
+    "m25SourceFilesUnchanged": true,
+    "allThreeFrozenOperatingPointsReported": true,
+    "prospectiveNaturalTaskValidation": false
+  },
+  "wrongEarlyStopCounts": {
+    "measured_api_latency_FAST": 0,
+    "measured_api_latency_MEDIUM": 0,
+    "measured_api_latency_CONSERVATIVE": 0,
+    "precomputed_before_eeg_FAST": 0,
+    "precomputed_before_eeg_MEDIUM": 0,
+    "precomputed_before_eeg_CONSERVATIVE": 0
+  },
+  "interpretation": "M28 software artifacts pass integrity checks. Conditional precomputed transfer means do not establish prospective causal Context performance."
+}
