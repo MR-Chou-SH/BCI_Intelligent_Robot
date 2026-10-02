@@ -1,0 +1,535 @@
+{
+  "record_type": "M29_SEMANTIC_BRIDGE_BENCHMARK_SUMMARY",
+  "generated_at_utc": "2026-10-02T10:52:41Z",
+  "benchmark_id": "m29-standalone-semantic-language-bridge-v1",
+  "benchmark_sha256": "ca1ed24dae3a8321952855a590ee011fff05e48ef1a872ab15fa1efa1f3d2b3c",
+  "case_count": 43,
+  "primary_call_count": 43,
+  "repeat_call_count": 16,
+  "expected_total_call_count": 59,
+  "missing_call_count": 0,
+  "missing_calls": [],
+  "complete": true,
+  "result_status_counts": {
+    "executable": 26,
+    "invalid": 11,
+    "ambiguous": 5,
+    "api_error": 1
+  },
+  "primary_metrics": {
+    "api_success": {
+      "count": 42,
+      "denominator": 43,
+      "rate": 0.9767441860465116
+    },
+    "schema_valid": {
+      "count": 42,
+      "denominator": 43,
+      "rate": 0.9767441860465116
+    },
+    "expected_status_match": {
+      "count": 38,
+      "denominator": 43,
+      "rate": 0.8837209302325582
+    },
+    "exact_action_sequence_match": {
+      "count": 39,
+      "denominator": 43,
+      "rate": 0.9069767441860465
+    },
+    "target_grounding_match": {
+      "count": 42,
+      "denominator": 43,
+      "rate": 0.9767441860465116
+    },
+    "strict_validator_pass": {
+      "count": 39,
+      "denominator": 43,
+      "rate": 0.9069767441860465
+    },
+    "ambiguity_policy_pass": {
+      "count": 42,
+      "denominator": 43,
+      "rate": 0.9767441860465116
+    },
+    "invalid_rejection_pass": {
+      "count": 42,
+      "denominator": 43,
+      "rate": 0.9767441860465116
+    },
+    "free_mode_safety_pass": {
+      "count": 6,
+      "denominator": 6,
+      "rate": 1.0
+    }
+  },
+  "scene_split_metrics": {
+    "current_m20": {
+      "case_count": 16,
+      "api_success": {
+        "count": 15,
+        "denominator": 16,
+        "rate": 0.9375
+      },
+      "schema_valid": {
+        "count": 15,
+        "denominator": 16,
+        "rate": 0.9375
+      },
+      "expected_status_match": {
+        "count": 13,
+        "denominator": 16,
+        "rate": 0.8125
+      },
+      "action_sequence_match": {
+        "count": 13,
+        "denominator": 16,
+        "rate": 0.8125
+      },
+      "validator_pass": {
+        "count": 12,
+        "denominator": 16,
+        "rate": 0.75
+      }
+    },
+    "exploratory_free_noun": {
+      "case_count": 6,
+      "api_success": {
+        "count": 6,
+        "denominator": 6,
+        "rate": 1.0
+      },
+      "schema_valid": {
+        "count": 6,
+        "denominator": 6,
+        "rate": 1.0
+      },
+      "expected_status_match": {
+        "count": 6,
+        "denominator": 6,
+        "rate": 1.0
+      },
+      "action_sequence_match": {
+        "count": 6,
+        "denominator": 6,
+        "rate": 1.0
+      },
+      "validator_pass": {
+        "count": 6,
+        "denominator": 6,
+        "rate": 1.0
+      }
+    },
+    "held_out": {
+      "case_count": 21,
+      "api_success": {
+        "count": 21,
+        "denominator": 21,
+        "rate": 1.0
+      },
+      "schema_valid": {
+        "count": 21,
+        "denominator": 21,
+        "rate": 1.0
+      },
+      "expected_status_match": {
+        "count": 19,
+        "denominator": 21,
+        "rate": 0.9047619047619048
+      },
+      "action_sequence_match": {
+        "count": 20,
+        "denominator": 21,
+        "rate": 0.9523809523809523
+      },
+      "validator_pass": {
+        "count": 21,
+        "denominator": 21,
+        "rate": 1.0
+      }
+    }
+  },
+  "repeatability": {
+    "selected_case_count": 8,
+    "repeat_call_count": 16,
+    "complete_case_count": 8,
+    "structural_consistent_case_count": 7,
+    "exact_prose_consistent_case_count": 8,
+    "cases": {
+      "book_to_bookshelf_en": {
+        "call_count": 3,
+        "structural_consistent": true,
+        "exact_prose_consistent": true,
+        "status_sequence": [
+          "executable",
+          "executable",
+          "executable"
+        ],
+        "action_sequence": [
+          [
+            "PICK:future_book_01",
+            "PLACE_ON:future_book_01:future_book_shelf"
+          ],
+          [
+            "PICK:future_book_01",
+            "PLACE_ON:future_book_01:future_book_shelf"
+          ],
+          [
+            "PICK:future_book_01",
+            "PLACE_ON:future_book_01:future_book_shelf"
+          ]
+        ],
+        "grounding_sequence": [
+          [
+            "future_book_01",
+            "future_book_shelf"
+          ],
+          [
+            "future_book_01",
+            "future_book_shelf"
+          ],
+          [
+            "future_book_01",
+            "future_book_shelf"
+          ]
+        ]
+      },
+      "cup_ambiguous_put_away": {
+        "call_count": 3,
+        "structural_consistent": false,
+        "exact_prose_consistent": true,
+        "status_sequence": [
+          "ambiguous",
+          "ambiguous",
+          "ambiguous"
+        ],
+        "action_sequence": [
+          [],
+          [],
+          []
+        ],
+        "grounding_sequence": [
+          [
+            "cup_source_01",
+            "cupboard_01",
+            "serving_tray_01"
+          ],
+          [
+            "cup_source_01",
+            "cupboard_01",
+            "serving_tray_01"
+          ],
+          [
+            "cup_source_01",
+            "cupboard_01",
+            "serving_tray_01"
+          ]
+        ]
+      },
+      "cup_on_serving_tray": {
+        "call_count": 3,
+        "structural_consistent": true,
+        "exact_prose_consistent": true,
+        "status_sequence": [
+          "executable",
+          "executable",
+          "executable"
+        ],
+        "action_sequence": [
+          [
+            "PICK:cup_source_01",
+            "PLACE_ON:cup_source_01:serving_tray_01"
+          ],
+          [
+            "PICK:cup_source_01",
+            "PLACE_ON:cup_source_01:serving_tray_01"
+          ],
+          [
+            "PICK:cup_source_01",
+            "PLACE_ON:cup_source_01:serving_tray_01"
+          ]
+        ],
+        "grounding_sequence": [
+          [
+            "cup_source_01",
+            "serving_tray_01"
+          ],
+          [
+            "cup_source_01",
+            "serving_tray_01"
+          ],
+          [
+            "cup_source_01",
+            "serving_tray_01"
+          ]
+        ]
+      },
+      "free_watch_tray": {
+        "call_count": 3,
+        "structural_consistent": true,
+        "exact_prose_consistent": true,
+        "status_sequence": [
+          "ambiguous",
+          "ambiguous",
+          "ambiguous"
+        ],
+        "action_sequence": [
+          [],
+          [],
+          []
+        ],
+        "grounding_sequence": [
+          [
+            "free_object_0",
+            "free_object_1"
+          ],
+          [
+            "free_object_0",
+            "free_object_1"
+          ],
+          [
+            "free_object_0",
+            "free_object_1"
+          ]
+        ]
+      },
+      "m20_ambiguous_relations": {
+        "call_count": 3,
+        "structural_consistent": true,
+        "exact_prose_consistent": true,
+        "status_sequence": [
+          "ambiguous",
+          "ambiguous",
+          "ambiguous"
+        ],
+        "action_sequence": [
+          [],
+          [],
+          []
+        ],
+        "grounding_sequence": [
+          [
+            "assist_phone",
+            "assist_wireless_charger",
+            "assist_storage_box"
+          ],
+          [
+            "assist_phone",
+            "assist_wireless_charger",
+            "assist_storage_box"
+          ],
+          [
+            "assist_phone",
+            "assist_wireless_charger",
+            "assist_storage_box"
+          ]
+        ]
+      },
+      "m20_medicine_closed_box_zh": {
+        "call_count": 3,
+        "structural_consistent": true,
+        "exact_prose_consistent": true,
+        "status_sequence": [
+          "executable",
+          "executable",
+          "executable"
+        ],
+        "action_sequence": [
+          [
+            "OPEN:assist_storage_box",
+            "PICK:assist_medicine_box",
+            "PLACE_IN:assist_medicine_box:assist_storage_box",
+            "CLOSE:assist_storage_box"
+          ],
+          [
+            "OPEN:assist_storage_box",
+            "PICK:assist_medicine_box",
+            "PLACE_IN:assist_medicine_box:assist_storage_box",
+            "CLOSE:assist_storage_box"
+          ],
+          [
+            "OPEN:assist_storage_box",
+            "PICK:assist_medicine_box",
+            "PLACE_IN:assist_medicine_box:assist_storage_box",
+            "CLOSE:assist_storage_box"
+          ]
+        ],
+        "grounding_sequence": [
+          [
+            "assist_medicine_box",
+            "assist_storage_box"
+          ],
+          [
+            "assist_medicine_box",
+            "assist_storage_box"
+          ],
+          [
+            "assist_medicine_box",
+            "assist_storage_box"
+          ]
+        ]
+      },
+      "m20_phone_charger_zh": {
+        "call_count": 3,
+        "structural_consistent": true,
+        "exact_prose_consistent": true,
+        "status_sequence": [
+          "executable",
+          "executable",
+          "executable"
+        ],
+        "action_sequence": [
+          [
+            "PICK:assist_phone",
+            "PLACE_ON:assist_phone:assist_wireless_charger"
+          ],
+          [
+            "PICK:assist_phone",
+            "PLACE_ON:assist_phone:assist_wireless_charger"
+          ],
+          [
+            "PICK:assist_phone",
+            "PLACE_ON:assist_phone:assist_wireless_charger"
+          ]
+        ],
+        "grounding_sequence": [
+          [
+            "assist_phone",
+            "assist_wireless_charger"
+          ],
+          [
+            "assist_phone",
+            "assist_wireless_charger"
+          ],
+          [
+            "assist_phone",
+            "assist_wireless_charger"
+          ]
+        ]
+      },
+      "pen_to_closed_drawer": {
+        "call_count": 3,
+        "structural_consistent": true,
+        "exact_prose_consistent": true,
+        "status_sequence": [
+          "executable",
+          "executable",
+          "executable"
+        ],
+        "action_sequence": [
+          [
+            "OPEN:future_pen_drawer",
+            "PICK:future_pen_01",
+            "PLACE_IN:future_pen_01:future_pen_drawer",
+            "CLOSE:future_pen_drawer"
+          ],
+          [
+            "OPEN:future_pen_drawer",
+            "PICK:future_pen_01",
+            "PLACE_IN:future_pen_01:future_pen_drawer",
+            "CLOSE:future_pen_drawer"
+          ],
+          [
+            "OPEN:future_pen_drawer",
+            "PICK:future_pen_01",
+            "PLACE_IN:future_pen_01:future_pen_drawer",
+            "CLOSE:future_pen_drawer"
+          ]
+        ],
+        "grounding_sequence": [
+          [
+            "future_pen_01",
+            "future_pen_drawer"
+          ],
+          [
+            "future_pen_01",
+            "future_pen_drawer"
+          ],
+          [
+            "future_pen_01",
+            "future_pen_drawer"
+          ]
+        ]
+      }
+    }
+  },
+  "latency_primary_ms": {
+    "n": 43,
+    "mean": 1522.5474418604651,
+    "median": 1347.585,
+    "p90": 2597.8540000000003,
+    "p95": 2702.5735999999997
+  },
+  "schema_correction_retry_count": 11,
+  "schema_correction_retry_rate": 0.14864864864864866,
+  "api_failure_count": 0,
+  "input_contract_error_count": 1,
+  "model_api_request_estimate": 74,
+  "token_usage_total": {
+    "prompt_tokens": 136901,
+    "completion_tokens": 12735,
+    "total_tokens": 149636
+  },
+  "evaluation_boundary": "Free-noun cases are scored for unverified labels, schema, and dispatch prohibition; inferred physical affordances are not validated as facts.",
+  "final_implementation_hybrid": {
+    "combination_method": "Frozen first-pass results for unaffected cases; final-code live targeted retests replace the three affected input cases only.",
+    "replacedCaseIds": [
+      "m20_button_press_en",
+      "m20_button_press_zh",
+      "m20_invalid_press_medicine"
+    ],
+    "metrics": {
+      "case_count": 43,
+      "api_success": {
+        "count": 43,
+        "denominator": 43,
+        "rate": 1.0
+      },
+      "schema_valid": {
+        "count": 43,
+        "denominator": 43,
+        "rate": 1.0
+      },
+      "expected_status_match": {
+        "count": 41,
+        "denominator": 43,
+        "rate": 0.9534883720930233
+      },
+      "exact_action_sequence_match": {
+        "count": 42,
+        "denominator": 43,
+        "rate": 0.9767441860465116
+      },
+      "target_grounding_match": {
+        "count": 43,
+        "denominator": 43,
+        "rate": 1.0
+      },
+      "strict_validator_pass": {
+        "count": 42,
+        "denominator": 43,
+        "rate": 0.9767441860465116
+      },
+      "free_mode_safety_pass": {
+        "count": 6,
+        "denominator": 6,
+        "rate": 1.0
+      },
+      "ambiguity_expected_status_match": {
+        "count": 3,
+        "denominator": 4,
+        "rate": 0.75
+      },
+      "invalid_expected_status_match": {
+        "count": 7,
+        "denominator": 7,
+        "rate": 1.0
+      }
+    },
+    "remainingExpectedStatusMismatches": [
+      "toy_in_bin",
+      "toy_ambiguous_tidy"
+    ],
+    "remainingMismatchDisposition": "The two toy-bin gold labels assume a usable/open container although the frozen scene supplies openable=true with unknown state. The final planner conservatively rejects PLACE_IN rather than inventing container state. The frozen benchmark and hash were not changed."
+  }
+}

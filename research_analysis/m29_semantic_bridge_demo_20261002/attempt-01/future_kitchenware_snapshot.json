@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "sceneId": "m29-future-cup-tray",
+  "templateId": "future_kitchenware",
+  "randomSeed": null,
+  "createdUtc": "2026-10-02T00:00:00Z",
+  "randomizationMethod": "m29_synthetic_semantic_fixture_v1",
+  "fallbackUsed": false,
+  "candidateOrderFarToNearLeftToRight": [
+    "cup_source_01",
+    "serving_tray_01",
+    "cupboard_01",
+    "sink_01"
+  ],
+  "objects": [
+    {
+      "semanticId": "cup_source_01",
+      "targetId": "cup_source_01",
+      "logicalBlockId": "",
+      "objectType": "cup",
+      "role": "semantic_fixture",
+      "sourceKind": "m29_synthetic_fixture",
+      "selectable": true,
+      "fixedPose": false,
+      "affordanceTags": [
+        "movable",
+        "drinkware"
+      ],
+      "positionMeters": null,
+      "dimensionsMeters": null
+    },
+    {
+      "semanticId": "serving_tray_01",
+      "targetId": "serving_tray_01",
+      "logicalBlockId": "",
+      "objectType": "serving_tray",
+      "role": "semantic_fixture",
+      "sourceKind": "m29_synthetic_fixture",
+      "selectable": true,
+      "fixedPose": true,
+      "affordanceTags": [
+        "fixed_surface",
+        "cup_destination"
+      ],
+      "positionMeters": null,
+      "dimensionsMeters": null
+    },
+    {
+      "semanticId": "cupboard_01",
+      "targetId": "cupboard_01",
+      "logicalBlockId": "",
+      "objectType": "cupboard",
+      "role": "semantic_fixture",
+      "sourceKind": "m29_synthetic_fixture",
+      "selectable": true,
+      "fixedPose": true,
+      "affordanceTags": [
+        "container",
+        "openable",
+        "closable"
+      ],
+      "positionMeters": null,
+      "dimensionsMeters": null
+    },
+    {
+      "semanticId": "sink_01",
+      "targetId": "sink_01",
+      "logicalBlockId": "",
+      "objectType": "sink",
+      "role": "semantic_fixture",
+      "sourceKind": "m29_synthetic_fixture",
+      "selectable": true,
+      "fixedPose": true,
+      "affordanceTags": [
+        "fixed_surface",
+        "water_source",
+        "sink"
+      ],
+      "positionMeters": null,
+      "dimensionsMeters": null
+    }
+  ]
+}

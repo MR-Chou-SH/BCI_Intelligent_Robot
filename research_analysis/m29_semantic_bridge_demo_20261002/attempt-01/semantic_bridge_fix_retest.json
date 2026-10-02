@@ -1,0 +1,254 @@
+{
+  "record_type": "M29_POST_FIX_TARGETED_LIVE_RETEST",
+  "generated_at_utc": "2026-10-02T10:52:10Z",
+  "benchmark_id": "m29-standalone-semantic-language-bridge-v1",
+  "benchmark_sha256": "ca1ed24dae3a8321952855a590ee011fff05e48ef1a872ab15fa1efa1f3d2b3c",
+  "model": {
+    "model_id": "deepseek-flash",
+    "base_url": "https://api.deepseek.com",
+    "available_chat_models": [
+      "deepseek-flash",
+      "deepseek-v4-pro"
+    ],
+    "model_configured_by_environment": false,
+    "prompt_version": "m27-semantic-planner-prompt-v3",
+    "schema_version": "m27-structured-plan-v1"
+  },
+  "records": [
+    {
+      "case_id": "m20_button_press_zh",
+      "timestamp_utc": "2026-10-02T10:52:07Z",
+      "expected_status": "executable",
+      "expected_action_sequence": [
+        "PRESS:assist_button_switch"
+      ],
+      "latency_ms": 955.92,
+      "score": {
+        "api_success": true,
+        "schema_valid": true,
+        "expected_status_match": true,
+        "action_sequence_match": true,
+        "target_grounding_match": true,
+        "validator_pass": true,
+        "ambiguity_policy_pass": true,
+        "invalid_rejection_pass": true,
+        "free_mode_safety_pass": true,
+        "error_type": null
+      },
+      "result": {
+        "status": "executable",
+        "mode": "strict_scene",
+        "grounded_objects": [
+          {
+            "input": "按钮",
+            "object_id": "assist_button_switch",
+            "trust": "scene_grounded"
+          },
+          {
+            "input": "开关",
+            "object_id": "assist_button_switch",
+            "trust": "scene_grounded"
+          }
+        ],
+        "intent_summary": "Press the selected button switch.",
+        "actions": [
+          {
+            "type": "PRESS",
+            "object_id": "assist_button_switch"
+          }
+        ],
+        "alternatives": [],
+        "vla_instruction_zh": "按下按钮开关。",
+        "vla_instruction_en": "Press the button switch.",
+        "assumptions": [
+          "The button switch is pressable and stationary.",
+          "No other selected-object relation is requested by the intent context."
+        ],
+        "reason_code": "plan_validated",
+        "validation": {
+          "valid": true,
+          "checks": {
+            "schema_valid": true,
+            "selected_object_identity": true,
+            "object_grounding": true,
+            "action_whitelist": true,
+            "affordance_consistency": true,
+            "state_consistency": true,
+            "ambiguity_handling": true
+          },
+          "errors": []
+        },
+        "attempt_count": 1,
+        "fallback_used": false,
+        "token_usage": {
+          "prompt_tokens": 2389,
+          "completion_tokens": 97,
+          "total_tokens": 2486
+        },
+        "model_metadata": {
+          "model_id": "deepseek-flash",
+          "base_url": "https://api.deepseek.com",
+          "prompt_version": "m27-semantic-planner-prompt-v3",
+          "schema_version": "m27-structured-plan-v1",
+          "temperature": 0.0,
+          "max_output_tokens": 1200,
+          "max_correction_retries": 1,
+          "thinking": "disabled"
+        },
+        "dispatch_allowed": false
+      }
+    },
+    {
+      "case_id": "m20_button_press_en",
+      "timestamp_utc": "2026-10-02T10:52:08Z",
+      "expected_status": "executable",
+      "expected_action_sequence": [
+        "PRESS:assist_button_switch"
+      ],
+      "latency_ms": 1099.479,
+      "score": {
+        "api_success": true,
+        "schema_valid": true,
+        "expected_status_match": true,
+        "action_sequence_match": true,
+        "target_grounding_match": true,
+        "validator_pass": true,
+        "ambiguity_policy_pass": true,
+        "invalid_rejection_pass": true,
+        "free_mode_safety_pass": true,
+        "error_type": null
+      },
+      "result": {
+        "status": "executable",
+        "mode": "strict_scene",
+        "grounded_objects": [
+          {
+            "input": "button",
+            "object_id": "assist_button_switch",
+            "trust": "scene_grounded"
+          },
+          {
+            "input": "switch",
+            "object_id": "assist_button_switch",
+            "trust": "scene_grounded"
+          }
+        ],
+        "intent_summary": "Press the selected button switch.",
+        "actions": [
+          {
+            "type": "PRESS",
+            "object_id": "assist_button_switch"
+          }
+        ],
+        "alternatives": [],
+        "vla_instruction_zh": "按下按钮开关。",
+        "vla_instruction_en": "Press the button switch.",
+        "assumptions": [
+          "The button switch is pressable and its current state is not specified, so a single PRESS action is sufficient."
+        ],
+        "reason_code": "plan_validated",
+        "validation": {
+          "valid": true,
+          "checks": {
+            "schema_valid": true,
+            "selected_object_identity": true,
+            "object_grounding": true,
+            "action_whitelist": true,
+            "affordance_consistency": true,
+            "state_consistency": true,
+            "ambiguity_handling": true
+          },
+          "errors": []
+        },
+        "attempt_count": 1,
+        "fallback_used": false,
+        "token_usage": {
+          "prompt_tokens": 2388,
+          "completion_tokens": 98,
+          "total_tokens": 2486
+        },
+        "model_metadata": {
+          "model_id": "deepseek-flash",
+          "base_url": "https://api.deepseek.com",
+          "prompt_version": "m27-semantic-planner-prompt-v3",
+          "schema_version": "m27-structured-plan-v1",
+          "temperature": 0.0,
+          "max_output_tokens": 1200,
+          "max_correction_retries": 1,
+          "thinking": "disabled"
+        },
+        "dispatch_allowed": false
+      }
+    },
+    {
+      "case_id": "m20_invalid_press_medicine",
+      "timestamp_utc": "2026-10-02T10:52:10Z",
+      "expected_status": "invalid",
+      "expected_action_sequence": null,
+      "latency_ms": 2074.283,
+      "score": {
+        "api_success": true,
+        "schema_valid": true,
+        "expected_status_match": true,
+        "action_sequence_match": true,
+        "target_grounding_match": true,
+        "validator_pass": true,
+        "ambiguity_policy_pass": true,
+        "invalid_rejection_pass": true,
+        "free_mode_safety_pass": true,
+        "error_type": null
+      },
+      "result": {
+        "status": "invalid",
+        "mode": "strict_scene",
+        "grounded_objects": [
+          {
+            "input": "medicine box",
+            "object_id": "assist_medicine_box",
+            "trust": "scene_grounded"
+          }
+        ],
+        "intent_summary": "The user asked to press the selected medicine box, but the selected object is not pressable.",
+        "actions": [],
+        "alternatives": [],
+        "vla_instruction_zh": "",
+        "vla_instruction_en": "",
+        "assumptions": [],
+        "reason_code": "invalid_plan",
+        "validation": {
+          "valid": true,
+          "checks": {
+            "schema_valid": true,
+            "selected_object_identity": true,
+            "object_grounding": true,
+            "action_whitelist": true,
+            "affordance_consistency": true,
+            "state_consistency": true,
+            "ambiguity_handling": true
+          },
+          "errors": []
+        },
+        "attempt_count": 2,
+        "fallback_used": false,
+        "token_usage": {
+          "prompt_tokens": 4897,
+          "completion_tokens": 185,
+          "total_tokens": 5082
+        },
+        "model_metadata": {
+          "model_id": "deepseek-flash",
+          "base_url": "https://api.deepseek.com",
+          "prompt_version": "m27-semantic-planner-prompt-v3",
+          "schema_version": "m27-structured-plan-v1",
+          "temperature": 0.0,
+          "max_output_tokens": 1200,
+          "max_correction_retries": 1,
+          "thinking": "disabled"
+        },
+        "dispatch_allowed": false
+      }
+    }
+  ],
+  "all_targeted_checks_pass": true,
+  "boundary": "Targeted live retests of input handling only; they are supplemental and do not replace the original frozen benchmark results."
+}

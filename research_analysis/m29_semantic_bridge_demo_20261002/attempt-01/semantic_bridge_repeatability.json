@@ -1,0 +1,304 @@
+{
+  "selected_case_count": 8,
+  "repeat_call_count": 16,
+  "complete_case_count": 8,
+  "structural_consistent_case_count": 7,
+  "exact_prose_consistent_case_count": 8,
+  "cases": {
+    "book_to_bookshelf_en": {
+      "call_count": 3,
+      "structural_consistent": true,
+      "exact_prose_consistent": true,
+      "status_sequence": [
+        "executable",
+        "executable",
+        "executable"
+      ],
+      "action_sequence": [
+        [
+          "PICK:future_book_01",
+          "PLACE_ON:future_book_01:future_book_shelf"
+        ],
+        [
+          "PICK:future_book_01",
+          "PLACE_ON:future_book_01:future_book_shelf"
+        ],
+        [
+          "PICK:future_book_01",
+          "PLACE_ON:future_book_01:future_book_shelf"
+        ]
+      ],
+      "grounding_sequence": [
+        [
+          "future_book_01",
+          "future_book_shelf"
+        ],
+        [
+          "future_book_01",
+          "future_book_shelf"
+        ],
+        [
+          "future_book_01",
+          "future_book_shelf"
+        ]
+      ]
+    },
+    "cup_ambiguous_put_away": {
+      "call_count": 3,
+      "structural_consistent": false,
+      "exact_prose_consistent": true,
+      "status_sequence": [
+        "ambiguous",
+        "ambiguous",
+        "ambiguous"
+      ],
+      "action_sequence": [
+        [],
+        [],
+        []
+      ],
+      "grounding_sequence": [
+        [
+          "cup_source_01",
+          "cupboard_01",
+          "serving_tray_01"
+        ],
+        [
+          "cup_source_01",
+          "cupboard_01",
+          "serving_tray_01"
+        ],
+        [
+          "cup_source_01",
+          "cupboard_01",
+          "serving_tray_01"
+        ]
+      ]
+    },
+    "cup_on_serving_tray": {
+      "call_count": 3,
+      "structural_consistent": true,
+      "exact_prose_consistent": true,
+      "status_sequence": [
+        "executable",
+        "executable",
+        "executable"
+      ],
+      "action_sequence": [
+        [
+          "PICK:cup_source_01",
+          "PLACE_ON:cup_source_01:serving_tray_01"
+        ],
+        [
+          "PICK:cup_source_01",
+          "PLACE_ON:cup_source_01:serving_tray_01"
+        ],
+        [
+          "PICK:cup_source_01",
+          "PLACE_ON:cup_source_01:serving_tray_01"
+        ]
+      ],
+      "grounding_sequence": [
+        [
+          "cup_source_01",
+          "serving_tray_01"
+        ],
+        [
+          "cup_source_01",
+          "serving_tray_01"
+        ],
+        [
+          "cup_source_01",
+          "serving_tray_01"
+        ]
+      ]
+    },
+    "free_watch_tray": {
+      "call_count": 3,
+      "structural_consistent": true,
+      "exact_prose_consistent": true,
+      "status_sequence": [
+        "ambiguous",
+        "ambiguous",
+        "ambiguous"
+      ],
+      "action_sequence": [
+        [],
+        [],
+        []
+      ],
+      "grounding_sequence": [
+        [
+          "free_object_0",
+          "free_object_1"
+        ],
+        [
+          "free_object_0",
+          "free_object_1"
+        ],
+        [
+          "free_object_0",
+          "free_object_1"
+        ]
+      ]
+    },
+    "m20_ambiguous_relations": {
+      "call_count": 3,
+      "structural_consistent": true,
+      "exact_prose_consistent": true,
+      "status_sequence": [
+        "ambiguous",
+        "ambiguous",
+        "ambiguous"
+      ],
+      "action_sequence": [
+        [],
+        [],
+        []
+      ],
+      "grounding_sequence": [
+        [
+          "assist_phone",
+          "assist_wireless_charger",
+          "assist_storage_box"
+        ],
+        [
+          "assist_phone",
+          "assist_wireless_charger",
+          "assist_storage_box"
+        ],
+        [
+          "assist_phone",
+          "assist_wireless_charger",
+          "assist_storage_box"
+        ]
+      ]
+    },
+    "m20_medicine_closed_box_zh": {
+      "call_count": 3,
+      "structural_consistent": true,
+      "exact_prose_consistent": true,
+      "status_sequence": [
+        "executable",
+        "executable",
+        "executable"
+      ],
+      "action_sequence": [
+        [
+          "OPEN:assist_storage_box",
+          "PICK:assist_medicine_box",
+          "PLACE_IN:assist_medicine_box:assist_storage_box",
+          "CLOSE:assist_storage_box"
+        ],
+        [
+          "OPEN:assist_storage_box",
+          "PICK:assist_medicine_box",
+          "PLACE_IN:assist_medicine_box:assist_storage_box",
+          "CLOSE:assist_storage_box"
+        ],
+        [
+          "OPEN:assist_storage_box",
+          "PICK:assist_medicine_box",
+          "PLACE_IN:assist_medicine_box:assist_storage_box",
+          "CLOSE:assist_storage_box"
+        ]
+      ],
+      "grounding_sequence": [
+        [
+          "assist_medicine_box",
+          "assist_storage_box"
+        ],
+        [
+          "assist_medicine_box",
+          "assist_storage_box"
+        ],
+        [
+          "assist_medicine_box",
+          "assist_storage_box"
+        ]
+      ]
+    },
+    "m20_phone_charger_zh": {
+      "call_count": 3,
+      "structural_consistent": true,
+      "exact_prose_consistent": true,
+      "status_sequence": [
+        "executable",
+        "executable",
+        "executable"
+      ],
+      "action_sequence": [
+        [
+          "PICK:assist_phone",
+          "PLACE_ON:assist_phone:assist_wireless_charger"
+        ],
+        [
+          "PICK:assist_phone",
+          "PLACE_ON:assist_phone:assist_wireless_charger"
+        ],
+        [
+          "PICK:assist_phone",
+          "PLACE_ON:assist_phone:assist_wireless_charger"
+        ]
+      ],
+      "grounding_sequence": [
+        [
+          "assist_phone",
+          "assist_wireless_charger"
+        ],
+        [
+          "assist_phone",
+          "assist_wireless_charger"
+        ],
+        [
+          "assist_phone",
+          "assist_wireless_charger"
+        ]
+      ]
+    },
+    "pen_to_closed_drawer": {
+      "call_count": 3,
+      "structural_consistent": true,
+      "exact_prose_consistent": true,
+      "status_sequence": [
+        "executable",
+        "executable",
+        "executable"
+      ],
+      "action_sequence": [
+        [
+          "OPEN:future_pen_drawer",
+          "PICK:future_pen_01",
+          "PLACE_IN:future_pen_01:future_pen_drawer",
+          "CLOSE:future_pen_drawer"
+        ],
+        [
+          "OPEN:future_pen_drawer",
+          "PICK:future_pen_01",
+          "PLACE_IN:future_pen_01:future_pen_drawer",
+          "CLOSE:future_pen_drawer"
+        ],
+        [
+          "OPEN:future_pen_drawer",
+          "PICK:future_pen_01",
+          "PLACE_IN:future_pen_01:future_pen_drawer",
+          "CLOSE:future_pen_drawer"
+        ]
+      ],
+      "grounding_sequence": [
+        [
+          "future_pen_01",
+          "future_pen_drawer"
+        ],
+        [
+          "future_pen_01",
+          "future_pen_drawer"
+        ],
+        [
+          "future_pen_01",
+          "future_pen_drawer"
+        ]
+      ]
+    }
+  }
+}

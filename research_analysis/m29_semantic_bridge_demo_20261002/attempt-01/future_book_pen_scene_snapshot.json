@@ -1,0 +1,380 @@
+{
+  "schemaVersion": 1,
+  "sceneId": "m29-future-bookshelf-and-desk-tools",
+  "templateId": "m29_future_book_pen_scene_v1",
+  "randomSeed": 20261002,
+  "createdUtc": "2026-10-02T00:00:00Z",
+  "randomizationMethod": "m27_synthetic_future_affordance_extension_v1",
+  "fallbackUsed": false,
+  "coordinateFrame": {
+    "id": "m20_table_local_to_mujoco_v1",
+    "unit": "meter",
+    "origin": "center of the tabletop top surface",
+    "x": "user visual right",
+    "y": "away from user toward robot",
+    "z": "up",
+    "unityTableRootLocalPositionAdapter": "(-x, z, -y)",
+    "mujocoWorldPositionAdapter": "(x, y, tableTopWorldZ + z)"
+  },
+  "table": {
+    "dimensionsMeters": {
+      "x": 0.96,
+      "y": 0.56,
+      "z": 0.05
+    },
+    "mujocoTopSurfaceWorldZMeters": 0.75
+  },
+  "candidateOrderFarToNearLeftToRight": [
+    "assist_button_switch",
+    "assist_medicine_box",
+    "assist_phone",
+    "assist_storage_box",
+    "assist_wireless_charger",
+    "assist_user_zone",
+    "future_book_01",
+    "future_book_shelf",
+    "future_pen_01",
+    "future_pen_drawer",
+    "future_book_box",
+    "desk_surface_01"
+  ],
+  "objects": [
+    {
+      "semanticId": "assist_medicine_box",
+      "targetId": "assist_medicine_box",
+      "logicalBlockId": "block_assist_medicine_01",
+      "objectType": "small_medicine_box",
+      "role": "movable_source",
+      "sourceKind": "virtual_block",
+      "selectable": true,
+      "fixedPose": false,
+      "positionMeters": {
+        "x": -0.18745488217449166,
+        "y": 0.12483828341306662,
+        "z": 0.015
+      },
+      "dimensionsMeters": {
+        "x": 0.1,
+        "y": 0.06,
+        "z": 0.03
+      },
+      "yawDegrees": 0.0,
+      "affordanceTags": [
+        "medicine_container",
+        "small_rigid_box",
+        "movable"
+      ]
+    },
+    {
+      "semanticId": "assist_storage_box",
+      "targetId": "assist_storage_box",
+      "logicalBlockId": "block_assist_storage_02",
+      "objectType": "hinged_storage_box",
+      "role": "articulated_context_object",
+      "sourceKind": "virtual_block",
+      "selectable": true,
+      "fixedPose": false,
+      "positionMeters": {
+        "x": -0.24748195764065078,
+        "y": 0.010426751937635908,
+        "z": 0.0375
+      },
+      "dimensionsMeters": {
+        "x": 0.18,
+        "y": 0.12,
+        "z": 0.075
+      },
+      "yawDegrees": 0.0,
+      "affordanceTags": [
+        "storage_container",
+        "hinged_lid",
+        "stationary_context_object"
+      ]
+    },
+    {
+      "semanticId": "assist_phone",
+      "targetId": "assist_phone",
+      "logicalBlockId": "block_assist_phone_03",
+      "objectType": "smartphone",
+      "role": "movable_source",
+      "sourceKind": "virtual_block",
+      "selectable": true,
+      "fixedPose": false,
+      "positionMeters": {
+        "x": 0.19921030834196907,
+        "y": 0.051864560520791574,
+        "z": 0.004
+      },
+      "dimensionsMeters": {
+        "x": 0.15,
+        "y": 0.072,
+        "z": 0.008
+      },
+      "yawDegrees": 0.0,
+      "affordanceTags": [
+        "smartphone",
+        "flat_rigid_object",
+        "wireless_charging_source",
+        "movable"
+      ]
+    },
+    {
+      "semanticId": "assist_button_switch",
+      "targetId": "assist_button_switch",
+      "logicalBlockId": "block_assist_button_04",
+      "objectType": "button_switch",
+      "role": "articulated_context_object",
+      "sourceKind": "virtual_block",
+      "selectable": true,
+      "fixedPose": false,
+      "positionMeters": {
+        "x": 0.160294648130396,
+        "y": 0.20041617807567091,
+        "z": 0.011
+      },
+      "dimensionsMeters": {
+        "x": 0.11,
+        "y": 0.06,
+        "z": 0.022
+      },
+      "yawDegrees": 0.0,
+      "affordanceTags": [
+        "button",
+        "switch",
+        "pressable",
+        "stationary_context_object"
+      ]
+    },
+    {
+      "semanticId": "assist_wireless_charger",
+      "targetId": "assist_wireless_charger",
+      "logicalBlockId": "block_assist_charger_05",
+      "objectType": "wireless_charging_pad",
+      "role": "fixed_destination",
+      "sourceKind": "virtual_block",
+      "selectable": true,
+      "fixedPose": false,
+      "positionMeters": {
+        "x": 0.38313517294338373,
+        "y": 0.02198701526057941,
+        "z": 0.006
+      },
+      "dimensionsMeters": {
+        "x": 0.095,
+        "y": 0.095,
+        "z": 0.012
+      },
+      "yawDegrees": 0.0,
+      "affordanceTags": [
+        "wireless_charger",
+        "phone_destination",
+        "fixed_surface"
+      ]
+    },
+    {
+      "semanticId": "assist_user_zone",
+      "targetId": "assist_user_zone",
+      "logicalBlockId": "block_assist_user_zone_06",
+      "objectType": "user_zone",
+      "role": "fixed_destination",
+      "sourceKind": "virtual_block",
+      "selectable": true,
+      "fixedPose": true,
+      "positionMeters": {
+        "x": 0.0,
+        "y": -0.19,
+        "z": 0.001
+      },
+      "dimensionsMeters": {
+        "x": 0.46,
+        "y": 0.18,
+        "z": 0.002
+      },
+      "yawDegrees": 0.0,
+      "affordanceTags": [
+        "user_zone",
+        "placement_destination",
+        "fixed_surface"
+      ]
+    },
+    {
+      "semanticId": "assist_storage_lid",
+      "targetId": "",
+      "logicalBlockId": "",
+      "objectType": "storage_lid",
+      "role": "hinged_part",
+      "sourceKind": "articulated_part",
+      "selectable": false,
+      "fixedPose": false,
+      "positionMeters": {
+        "x": -0.24748195764065078,
+        "y": 0.010426751937635911,
+        "z": 0.079
+      },
+      "dimensionsMeters": {
+        "x": 0.18,
+        "y": 0.12,
+        "z": 0.008
+      },
+      "yawDegrees": 0.0,
+      "affordanceTags": [
+        "hinged_lid"
+      ]
+    },
+    {
+      "semanticId": "assist_button_cap",
+      "targetId": "",
+      "logicalBlockId": "",
+      "objectType": "button_cap",
+      "role": "sliding_part",
+      "sourceKind": "articulated_part",
+      "selectable": false,
+      "fixedPose": false,
+      "positionMeters": {
+        "x": 0.160294648130396,
+        "y": 0.20041617807567091,
+        "z": 0.028
+      },
+      "dimensionsMeters": {
+        "x": 0.028,
+        "y": 0.028,
+        "z": 0.012
+      },
+      "yawDegrees": 0.0,
+      "affordanceTags": [
+        "button_cap",
+        "sliding_part"
+      ]
+    },
+    {
+      "semanticId": "future_book_01",
+      "targetId": "future_book_01",
+      "logicalBlockId": "future_book_01",
+      "objectType": "paperback_book",
+      "role": "movable_source",
+      "sourceKind": "synthetic_future_object",
+      "selectable": true,
+      "fixedPose": false,
+      "positionMeters": {
+        "x": 0.31,
+        "y": 0.19,
+        "z": 0.012
+      },
+      "dimensionsMeters": {
+        "x": 0.16,
+        "y": 0.02,
+        "z": 0.22
+      },
+      "affordanceTags": [
+        "movable",
+        "rigid_object",
+        "reading_material"
+      ]
+    },
+    {
+      "semanticId": "future_book_shelf",
+      "targetId": "future_book_shelf",
+      "logicalBlockId": "future_book_shelf",
+      "objectType": "bookshelf_surface",
+      "role": "fixed_destination",
+      "sourceKind": "synthetic_future_fixture",
+      "selectable": true,
+      "fixedPose": true,
+      "positionMeters": {
+        "x": 0.36,
+        "y": 0.2,
+        "z": 0.2
+      },
+      "dimensionsMeters": {
+        "x": 0.3,
+        "y": 0.2,
+        "z": 0.02
+      },
+      "affordanceTags": [
+        "fixed_surface",
+        "book_destination"
+      ]
+    },
+    {
+      "semanticId": "future_pen_01",
+      "targetId": "future_pen_01",
+      "logicalBlockId": "future_pen_01",
+      "objectType": "pen",
+      "role": "movable_source",
+      "sourceKind": "synthetic_future_object",
+      "selectable": true,
+      "fixedPose": false,
+      "positionMeters": {
+        "x": 0.3,
+        "y": 0.08,
+        "z": 0.01
+      },
+      "dimensionsMeters": {
+        "x": 0.14,
+        "y": 0.015,
+        "z": 0.015
+      },
+      "affordanceTags": [
+        "movable",
+        "writing_tool"
+      ]
+    },
+    {
+      "semanticId": "future_pen_drawer",
+      "targetId": "future_pen_drawer",
+      "logicalBlockId": "future_pen_drawer",
+      "objectType": "desk_drawer",
+      "role": "articulated_context_object",
+      "sourceKind": "synthetic_future_fixture",
+      "selectable": true,
+      "fixedPose": true,
+      "positionMeters": {
+        "x": 0.36,
+        "y": 0.08,
+        "z": 0.1
+      },
+      "dimensionsMeters": {
+        "x": 0.2,
+        "y": 0.16,
+        "z": 0.08
+      },
+      "affordanceTags": [
+        "storage_container",
+        "hinged_lid",
+        "stationary_context_object"
+      ]
+    },
+    {
+      "semanticId": "future_book_box",
+      "targetId": "future_book_box",
+      "logicalBlockId": "",
+      "objectType": "book_storage_box",
+      "role": "articulated_context_object",
+      "sourceKind": "m29_synthetic_fixture",
+      "selectable": true,
+      "fixedPose": true,
+      "affordanceTags": [
+        "container",
+        "openable",
+        "closable"
+      ],
+      "positionMeters": null,
+      "dimensionsMeters": null
+    },
+    {
+      "semanticId": "desk_surface_01",
+      "targetId": "desk_surface_01",
+      "logicalBlockId": "",
+      "objectType": "desk_surface",
+      "role": "fixed_destination",
+      "sourceKind": "m29_synthetic_fixture",
+      "selectable": true,
+      "fixedPose": true,
+      "affordanceTags": [
+        "fixed_surface"
+      ],
+      "positionMeters": null,
+      "dimensionsMeters": null
+    }
+  ]
+}

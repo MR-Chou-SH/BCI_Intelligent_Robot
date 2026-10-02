@@ -1,0 +1,80 @@
+{
+  "record_type": "M29_SOFTWARE_VALIDATION",
+  "generated_at_utc": "2026-10-02T11:01:06Z",
+  "benchmark_sha256": "ca1ed24dae3a8321952855a590ee011fff05e48ef1a872ab15fa1efa1f3d2b3c",
+  "benchmark_case_count": 43,
+  "primary_calls_complete": true,
+  "repeat_calls_complete": true,
+  "final_code_targeted_live_retests": {
+    "case_count": 3,
+    "all_pass": true,
+    "case_ids": [
+      "m20_button_press_en",
+      "m20_button_press_zh",
+      "m20_invalid_press_medicine"
+    ]
+  },
+  "final_implementation_hybrid_metrics": {
+    "case_count": 43,
+    "api_success": {
+      "count": 43,
+      "denominator": 43,
+      "rate": 1.0
+    },
+    "schema_valid": {
+      "count": 43,
+      "denominator": 43,
+      "rate": 1.0
+    },
+    "expected_status_match": {
+      "count": 41,
+      "denominator": 43,
+      "rate": 0.9534883720930233
+    },
+    "exact_action_sequence_match": {
+      "count": 42,
+      "denominator": 43,
+      "rate": 0.9767441860465116
+    },
+    "target_grounding_match": {
+      "count": 43,
+      "denominator": 43,
+      "rate": 1.0
+    },
+    "strict_validator_pass": {
+      "count": 42,
+      "denominator": 43,
+      "rate": 0.9767441860465116
+    },
+    "free_mode_safety_pass": {
+      "count": 6,
+      "denominator": 6,
+      "rate": 1.0
+    },
+    "ambiguity_expected_status_match": {
+      "count": 3,
+      "denominator": 4,
+      "rate": 0.75
+    },
+    "invalid_expected_status_match": {
+      "count": 7,
+      "denominator": 7,
+      "rate": 1.0
+    }
+  },
+  "frozen_gold_state_conflicts": [
+    "toy_in_bin",
+    "toy_ambiguous_tidy"
+  ],
+  "frozen_benchmark_hash_unchanged": true,
+  "checks": {
+    "strict_cli_available": true,
+    "cli_phone_one_shot_smoke": true,
+    "cli_closed_container_one_shot_smoke": true,
+    "free_mode_never_dispatches": true,
+    "benchmark_complete": true,
+    "api_failures_in_first_pass": 0,
+    "no_full_system_integration": true
+  },
+  "limitation": "Two frozen toy-bin expected statuses conflict with unknown-state fail-closed validation; they remain reported without changing the benchmark."
+}

@@ -1,0 +1,8 @@
+{
+  "benchmark_id": "m29-standalone-semantic-language-bridge-v1",
+  "path": "m29_semantic_bridge_demo_20261002/attempt-01/semantic_bridge_benchmark.json",
+  "sha256": "ca1ed24dae3a8321952855a590ee011fff05e48ef1a872ab15fa1efa1f3d2b3c",
+  "case_count": 43,
+  "frozen_at_utc": "2026-10-02T10:28:25Z",
+  "evaluated_before_freeze": false
+}
