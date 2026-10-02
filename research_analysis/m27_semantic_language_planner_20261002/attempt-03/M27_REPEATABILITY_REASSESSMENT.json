@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "metric_version": "structure-only-v2",
+  "source_results": "semantic_planner_results.jsonl",
+  "source_results_sha256": "9cef20d5f92d37b14e1656aefa78f390e8aee54dd132b3bb0f0c7a97f11aafe4",
+  "source_live_calls_reused": 14,
+  "expected_live_calls": 14,
+  "new_api_calls": 0,
+  "structure_fields": [
+    "status",
+    "selected_objects in order",
+    "ordered top-level actions (type/object_id/target_id)",
+    "ordered alternative action sequences"
+  ],
+  "natural_language_fields_compared_separately": [
+    "intent_summary",
+    "natural_language_instruction",
+    "assumptions",
+    "ambiguity_reason"
+  ],
+  "repeatability": {
+    "m20_phone_to_wireless_charger": {
+      "repeat_count": 2,
+      "structurally_identical": true,
+      "exact_natural_language_identical": false
+    },
+    "m20_medicine_into_closed_storage": {
+      "repeat_count": 2,
+      "structurally_identical": true,
+      "exact_natural_language_identical": false
+    },
+    "m20_phone_charger_or_storage_ambiguous": {
+      "repeat_count": 2,
+      "structurally_identical": true,
+      "exact_natural_language_identical": false
+    },
+    "future_book_to_bookshelf": {
+      "repeat_count": 2,
+      "structurally_identical": true,
+      "exact_natural_language_identical": false
+    },
+    "future_pen_into_closed_drawer": {
+      "repeat_count": 2,
+      "structurally_identical": true,
+      "exact_natural_language_identical": false
+    }
+  }
+}

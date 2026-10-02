@@ -1,0 +1,111 @@
+{
+  "status": "PASS",
+  "run_started_utc": "2026-10-01T23:50:53.700Z",
+  "run_finished_utc": "2026-10-01T23:51:15.038Z",
+  "api_key_available": true,
+  "secret_scan_pass": true,
+  "model_resolution": {
+    "resolved_model_id": "deepseek-flash",
+    "source": "live official GET /models catalog intersected with documented Chat Completions IDs",
+    "configured_model_override_used": false,
+    "available_catalog_ids": [
+      "deepseek-flash",
+      "deepseek-v4-pro"
+    ],
+    "base_url": "https://api.deepseek.com"
+  },
+  "request_parameters": {
+    "protocol": "DeepSeek Chat Completions",
+    "temperature": 0.0,
+    "max_tokens": 1200,
+    "response_format": {
+      "type": "json_object"
+    },
+    "thinking": {
+      "type": "disabled"
+    },
+    "stream": false,
+    "timeout_seconds": 45,
+    "max_correction_retries": 1
+  },
+  "versions": {
+    "prompt": "m27-semantic-planner-prompt-v3",
+    "plan_schema": "m27-structured-plan-v1",
+    "scene_schema": "m27-semantic-scene-v1"
+  },
+  "scene_provenance": {
+    "scene_id": "m20-random-validation-20261002",
+    "m20_template_id": "m20_daily_assistive_desk",
+    "m20_snapshot_sha256": "e234b92f1f019debbace48e4e3b56685c9a3a0c9b79efb2be126963a5589b046",
+    "task2_expected_snapshot_sha256": "e234b92f1f019debbace48e4e3b56685c9a3a0c9b79efb2be126963a5589b046",
+    "canonical_spec_sha256": "dad6e32b198d5d6f41cbea8b22f35b7fb46a617e0c6a26ec1e4b02d4f3aa57b3",
+    "task2_first_seed_replay_match": true,
+    "future_scene_is_synthetic": true
+  },
+  "benchmark": {
+    "frozen_case_count": 9,
+    "requested_calls": 14,
+    "completed_calls": 14,
+    "expected_acceptances": 14,
+    "direct_model_expected_acceptances": 14,
+    "safe_fallback_calls": 0,
+    "enum_normalizations": 0,
+    "validated_plans": 14,
+    "median_latency_ms": 1462.6525,
+    "maximum_latency_ms": 2212.953,
+    "token_usage_total": 47149,
+    "repeatability": {
+      "m20_phone_to_wireless_charger": {
+        "repeat_count": 2,
+        "structurally_identical": true,
+        "exact_natural_language_identical": false
+      },
+      "m20_medicine_into_closed_storage": {
+        "repeat_count": 2,
+        "structurally_identical": true,
+        "exact_natural_language_identical": false
+      },
+      "m20_phone_charger_or_storage_ambiguous": {
+        "repeat_count": 2,
+        "structurally_identical": true,
+        "exact_natural_language_identical": false
+      },
+      "future_book_to_bookshelf": {
+        "repeat_count": 2,
+        "structurally_identical": true,
+        "exact_natural_language_identical": false
+      },
+      "future_pen_into_closed_drawer": {
+        "repeat_count": 2,
+        "structurally_identical": true,
+        "exact_natural_language_identical": false
+      }
+    },
+    "correction_retries_used": 3,
+    "transport_failure": null,
+    "initial_repeatability_metric": {
+      "m20_phone_to_wireless_charger": {
+        "repeat_count": 2,
+        "structurally_identical": true
+      },
+      "m20_medicine_into_closed_storage": {
+        "repeat_count": 2,
+        "structurally_identical": true
+      },
+      "m20_phone_charger_or_storage_ambiguous": {
+        "repeat_count": 2,
+        "structurally_identical": false
+      },
+      "future_book_to_bookshelf": {
+        "repeat_count": 2,
+        "structurally_identical": true
+      },
+      "future_pen_into_closed_drawer": {
+        "repeat_count": 2,
+        "structurally_identical": true
+      }
+    },
+    "repeatability_metric_version": "structure-only-v2",
+    "repeatability_source_results_sha256": "9cef20d5f92d37b14e1656aefa78f390e8aee54dd132b3bb0f0c7a97f11aafe4"
+  }
+}

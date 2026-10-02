@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL",
+  "checks": {
+    "task2_snapshot_reconstructed_exactly": true,
+    "all_live_calls_completed": true,
+    "all_plans_passed_local_validation": false,
+    "all_predeclared_cases_matched": false,
+    "secret_scan_pass": true,
+    "no_robot_or_hardware_dispatch": true,
+    "task1_task2_stable_checkpoint_untouched": true
+  },
+  "artifact_paths": [
+    "semantic_planner_results.jsonl",
+    "current_scene_snapshot.json",
+    "future_scene_snapshot.json",
+    "semantic_planner_summary.json",
+    "M27_FINAL_REPORT.md",
+    "final_validation.json"
+  ]
+}

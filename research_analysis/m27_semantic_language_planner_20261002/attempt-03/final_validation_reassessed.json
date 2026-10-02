@@ -1,0 +1,26 @@
+{
+  "schema_version": 2,
+  "status": "PASS",
+  "source_validation": "final_validation.json",
+  "source_repeatability_audit": "M27_REPEATABILITY_REASSESSMENT.json",
+  "checks": {
+    "original_live_benchmark_validation_pass": true,
+    "all_14_saved_live_calls_retained": true,
+    "all_14_saved_final_plans_locally_validated": true,
+    "structure_only_repeatability_passed_for_all_5_repeated_cases": true,
+    "natural_language_variation_reported_separately": true,
+    "repeatability_reanalysis_made_no_new_api_calls": true,
+    "secret_scan_pass": true,
+    "no_robot_or_hardware_dispatch": true,
+    "task1_task2_stable_checkpoint_untouched": true
+  },
+  "evidence_sha256": {
+    "semantic_planner_results.jsonl": "9cef20d5f92d37b14e1656aefa78f390e8aee54dd132b3bb0f0c7a97f11aafe4"
+  },
+  "artifacts": [
+    "M27_REPEATABILITY_REASSESSMENT.json",
+    "M27_REPEATABILITY_REASSESSMENT.md",
+    "M27_FINAL_REPORT_REASSESSED.md",
+    "semantic_planner_summary_reassessed.json"
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "schema_version": "m27-benchmark-v1",
+  "repeat_temperature": 0.0,
+  "cases": [
+    {
+      "case_id": "m20_phone_to_wireless_charger",
+      "scene_variant": "m20_current",
+      "selected_object_ids": ["assist_phone", "assist_wireless_charger"],
+      "intent_context": "Place the selected phone on its compatible wireless charging target.",
+      "current_states": {},
+      "expected_status": "executable",
+      "expected_relation": {"type": "PLACE_ON", "object_id": "assist_phone", "target_id": "assist_wireless_charger"},
+      "repeat_count": 2,
+      "acceptance_case": "M20 phone + wireless charger"
+    },
+    {
+      "case_id": "m20_medicine_into_closed_storage",
+      "scene_variant": "m20_current",
+      "selected_object_ids": ["assist_medicine_box", "assist_storage_box"],
+      "intent_context": "Put the selected small medicine box away in the selected storage box.",
+      "current_states": {"assist_storage_box": {"lid": "closed"}},
+      "expected_status": "executable",
+      "expected_action_sequence": [
+        {"type": "OPEN", "object_id": "assist_storage_box"},
+        {"type": "PICK", "object_id": "assist_medicine_box"},
+        {"type": "PLACE_IN", "object_id": "assist_medicine_box", "target_id": "assist_storage_box"},
+        {"type": "CLOSE", "object_id": "assist_storage_box"}
+      ],
+      "repeat_count": 2,
+      "acceptance_case": "M20 medicine + storage box"
+    },
+    {
+      "case_id": "m20_phone_charger_or_storage_ambiguous",
+      "scene_variant": "m20_current",
+      "selected_object_ids": ["assist_phone", "assist_wireless_charger", "assist_storage_box"],
+      "intent_context": "Help decide what to do with these selected items.",
+      "current_states": {"assist_storage_box": {"lid": "closed"}},
+      "expected_status": "ambiguous",
+      "minimum_alternatives": 2,
+      "repeat_count": 2,
+      "acceptance_case": "M20 competing plausible relations"
+    },
+    {
+      "case_id": "m20_medicine_to_user_zone",
+      "scene_variant": "m20_current",
+      "selected_object_ids": ["assist_medicine_box", "assist_user_zone"],
+      "intent_context": "Move the selected medicine box onto the user-side placement zone.",
+      "current_states": {},
+      "expected_status": "executable",
+      "expected_relation": {"type": "PLACE_ON", "object_id": "assist_medicine_box", "target_id": "assist_user_zone"},
+      "repeat_count": 1,
+      "acceptance_case": "M20 placement surface"
+    },
+    {
+      "case_id": "m20_pressable_affordance_conflict",
+      "scene_variant": "m20_current",
+      "selected_object_ids": ["assist_medicine_box"],
+      "intent_context": "Press the selected medicine box.",
+      "current_states": {},
+      "expected_status": "invalid",
+      "minimum_alternatives": 0,
+      "repeat_count": 1,
+      "acceptance_case": "affordance conflict"
+    },
+    {
+      "case_id": "m20_container_relation_conflict",
+      "scene_variant": "m20_current",
+      "selected_object_ids": ["assist_phone", "assist_wireless_charger"],
+      "intent_context": "Put the selected phone inside the selected wireless charger.",
+      "current_states": {},
+      "expected_status": "invalid",
+      "minimum_alternatives": 0,
+      "repeat_count": 1,
+      "acceptance_case": "container affordance conflict"
+    },
+    {
+      "case_id": "m20_missing_named_destination_hallucination_trap",
+      "scene_variant": "m20_current",
+      "selected_object_ids": ["assist_phone", "assist_wireless_charger"],
+      "intent_context": "Put the selected phone on the Pixel Dock.",
+      "current_states": {},
+      "expected_status": "invalid",
+      "minimum_alternatives": 0,
+      "repeat_count": 1,
+      "acceptance_case": "nonexistent-object hallucination trap"
+    },
+    {
+      "case_id": "future_book_to_bookshelf",
+      "scene_variant": "future_utility_desk",
+      "selected_object_ids": ["future_book_01", "future_book_shelf"],
+      "intent_context": "Place the selected book on the compatible bookshelf surface.",
+      "current_states": {},
+      "expected_status": "executable",
+      "expected_relation": {"type": "PLACE_ON", "object_id": "future_book_01", "target_id": "future_book_shelf"},
+      "repeat_count": 2,
+      "acceptance_case": "future-compatible unseen object categories"
+    },
+    {
+      "case_id": "future_pen_into_closed_drawer",
+      "scene_variant": "future_utility_desk",
+      "selected_object_ids": ["future_pen_01", "future_pen_drawer"],
+      "intent_context": "Store the selected pen inside the selected desk drawer.",
+      "current_states": {"future_pen_drawer": {"lid": "closed"}},
+      "expected_status": "executable",
+      "expected_action_sequence": [
+        {"type": "OPEN", "object_id": "future_pen_drawer"},
+        {"type": "PICK", "object_id": "future_pen_01"},
+        {"type": "PLACE_IN", "object_id": "future_pen_01", "target_id": "future_pen_drawer"},
+        {"type": "CLOSE", "object_id": "future_pen_drawer"}
+      ],
+      "repeat_count": 2,
+      "acceptance_case": "future-compatible multi-step affordance composition"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "m27-structured-plan-v1",
+  "title": "M27 Structured Manipulation Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "intent_summary", "selected_objects", "actions", "natural_language_instruction", "assumptions", "ambiguity_reason", "alternatives"],
+  "properties": {
+    "status": {"enum": ["executable", "ambiguous", "invalid"]},
+    "intent_summary": {"type": "string"},
+    "selected_objects": {"type": "array", "items": {"type": "string"}},
+    "actions": {"type": "array", "items": {"$ref": "#/$defs/action"}},
+    "natural_language_instruction": {"type": "string"},
+    "assumptions": {"type": "array", "items": {"type": "string"}},
+    "ambiguity_reason": {"type": ["string", "null"]},
+    "alternatives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["intent_summary", "actions", "natural_language_instruction"],
+        "properties": {
+          "intent_summary": {"type": "string"},
+          "actions": {"type": "array", "items": {"$ref": "#/$defs/action"}},
+          "natural_language_instruction": {"type": "string"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "action": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["type", "object_id"], "properties": {"type": {"const": "PICK"}, "object_id": {"type": "string"}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "object_id"], "properties": {"type": {"enum": ["OPEN", "CLOSE", "PRESS"]}, "object_id": {"type": "string"}}},
+        {"type": "object", "additionalProperties": false, "required": ["type", "object_id", "target_id"], "properties": {"type": {"enum": ["PLACE_ON", "PLACE_IN", "MOVE_TO", "RELEASE"]}, "object_id": {"type": "string"}, "target_id": {"type": "string"}}}
+      ]
+    }
+  }
+}

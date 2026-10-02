@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "m27-semantic-scene-v1",
+  "title": "M27 Semantic Scene",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "scene_id", "template_id", "snapshot_schema_version", "objects"],
+  "properties": {
+    "schema_version": {"const": "m27-semantic-scene-v1"},
+    "scene_id": {"type": "string", "minLength": 1},
+    "template_id": {"type": "string", "minLength": 1},
+    "snapshot_schema_version": {"type": "integer", "const": 1},
+    "random_seed": {"type": ["integer", "null"]},
+    "coordinate_frame": {"type": "object"},
+    "table": {"type": "object"},
+    "candidate_order": {"type": "array", "items": {"type": "string"}},
+    "objects": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "object_type", "role", "source_kind", "selectable", "fixed_pose", "affordance_tags", "movable", "container", "openable", "closable", "support_surface", "charging_target", "pressable", "accepted_categories", "current_state"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "target_id": {"type": "string"},
+          "logical_block_id": {"type": "string"},
+          "name": {"type": "string"},
+          "object_type": {"type": "string"},
+          "role": {"type": "string"},
+          "source_kind": {"type": "string"},
+          "selectable": {"type": "boolean"},
+          "fixed_pose": {"type": "boolean"},
+          "position_meters": {"type": ["object", "null"]},
+          "dimensions_meters": {"type": ["object", "null"]},
+          "affordance_tags": {"type": "array", "items": {"type": "string"}},
+          "movable": {"type": "boolean"},
+          "container": {"type": "boolean"},
+          "openable": {"type": "boolean"},
+          "closable": {"type": "boolean"},
+          "support_surface": {"type": "boolean"},
+          "charging_target": {"type": "boolean"},
+          "pressable": {"type": "boolean"},
+          "accepted_categories": {"type": "array", "items": {"type": "string"}},
+          "current_state": {"type": "object"}
+        }
+      }
+    }
+  }
+}

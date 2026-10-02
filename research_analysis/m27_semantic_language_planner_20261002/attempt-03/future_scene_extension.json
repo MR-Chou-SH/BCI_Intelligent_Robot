@@ -1,0 +1,58 @@
+{
+  "schema_version": "m27-future-scene-extension-v1",
+  "scene_id": "m27-future-utility-desk",
+  "objects": [
+    {
+      "semanticId": "future_book_01",
+      "targetId": "future_book_01",
+      "logicalBlockId": "future_book_01",
+      "objectType": "paperback_book",
+      "role": "movable_source",
+      "sourceKind": "synthetic_future_object",
+      "selectable": true,
+      "fixedPose": false,
+      "positionMeters": {"x": 0.31, "y": 0.19, "z": 0.012},
+      "dimensionsMeters": {"x": 0.16, "y": 0.02, "z": 0.22},
+      "affordanceTags": ["movable", "rigid_object", "reading_material"]
+    },
+    {
+      "semanticId": "future_book_shelf",
+      "targetId": "future_book_shelf",
+      "logicalBlockId": "future_book_shelf",
+      "objectType": "bookshelf_surface",
+      "role": "fixed_destination",
+      "sourceKind": "synthetic_future_fixture",
+      "selectable": true,
+      "fixedPose": true,
+      "positionMeters": {"x": 0.36, "y": 0.20, "z": 0.20},
+      "dimensionsMeters": {"x": 0.30, "y": 0.20, "z": 0.02},
+      "affordanceTags": ["fixed_surface", "book_destination"]
+    },
+    {
+      "semanticId": "future_pen_01",
+      "targetId": "future_pen_01",
+      "logicalBlockId": "future_pen_01",
+      "objectType": "pen",
+      "role": "movable_source",
+      "sourceKind": "synthetic_future_object",
+      "selectable": true,
+      "fixedPose": false,
+      "positionMeters": {"x": 0.30, "y": 0.08, "z": 0.01},
+      "dimensionsMeters": {"x": 0.14, "y": 0.015, "z": 0.015},
+      "affordanceTags": ["movable", "writing_tool"]
+    },
+    {
+      "semanticId": "future_pen_drawer",
+      "targetId": "future_pen_drawer",
+      "logicalBlockId": "future_pen_drawer",
+      "objectType": "desk_drawer",
+      "role": "articulated_context_object",
+      "sourceKind": "synthetic_future_fixture",
+      "selectable": true,
+      "fixedPose": true,
+      "positionMeters": {"x": 0.36, "y": 0.08, "z": 0.10},
+      "dimensionsMeters": {"x": 0.20, "y": 0.16, "z": 0.08},
+      "affordanceTags": ["storage_container", "hinged_lid", "stationary_context_object"]
+    }
+  ]
+}
