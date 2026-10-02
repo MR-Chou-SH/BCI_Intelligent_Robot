@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "runId": "semantic_layer_longrun_20261002",
+  "capturedAtUtc": "2026-10-02T09:40:30Z",
+  "repository": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot",
+  "gitRoot": "C:/Users/zsh21/Desktop/BCI_Intelligent_Robot",
+  "sourceBranchBeforeCreation": "codex/m27-semantic-language-planner",
+  "workingBranch": "codex/m28-m29-semantic-context-bridge",
+  "head": "ca8d10ab8fac14bfe75a6be8764e577f9339f766",
+  "upstream": null,
+  "origin": "https://github.com/MR-Chou-SH/BCI_Intelligent_Robot.git",
+  "stableCheckpoint": "0e5bf5e42847e3f2580e02dcc0a7fd546f8db138",
+  "m27Checkpoint": "ca8d10ab8fac14bfe75a6be8764e577f9339f766",
+  "stableCheckpointIsAncestorOfM27": true,
+  "m27CheckpointIsAncestorOfHead": true,
+  "trackedWorkingTreeDiffStat": ".../task2/TASK2_FINAL_REPORT.md                    | 17 +++--\n .../task2/quest_runtime_validation.json            | 78 ++++++++++++++++------\n integration/m20_scene_layout_snapshot.py           | 35 ++++++++--\n integration/test_m20_quest_pc_acceptance.py        | 27 ++++++++\n integration/test_m20_scene_layout_snapshot.py      | 31 +++++++++\n 5 files changed, 156 insertions(+), 32 deletions(-)",
+  "stagedDiffStat": "",
+  "preexistingTrackedModifiedCount": 5,
+  "preexistingUntrackedPathCountBeforeRunArtifacts": 4345,
+  "preexistingStatusManifest": "preexisting_status_porcelain.txt",
+  "preexistingUntrackedManifest": "preexisting_untracked_paths.txt",
+  "m25InputManifest": {
+    "path": "research_analysis/m25_context_evidence_latency_20261002/attempt-01/INPUT_MANIFEST.json",
+    "sha256": "0bc5b2032df564342562d3af085a174d81f707db42dfc161c14db4715d5fec5a",
+    "featureTableSha256": "458cc6a79f8bd3e4e38d79ac7163cd8636039eb0698c74d9cad98ee59d9b2309",
+    "frozenOperatingPointsSha256": "1ff7690941778c0a58f3ac1976cc111054b4fecf5dcec1f5d2c1c2d56e3f0513",
+    "frozenAssignmentSha256": "5dabf7ed921d95ebc1933f7a0ebff93a702cf92fc6fb9cb41a1629786f32ae43",
+    "formalN": 88,
+    "rawEegWaveformDecoded": false,
+    "rawEegModified": false
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.5.3",
+    "matplotlib": "unavailable: ModuleNotFoundError",
+    "deepseekApiKeyPresent": true
+  },
+  "protectedBoundaries": {
+    "questAccessed": false,
+    "adbMqdhAccessed": false,
+    "nd8Accessed": false,
+    "com11Accessed": false,
+    "rawEegModified": false,
+    "stableTask2BranchModified": false,
+    "deepseekApiKeyPersisted": false
+  }
+}
