@@ -3,8 +3,10 @@
 ## Git checkpoint
 
 - Branch: `codex/m30-m31-nextgen-semantic-context-vla-bridge`
-- M30/M31 implementation commit: `570f0dc7694d1bc12a434e59329a084ebcc6ee4e`
-- Push status: **PASS**; `origin/codex/m30-m31-nextgen-semantic-context-vla-bridge` resolves to the same SHA.
+- M30/M31 implementation commit: `570f0dc7694d1bc12a434e59329a084ebcc6ee4e` (pushed).
+- Checkpoint-record commit: `c951674520cbe371016c3f19b33954e916d986b3` (pushed).
+- Remote verification at `2026-10-02T23:58:39Z`: local HEAD and `origin/codex/m30-m31-nextgen-semantic-context-vla-bridge` both resolved to `c951674520cbe371016c3f19b33954e916d986b3`.
+- M32 gate is satisfied only after that record commit was pushed; M32 has not yet started.
 - The checkpoint contains 134 selectively staged files. It excludes the 176 MB uncompressed transfer CSV, all unrelated pre-existing dirty paths, raw EEG, caches, credentials, and M20/overnight acceptance modifications. The compressed transfer table is a deterministic lossless copy verified against the local source SHA-256 `416296120f8fbfedfe9bb3a014777903bf0e69f96889ceaf2d3db130dbfcb896`.
 - M32 has not started. It remains gated until this record is itself committed and pushed.
 
