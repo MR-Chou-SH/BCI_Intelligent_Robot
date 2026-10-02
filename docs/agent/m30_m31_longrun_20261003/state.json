@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "runId": "m30_m31_longrun_20261003",
+  "status": "IN_PROGRESS",
+  "startedAtUtc": "2026-10-02T20:21:55Z",
+  "updatedAtUtc": "2026-10-02T23:48:45Z",
+  "repository": {
+    "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot",
+    "branch": "codex/m30-m31-nextgen-semantic-context-vla-bridge",
+    "head": "e564ca093d48692879853d493135071316e34a52",
+    "origin": "https://github.com/MR-Chou-SH/BCI_Intelligent_Robot.git",
+    "upstream": null,
+    "workingTreeClean": false,
+    "preflight": "docs\\agent\\m30_m31_longrun_20261003\\preflight\\preflight.json"
+  },
+  "phase": "M30_M31_CHECKPOINT",
+  "completedSteps": [
+    "preflight_recorded",
+    "full_goal_contract_read",
+    "overnight_policy_read",
+    "experimental_branch_created_and_dirty_baseline_verified",
+    "m28_m29_19_of_19_and_m27_12_of_12_baseline_regressions",
+    "m30_sequence_context_engine_and_targeted_tests",
+    "m30_benchmark_frozen_after_prevalidation_fix",
+    "m30_benchmark_leakage_and_scene_core_validation",
+    "m30_deepseek_prompt_v1_129_of_129",
+    "m30_prompt_v1_repeatability_16_cases",
+    "m30_prompt_v2_affordance_validator_alignment",
+    "m30_benchmark_label_compatibility_audit_and_126_decision_relock",
+    "m30_ambiguity_label_audit_and_prompt_v3_freeze",
+    "m30_prompt_v3_train_partial_overabstention_detected_and_v4_frozen",
+    "m30_generic_precondition_guard_and_14_targeted_tests",
+    "m30_prompt_v4_precondition_guard_126_of_126_and_repeatability_16",
+    "m30_eeg_transfer_45_primary_conditions_and_timing_sensitivity",
+    "m30_final_audit_report_validation_14_plots",
+    "m30_final_readonly_validation_gzip_pass",
+    "m30_m31_focused_regressions_final_pass",
+    "m31_final_benchmark_and_requirement_audit_pass",
+    "m30_m31_selective_checkpoint_pending"
+  ],
+  "nextStep": "selectively stage the audited M30/M31 source and experiment artifacts, commit and push the current branch, verify the remote SHA, record it in M30_M31_PRE_M32_CHECKPOINT.md; do not start M32 before this checkpoint is pushed",
+  "lastGreenVerification": {
+    "recordedAtUtc": "2026-10-02T23:48:45Z",
+    "m30FinalValidation": "PASS (read-only; gzip transfer table verified; 467280 rows; 14 valid SVG plots; M25 inputs unchanged)",
+    "m31FinalValidation": "PASS_WITH_REPORTED_LIMITATIONS (software implementation PASS; semantic quality PARTIAL)",
+    "m31BenchmarkSha256": "7d386f8ee1ab4fcee3f932719a49cff23a7cd23491cd913e8c9a8ccfe00dacee",
+    "m31Primary": "84/84 calls; status accuracy 76/84; relation 62/70; ambiguous/invalid 9/14; grounding references 84/84",
+    "tests": "51 focused M28-M31 integration tests PASS; M27 regression discovery 12/12 PASS; py_compile PASS",
+    "m30Transfer": {
+      "primaryConditions": 45,
+      "primaryRows": 396000,
+      "timingRows": 71280,
+      "m25BaselineReproductions": 264,
+      "m25InputsUnchanged": true,
+      "noDelayViolations": 0,
+      "wrongEarlyStopRows": 246,
+      "positiveLambdaSafeConditions": 0
+    },
+    "limitations": [
+      "M30 has zero positive-lambda safe-supported conditions; 246 wrong early-stop rows.",
+      "M31 ambiguity recognition is 2/7; one frozen development-label conflict remains reported."
+    ],
+    "next": "selective M30/M31 commit and push, then exact checkpoint record; M32 remains gated"
+  },
+  "checkpoint": {
+    "kind": "m30_m31_branch_base",
+    "sha": "e564ca093d48692879853d493135071316e34a52",
+    "pushed": false,
+    "sourceCheckpointPushed": true,
+    "m30M31": {
+      "status": "verification_complete_checkpoint_pending",
+      "commit": null,
+      "pushed": false
+    }
+  },
+  "blocker": null,
+  "protectedBoundaries": {
+    "questAccessed": false,
+    "adbMqdhAccessed": false,
+    "nd8Accessed": false,
+    "com11Accessed": false,
+    "physicalRobotAccessed": false,
+    "liveEegAccessed": false,
+    "rawEegModified": false,
+    "productionM19Modified": false,
+    "realVlaDispatch": false,
+    "deepseekKeyPersisted": false
+  }
+}

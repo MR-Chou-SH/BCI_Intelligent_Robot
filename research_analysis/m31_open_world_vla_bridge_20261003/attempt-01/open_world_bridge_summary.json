@@ -1,0 +1,3077 @@
+{
+  "schema_version": "m31-open-world-bridge-summary-v1",
+  "updated_at_utc": "2026-10-02T23:38:29.861Z",
+  "primary_run_label": "prompt-v5",
+  "benchmark_sha256": "7d386f8ee1ab4fcee3f932719a49cff23a7cd23491cd913e8c9a8ccfe00dacee",
+  "case_count": 84,
+  "split_counts": {
+    "train": 48,
+    "dev": 12,
+    "heldout": 24
+  },
+  "status_accuracy": {
+    "numerator": 76,
+    "denominator": 84,
+    "rate": 0.9048
+  },
+  "relation_accuracy_on_expected_executable_cases": {
+    "numerator": 62,
+    "denominator": 70,
+    "rate": 0.8857
+  },
+  "grounding_reference_correctness": {
+    "numerator": 84,
+    "denominator": 84,
+    "rate": 1.0
+  },
+  "hallucinated_reference_validation_events": 0,
+  "manual_forbidden_object_mention_cases": 0,
+  "explicit_color_fidelity": {
+    "numerator": 4,
+    "denominator": 4,
+    "rate": 1.0
+  },
+  "unobserved_color_claims": 0,
+  "unobserved_state_claims": 0,
+  "explicit_state_acknowledgement": {
+    "numerator": 3,
+    "denominator": 3,
+    "rate": 1.0
+  },
+  "explicit_state_safe_outcome": {
+    "numerator": 3,
+    "denominator": 3,
+    "rate": 1.0
+  },
+  "bilingual_instruction_presence_on_expected_executable_cases": {
+    "numerator": 67,
+    "denominator": 70,
+    "rate": 0.9571
+  },
+  "bilingual_relation_cue_consistency": {
+    "numerator": 65,
+    "denominator": 72,
+    "rate": 0.9028
+  },
+  "high_level_step_relation_alignment": {
+    "numerator": 65,
+    "denominator": 67,
+    "rate": 0.9701
+  },
+  "ambiguous_invalid_handling_accuracy": {
+    "numerator": 9,
+    "denominator": 14,
+    "rate": 0.6429
+  },
+  "api_latency_ms": {
+    "mean": 1227.299,
+    "median": 1139.496,
+    "p90": 1499.895,
+    "p95": 2294.708,
+    "max": 2691.96
+  },
+  "retry_rate": {
+    "numerator": 8,
+    "denominator": 84,
+    "rate": 0.0952
+  },
+  "token_usage": {
+    "prompt_tokens": 104935,
+    "completion_tokens": 15822,
+    "total_tokens": 120757
+  },
+  "repeatability": {
+    "cases": [
+      "m31-storage-medicine",
+      "m31-storage-closed-box",
+      "m31-storage-clothes-basket",
+      "m31-storage-plate-cabinet",
+      "m31-tool-apple-knife",
+      "m31-tool-orange-juicer",
+      "m31-tool-screw-driver",
+      "m31-kitchen-cup-tap",
+      "m31-electronics-phone-charger",
+      "m31-reverse-knife-apple",
+      "m31-facts-red-apple",
+      "m31-ambiguous-phone-box",
+      "m31-invalid-book-battery",
+      "m31-storage-book-shelf",
+      "m31-tool-paintbrush-canvas",
+      "m31-storage-pen-holder"
+    ],
+    "structural_exact_rate": 0.875,
+    "prose_exact_rate": 0.75
+  },
+  "by_category": {
+    "ambiguous_pairs": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 2,
+        "denominator": 7,
+        "rate": 0.2857
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 0,
+        "denominator": 0,
+        "rate": null
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    },
+    "charging_and_electronics": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    },
+    "cleaning_and_care": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 5,
+        "denominator": 7,
+        "rate": 0.7143
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    },
+    "context_and_reference_control": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    },
+    "everyday_placement": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    },
+    "explicit_color_and_state": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 6,
+        "denominator": 7,
+        "rate": 0.8571
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 6,
+        "denominator": 7,
+        "rate": 0.8571
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    },
+    "incompatible_task_traps": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 0,
+        "denominator": 0,
+        "rate": null
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    },
+    "kitchen_and_food": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 4,
+        "denominator": 7,
+        "rate": 0.5714
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    },
+    "open_world_ordinary_nouns": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 6,
+        "denominator": 7,
+        "rate": 0.8571
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 6,
+        "denominator": 7,
+        "rate": 0.8571
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    },
+    "reversed_input_order": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 6,
+        "denominator": 7,
+        "rate": 0.8571
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 6,
+        "denominator": 7,
+        "rate": 0.8571
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    },
+    "storage_placement": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    },
+    "tool_use": {
+      "cases": 7,
+      "status_accuracy": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "relation_accuracy_on_executable_labels": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "reference_correctness": {
+        "numerator": 7,
+        "denominator": 7,
+        "rate": 1.0
+      },
+      "hallucinated_forbidden_mentions": 0
+    }
+  },
+  "case_metrics": [
+    {
+      "case_id": "m31-openworld-folding-bag-hook",
+      "split": "train",
+      "category": "open_world_ordinary_nouns",
+      "expected_status": "executable",
+      "actual_status": "ambiguous",
+      "status_correct": false,
+      "expected_relation": [
+        "PLACE_ON",
+        "STORE_ON"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 1106.198,
+      "total_latency_ms": 1114.96,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1116,
+        "completion_tokens": 131,
+        "total_tokens": 1247
+      }
+    },
+    {
+      "case_id": "m31-reverse-storage-medicine",
+      "split": "train",
+      "category": "reversed_input_order",
+      "expected_status": "executable",
+      "actual_status": "ambiguous",
+      "status_correct": false,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 1089.879,
+      "total_latency_ms": 1090.757,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 134,
+        "total_tokens": 1246
+      }
+    },
+    {
+      "case_id": "m31-ambiguous-book-table",
+      "split": "train",
+      "category": "ambiguous_pairs",
+      "expected_status": "ambiguous",
+      "actual_status": "executable",
+      "status_correct": false,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "PLACE_ON",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 999.313,
+      "total_latency_ms": 1000.234,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1108,
+        "completion_tokens": 164,
+        "total_tokens": 1272
+      }
+    },
+    {
+      "case_id": "m31-facts-occupied-charger",
+      "split": "dev",
+      "category": "explicit_color_and_state",
+      "expected_status": "executable",
+      "actual_status": "invalid",
+      "status_correct": false,
+      "expected_relation": [
+        "CHARGE_WITH"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": true,
+      "explicit_state_safe_outcome": true,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 872.476,
+      "total_latency_ms": 879.145,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1123,
+        "completion_tokens": 107,
+        "total_tokens": 1230
+      }
+    },
+    {
+      "case_id": "m31-invalid-drawer-banana",
+      "split": "dev",
+      "category": "incompatible_task_traps",
+      "expected_status": "invalid",
+      "actual_status": "invalid",
+      "status_correct": true,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 643.095,
+      "total_latency_ms": 644.084,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1118,
+        "completion_tokens": 95,
+        "total_tokens": 1213
+      }
+    },
+    {
+      "case_id": "m31-storage-medicine",
+      "split": "train",
+      "category": "storage_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "STORE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1402.698,
+      "total_latency_ms": 1410.625,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 173,
+        "total_tokens": 1285
+      }
+    },
+    {
+      "case_id": "m31-storage-closed-box",
+      "split": "train",
+      "category": "storage_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "STORE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": true,
+      "explicit_state_safe_outcome": true,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1139.011,
+      "total_latency_ms": 1140.362,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1132,
+        "completion_tokens": 210,
+        "total_tokens": 1342
+      }
+    },
+    {
+      "case_id": "m31-storage-clothes-basket",
+      "split": "train",
+      "category": "storage_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 866.44,
+      "total_latency_ms": 867.577,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 161,
+        "total_tokens": 1271
+      }
+    },
+    {
+      "case_id": "m31-storage-plate-cabinet",
+      "split": "train",
+      "category": "storage_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "STORE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 2192.673,
+      "total_latency_ms": 2193.65,
+      "retries": 1,
+      "usage": {
+        "prompt_tokens": 2525,
+        "completion_tokens": 355,
+        "total_tokens": 2880
+      }
+    },
+    {
+      "case_id": "m31-tool-apple-knife",
+      "split": "train",
+      "category": "tool_use",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CUT_WITH"
+      ],
+      "actual_relation": "CUT_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1205.229,
+      "total_latency_ms": 1206.129,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 156,
+        "total_tokens": 1266
+      }
+    },
+    {
+      "case_id": "m31-tool-orange-juicer",
+      "split": "train",
+      "category": "tool_use",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "JUICE_WITH"
+      ],
+      "actual_relation": "JUICE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1097.569,
+      "total_latency_ms": 1099.355,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1114,
+        "completion_tokens": 197,
+        "total_tokens": 1311
+      }
+    },
+    {
+      "case_id": "m31-tool-screw-driver",
+      "split": "train",
+      "category": "tool_use",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FASTEN_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "FASTEN_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1017.703,
+      "total_latency_ms": 1018.446,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 174,
+        "total_tokens": 1284
+      }
+    },
+    {
+      "case_id": "m31-tool-nail-hammer",
+      "split": "train",
+      "category": "tool_use",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FASTEN_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1198.264,
+      "total_latency_ms": 1199.196,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1108,
+        "completion_tokens": 168,
+        "total_tokens": 1276
+      }
+    },
+    {
+      "case_id": "m31-kitchen-cup-tap",
+      "split": "train",
+      "category": "kitchen_and_food",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FILL_FROM",
+        "RINSE_WITH"
+      ],
+      "actual_relation": "FILL_FROM",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1093.981,
+      "total_latency_ms": 1094.647,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 205,
+        "total_tokens": 1315
+      }
+    },
+    {
+      "case_id": "m31-kitchen-plate-sponge",
+      "split": "train",
+      "category": "kitchen_and_food",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "RINSE_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "WASH_WITH",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1015.607,
+      "total_latency_ms": 1016.291,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1108,
+        "completion_tokens": 162,
+        "total_tokens": 1270
+      }
+    },
+    {
+      "case_id": "m31-kitchen-bottle-tap",
+      "split": "train",
+      "category": "kitchen_and_food",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FILL_FROM",
+        "RINSE_WITH"
+      ],
+      "actual_relation": "FILL_FROM",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1159.212,
+      "total_latency_ms": 1160.082,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1114,
+        "completion_tokens": 204,
+        "total_tokens": 1318
+      }
+    },
+    {
+      "case_id": "m31-kitchen-kettle-cup",
+      "split": "train",
+      "category": "kitchen_and_food",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "POUR_INTO",
+        "FILL_FROM"
+      ],
+      "actual_relation": "POUR_INTO",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 845.266,
+      "total_latency_ms": 846.331,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 177,
+        "total_tokens": 1287
+      }
+    },
+    {
+      "case_id": "m31-electronics-phone-charger",
+      "split": "train",
+      "category": "charging_and_electronics",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CHARGE_WITH"
+      ],
+      "actual_relation": "CHARGE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1228.034,
+      "total_latency_ms": 1228.868,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 192,
+        "total_tokens": 1304
+      }
+    },
+    {
+      "case_id": "m31-electronics-laptop-adapter",
+      "split": "train",
+      "category": "charging_and_electronics",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CHARGE_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "CHARGE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1344.077,
+      "total_latency_ms": 1344.816,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 173,
+        "total_tokens": 1285
+      }
+    },
+    {
+      "case_id": "m31-electronics-camera-battery",
+      "split": "train",
+      "category": "charging_and_electronics",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CHARGE_WITH"
+      ],
+      "actual_relation": "CHARGE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1168.575,
+      "total_latency_ms": 1169.634,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1114,
+        "completion_tokens": 196,
+        "total_tokens": 1310
+      }
+    },
+    {
+      "case_id": "m31-electronics-watch-dock",
+      "split": "train",
+      "category": "charging_and_electronics",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CHARGE_WITH"
+      ],
+      "actual_relation": "CHARGE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1081.935,
+      "total_latency_ms": 1082.887,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 193,
+        "total_tokens": 1303
+      }
+    },
+    {
+      "case_id": "m31-cleaning-clothes-washer",
+      "split": "train",
+      "category": "cleaning_and_care",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "WASH_WITH"
+      ],
+      "actual_relation": "WASH_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 2642.955,
+      "total_latency_ms": 2644.436,
+      "retries": 1,
+      "usage": {
+        "prompt_tokens": 2543,
+        "completion_tokens": 383,
+        "total_tokens": 2926
+      }
+    },
+    {
+      "case_id": "m31-cleaning-toothbrush-paste",
+      "split": "train",
+      "category": "cleaning_and_care",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "USE_WITH"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 2504.605,
+      "total_latency_ms": 2506.129,
+      "retries": 1,
+      "usage": {
+        "prompt_tokens": 2531,
+        "completion_tokens": 407,
+        "total_tokens": 2938
+      }
+    },
+    {
+      "case_id": "m31-cleaning-broom-floor",
+      "split": "train",
+      "category": "cleaning_and_care",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CLEAN_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 2353.276,
+      "total_latency_ms": 2354.492,
+      "retries": 1,
+      "usage": {
+        "prompt_tokens": 2482,
+        "completion_tokens": 333,
+        "total_tokens": 2815
+      }
+    },
+    {
+      "case_id": "m31-cleaning-sponge-dish",
+      "split": "train",
+      "category": "cleaning_and_care",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CLEAN_WITH",
+        "RINSE_WITH"
+      ],
+      "actual_relation": "WASH_WITH",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 994.451,
+      "total_latency_ms": 995.773,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1114,
+        "completion_tokens": 170,
+        "total_tokens": 1284
+      }
+    },
+    {
+      "case_id": "m31-place-keys-bowl",
+      "split": "train",
+      "category": "everyday_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1025.504,
+      "total_latency_ms": 1026.641,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 167,
+        "total_tokens": 1277
+      }
+    },
+    {
+      "case_id": "m31-place-umbrella-stand",
+      "split": "train",
+      "category": "everyday_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "STORE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 893.579,
+      "total_latency_ms": 894.626,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1114,
+        "completion_tokens": 173,
+        "total_tokens": 1287
+      }
+    },
+    {
+      "case_id": "m31-place-towel-rack",
+      "split": "train",
+      "category": "everyday_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_ON",
+        "STORE_ON"
+      ],
+      "actual_relation": "PLACE_ON",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1212.952,
+      "total_latency_ms": 1213.91,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1114,
+        "completion_tokens": 169,
+        "total_tokens": 1283
+      }
+    },
+    {
+      "case_id": "m31-place-documents-tray",
+      "split": "train",
+      "category": "everyday_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1081.809,
+      "total_latency_ms": 1082.647,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1114,
+        "completion_tokens": 169,
+        "total_tokens": 1283
+      }
+    },
+    {
+      "case_id": "m31-openworld-doorstop-door",
+      "split": "train",
+      "category": "open_world_ordinary_nouns",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "USE_WITH",
+        "CUSTOM"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": false,
+      "high_level_step_relation_aligned": false,
+      "api_latency_ms": 1187.902,
+      "total_latency_ms": 1188.991,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 175,
+        "total_tokens": 1285
+      }
+    },
+    {
+      "case_id": "m31-openworld-hygrometer-wall",
+      "split": "train",
+      "category": "open_world_ordinary_nouns",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_ON",
+        "STORE_ON"
+      ],
+      "actual_relation": "PLACE_ON",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1362.61,
+      "total_latency_ms": 1363.679,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 174,
+        "total_tokens": 1286
+      }
+    },
+    {
+      "case_id": "m31-openworld-cable-clip",
+      "split": "train",
+      "category": "open_world_ordinary_nouns",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FASTEN_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "FASTEN_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": false,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1279.47,
+      "total_latency_ms": 1280.789,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1114,
+        "completion_tokens": 174,
+        "total_tokens": 1288
+      }
+    },
+    {
+      "case_id": "m31-reverse-charger-phone",
+      "split": "train",
+      "category": "reversed_input_order",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CHARGE_WITH"
+      ],
+      "actual_relation": "CHARGE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1170.77,
+      "total_latency_ms": 1171.832,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 196,
+        "total_tokens": 1308
+      }
+    },
+    {
+      "case_id": "m31-reverse-knife-apple",
+      "split": "train",
+      "category": "reversed_input_order",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CUT_WITH"
+      ],
+      "actual_relation": "CUT_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1158.733,
+      "total_latency_ms": 1159.703,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 184,
+        "total_tokens": 1294
+      }
+    },
+    {
+      "case_id": "m31-reverse-juicer-orange",
+      "split": "train",
+      "category": "reversed_input_order",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "JUICE_WITH"
+      ],
+      "actual_relation": "JUICE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1451.61,
+      "total_latency_ms": 1452.981,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1114,
+        "completion_tokens": 198,
+        "total_tokens": 1312
+      }
+    },
+    {
+      "case_id": "m31-facts-red-apple",
+      "split": "train",
+      "category": "explicit_color_and_state",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CUT_WITH"
+      ],
+      "actual_relation": "CUT_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": true,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1139.982,
+      "total_latency_ms": 1141.733,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1111,
+        "completion_tokens": 169,
+        "total_tokens": 1280
+      }
+    },
+    {
+      "case_id": "m31-facts-blue-cup",
+      "split": "train",
+      "category": "explicit_color_and_state",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FILL_FROM",
+        "RINSE_WITH"
+      ],
+      "actual_relation": "FILL_FROM",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": true,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 979.841,
+      "total_latency_ms": 981.726,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1111,
+        "completion_tokens": 197,
+        "total_tokens": 1308
+      }
+    },
+    {
+      "case_id": "m31-facts-white-plate",
+      "split": "train",
+      "category": "explicit_color_and_state",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "STORE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": true,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 2691.96,
+      "total_latency_ms": 2693.544,
+      "retries": 1,
+      "usage": {
+        "prompt_tokens": 2528,
+        "completion_tokens": 354,
+        "total_tokens": 2882
+      }
+    },
+    {
+      "case_id": "m31-facts-green-screw",
+      "split": "train",
+      "category": "explicit_color_and_state",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FASTEN_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "FASTEN_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": true,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1037.149,
+      "total_latency_ms": 1038.409,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1111,
+        "completion_tokens": 191,
+        "total_tokens": 1302
+      }
+    },
+    {
+      "case_id": "m31-ambiguous-cup-plate",
+      "split": "train",
+      "category": "ambiguous_pairs",
+      "expected_status": "ambiguous",
+      "actual_status": "ambiguous",
+      "status_correct": true,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 946.242,
+      "total_latency_ms": 947.137,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1108,
+        "completion_tokens": 136,
+        "total_tokens": 1244
+      }
+    },
+    {
+      "case_id": "m31-ambiguous-phone-box",
+      "split": "train",
+      "category": "ambiguous_pairs",
+      "expected_status": "ambiguous",
+      "actual_status": "ambiguous",
+      "status_correct": true,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 1113.827,
+      "total_latency_ms": 1114.719,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1108,
+        "completion_tokens": 138,
+        "total_tokens": 1246
+      }
+    },
+    {
+      "case_id": "m31-ambiguous-key-lock",
+      "split": "train",
+      "category": "ambiguous_pairs",
+      "expected_status": "ambiguous",
+      "actual_status": "executable",
+      "status_correct": false,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 985.852,
+      "total_latency_ms": 986.898,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1108,
+        "completion_tokens": 154,
+        "total_tokens": 1262
+      }
+    },
+    {
+      "case_id": "m31-invalid-screwdriver-soup",
+      "split": "train",
+      "category": "incompatible_task_traps",
+      "expected_status": "invalid",
+      "actual_status": "invalid",
+      "status_correct": true,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 900.71,
+      "total_latency_ms": 901.688,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1122,
+        "completion_tokens": 95,
+        "total_tokens": 1217
+      }
+    },
+    {
+      "case_id": "m31-invalid-book-battery",
+      "split": "train",
+      "category": "incompatible_task_traps",
+      "expected_status": "invalid",
+      "actual_status": "invalid",
+      "status_correct": true,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 975.51,
+      "total_latency_ms": 976.346,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1117,
+        "completion_tokens": 95,
+        "total_tokens": 1212
+      }
+    },
+    {
+      "case_id": "m31-invalid-apple-pillow",
+      "split": "train",
+      "category": "incompatible_task_traps",
+      "expected_status": "invalid",
+      "actual_status": "invalid",
+      "status_correct": true,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 734.862,
+      "total_latency_ms": 735.841,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1116,
+        "completion_tokens": 95,
+        "total_tokens": 1211
+      }
+    },
+    {
+      "case_id": "m31-invalid-water-song",
+      "split": "train",
+      "category": "incompatible_task_traps",
+      "expected_status": "invalid",
+      "actual_status": "invalid",
+      "status_correct": true,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 896.749,
+      "total_latency_ms": 897.706,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1114,
+        "completion_tokens": 95,
+        "total_tokens": 1209
+      }
+    },
+    {
+      "case_id": "m31-context-cutting-board",
+      "split": "train",
+      "category": "context_and_reference_control",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CUT_WITH"
+      ],
+      "actual_relation": "CUT_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1274.576,
+      "total_latency_ms": 1275.583,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1140,
+        "completion_tokens": 236,
+        "total_tokens": 1376
+      }
+    },
+    {
+      "case_id": "m31-context-charger-table",
+      "split": "train",
+      "category": "context_and_reference_control",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CHARGE_WITH"
+      ],
+      "actual_relation": "CHARGE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1499.895,
+      "total_latency_ms": 1501.095,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1142,
+        "completion_tokens": 251,
+        "total_tokens": 1393
+      }
+    },
+    {
+      "case_id": "m31-context-book-shelf",
+      "split": "train",
+      "category": "context_and_reference_control",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_ON",
+        "STORE_ON"
+      ],
+      "actual_relation": "PLACE_ON",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1147.311,
+      "total_latency_ms": 1148.454,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1136,
+        "completion_tokens": 168,
+        "total_tokens": 1304
+      }
+    },
+    {
+      "case_id": "m31-context-clothes-basket",
+      "split": "train",
+      "category": "context_and_reference_control",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1236.836,
+      "total_latency_ms": 1237.838,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1140,
+        "completion_tokens": 210,
+        "total_tokens": 1350
+      }
+    },
+    {
+      "case_id": "m31-storage-book-shelf",
+      "split": "dev",
+      "category": "storage_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_ON",
+        "STORE_ON"
+      ],
+      "actual_relation": "PLACE_ON",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1151.272,
+      "total_latency_ms": 1158.179,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1108,
+        "completion_tokens": 165,
+        "total_tokens": 1273
+      }
+    },
+    {
+      "case_id": "m31-tool-paintbrush-canvas",
+      "split": "dev",
+      "category": "tool_use",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "USE_WITH",
+        "CUSTOM"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1073.595,
+      "total_latency_ms": 1074.456,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 174,
+        "total_tokens": 1286
+      }
+    },
+    {
+      "case_id": "m31-kitchen-carrot-peeler",
+      "split": "dev",
+      "category": "kitchen_and_food",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "USE_WITH",
+        "CUSTOM"
+      ],
+      "actual_relation": "CUT_WITH",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": false,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 953.081,
+      "total_latency_ms": 953.765,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 182,
+        "total_tokens": 1294
+      }
+    },
+    {
+      "case_id": "m31-electronics-tablet-stand",
+      "split": "dev",
+      "category": "charging_and_electronics",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_ON",
+        "STORE_ON"
+      ],
+      "actual_relation": "PLACE_ON",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1264.66,
+      "total_latency_ms": 1265.521,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 167,
+        "total_tokens": 1277
+      }
+    },
+    {
+      "case_id": "m31-cleaning-cloth-window",
+      "split": "dev",
+      "category": "cleaning_and_care",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CLEAN_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "WASH_WITH",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": false,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 892.714,
+      "total_latency_ms": 893.617,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 166,
+        "total_tokens": 1276
+      }
+    },
+    {
+      "case_id": "m31-place-toy-bin",
+      "split": "dev",
+      "category": "everyday_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1273.424,
+      "total_latency_ms": 1274.468,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 168,
+        "total_tokens": 1280
+      }
+    },
+    {
+      "case_id": "m31-openworld-hex-key-kit",
+      "split": "dev",
+      "category": "open_world_ordinary_nouns",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "USE_WITH",
+        "FASTEN_WITH"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1182.263,
+      "total_latency_ms": 1183.846,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1116,
+        "completion_tokens": 183,
+        "total_tokens": 1299
+      }
+    },
+    {
+      "case_id": "m31-reverse-driver-screw",
+      "split": "dev",
+      "category": "reversed_input_order",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FASTEN_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": false,
+      "api_latency_ms": 1278.155,
+      "total_latency_ms": 1279.147,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 166,
+        "total_tokens": 1276
+      }
+    },
+    {
+      "case_id": "m31-ambiguous-bag-coat",
+      "split": "dev",
+      "category": "ambiguous_pairs",
+      "expected_status": "ambiguous",
+      "actual_status": "executable",
+      "status_correct": false,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1004.32,
+      "total_latency_ms": 1005.155,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1108,
+        "completion_tokens": 165,
+        "total_tokens": 1273
+      }
+    },
+    {
+      "case_id": "m31-context-mug-tap",
+      "split": "dev",
+      "category": "context_and_reference_control",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FILL_FROM",
+        "RINSE_WITH"
+      ],
+      "actual_relation": "FILL_FROM",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1362.178,
+      "total_latency_ms": 1363.344,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1138,
+        "completion_tokens": 269,
+        "total_tokens": 1407
+      }
+    },
+    {
+      "case_id": "m31-storage-pen-holder",
+      "split": "heldout",
+      "category": "storage_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1208.891,
+      "total_latency_ms": 1215.771,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 167,
+        "total_tokens": 1277
+      }
+    },
+    {
+      "case_id": "m31-storage-document-folder",
+      "split": "heldout",
+      "category": "storage_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1011.54,
+      "total_latency_ms": 1013.148,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 165,
+        "total_tokens": 1275
+      }
+    },
+    {
+      "case_id": "m31-tool-scissors-paper",
+      "split": "heldout",
+      "category": "tool_use",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CUT_WITH"
+      ],
+      "actual_relation": "CUT_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": false,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1097.635,
+      "total_latency_ms": 1098.522,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 163,
+        "total_tokens": 1273
+      }
+    },
+    {
+      "case_id": "m31-tool-wrench-bolt",
+      "split": "heldout",
+      "category": "tool_use",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FASTEN_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1070.932,
+      "total_latency_ms": 1071.59,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 168,
+        "total_tokens": 1278
+      }
+    },
+    {
+      "case_id": "m31-kitchen-teabag-cup",
+      "split": "heldout",
+      "category": "kitchen_and_food",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "USE_WITH",
+        "POUR_INTO"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1345.815,
+      "total_latency_ms": 1346.617,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 167,
+        "total_tokens": 1277
+      }
+    },
+    {
+      "case_id": "m31-kitchen-spoon-soup",
+      "split": "heldout",
+      "category": "kitchen_and_food",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "USE_WITH"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1348.424,
+      "total_latency_ms": 1349.285,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 170,
+        "total_tokens": 1282
+      }
+    },
+    {
+      "case_id": "m31-electronics-cable-phone",
+      "split": "heldout",
+      "category": "charging_and_electronics",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CHARGE_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "CHARGE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 2264.872,
+      "total_latency_ms": 2266.27,
+      "retries": 1,
+      "usage": {
+        "prompt_tokens": 2511,
+        "completion_tokens": 390,
+        "total_tokens": 2901
+      }
+    },
+    {
+      "case_id": "m31-electronics-headphones-case",
+      "split": "heldout",
+      "category": "charging_and_electronics",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "STORE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1260.643,
+      "total_latency_ms": 1261.533,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1114,
+        "completion_tokens": 166,
+        "total_tokens": 1280
+      }
+    },
+    {
+      "case_id": "m31-cleaning-brush-hair",
+      "split": "heldout",
+      "category": "cleaning_and_care",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "USE_WITH"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 2130.0,
+      "total_latency_ms": 2131.193,
+      "retries": 1,
+      "usage": {
+        "prompt_tokens": 2481,
+        "completion_tokens": 376,
+        "total_tokens": 2857
+      }
+    },
+    {
+      "case_id": "m31-cleaning-bottle-bin",
+      "split": "heldout",
+      "category": "cleaning_and_care",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "DISCARD_IN",
+        "PLACE_IN"
+      ],
+      "actual_relation": "DISCARD_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": false,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 988.703,
+      "total_latency_ms": 989.578,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1127,
+        "completion_tokens": 173,
+        "total_tokens": 1300
+      }
+    },
+    {
+      "case_id": "m31-place-groceries-tote",
+      "split": "heldout",
+      "category": "everyday_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1009.857,
+      "total_latency_ms": 1010.888,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1116,
+        "completion_tokens": 173,
+        "total_tokens": 1289
+      }
+    },
+    {
+      "case_id": "m31-place-coins-wallet",
+      "split": "heldout",
+      "category": "everyday_placement",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1125.911,
+      "total_latency_ms": 1126.868,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 167,
+        "total_tokens": 1277
+      }
+    },
+    {
+      "case_id": "m31-openworld-straw-cup",
+      "split": "heldout",
+      "category": "open_world_ordinary_nouns",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "USE_WITH",
+        "PLACE_IN"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 889.705,
+      "total_latency_ms": 890.519,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 171,
+        "total_tokens": 1283
+      }
+    },
+    {
+      "case_id": "m31-openworld-leash-hook",
+      "split": "heldout",
+      "category": "open_world_ordinary_nouns",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_ON",
+        "STORE_ON"
+      ],
+      "actual_relation": "STORE_ON",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": false,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 973.663,
+      "total_latency_ms": 974.778,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 173,
+        "total_tokens": 1285
+      }
+    },
+    {
+      "case_id": "m31-reverse-shelf-book",
+      "split": "heldout",
+      "category": "reversed_input_order",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_ON",
+        "STORE_ON"
+      ],
+      "actual_relation": "PLACE_ON",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 951.35,
+      "total_latency_ms": 952.614,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1108,
+        "completion_tokens": 169,
+        "total_tokens": 1277
+      }
+    },
+    {
+      "case_id": "m31-reverse-tap-cup",
+      "split": "heldout",
+      "category": "reversed_input_order",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FILL_FROM",
+        "RINSE_WITH"
+      ],
+      "actual_relation": "FILL_FROM",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1023.068,
+      "total_latency_ms": 1023.924,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 201,
+        "total_tokens": 1311
+      }
+    },
+    {
+      "case_id": "m31-facts-closed-drawer",
+      "split": "heldout",
+      "category": "explicit_color_and_state",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "PLACE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": true,
+      "explicit_state_safe_outcome": true,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1371.745,
+      "total_latency_ms": 1372.625,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1125,
+        "completion_tokens": 169,
+        "total_tokens": 1294
+      }
+    },
+    {
+      "case_id": "m31-facts-unknown-color",
+      "split": "heldout",
+      "category": "explicit_color_and_state",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "CUT_WITH"
+      ],
+      "actual_relation": "CUT_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1203.669,
+      "total_latency_ms": 1204.607,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 166,
+        "total_tokens": 1276
+      }
+    },
+    {
+      "case_id": "m31-ambiguous-towel-rack",
+      "split": "heldout",
+      "category": "ambiguous_pairs",
+      "expected_status": "ambiguous",
+      "actual_status": "executable",
+      "status_correct": false,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "PLACE_ON",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1303.17,
+      "total_latency_ms": 1303.905,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1110,
+        "completion_tokens": 163,
+        "total_tokens": 1273
+      }
+    },
+    {
+      "case_id": "m31-ambiguous-screw-drill",
+      "split": "heldout",
+      "category": "ambiguous_pairs",
+      "expected_status": "ambiguous",
+      "actual_status": "executable",
+      "status_correct": false,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": false,
+      "api_latency_ms": 1179.711,
+      "total_latency_ms": 1180.491,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1112,
+        "completion_tokens": 187,
+        "total_tokens": 1299
+      }
+    },
+    {
+      "case_id": "m31-invalid-phone-cardboard",
+      "split": "heldout",
+      "category": "incompatible_task_traps",
+      "expected_status": "invalid",
+      "actual_status": "invalid",
+      "status_correct": true,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 1038.488,
+      "total_latency_ms": 1039.575,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1119,
+        "completion_tokens": 95,
+        "total_tokens": 1214
+      }
+    },
+    {
+      "case_id": "m31-invalid-drill-drink",
+      "split": "heldout",
+      "category": "incompatible_task_traps",
+      "expected_status": "invalid",
+      "actual_status": "invalid",
+      "status_correct": true,
+      "expected_relation": [
+        "NONE"
+      ],
+      "actual_relation": "NONE",
+      "relation_correct": false,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": false,
+      "bilingual_relation_cues_present": null,
+      "high_level_step_relation_aligned": null,
+      "api_latency_ms": 748.255,
+      "total_latency_ms": 749.255,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1116,
+        "completion_tokens": 95,
+        "total_tokens": 1211
+      }
+    },
+    {
+      "case_id": "m31-context-toolbox-screw",
+      "split": "heldout",
+      "category": "context_and_reference_control",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "FASTEN_WITH",
+        "USE_WITH"
+      ],
+      "actual_relation": "USE_WITH",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 1167.969,
+      "total_latency_ms": 1168.848,
+      "retries": 0,
+      "usage": {
+        "prompt_tokens": 1142,
+        "completion_tokens": 220,
+        "total_tokens": 1362
+      }
+    },
+    {
+      "case_id": "m31-context-plate-cabinet",
+      "split": "heldout",
+      "category": "context_and_reference_control",
+      "expected_status": "executable",
+      "actual_status": "executable",
+      "status_correct": true,
+      "expected_relation": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_relation": "STORE_IN",
+      "relation_correct": true,
+      "structural_references_correct": true,
+      "hallucinated_reference_errors": 0,
+      "hallucinated_forbidden_mentions": [],
+      "explicit_color_fidelity": null,
+      "unobserved_color_claims": [],
+      "unobserved_state_claims": [],
+      "explicit_state_acknowledgement": null,
+      "explicit_state_safe_outcome": null,
+      "bilingual_instruction_present": true,
+      "bilingual_relation_cues_present": true,
+      "high_level_step_relation_aligned": true,
+      "api_latency_ms": 2294.708,
+      "total_latency_ms": 2296.093,
+      "retries": 1,
+      "usage": {
+        "prompt_tokens": 2608,
+        "completion_tokens": 380,
+        "total_tokens": 2988
+      }
+    }
+  ]
+}

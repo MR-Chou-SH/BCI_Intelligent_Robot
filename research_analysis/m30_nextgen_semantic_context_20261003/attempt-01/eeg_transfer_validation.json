@@ -1,0 +1,82 @@
+{
+  "recordType": "m30_eeg_transfer_validation",
+  "status": "PASS",
+  "benchmarkSha256": "899aae6febb96cb6a63f0589fd7ad8e5bd0b317e97ac81de23c71ff062d237b0",
+  "m30EngineVersion": "m30-context-precondition-guard-v1",
+  "m25ManifestSha256Before": "0bc5b2032df564342562d3af085a174d81f707db42dfc161c14db4715d5fec5a",
+  "m25ManifestSha256After": "0bc5b2032df564342562d3af085a174d81f707db42dfc161c14db4715d5fec5a",
+  "m25FrozenInputFingerprintsUnchanged": true,
+  "m25Cohort": {
+    "checks": {
+      "formalN88": true,
+      "sessionCountsA30B129B229": true,
+      "b1Trial011Excluded": true,
+      "b2Trial023Excluded": true,
+      "sourceRate250HzProvenance": true,
+      "operatingPointHashMatchesSidecar": true,
+      "rawWaveformNotRead": true
+    },
+    "formalN": 88,
+    "sessionCounts": {
+      "A": 30,
+      "B1": 29,
+      "B2": 29
+    }
+  },
+  "m25BaselineReproductions": 264,
+  "m25BaselineExpected": 264,
+  "primarySeedCount": 100,
+  "timingSensitivitySeedCount": 30,
+  "coverageOperatingPoints": [
+    "C65",
+    "C85",
+    "C100"
+  ],
+  "lambdaCtxValues": [
+    0.0,
+    0.5,
+    1.0,
+    1.5,
+    2.0
+  ],
+  "eegOperatingPoints": [
+    "FAST",
+    "MEDIUM",
+    "CONSERVATIVE"
+  ],
+  "primaryConditionCount": 45,
+  "primaryTrialRowCount": 396000,
+  "timingTrialRowCount": 71280,
+  "noDelayViolationCount": 0,
+  "wrongEarlyStopCount": 246,
+  "heldOutSemanticGateStats": {
+    "C65": {
+      "heldOutDecisionCount": 46,
+      "heldOutGateActiveCount": 32,
+      "heldOutGateActiveRateAll": 0.6956521739130435,
+      "heldOutEligibleInformativeCount": 34,
+      "heldOutGateActiveRateEligible": 0.7058823529411765,
+      "heldOutActivePrecision": 0.6875
+    },
+    "C85": {
+      "heldOutDecisionCount": 46,
+      "heldOutGateActiveCount": 40,
+      "heldOutGateActiveRateAll": 0.8695652173913043,
+      "heldOutEligibleInformativeCount": 34,
+      "heldOutGateActiveRateEligible": 0.9411764705882353,
+      "heldOutActivePrecision": 0.6
+    },
+    "C100": {
+      "heldOutDecisionCount": 46,
+      "heldOutGateActiveCount": 41,
+      "heldOutGateActiveRateAll": 0.8913043478260869,
+      "heldOutEligibleInformativeCount": 34,
+      "heldOutGateActiveRateEligible": 0.9705882352941176,
+      "heldOutActivePrecision": 0.6097560975609756
+    }
+  },
+  "evidenceLabel": "NEXTGEN_SEMANTIC_CONTEXT_QUALITY_TRANSFER_SIMULATION",
+  "prospectiveCausalEvidence": false,
+  "allPrimaryConditionsPresent": true,
+  "m28ComparisonRows": 9
+}

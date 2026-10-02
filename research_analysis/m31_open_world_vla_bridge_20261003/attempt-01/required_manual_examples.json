@@ -1,0 +1,743 @@
+{
+  "examples": [
+    {
+      "acceptable_relations": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "STORE_IN",
+        "custom_relation": null,
+        "source_object": "药盒",
+        "target_or_tool_object": "收纳盒",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_0"
+          },
+          {
+            "action": "PLACE",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "把药盒放进收纳盒里。",
+        "vla_instruction_en": "Put the medicine box into the storage box.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1402.698,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1112,
+          "completion_tokens": 173,
+          "total_tokens": 1285
+        }
+      },
+      "case_id": "m31-storage-medicine",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "药盒",
+          "收纳盒"
+        ],
+        "task_context": null
+      },
+      "label": "药盒+收纳盒"
+    },
+    {
+      "acceptable_relations": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "STORE_IN",
+        "custom_relation": null,
+        "source_object": "小药盒",
+        "target_or_tool_object": "收纳盒(关闭状态)",
+        "ordered_high_level_steps": [
+          {
+            "action": "OPEN",
+            "object_id": "selected_1"
+          },
+          {
+            "action": "PICK",
+            "object_id": "selected_0"
+          },
+          {
+            "action": "PLACE",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          },
+          {
+            "action": "CLOSE",
+            "object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "打开收纳盒，把小药盒放进去，然后关上收纳盒。",
+        "vla_instruction_en": "Open the storage box, put the small pill box inside, and then close the storage box.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1139.011,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1132,
+          "completion_tokens": 210,
+          "total_tokens": 1342
+        }
+      },
+      "case_id": "m31-storage-closed-box",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "小药盒",
+          "收纳盒（关闭状态）"
+        ],
+        "task_context": null
+      },
+      "label": "小药盒+收纳盒（关闭状态）"
+    },
+    {
+      "acceptable_relations": [
+        "CHARGE_WITH"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "CHARGE_WITH",
+        "custom_relation": null,
+        "source_object": "手机",
+        "target_or_tool_object": "无线充电座",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_0"
+          },
+          {
+            "action": "PLACE_ON",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          },
+          {
+            "action": "CHARGE",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "把手机放到无线充电座上充电。",
+        "vla_instruction_en": "Place the phone on the wireless charging pad to charge it.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1228.034,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1112,
+          "completion_tokens": 192,
+          "total_tokens": 1304
+        }
+      },
+      "case_id": "m31-electronics-phone-charger",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "手机",
+          "无线充电座"
+        ],
+        "task_context": null
+      },
+      "label": "手机+无线充电座"
+    },
+    {
+      "acceptable_relations": [
+        "CUT_WITH"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "CUT_WITH",
+        "custom_relation": null,
+        "source_object": "苹果",
+        "target_or_tool_object": "水果刀",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_1"
+          },
+          {
+            "action": "CUT",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "用水果刀切苹果。",
+        "vla_instruction_en": "Cut the apple with the fruit knife.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1205.229,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1110,
+          "completion_tokens": 156,
+          "total_tokens": 1266
+        }
+      },
+      "case_id": "m31-tool-apple-knife",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "苹果",
+          "水果刀"
+        ],
+        "task_context": null
+      },
+      "label": "苹果+水果刀"
+    },
+    {
+      "acceptable_relations": [
+        "CUT_WITH"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "CUT_WITH",
+        "custom_relation": null,
+        "source_object": "红色苹果",
+        "target_or_tool_object": "水果刀",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_1"
+          },
+          {
+            "action": "CUT",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "用水果刀切红色苹果。",
+        "vla_instruction_en": "Use the fruit knife to cut the red apple.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1139.982,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1111,
+          "completion_tokens": 169,
+          "total_tokens": 1280
+        }
+      },
+      "case_id": "m31-facts-red-apple",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "红色苹果",
+          "水果刀"
+        ],
+        "task_context": null
+      },
+      "label": "红色苹果+水果刀"
+    },
+    {
+      "acceptable_relations": [
+        "JUICE_WITH"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "JUICE_WITH",
+        "custom_relation": null,
+        "source_object": "橙子",
+        "target_or_tool_object": "榨汁机",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_0"
+          },
+          {
+            "action": "PLACE",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          },
+          {
+            "action": "JUICE",
+            "object_id": "selected_1",
+            "target_object_id": "selected_0"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "用榨汁机榨橙子。",
+        "vla_instruction_en": "Juice the orange with the juicer.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1097.569,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1114,
+          "completion_tokens": 197,
+          "total_tokens": 1311
+        }
+      },
+      "case_id": "m31-tool-orange-juicer",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "橙子",
+          "榨汁机"
+        ],
+        "task_context": null
+      },
+      "label": "橙子+榨汁机"
+    },
+    {
+      "acceptable_relations": [
+        "PLACE_ON",
+        "STORE_ON"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "PLACE_ON",
+        "custom_relation": null,
+        "source_object": "书",
+        "target_or_tool_object": "书架",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_0"
+          },
+          {
+            "action": "PLACE",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "把书放到书架上。",
+        "vla_instruction_en": "Place the book on the bookshelf.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1151.272,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1108,
+          "completion_tokens": 165,
+          "total_tokens": 1273
+        }
+      },
+      "case_id": "m31-storage-book-shelf",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "书",
+          "书架"
+        ],
+        "task_context": null
+      },
+      "label": "书+书架"
+    },
+    {
+      "acceptable_relations": [
+        "FILL_FROM",
+        "RINSE_WITH"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "FILL_FROM",
+        "custom_relation": null,
+        "source_object": "水龙头",
+        "target_or_tool_object": "杯子",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_0"
+          },
+          {
+            "action": "PLACE",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          },
+          {
+            "action": "FILL_FROM",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "把杯子放到水龙头下接水。",
+        "vla_instruction_en": "Place the cup under the faucet to fill it with water.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1093.981,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1110,
+          "completion_tokens": 205,
+          "total_tokens": 1315
+        }
+      },
+      "case_id": "m31-kitchen-cup-tap",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "杯子",
+          "水龙头"
+        ],
+        "task_context": null
+      },
+      "label": "杯子+水龙头"
+    },
+    {
+      "acceptable_relations": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "PLACE_IN",
+        "custom_relation": null,
+        "source_object": "衣服",
+        "target_or_tool_object": "洗衣篮",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_0"
+          },
+          {
+            "action": "PLACE",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "把衣服放进洗衣篮。",
+        "vla_instruction_en": "Put the clothes into the laundry basket.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 866.44,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1110,
+          "completion_tokens": 161,
+          "total_tokens": 1271
+        }
+      },
+      "case_id": "m31-storage-clothes-basket",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "衣服",
+          "洗衣篮"
+        ],
+        "task_context": null
+      },
+      "label": "衣服+洗衣篮"
+    },
+    {
+      "acceptable_relations": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "STORE_IN",
+        "custom_relation": null,
+        "source_object": "盘子",
+        "target_or_tool_object": "橱柜",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_0"
+          },
+          {
+            "action": "PLACE",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "把盘子放进橱柜里。",
+        "vla_instruction_en": "Put the plate into the cabinet.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 2192.673,
+        "retries": 1,
+        "usage": {
+          "prompt_tokens": 2525,
+          "completion_tokens": 355,
+          "total_tokens": 2880
+        }
+      },
+      "case_id": "m31-storage-plate-cabinet",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "盘子",
+          "橱柜"
+        ],
+        "task_context": null
+      },
+      "label": "盘子+橱柜"
+    },
+    {
+      "acceptable_relations": [
+        "PLACE_IN",
+        "STORE_IN"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "PLACE_IN",
+        "custom_relation": null,
+        "source_object": "笔",
+        "target_or_tool_object": "笔筒",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_0"
+          },
+          {
+            "action": "PLACE",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "把笔放进笔筒里。",
+        "vla_instruction_en": "Put the pen into the pen holder.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1208.891,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1110,
+          "completion_tokens": 167,
+          "total_tokens": 1277
+        }
+      },
+      "case_id": "m31-storage-pen-holder",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "笔",
+          "笔筒"
+        ],
+        "task_context": null
+      },
+      "label": "笔+笔筒"
+    },
+    {
+      "acceptable_relations": [
+        "FASTEN_WITH",
+        "USE_WITH"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "FASTEN_WITH",
+        "custom_relation": null,
+        "source_object": "螺丝",
+        "target_or_tool_object": "螺丝刀",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_1"
+          },
+          {
+            "action": "FASTEN",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "用螺丝刀拧螺丝。",
+        "vla_instruction_en": "Use the screwdriver to fasten the screw.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1017.703,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1110,
+          "completion_tokens": 174,
+          "total_tokens": 1284
+        }
+      },
+      "case_id": "m31-tool-screw-driver",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "螺丝",
+          "螺丝刀"
+        ],
+        "task_context": null
+      },
+      "label": "螺丝+螺丝刀"
+    },
+    {
+      "acceptable_relations": [
+        "CUT_WITH"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "CUT_WITH",
+        "custom_relation": null,
+        "source_object": "苹果",
+        "target_or_tool_object": "水果刀",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_0"
+          },
+          {
+            "action": "PICK",
+            "object_id": "selected_1"
+          },
+          {
+            "action": "CUT",
+            "object_id": "selected_1",
+            "target_object_id": "selected_0"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "用水果刀切苹果。",
+        "vla_instruction_en": "Use the fruit knife to cut the apple.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1158.733,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1110,
+          "completion_tokens": 184,
+          "total_tokens": 1294
+        }
+      },
+      "case_id": "m31-reverse-knife-apple",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "水果刀",
+          "苹果"
+        ],
+        "task_context": null
+      },
+      "label": "水果刀+苹果"
+    },
+    {
+      "acceptable_relations": [
+        "NONE"
+      ],
+      "actual_result": {
+        "status": "ambiguous",
+        "relation_type": "NONE",
+        "custom_relation": null,
+        "source_object": null,
+        "target_or_tool_object": null,
+        "ordered_high_level_steps": [],
+        "ambiguity_reason": "A phone and a box have several similarly plausible relations (storing the phone in the box, placing it on the box, or unpacking a phone from the box) with no task context to disambiguate.",
+        "vla_instruction_zh": "",
+        "vla_instruction_en": "",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1113.827,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1108,
+          "completion_tokens": 138,
+          "total_tokens": 1246
+        }
+      },
+      "case_id": "m31-ambiguous-phone-box",
+      "expected_status": "ambiguous",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "phone",
+          "box"
+        ],
+        "task_context": null
+      },
+      "label": "phone+box"
+    },
+    {
+      "acceptable_relations": [
+        "NONE"
+      ],
+      "actual_result": {
+        "status": "invalid",
+        "relation_type": "NONE",
+        "custom_relation": null,
+        "source_object": null,
+        "target_or_tool_object": null,
+        "ordered_high_level_steps": [],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "",
+        "vla_instruction_en": "",
+        "dispatch_allowed": false,
+        "api_latency_ms": 975.51,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1117,
+          "completion_tokens": 95,
+          "total_tokens": 1212
+        }
+      },
+      "case_id": "m31-invalid-book-battery",
+      "expected_status": "invalid",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "book",
+          "battery"
+        ],
+        "task_context": "Use the book to charge the battery."
+      },
+      "label": "book+battery"
+    },
+    {
+      "acceptable_relations": [
+        "USE_WITH",
+        "CUSTOM"
+      ],
+      "actual_result": {
+        "status": "executable",
+        "relation_type": "USE_WITH",
+        "custom_relation": null,
+        "source_object": "paintbrush",
+        "target_or_tool_object": "canvas",
+        "ordered_high_level_steps": [
+          {
+            "action": "PICK",
+            "object_id": "selected_0"
+          },
+          {
+            "action": "USE_WITH",
+            "object_id": "selected_0",
+            "target_object_id": "selected_1"
+          }
+        ],
+        "ambiguity_reason": "",
+        "vla_instruction_zh": "用画笔在画布上作画。",
+        "vla_instruction_en": "Use the paintbrush to paint on the canvas.",
+        "dispatch_allowed": false,
+        "api_latency_ms": 1073.595,
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 1112,
+          "completion_tokens": 174,
+          "total_tokens": 1286
+        }
+      },
+      "case_id": "m31-tool-paintbrush-canvas",
+      "expected_status": "executable",
+      "input": {
+        "scene_context_objects": [],
+        "selected_objects": [
+          "paintbrush",
+          "canvas"
+        ],
+        "task_context": null
+      },
+      "label": "paintbrush+canvas"
+    }
+  ],
+  "schema_version": "m31-required-manual-examples-v1",
+  "prompt_version": "m31-open-world-vla-language-v5",
+  "run_label": "prompt-v5"
+}

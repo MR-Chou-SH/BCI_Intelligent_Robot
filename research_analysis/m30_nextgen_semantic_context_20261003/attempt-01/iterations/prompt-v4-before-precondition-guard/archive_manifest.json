@@ -1,0 +1,93 @@
+{
+  "archiveType": "superseded_m30_prompt_v4_results_before_generic_precondition_guard",
+  "benchmarkSha256": "899aae6febb96cb6a63f0589fd7ad8e5bd0b317e97ac81de23c71ff062d237b0",
+  "promptVersion": "m30-sequential-relational-context-v4",
+  "engineVersion": "m30-context-engine-without-precondition-guard",
+  "files": [
+    {
+      "path": "context_latency_summary.json",
+      "sha256": "78fcff726aa0903a97eeeea0836467367b9c1ba95ec3894ae2fe1c10db1baeca",
+      "bytes": 827
+    },
+    {
+      "path": "coverage_operating_points.json",
+      "sha256": "6d92aed23acbb3bf01d316857ca89f5f6e4cce51d56735318bc3d07e2e900cda",
+      "bytes": 1588
+    },
+    {
+      "path": "coverage_precision_summary.csv",
+      "sha256": "e18ac6b391a40c80f6992eb23cc40166ff36416950a2baea6a7151e111db5bd5",
+      "bytes": 3606
+    },
+    {
+      "path": "page_projection_results.csv",
+      "sha256": "305ae84e9237414c81c90402cb7b58000a6ad99c122bc85830de4f86b3e2acc0",
+      "bytes": 87323
+    },
+    {
+      "path": "semantic_context_per_round.csv",
+      "sha256": "1898b9de1c3aeef28ef675826fc25ec0bfd2363db02786d07521611cf122dff3",
+      "bytes": 1007
+    },
+    {
+      "path": "semantic_context_per_scene_family.csv",
+      "sha256": "b4a906ee10fef5d88b394dfb5a2e43d9bacec5f7207b1c5b563f9bf3fe5c20b2",
+      "bytes": 2267
+    },
+    {
+      "path": "semantic_context_repeatability.jsonl",
+      "sha256": "f06fbe118d996a4eea5a9d818a4c50a072a25cf2b6baa22834f0b34e09244003",
+      "bytes": 57390
+    },
+    {
+      "path": "semantic_context_results.jsonl",
+      "sha256": "04869142f3ae8baa308c167413b2607cf48c940c8b0177cf65e31d78ffdc3bb0",
+      "bytes": 403264
+    },
+    {
+      "path": "semantic_context_summary.json",
+      "sha256": "f5678fb8c6c77f8a63d89d8c626442fe5295913cc2622e52e06de08ae6186e6d",
+      "bytes": 3654
+    },
+    {
+      "path": "plots/01_coverage_vs_semantic_precision.svg",
+      "sha256": "73d793d09e55f4d31a4524e551c3d1793894b67d407290a3ed5544a9552b8a0c",
+      "bytes": 1874
+    },
+    {
+      "path": "plots/02_coverage_vs_wrong_active_rate.svg",
+      "sha256": "166de96be8c7580efe0a620f9983c72c97aec21a27a220574eb4cc8b5cefe9bc",
+      "bytes": 1875
+    },
+    {
+      "path": "plots/03_scene_family_accuracy.svg",
+      "sha256": "d257bab1bbee50651308101463225e41dd707329ff26ef38335f528bd7fd67e6",
+      "bytes": 3071
+    },
+    {
+      "path": "plots/04_round_index_context_quality.svg",
+      "sha256": "f76d8db4a510f5b6c1deaac196b66a9e8be04441365575a5a04a35a0823e2f51",
+      "bytes": 2067
+    },
+    {
+      "path": "plots/05_prior_entropy_distribution.svg",
+      "sha256": "62000e008c40bc1c5bdd65c9cfd14634aaf5004b7d821cc5f44797ac19d4e27e",
+      "bytes": 2244
+    },
+    {
+      "path": "plots/06_prior_top_mass_distribution.svg",
+      "sha256": "912d158fc4881ada428ee01d9449d06be9d3061353d7d063dcb164d3bc648682",
+      "bytes": 2249
+    },
+    {
+      "path": "plots/07_page_projection_effect.svg",
+      "sha256": "4de03058e2c08f0ce893332bbb30050312efdd342c9f19a248bc1b4e3b43a645",
+      "bytes": 1878
+    },
+    {
+      "path": "plots/08_context_api_latency.svg",
+      "sha256": "96cd25cda70b03d22eed445330b4c60b3c822f2c9113def3185429ece3b5d3c2",
+      "bytes": 1863
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "recordType": "m30_context_latency_summary",
+  "benchmarkSha256": "f8f2b741e054a94aa33f4fc26686c0ac65ffa983784ffa4cabf21990b7c8e5c2",
+  "apiCallN": 125,
+  "apiLatencyMs": {
+    "mean": 1836.528696,
+    "median": 1635.599,
+    "p90": 2848.979,
+    "p95": 3098.173,
+    "max": 3458.806
+  },
+  "logicalPrimaryCallN": 126,
+  "callsWithCorrectionRetry": 32,
+  "correctionRetryRate": 0.25396825396825395,
+  "hallucinatedCandidateAttemptCount": 0,
+  "stateContradictionAttemptCount": 26,
+  "localDeterministicRelationValidationMsMean": 0.6231944444444445,
+  "localPriorConstructionMsMean": 0.01294047619047619,
+  "localAllPageProjectionMsMean": 0.050426984126984126,
+  "interpretation": "Measured API wall time is separate from deterministic local relation validation, q construction, and projection replay."
+}

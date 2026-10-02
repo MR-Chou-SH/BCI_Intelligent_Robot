@@ -1,0 +1,16 @@
+{
+  "recordType": "m30_superseded_benchmark_artifact_archive",
+  "archivedAtUtc": "2026-10-02T21:40:03Z",
+  "benchmarkSha256": "ddc3a3e2388bfaf172a708a5f14a145aa68a62140be93d4883c999cec0e2f8be",
+  "promptVersion": "m30-sequential-relational-context-v2",
+  "reason": "Pre-run independent label compatibility audit corrected four incompatible ground-truth relation labels and replaced an impossible invalid-state fixture. These results are preserved as exploratory outputs for the superseded 129-decision lock.",
+  "preservedFiles": [
+    "M30_EXPERIMENT_SPEC.md",
+    "relational_affordance_schema.json",
+    "scene_family_manifest.json",
+    "semantic_context_repeatability.jsonl",
+    "semantic_context_results.jsonl",
+    "semantic_context_sequence_benchmark_lock.json",
+    "semantic_context_sequence_benchmark_v2.json"
+  ]
+}

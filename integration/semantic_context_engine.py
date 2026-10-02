@@ -249,6 +249,32 @@ class SemanticContextEngine:
             "prior_transform": "softmax(semantic_score / 0.20); not calibrated",
         }
 
+    def predict_next_target(
+        self,
+        *,
+        scene: dict[str, Any] | SemanticSceneCore,
+        selection_history: list[str],
+        remaining_candidates: list[str] | None = None,
+        current_task_state: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """M30 API: produce a variable-dimensional global prior for the next choice.
+
+        The historical M28 ``predict`` API remains unchanged. M32 uses this
+        method so its CLI exercises the same sequential Context implementation.
+        """
+        from integration.semantic_context_sequence import predict_next_target
+
+        return predict_next_target(
+            self.client,
+            self.model_id,
+            scene=scene,
+            selection_history=selection_history,
+            remaining_candidates=remaining_candidates,
+            current_task_state=current_task_state,
+            base_url=self.base_url,
+            max_correction_retries=self.max_correction_retries,
+        )
+
     def predict(self, context_input: dict[str, Any]) -> dict[str, Any]:
         started = time.perf_counter()
         try:

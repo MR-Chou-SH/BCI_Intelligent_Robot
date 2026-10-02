@@ -1,0 +1,113 @@
+{
+  "schema_version": "m31-final-validation-v1",
+  "validated_at_utc": "2026-10-02T23:39:54.202Z",
+  "status": "PASS_WITH_REPORTED_LIMITATIONS",
+  "software_implementation": "PASS",
+  "benchmark_execution": "PASS",
+  "human_semantic_quality": "PARTIAL",
+  "benchmark": {
+    "status": "PASS",
+    "case_count": 84,
+    "split_counts": {
+      "dev": 12,
+      "heldout": 24,
+      "train": 48
+    },
+    "category_count": 12,
+    "benchmark_sha256": "7d386f8ee1ab4fcee3f932719a49cff23a7cd23491cd913e8c9a8ccfe00dacee",
+    "ground_truth_independent": true,
+    "model_input_label_leakage": false
+  },
+  "main_run": {
+    "run_label": "prompt-v5",
+    "model_id": "deepseek-flash",
+    "prompt_version": "m31-open-world-vla-language-v5",
+    "case_count": 84,
+    "split_counts": {
+      "train": 48,
+      "dev": 12,
+      "heldout": 24
+    },
+    "status_accuracy": {
+      "numerator": 76,
+      "denominator": 84,
+      "rate": 0.9048
+    },
+    "relation_accuracy_on_expected_executable_cases": {
+      "numerator": 62,
+      "denominator": 70,
+      "rate": 0.8857
+    },
+    "ambiguous_invalid_handling_accuracy": {
+      "numerator": 9,
+      "denominator": 14,
+      "rate": 0.6429
+    },
+    "bilingual_relation_cue_consistency": {
+      "numerator": 65,
+      "denominator": 72,
+      "rate": 0.9028
+    },
+    "high_level_step_relation_alignment": {
+      "numerator": 65,
+      "denominator": 67,
+      "rate": 0.9701
+    },
+    "grounding_reference_correctness": {
+      "numerator": 84,
+      "denominator": 84,
+      "rate": 1.0
+    },
+    "explicit_color_fidelity": {
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "explicit_state_safe_outcome": {
+      "numerator": 3,
+      "denominator": 3,
+      "rate": 1.0
+    },
+    "api_latency_ms": {
+      "mean": 1227.299,
+      "median": 1139.496,
+      "p90": 1499.895,
+      "p95": 2294.708,
+      "max": 2691.96
+    },
+    "repeatability": {
+      "cases": [
+        "m31-storage-medicine",
+        "m31-storage-closed-box",
+        "m31-storage-clothes-basket",
+        "m31-storage-plate-cabinet",
+        "m31-tool-apple-knife",
+        "m31-tool-orange-juicer",
+        "m31-tool-screw-driver",
+        "m31-kitchen-cup-tap",
+        "m31-electronics-phone-charger",
+        "m31-reverse-knife-apple",
+        "m31-facts-red-apple",
+        "m31-ambiguous-phone-box",
+        "m31-invalid-book-battery",
+        "m31-storage-book-shelf",
+        "m31-tool-paintbrush-canvas",
+        "m31-storage-pen-holder"
+      ],
+      "structural_exact_rate": 0.875,
+      "prose_exact_rate": 0.75
+    }
+  },
+  "required_outputs_present": true,
+  "default_cli_mode": "semantic_open_world",
+  "strict_scene_mode_retained": true,
+  "dispatch_allowed": false,
+  "real_vla_connected": false,
+  "api_key_persisted": false,
+  "heldout_used_for_prompt_tuning": false,
+  "limitations": [
+    "Ambiguous-pair classification remains weak; 2/7 benchmark ambiguity cases were recognized.",
+    "One frozen development label expects charging from an explicitly occupied charger; the fail-closed invalid output is state-consistent, and the original label was preserved.",
+    "Forbidden third-object phrase audit is finite and is not general open-vocabulary entity detection."
+  ]
+}

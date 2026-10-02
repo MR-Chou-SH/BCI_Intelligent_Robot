@@ -1,0 +1,47 @@
+{
+  "recordType": "m30_final_validation",
+  "status": "PASS",
+  "benchmarkSha256": "899aae6febb96cb6a63f0589fd7ad8e5bd0b317e97ac81de23c71ff062d237b0",
+  "decisionPointCount": 126,
+  "repeatabilityPointCount": 16,
+  "transferTrialRowCount": 467280,
+  "plotCount": 14,
+  "missingFiles": [],
+  "invalidSvgs": [],
+  "checks": {
+    "benchmarkStaticValidation": true,
+    "lockedBenchmarkDigestMatchesSemanticRun": true,
+    "promptVersionFrozen": true,
+    "engineVersionRecorded": true,
+    "semanticPointCount126": true,
+    "repeatabilityPointCount16": true,
+    "trainDevOnlyGateSelection": true,
+    "transferIntegrityStatus": true,
+    "m25InputsUnchanged": true,
+    "m25BaselineReproductions264": true,
+    "primaryTransferRows396000": true,
+    "timingTransferRows71280": true,
+    "totalTransferRows467280": true,
+    "noDelayViolations": true,
+    "lambdaZeroExactBaseline": true,
+    "plotsAtLeast13": true,
+    "allPlotsAreValidSvg": true,
+    "allRequiredArtifactsPresent": true,
+    "reportAnswersAll11Questions": true,
+    "apiKeyNotPersisted": true
+  },
+  "transferSafety": {
+    "wrongEarlyStopRows": 246,
+    "noDelayViolationRows": 0,
+    "positiveLambdaConditionsWithZeroWrongEarlyStops": 0,
+    "supportedSafeContextConditions": 0,
+    "interpretation": "A PASS here is artifact/replay integrity only; positive-lambda results do not pass the safety gate."
+  },
+  "boundary": {
+    "prospectiveHumanEegEvidence": false,
+    "rawEegModified": false,
+    "questOrPhysicalHardwareUsed": false,
+    "productionM19Modified": false,
+    "apiKeyPersisted": false
+  }
+}

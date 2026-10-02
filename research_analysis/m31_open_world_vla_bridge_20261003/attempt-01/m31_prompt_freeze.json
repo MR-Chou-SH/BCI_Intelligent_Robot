@@ -1,0 +1,13 @@
+{
+  "schema_version": "m31-prompt-freeze-v1",
+  "frozen_at_utc": "2026-10-02T23:26:24.702Z",
+  "benchmark_sha256": "7d386f8ee1ab4fcee3f932719a49cff23a7cd23491cd913e8c9a8ccfe00dacee",
+  "model_id": "deepseek-flash",
+  "run_label": "prompt-v5",
+  "prompt_version": "m31-open-world-vla-language-v5",
+  "schema_version_used": "m31-structured-intent-v2",
+  "engine_version": "m31-descriptor-parse-and-reference-guard-v4",
+  "temperature": 0.0,
+  "train_dev_case_count": 60,
+  "heldout_used_for_prompt_tuning": false
+}

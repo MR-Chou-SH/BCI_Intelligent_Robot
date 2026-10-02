@@ -1,0 +1,11 @@
+{
+  "recordType": "m30_partial_prompt_iteration_archive",
+  "archivedAtUtc": "2026-10-02T22:05:10Z",
+  "benchmarkSha256": "899aae6febb96cb6a63f0589fd7ad8e5bd0b317e97ac81de23c71ff062d237b0",
+  "promptVersion": "m30-sequential-relational-context-v3",
+  "attemptedPrimaryPoints": 27,
+  "completedPrimaryPoints": 27,
+  "split": "train only",
+  "heldOutRequests": 0,
+  "reason": "Prompt-v3 wording caused broad over-abstention across initial train points; the bounded run was interrupted and preserved before any held-out query."
+}

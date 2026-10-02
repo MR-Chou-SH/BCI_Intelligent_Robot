@@ -1,0 +1,34 @@
+{
+  "recordType": "m30_superseded_benchmark_iteration_archive",
+  "archivedAtUtc": "2026-10-02T22:02:26Z",
+  "benchmarkSha256": "f8f2b741e054a94aa33f4fc26686c0ac65ffa983784ffa4cabf21990b7c8e5c2",
+  "promptVersion": "m30-sequential-relational-context-v2",
+  "reason": "Pre-final independent ambiguity-label audit found one ambiguous decision with only one distinct accepted target and several alternatives that were not plausible task continuations. The original results and plots are retained unchanged.",
+  "plots": [
+    "01_coverage_vs_semantic_precision.svg",
+    "02_coverage_vs_wrong_active_rate.svg",
+    "03_scene_family_accuracy.svg",
+    "04_round_index_context_quality.svg",
+    "05_prior_entropy_distribution.svg",
+    "06_prior_top_mass_distribution.svg",
+    "07_page_projection_effect.svg",
+    "08_context_api_latency.svg"
+  ],
+  "results": [
+    "context_latency_summary.json",
+    "coverage_operating_points.json",
+    "coverage_precision_summary.csv",
+    "M30_EXPERIMENT_SPEC.md",
+    "page_projection_results.csv",
+    "relational_affordance_schema.json",
+    "scene_family_manifest.json",
+    "semantic_context_per_round.csv",
+    "semantic_context_per_scene_family.csv",
+    "semantic_context_repeatability.jsonl",
+    "semantic_context_results.jsonl",
+    "semantic_context_sequence_benchmark_lock.json",
+    "semantic_context_sequence_benchmark_v2.json",
+    "semantic_context_summary.json"
+  ],
+  "heldOutExposureNote": "A prior prompt-v2 evaluation on the earlier lock had already been observed. Prompt-v3 results on the corrected lock are an iterative exploratory evaluation, not a pristine first-look holdout."
+}

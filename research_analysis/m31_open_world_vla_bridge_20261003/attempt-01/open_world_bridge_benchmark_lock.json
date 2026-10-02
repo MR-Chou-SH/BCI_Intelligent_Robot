@@ -1,0 +1,1 @@
+{"benchmark_version":"2026-10-03-v1","canonical_sha256":"7d386f8ee1ab4fcee3f932719a49cff23a7cd23491cd913e8c9a8ccfe00dacee","case_count":84,"ground_truth_frozen_before_model_calls":true,"schema_version":"m31-benchmark-lock-v1","split_counts":{"dev":12,"heldout":24,"train":48}}

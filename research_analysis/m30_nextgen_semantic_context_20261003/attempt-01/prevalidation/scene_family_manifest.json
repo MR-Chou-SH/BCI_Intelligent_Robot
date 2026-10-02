@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "m30-scene-family-manifest-v1",
+  "benchmarkSha256": "1f255cff6c8fb9f536d7b1ca5ddc993bf910a498e2fec6ceb9c29751831c8453",
+  "splitPolicy": "Group holdout by scene family; no family crosses train/dev/held_out.",
+  "families": {
+    "desktop_office": {
+      "description": "Office and desktop organization tasks; TRAIN.",
+      "split": "train",
+      "episode_ids": [
+        "office_phone_charge",
+        "office_book_shelve",
+        "office_pen_station",
+        "office_laptop_dock",
+        "office_audio_storage",
+        "office_documents",
+        "office_remote"
+      ]
+    },
+    "storage_organization": {
+      "description": "Household storage and organization tasks; TRAIN.",
+      "split": "train",
+      "episode_ids": [
+        "storage_medicine",
+        "storage_toys",
+        "storage_cables",
+        "storage_plates",
+        "storage_clothes",
+        "storage_tools",
+        "storage_receipts"
+      ]
+    },
+    "household_cleaning": {
+      "description": "Cleaning and washing tasks; DEV.",
+      "split": "dev",
+      "episode_ids": [
+        "clean_laundry",
+        "clean_dishes",
+        "clean_spill"
+      ]
+    },
+    "tools_simple_manipulation": {
+      "description": "Basic tool and fastener tasks; DEV.",
+      "split": "dev",
+      "episode_ids": [
+        "tool_screw",
+        "tool_nail",
+        "tool_bolt"
+      ]
+    },
+    "kitchen_food_preparation": {
+      "description": "Food preparation and kitchen relations; HELD_OUT.",
+      "split": "held_out",
+      "episode_ids": [
+        "kitchen_apple",
+        "kitchen_juice",
+        "kitchen_vegetable"
+      ]
+    },
+    "assistive_handover": {
+      "description": "Object delivery to a user zone; HELD_OUT.",
+      "split": "held_out",
+      "episode_ids": [
+        "assist_medicine",
+        "assist_glasses",
+        "assist_phone"
+      ]
+    },
+    "state_dependent": {
+      "description": "Selection depends on explicit occupancy, capacity, access or tool state; HELD_OUT.",
+      "split": "held_out",
+      "episode_ids": [
+        "state_charger",
+        "state_bins",
+        "state_dishes",
+        "state_tool_absent"
+      ]
+    },
+    "ambiguous_adversarial": {
+      "description": "Multiple plausible surfaces, completed tasks and incompatible contexts; HELD_OUT.",
+      "split": "held_out",
+      "episode_ids": [
+        "adv_multiple_surfaces",
+        "adv_completed",
+        "adv_incompatible"
+      ]
+    }
+  },
+  "episodeCountsBySplit": {
+    "train": 14,
+    "dev": 6,
+    "held_out": 13
+  }
+}

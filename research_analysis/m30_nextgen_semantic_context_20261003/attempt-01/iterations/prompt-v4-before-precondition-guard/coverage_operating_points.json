@@ -1,0 +1,42 @@
+{
+  "recordType": "m30_train_dev_only_coverage_gates",
+  "benchmarkSha256": "899aae6febb96cb6a63f0589fd7ad8e5bd0b317e97ac81de23c71ff062d237b0",
+  "confidenceScore": "0.5*top ordinal semantic score + 0.5*(top minus second ordinal semantic score); not calibrated",
+  "calibrationRows": 65,
+  "coverageOperatingPoints": {
+    "C65": {
+      "targetEligibleParticipation": 0.65,
+      "confidenceThreshold": 0.49999999999999994,
+      "calibrationN": 65,
+      "calibrationRealizedEligibleParticipation": 0.6461538461538462,
+      "calibrationSplits": [
+        "train",
+        "dev"
+      ],
+      "gate": "predictedStatus == informative AND 0.5*topOrdinalSemanticScore + 0.5*topSecondOrdinalMargin >= threshold"
+    },
+    "C85": {
+      "targetEligibleParticipation": 0.85,
+      "confidenceThreshold": 0.39999999999999997,
+      "calibrationN": 65,
+      "calibrationRealizedEligibleParticipation": 0.8923076923076924,
+      "calibrationSplits": [
+        "train",
+        "dev"
+      ],
+      "gate": "predictedStatus == informative AND 0.5*topOrdinalSemanticScore + 0.5*topSecondOrdinalMargin >= threshold"
+    },
+    "C100": {
+      "targetEligibleParticipation": 1.0,
+      "confidenceThreshold": 0.19999999999999998,
+      "calibrationN": 65,
+      "calibrationRealizedEligibleParticipation": 1.0,
+      "calibrationSplits": [
+        "train",
+        "dev"
+      ],
+      "gate": "predictedStatus == informative AND 0.5*topOrdinalSemanticScore + 0.5*topSecondOrdinalMargin >= threshold"
+    }
+  },
+  "heldOutUsedForGateSelection": false
+}

@@ -1,0 +1,25 @@
+{
+  "benchmark_id": "m30-nextgen-sequential-context-v2",
+  "path": "semantic_context_sequence_benchmark_v2.json",
+  "sha256": "899aae6febb96cb6a63f0589fd7ad8e5bd0b317e97ac81de23c71ff062d237b0",
+  "episode_count": 33,
+  "decision_point_count": 126,
+  "family_episode_counts": {
+    "desktop_office": 7,
+    "storage_organization": 7,
+    "household_cleaning": 3,
+    "tools_simple_manipulation": 3,
+    "kitchen_food_preparation": 3,
+    "assistive_handover": 3,
+    "state_dependent": 4,
+    "ambiguous_adversarial": 3
+  },
+  "split_episode_counts": {
+    "train": 14,
+    "dev": 6,
+    "held_out": 13
+  },
+  "frozen_at_utc": "2026-10-02T22:01:25Z",
+  "expected_answers_generated_independently": true,
+  "evaluation_started_before_freeze": false
+}

@@ -1,0 +1,104 @@
+{
+  "recordType": "m30_semantic_context_summary",
+  "benchmarkSha256": "f8f2b741e054a94aa33f4fc26686c0ac65ffa983784ffa4cabf21990b7c8e5c2",
+  "promptVersion": "m30-sequential-relational-context-v2",
+  "modelId": "deepseek-flash",
+  "episodeCount": 33,
+  "decisionPointCount": 126,
+  "splitMetrics": {
+    "train": {
+      "decisionCount": 56,
+      "eligibleInformativeCount": 46,
+      "predictedInformativeCount": 43,
+      "informativeTop1Count": 36,
+      "informativeTop1Accuracy": 0.782608695652174,
+      "top3Recall": 0.9782608695652174,
+      "ambiguityAccuracy": 0.1,
+      "invalidRejectionRate": null,
+      "completedRejectionRate": null,
+      "meanEntropy": 0.7241135279015423,
+      "meanPriorTopMass": 0.5253306494030808
+    },
+    "dev": {
+      "decisionCount": 24,
+      "eligibleInformativeCount": 21,
+      "predictedInformativeCount": 19,
+      "informativeTop1Count": 17,
+      "informativeTop1Accuracy": 0.8095238095238095,
+      "top3Recall": 0.9047619047619048,
+      "ambiguityAccuracy": 0.3333333333333333,
+      "invalidRejectionRate": null,
+      "completedRejectionRate": null,
+      "meanEntropy": 0.700465301520383,
+      "meanPriorTopMass": 0.5569097601319069
+    },
+    "held_out": {
+      "decisionCount": 46,
+      "eligibleInformativeCount": 34,
+      "predictedInformativeCount": 35,
+      "informativeTop1Count": 26,
+      "informativeTop1Accuracy": 0.7647058823529411,
+      "top3Recall": 0.9411764705882353,
+      "ambiguityAccuracy": 0.0,
+      "invalidRejectionRate": 1.0,
+      "completedRejectionRate": 1.0,
+      "meanEntropy": 0.6956545295673121,
+      "meanPriorTopMass": 0.5539410930332286
+    },
+    "all": {
+      "decisionCount": 126,
+      "eligibleInformativeCount": 101,
+      "predictedInformativeCount": 97,
+      "informativeTop1Count": 79,
+      "informativeTop1Accuracy": 0.7821782178217822,
+      "top3Recall": 0.9504950495049505,
+      "ambiguityAccuracy": 0.09090909090909091,
+      "invalidRejectionRate": 1.0,
+      "completedRejectionRate": 1.0,
+      "meanEntropy": 0.709219310786285,
+      "meanPriorTopMass": 0.5417908007084667
+    }
+  },
+  "repeatability": {
+    "n": 16,
+    "sameStatusRate": 0.9375,
+    "sameTopCandidateRate": 0.9375,
+    "sameFullRankingRate": 0.625
+  },
+  "gateCalibration": {
+    "C65": {
+      "targetEligibleParticipation": 0.65,
+      "confidenceThreshold": 0.39999999999999997,
+      "calibrationN": 51,
+      "calibrationRealizedEligibleParticipation": 0.7450980392156863,
+      "calibrationSplits": [
+        "train",
+        "dev"
+      ],
+      "gate": "predictedStatus == informative AND 0.5*topOrdinalSemanticScore + 0.5*topSecondOrdinalMargin >= threshold"
+    },
+    "C85": {
+      "targetEligibleParticipation": 0.85,
+      "confidenceThreshold": 0.325,
+      "calibrationN": 51,
+      "calibrationRealizedEligibleParticipation": 0.8431372549019608,
+      "calibrationSplits": [
+        "train",
+        "dev"
+      ],
+      "gate": "predictedStatus == informative AND 0.5*topOrdinalSemanticScore + 0.5*topSecondOrdinalMargin >= threshold"
+    },
+    "C100": {
+      "targetEligibleParticipation": 1.0,
+      "confidenceThreshold": 0.19999999999999998,
+      "calibrationN": 51,
+      "calibrationRealizedEligibleParticipation": 1.0,
+      "calibrationSplits": [
+        "train",
+        "dev"
+      ],
+      "gate": "predictedStatus == informative AND 0.5*topOrdinalSemanticScore + 0.5*topSecondOrdinalMargin >= threshold"
+    }
+  },
+  "interpretation": "Curated benchmark semantic performance; not population intent accuracy or prospective EEG evidence."
+}

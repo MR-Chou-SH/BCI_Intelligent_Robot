@@ -1,0 +1,203 @@
+{
+  "schemaVersion": "m30-relational-affordance-v1",
+  "relationTypes": [
+    {
+      "relationType": "CHARGE_WITH",
+      "description": "Charge a compatible source object using a charging target.",
+      "requiredSourceAnyOf": [
+        "chargeable"
+      ],
+      "requiredTargetAnyOf": [
+        "charging_target"
+      ]
+    },
+    {
+      "relationType": "CLOSE",
+      "description": "Close an explicitly openable object that is not already closed.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": []
+    },
+    {
+      "relationType": "CUT_WITH",
+      "description": "Cut a compatible food or cuttable object using a cutting tool.",
+      "requiredSourceAnyOf": [
+        "cuttable",
+        "food"
+      ],
+      "requiredTargetAnyOf": [
+        "cutting_tool",
+        "knife",
+        "tool"
+      ]
+    },
+    {
+      "relationType": "DISCARD_IN",
+      "description": "Discard an object into a compatible container.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": [
+        "container"
+      ]
+    },
+    {
+      "relationType": "FASTEN_WITH",
+      "description": "Fasten a compatible fastener using an appropriate tool.",
+      "requiredSourceAnyOf": [
+        "fastenable",
+        "fastener"
+      ],
+      "requiredTargetAnyOf": [
+        "fastening_tool",
+        "screwdriver",
+        "tool"
+      ]
+    },
+    {
+      "relationType": "FILL_FROM",
+      "description": "Fill a container from an explicit water source.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": [
+        "sink",
+        "tap",
+        "water_source"
+      ]
+    },
+    {
+      "relationType": "HAND_OVER",
+      "description": "Move an object to an explicit user or handover zone.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": [
+        "handover_target",
+        "user_zone"
+      ]
+    },
+    {
+      "relationType": "JUICE_WITH",
+      "description": "Process a compatible fruit using a juicing appliance.",
+      "requiredSourceAnyOf": [
+        "food",
+        "juicable"
+      ],
+      "requiredTargetAnyOf": [
+        "juicer",
+        "juicing_appliance"
+      ]
+    },
+    {
+      "relationType": "NONE",
+      "description": "No useful relation is asserted.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": []
+    },
+    {
+      "relationType": "OPEN",
+      "description": "Open an explicitly openable object when its state allows it.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": []
+    },
+    {
+      "relationType": "OTHER",
+      "description": "A supported relation outside the named task relation set.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": []
+    },
+    {
+      "relationType": "PLACE_IN",
+      "description": "Place an object inside a container.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": [
+        "container"
+      ]
+    },
+    {
+      "relationType": "PLACE_ON",
+      "description": "Place an object on a support surface.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": [
+        "support_surface"
+      ]
+    },
+    {
+      "relationType": "POUR_INTO",
+      "description": "Pour contents into a compatible container.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": [
+        "container",
+        "pour_target"
+      ]
+    },
+    {
+      "relationType": "PRESS",
+      "description": "Press an explicitly pressable control.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": [
+        "button",
+        "pressable",
+        "switch"
+      ]
+    },
+    {
+      "relationType": "RELATED_TO",
+      "description": "Objects are contextually related without a more specific relation.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": []
+    },
+    {
+      "relationType": "RINSE_WITH",
+      "description": "Rinse a compatible object using a water source.",
+      "requiredSourceAnyOf": [
+        "dish",
+        "rinsable",
+        "washable"
+      ],
+      "requiredTargetAnyOf": [
+        "sink",
+        "tap",
+        "water_source"
+      ]
+    },
+    {
+      "relationType": "STORE_IN",
+      "description": "Store an object inside a compatible container.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": [
+        "container"
+      ]
+    },
+    {
+      "relationType": "STORE_ON",
+      "description": "Store an object on a support or storage surface.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": [
+        "storage_surface",
+        "support_surface"
+      ]
+    },
+    {
+      "relationType": "USE_WITH",
+      "description": "Generic contextual use relation; not a physical skill claim.",
+      "requiredSourceAnyOf": [],
+      "requiredTargetAnyOf": []
+    },
+    {
+      "relationType": "WASH_WITH",
+      "description": "Wash a compatible item using washing equipment or detergent.",
+      "requiredSourceAnyOf": [
+        "laundry",
+        "washable"
+      ],
+      "requiredTargetAnyOf": [
+        "detergent",
+        "washing_equipment",
+        "washing_machine"
+      ]
+    }
+  ],
+  "stateRules": [
+    "Missing state remains unknown and is never treated as false.",
+    "Explicit full, occupied, unavailable or blocked state rejects capacity-dependent relations.",
+    "Closed non-openable containers reject STORE_IN, PLACE_IN, DISCARD_IN and POUR_INTO.",
+    "OPEN requires the openable affordance; CLOSE also rejects an already-closed target.",
+    "A relation is not a robot action or an executable manipulation plan."
+  ],
+  "candidateMembership": "Only IDs in the supplied remaining selectable candidate list may be ranked."
+}
