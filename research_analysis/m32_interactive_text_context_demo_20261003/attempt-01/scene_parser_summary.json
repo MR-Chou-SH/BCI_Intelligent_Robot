@@ -1,0 +1,118 @@
+{
+  "scene_count": 6,
+  "scene_object_count_exact_7_or_8": 6,
+  "object_mention_exact_match": {
+    "numerator": 48,
+    "denominator": 48,
+    "rate": 1.0
+  },
+  "missing_gold_object_mentions": 0,
+  "extra_accepted_object_mentions": 0,
+  "raw_model_object_predictions": 48,
+  "ungrounded_object_mentions_rejected": 0,
+  "explicit_color_correct": {
+    "numerator": 10,
+    "denominator": 10,
+    "rate": 1.0
+  },
+  "explicit_color_missing_or_wrong": 0,
+  "unspecified_colors_invented": 0,
+  "explicit_state_correct": {
+    "numerator": 4,
+    "denominator": 4,
+    "rate": 1.0
+  },
+  "explicit_state_missing_or_wrong": 0,
+  "unspecified_states_invented": 0,
+  "parser_latency_ms": {
+    "mean": 1830.614,
+    "median": 1839.522,
+    "p90": 2030.293
+  },
+  "per_scene": [
+    {
+      "scene_id": "laundry-room",
+      "family": "laundry",
+      "run_status": "parsed",
+      "expected_object_count": 8,
+      "parsed_object_count": 8,
+      "retained_nonselectable_context_count": 0,
+      "exact_mentions": 8,
+      "missing_mentions": 0,
+      "extra_mentions": 0,
+      "color_expected": 2,
+      "state_expected": 1,
+      "parser_latency_ms": 1915.012
+    },
+    {
+      "scene_id": "kitchen",
+      "family": "kitchen",
+      "run_status": "parsed",
+      "expected_object_count": 8,
+      "parsed_object_count": 8,
+      "retained_nonselectable_context_count": 0,
+      "exact_mentions": 8,
+      "missing_mentions": 0,
+      "extra_mentions": 0,
+      "color_expected": 2,
+      "state_expected": 0,
+      "parser_latency_ms": 1695.153
+    },
+    {
+      "scene_id": "study-office",
+      "family": "study_office",
+      "run_status": "parsed",
+      "expected_object_count": 8,
+      "parsed_object_count": 8,
+      "retained_nonselectable_context_count": 0,
+      "exact_mentions": 8,
+      "missing_mentions": 0,
+      "extra_mentions": 0,
+      "color_expected": 1,
+      "state_expected": 1,
+      "parser_latency_ms": 1548.902
+    },
+    {
+      "scene_id": "bedroom-clothing",
+      "family": "bedroom_clothing",
+      "run_status": "parsed",
+      "expected_object_count": 8,
+      "parsed_object_count": 8,
+      "retained_nonselectable_context_count": 0,
+      "exact_mentions": 8,
+      "missing_mentions": 0,
+      "extra_mentions": 0,
+      "color_expected": 2,
+      "state_expected": 1,
+      "parser_latency_ms": 1871.469
+    },
+    {
+      "scene_id": "electronics-desk",
+      "family": "electronics_desk",
+      "run_status": "parsed",
+      "expected_object_count": 8,
+      "parsed_object_count": 8,
+      "retained_nonselectable_context_count": 0,
+      "exact_mentions": 8,
+      "missing_mentions": 0,
+      "extra_mentions": 0,
+      "color_expected": 1,
+      "state_expected": 0,
+      "parser_latency_ms": 2145.575
+    },
+    {
+      "scene_id": "mixed-ambiguous",
+      "family": "mixed_adversarial_ambiguous",
+      "run_status": "parsed",
+      "expected_object_count": 8,
+      "parsed_object_count": 8,
+      "retained_nonselectable_context_count": 0,
+      "exact_mentions": 8,
+      "missing_mentions": 0,
+      "extra_mentions": 0,
+      "color_expected": 2,
+      "state_expected": 1,
+      "parser_latency_ms": 1807.575
+    }
+  ]
+}

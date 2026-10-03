@@ -1,0 +1,87 @@
+{
+  "archive_version": "m32-live-run-v1-archive",
+  "reason": "Preserve the first completed live run and its exact source inputs before correcting candidate semantics and benchmark scene wording.",
+  "benchmark_sha256": "f01e79b808fe7fa8dc5acbb931f3a70a721f4cd90a71f8571de8a7d4753f06c3",
+  "record_count": 76,
+  "record_types": {
+    "context": 60,
+    "repeatability": 8,
+    "run_finished": 1,
+    "run_started": 1,
+    "scene_parse": 6
+  },
+  "files": {
+    "benchmark_revision_log.jsonl": {
+      "sha256": "7484bf20c67d5eebe1d42452278c8deaf1bd4c0758991d26b4819685bb7cded5",
+      "size_bytes": 758
+    },
+    "context_per_round.csv": {
+      "sha256": "301c341d0ed19d01ed4d2df5f623b05a637365c621ccee251f108418231c4b55",
+      "size_bytes": 15776
+    },
+    "history_sensitivity_summary.csv": {
+      "sha256": "707ca4a6a2d58e4db50302c1dc7bd9acd8347096be6ffe7106e267b95b9cf73f",
+      "size_bytes": 1684
+    },
+    "history_sensitivity_summary.json": {
+      "sha256": "43c311607d568de21f0a4825682f8f245a82ebf9afc7cf87d2dd792c2e3443cb",
+      "size_bytes": 3811
+    },
+    "repeatability_summary.json": {
+      "sha256": "5d97c0bdb089ba14afc19084badd6bb2dc659a8953233c84f89ad0a709c95924",
+      "size_bytes": 2005
+    },
+    "scene_parser_per_scene.csv": {
+      "sha256": "7c97f80559e6e7e06cee25d95efb7f7bd9ecd7b9a627ad2c7cc601f688c6b0cd",
+      "size_bytes": 531
+    },
+    "scene_parser_summary.json": {
+      "sha256": "1650b029499b3b9b58779f967b192591024461398c32dcd1696d622338f355f7",
+      "size_bytes": 2886
+    },
+    "source/build_m32_benchmark.py": {
+      "sha256": "b83b88ace93871fc5f12c9fcb312d45a73c2c1514ec467dd2873ed55950b3b13",
+      "size_bytes": 18405
+    },
+    "source/run_m32_benchmark.py": {
+      "sha256": "004b6eabcd62ffc8a3bd483647307b455840dc6b91e369eaae55fbe62c21fc63",
+      "size_bytes": 10811
+    },
+    "source/semantic_context_demo_cli.py": {
+      "sha256": "1e5f09dfaeddfc447f36ec587b53ad01ab1d624b16fa483a55556482f0e56f8d",
+      "size_bytes": 15527
+    },
+    "source/summarize_m32_results.py": {
+      "sha256": "87148c38fe33f777cc09475e9e965c599f5d3e7d2644c59c01ff49b15c98dc12",
+      "size_bytes": 24293
+    },
+    "source/text_scene_parser.py": {
+      "sha256": "a2dd54f5a20329341f2173c2d14728a419a0a505a1429a53163a8b68430c6bcd",
+      "size_bytes": 17432
+    },
+    "source/validate_m32_benchmark.py": {
+      "sha256": "de57b17f68a5ee03a4b8eea651292ce45c3ecf90d1308085c0db58924e6aa76a",
+      "size_bytes": 5057
+    },
+    "text_scene_demo_cases.json": {
+      "sha256": "3189064d02ad127cc0137b7ab708d31023d646bb3e8e546c87a2b2f44490b1bd",
+      "size_bytes": 9997
+    },
+    "text_scene_sequence_benchmark.json": {
+      "sha256": "17022d6a7ffdf5a118e02b4c69b3d3722a1b7a3663aa6f5265fe9d6e611b32ee",
+      "size_bytes": 67693
+    },
+    "text_scene_sequence_benchmark_lock.json": {
+      "sha256": "471cd251f6c0b75d6b8b6b21879047b7f4a491bb655d3d6c410cf5472cec524d",
+      "size_bytes": 570
+    },
+    "text_scene_sequence_results.jsonl": {
+      "sha256": "7c365b30b3b06f855985533aae61e920f01baf9fb9e8a6f1a658a8c2f5d2e338",
+      "size_bytes": 171493
+    },
+    "text_scene_sequence_summary.json": {
+      "sha256": "52f9fea8795c75f6cb8b4f303c6e845aeb7ffff4921d7fdc36efb1594ae4291e",
+      "size_bytes": 12106
+    }
+  }
+}

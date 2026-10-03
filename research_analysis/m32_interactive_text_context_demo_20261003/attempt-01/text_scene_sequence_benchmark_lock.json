@@ -1,0 +1,16 @@
+{
+  "benchmark_id": "m32_interactive_text_context_20261003_attempt01_revision03",
+  "canonical_sha256": "c2eda933995158c0d96f3e5f64e5ee44e7422d787cfd1276c019ac6c703dff31",
+  "previous_benchmark_sha256": "f01e79b808fe7fa8dc5acbb931f3a70a721f4cd90a71f8571de8a7d4753f06c3",
+  "previous_lock_sha256": "471cd251f6c0b75d6b8b6b21879047b7f4a491bb655d3d6c410cf5472cec524d",
+  "revision_reason": "clarified scene text to enumerate exactly the eight intended selectable objects after the archived v1 run showed room/location phrases becoming unlabelled selectable candidates; gold target labels and histories are unchanged",
+  "scene_count": 6,
+  "trajectory_count": 12,
+  "decision_point_count": 60,
+  "locked_at_utc": "2026-10-03T00:50:45.045Z",
+  "ground_truth_authored_before_live_model_calls": true,
+  "target_labels_or_selection_histories_changed": false,
+  "scene_text_revised_after_live_run_v1": true,
+  "live_run_v1_archive": "iterations/live-run-v1",
+  "live_run_v1_archive_manifest_sha256": "63f714c9fc6ee1ac281392581b4a07c040ebdbdaded85a0c24f04dd3722b226b"
+}

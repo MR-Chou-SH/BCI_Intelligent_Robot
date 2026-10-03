@@ -1,0 +1,11 @@
+{
+  "benchmark_id": "m32_interactive_text_context_20261003_attempt01",
+  "canonical_sha256": "f01e79b808fe7fa8dc5acbb931f3a70a721f4cd90a71f8571de8a7d4753f06c3",
+  "previous_prevalidation_sha256": "1ab87d2b0af3213db909bcf519b346842bcdd1301fd66275fff09674e481948f",
+  "revision_reason": "removed acceptable-target labels that referenced already-selected objects before any live model call",
+  "scene_count": 6,
+  "trajectory_count": 12,
+  "decision_point_count": 60,
+  "locked_at_utc": "2026-10-03T00:22:45.242Z",
+  "ground_truth_authored_before_live_model_calls": true
+}

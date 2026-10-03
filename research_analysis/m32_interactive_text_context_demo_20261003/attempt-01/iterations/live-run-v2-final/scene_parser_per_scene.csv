@@ -1,0 +1,7 @@
+﻿scene_id,family,run_status,expected_object_count,parsed_object_count,exact_mentions,missing_mentions,extra_mentions,color_expected,state_expected,parser_latency_ms
+laundry-room,laundry,parsed,8,8,8,0,0,2,1,1915.012
+kitchen,kitchen,parsed,8,8,8,0,0,2,0,1695.153
+study-office,study_office,parsed,8,8,8,0,0,1,1,1548.902
+bedroom-clothing,bedroom_clothing,parsed,8,8,8,0,0,2,1,1871.469
+electronics-desk,electronics_desk,parsed,8,8,8,0,0,1,0,2145.575
+mixed-ambiguous,mixed_adversarial_ambiguous,parsed,8,8,8,0,0,2,1,1807.575

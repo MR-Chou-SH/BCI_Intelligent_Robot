@@ -1,0 +1,110 @@
+{
+  "same_candidate_set_pairs": 6,
+  "ranking_changed": {
+    "numerator": 3,
+    "denominator": 6,
+    "rate": 0.5
+  },
+  "top_candidate_changed": {
+    "numerator": 0,
+    "denominator": 6,
+    "rate": 0.0
+  },
+  "q_changed": {
+    "numerator": 4,
+    "denominator": 6,
+    "rate": 0.6667
+  },
+  "pairs": [
+    {
+      "pair_id": "bedroom-clothing-reversed-first-two",
+      "scene_id": "bedroom-clothing",
+      "left_point_id": "bedroom-clothing-shirt-first-r02",
+      "right_point_id": "bedroom-clothing-hanger-first-r02",
+      "same_candidate_set": 1,
+      "left_history": "[\"shirt\", \"hanger\"]",
+      "right_history": "[\"hanger\", \"shirt\"]",
+      "left_ranking": "[\"jacket\", \"basket\", \"wardrobe\", \"drawer\", \"bedside\", \"bed\"]",
+      "right_ranking": "[\"jacket\", \"basket\", \"wardrobe\", \"drawer\", \"bedside\", \"bed\"]",
+      "ranking_changed": 0,
+      "top_candidate_changed": 0,
+      "q_l1_distance": 0.335306,
+      "q_changed": 1
+    },
+    {
+      "pair_id": "electronics-desk-reversed-first-two",
+      "scene_id": "electronics-desk",
+      "left_point_id": "electronics-desk-phone-first-r02",
+      "right_point_id": "electronics-desk-charger-first-r02",
+      "same_candidate_set": 1,
+      "left_history": "[\"phone\", \"charger\"]",
+      "right_history": "[\"charger\", \"phone\"]",
+      "left_ranking": "[\"cable\", \"laptop\", \"desk\", \"user-zone\", \"mug\", \"drawer\"]",
+      "right_ranking": "[\"cable\", \"user-zone\", \"laptop\", \"desk\", \"mug\", \"drawer\"]",
+      "ranking_changed": 1,
+      "top_candidate_changed": 0,
+      "q_l1_distance": 0.084293,
+      "q_changed": 1
+    },
+    {
+      "pair_id": "kitchen-reversed-first-two",
+      "scene_id": "kitchen",
+      "left_point_id": "kitchen-apple-first-r02",
+      "right_point_id": "kitchen-knife-first-r02",
+      "same_candidate_set": 1,
+      "left_history": "[\"apple\", \"knife\"]",
+      "right_history": "[\"knife\", \"apple\"]",
+      "left_ranking": "[\"juicer\", \"orange\", \"plate\", \"sink\", \"cabinet\", \"trash\"]",
+      "right_ranking": "[\"juicer\", \"orange\", \"plate\", \"sink\", \"cabinet\", \"trash\"]",
+      "ranking_changed": 0,
+      "top_candidate_changed": 0,
+      "q_l1_distance": 0.328959,
+      "q_changed": 1
+    },
+    {
+      "pair_id": "laundry-room-reversed-first-two",
+      "scene_id": "laundry-room",
+      "left_point_id": "laundry-room-shirt-first-r02",
+      "right_point_id": "laundry-room-basket-first-r02",
+      "same_candidate_set": 1,
+      "left_history": "[\"shirt\", \"basket\"]",
+      "right_history": "[\"basket\", \"shirt\"]",
+      "left_ranking": "[\"washer\", \"detergent\", \"jeans\", \"rack\", \"cabinet\", \"trash\"]",
+      "right_ranking": "[]",
+      "ranking_changed": 1,
+      "top_candidate_changed": 0,
+      "q_l1_distance": 0.829633,
+      "q_changed": 1
+    },
+    {
+      "pair_id": "mixed-ambiguous-reversed-first-two",
+      "scene_id": "mixed-ambiguous",
+      "left_point_id": "mixed-ambiguous-phone-first-r02",
+      "right_point_id": "mixed-ambiguous-charger-first-r02",
+      "same_candidate_set": 1,
+      "left_history": "[\"phone\", \"charger\"]",
+      "right_history": "[\"charger\", \"phone\"]",
+      "left_ranking": "[\"apple\", \"knife\", \"plate\", \"box\", \"shelf\", \"trash\"]",
+      "right_ranking": "[\"apple\", \"knife\", \"plate\", \"box\", \"shelf\", \"trash\"]",
+      "ranking_changed": 0,
+      "top_candidate_changed": 0,
+      "q_l1_distance": 0.0,
+      "q_changed": 0
+    },
+    {
+      "pair_id": "study-office-reversed-first-two",
+      "scene_id": "study-office",
+      "left_point_id": "study-office-book-first-r02",
+      "right_point_id": "study-office-shelf-first-r02",
+      "same_candidate_set": 1,
+      "left_history": "[\"book\", \"bookshelf\"]",
+      "right_history": "[\"bookshelf\", \"book\"]",
+      "left_ranking": "[]",
+      "right_ranking": "[\"pen\", \"holder\", \"document\", \"tray\", \"drawer\", \"trash\"]",
+      "ranking_changed": 1,
+      "top_candidate_changed": 0,
+      "q_l1_distance": 0.0,
+      "q_changed": 0
+    }
+  ]
+}

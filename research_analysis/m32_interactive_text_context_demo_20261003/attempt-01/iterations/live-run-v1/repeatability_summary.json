@@ -1,0 +1,81 @@
+{
+  "repeat_calls": 8,
+  "structural_exact": {
+    "numerator": 6,
+    "denominator": 8,
+    "rate": 0.75
+  },
+  "relation_structure_exact": {
+    "numerator": 6,
+    "denominator": 8,
+    "rate": 0.75
+  },
+  "q_l1_distance_mean": 0.107482,
+  "q_l1_distance_median": 0.0,
+  "per_point": [
+    {
+      "point_id": "laundry-room-shirt-first-r02",
+      "run_status": "completed",
+      "structural_exact": 0,
+      "relations_exact": 0,
+      "q_l1_distance": 0.859855,
+      "repeat_latency_ms": 3037.178
+    },
+    {
+      "point_id": "kitchen-knife-first-r02",
+      "run_status": "completed",
+      "structural_exact": 1,
+      "relations_exact": 1,
+      "q_l1_distance": 0,
+      "repeat_latency_ms": 0.0
+    },
+    {
+      "point_id": "study-office-book-first-r03",
+      "run_status": "completed",
+      "structural_exact": 1,
+      "relations_exact": 1,
+      "q_l1_distance": 0,
+      "repeat_latency_ms": 0.0
+    },
+    {
+      "point_id": "bedroom-clothing-hanger-first-r02",
+      "run_status": "completed",
+      "structural_exact": 1,
+      "relations_exact": 1,
+      "q_l1_distance": 0.0,
+      "repeat_latency_ms": 3120.5
+    },
+    {
+      "point_id": "electronics-desk-phone-first-r02",
+      "run_status": "completed",
+      "structural_exact": 1,
+      "relations_exact": 1,
+      "q_l1_distance": 0,
+      "repeat_latency_ms": 0.0
+    },
+    {
+      "point_id": "mixed-ambiguous-phone-first-r02",
+      "run_status": "completed",
+      "structural_exact": 0,
+      "relations_exact": 0,
+      "q_l1_distance": 0.0,
+      "repeat_latency_ms": 2904.855
+    },
+    {
+      "point_id": "kitchen-apple-first-r04",
+      "run_status": "completed",
+      "structural_exact": 1,
+      "relations_exact": 1,
+      "q_l1_distance": 0,
+      "repeat_latency_ms": 0.0
+    },
+    {
+      "point_id": "electronics-desk-charger-first-r03",
+      "run_status": "completed",
+      "structural_exact": 1,
+      "relations_exact": 1,
+      "q_l1_distance": 0,
+      "repeat_latency_ms": 0.0
+    }
+  ]
+}

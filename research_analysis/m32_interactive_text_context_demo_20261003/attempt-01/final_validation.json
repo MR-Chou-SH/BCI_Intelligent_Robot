@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "status": "PASS_WITH_REPORTED_LIMITATIONS",
+  "scope": "M32 software-only text-scene and sequential M30 Context validation",
+  "benchmark_validation": {
+    "status": "PASS",
+    "benchmark_sha256": "c2eda933995158c0d96f3e5f64e5ee44e7422d787cfd1276c019ac6c703dff31",
+    "scene_count": 6,
+    "scene_family_count": 6,
+    "trajectory_count": 12,
+    "decision_point_count": 60,
+    "repeatability_point_count": 8,
+    "history_sensitivity_pairs": 6,
+    "independent_labels_frozen_before_live_calls": true,
+    "model_input_label_leakage": false
+  },
+  "benchmark_canonical_sha256": "c2eda933995158c0d96f3e5f64e5ee44e7422d787cfd1276c019ac6c703dff31",
+  "result_jsonl_sha256": "57ee6859590ceb00fb032236a8f60e893592470ad2f8c742951ca6f166769521",
+  "records": {
+    "total": 76,
+    "scene_parses": 6,
+    "context_decisions": 60,
+    "repeatability_calls": 8
+  },
+  "software_tests": {
+    "focused_m32_and_m30_semantic_regressions": "PASS (56 tests)",
+    "targeted_py_compile": "PASS (17 source/test files)"
+  },
+  "software_contract_checks": {
+    "six_scene_families_and_7_to_8_selectable_objects": "PASS",
+    "source_grounded_object_mentions": "PASS (48/48)",
+    "explicit_colors_and_states": "PASS (10/10 colors; 4/4 states)",
+    "no_unspecified_color_or_state_invention": "PASS",
+    "full_remaining_candidate_set_and_selected_removal": "PASS (60/60)",
+    "variable_q_dimension_and_normalization": "PASS (60/60)",
+    "same_candidate_different_history_ranking_change": "PASS (1 of 4 comparable pairs)",
+    "ambiguity_status_supported": "PASS_WITH_LOW_RECALL (3/60 labeled ambiguous points)",
+    "manual_review_runbook": "PASS",
+    "future_image_input": "NOT_IMPLEMENTED_BY_SCOPE"
+  },
+  "quality_limitations": {
+    "top1_acceptable": {
+      "numerator": 34,
+      "denominator": 55,
+      "rate": 0.6182
+    },
+    "top3_acceptable": {
+      "numerator": 53,
+      "denominator": 55,
+      "rate": 0.9636
+    },
+    "ambiguity_status_count": 3,
+    "repeat_structural_exact": {
+      "numerator": 5,
+      "denominator": 8,
+      "rate": 0.625
+    },
+    "repeat_q_l1_mean": 0.493525,
+    "context_latency_ms": {
+      "mean": 2236.15,
+      "median": 2401.714,
+      "p90": 3233.876,
+      "max": 3666.963
+    }
+  },
+  "preservation": {
+    "v1_archive_hashes_verified": 18,
+    "raw_eeg_or_device_data_touched": false,
+    "m30_heldout_results_retuned": false
+  },
+  "boundaries": {
+    "eeg_used": false,
+    "quest_used": false,
+    "image_input_implemented": false,
+    "real_vla_dispatch": false,
+    "deepseek_key_persisted": false
+  }
+}

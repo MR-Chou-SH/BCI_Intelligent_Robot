@@ -1,0 +1,409 @@
+{
+  "schema_version": "m32-sequential-context-summary-v1",
+  "benchmark_id": "m32_interactive_text_context_20261003_attempt01",
+  "benchmark_sha256": "f01e79b808fe7fa8dc5acbb931f3a70a721f4cd90a71f8571de8a7d4753f06c3",
+  "run_model_id": "deepseek-flash",
+  "scene_parser": {
+    "scene_count": 6,
+    "scene_object_count_exact_7_or_8": 3,
+    "object_mention_exact_match": {
+      "numerator": 48,
+      "denominator": 48,
+      "rate": 1.0
+    },
+    "missing_gold_object_mentions": 0,
+    "extra_accepted_object_mentions": 5,
+    "raw_model_object_predictions": 53,
+    "ungrounded_object_mentions_rejected": 0,
+    "explicit_color_correct": {
+      "numerator": 10,
+      "denominator": 10,
+      "rate": 1.0
+    },
+    "explicit_color_missing_or_wrong": 0,
+    "unspecified_colors_invented": 0,
+    "explicit_state_correct": {
+      "numerator": 4,
+      "denominator": 4,
+      "rate": 1.0
+    },
+    "explicit_state_missing_or_wrong": 0,
+    "unspecified_states_invented": 0,
+    "parser_latency_ms": {
+      "mean": 1844.793,
+      "median": 1910.295,
+      "p90": 1957.557
+    },
+    "per_scene": [
+      {
+        "scene_id": "laundry-room",
+        "family": "laundry",
+        "run_status": "parsed",
+        "expected_object_count": 8,
+        "parsed_object_count": 8,
+        "exact_mentions": 8,
+        "missing_mentions": 0,
+        "extra_mentions": 0,
+        "color_expected": 2,
+        "state_expected": 1,
+        "parser_latency_ms": 1720.606
+      },
+      {
+        "scene_id": "kitchen",
+        "family": "kitchen",
+        "run_status": "parsed",
+        "expected_object_count": 8,
+        "parsed_object_count": 10,
+        "exact_mentions": 8,
+        "missing_mentions": 0,
+        "extra_mentions": 2,
+        "color_expected": 2,
+        "state_expected": 0,
+        "parser_latency_ms": 1916.502
+      },
+      {
+        "scene_id": "study-office",
+        "family": "study_office",
+        "run_status": "parsed",
+        "expected_object_count": 8,
+        "parsed_object_count": 10,
+        "exact_mentions": 8,
+        "missing_mentions": 0,
+        "extra_mentions": 2,
+        "color_expected": 1,
+        "state_expected": 1,
+        "parser_latency_ms": 1612.452
+      },
+      {
+        "scene_id": "bedroom-clothing",
+        "family": "bedroom_clothing",
+        "run_status": "parsed",
+        "expected_object_count": 8,
+        "parsed_object_count": 8,
+        "exact_mentions": 8,
+        "missing_mentions": 0,
+        "extra_mentions": 0,
+        "color_expected": 2,
+        "state_expected": 1,
+        "parser_latency_ms": 1972.409
+      },
+      {
+        "scene_id": "electronics-desk",
+        "family": "electronics_desk",
+        "run_status": "parsed",
+        "expected_object_count": 8,
+        "parsed_object_count": 9,
+        "exact_mentions": 8,
+        "missing_mentions": 0,
+        "extra_mentions": 1,
+        "color_expected": 1,
+        "state_expected": 0,
+        "parser_latency_ms": 1904.088
+      },
+      {
+        "scene_id": "mixed-ambiguous",
+        "family": "mixed_adversarial_ambiguous",
+        "run_status": "parsed",
+        "expected_object_count": 8,
+        "parsed_object_count": 8,
+        "exact_mentions": 8,
+        "missing_mentions": 0,
+        "extra_mentions": 0,
+        "color_expected": 2,
+        "state_expected": 1,
+        "parser_latency_ms": 1942.704
+      }
+    ]
+  },
+  "context": {
+    "planned_decision_points": 60,
+    "completed_decision_points": 60,
+    "context_failures_or_missing": 0,
+    "candidate_coverage": {
+      "numerator": 30,
+      "denominator": 60,
+      "rate": 0.5
+    },
+    "selected_object_removal": {
+      "numerator": 60,
+      "denominator": 60,
+      "rate": 1.0
+    },
+    "q_dimension_correct": {
+      "numerator": 30,
+      "denominator": 60,
+      "rate": 0.5
+    },
+    "q_normalized": {
+      "numerator": 30,
+      "denominator": 60,
+      "rate": 0.5
+    },
+    "valid_candidate_and_q_rows": {
+      "numerator": 30,
+      "denominator": 60,
+      "rate": 0.5
+    },
+    "top1_acceptable_next_target": {
+      "numerator": 15,
+      "denominator": 27,
+      "rate": 0.5556
+    },
+    "top3_accepts_an_independent_label": {
+      "numerator": 25,
+      "denominator": 27,
+      "rate": 0.9259
+    },
+    "expected_ambiguity_points": 60,
+    "model_ambiguous_status_count": 0,
+    "context_status_counts": {
+      "informative": 23,
+      "context_off": 7,
+      "invalid": 30
+    },
+    "specific_affordance_relation_rows": 80,
+    "latency_ms": {
+      "mean": 1373.955,
+      "median": 455.137,
+      "p90": 3228.319,
+      "max": 11745.634
+    },
+    "total_completion_tokens_reported": 130120,
+    "history_sensitivity": {
+      "same_candidate_set_pairs": 6,
+      "ranking_changed": {
+        "numerator": 1,
+        "denominator": 6,
+        "rate": 0.1667
+      },
+      "top_candidate_changed": {
+        "numerator": 1,
+        "denominator": 6,
+        "rate": 0.1667
+      },
+      "q_changed": {
+        "numerator": 2,
+        "denominator": 6,
+        "rate": 0.3333
+      },
+      "pairs": [
+        {
+          "pair_id": "bedroom-clothing-reversed-first-two",
+          "scene_id": "bedroom-clothing",
+          "left_point_id": "bedroom-clothing-shirt-first-r02",
+          "right_point_id": "bedroom-clothing-hanger-first-r02",
+          "same_candidate_set": 1,
+          "left_history": "[\"shirt\", \"hanger\"]",
+          "right_history": "[\"hanger\", \"shirt\"]",
+          "left_ranking": "[\"jacket\", \"basket\", \"wardrobe\", \"drawer\", \"bedside\", \"bed\"]",
+          "right_ranking": "[\"jacket\", \"basket\", \"wardrobe\", \"drawer\", \"bedside\", \"bed\"]",
+          "ranking_changed": 0,
+          "top_candidate_changed": 0,
+          "q_l1_distance": 0.283171,
+          "q_changed": 1
+        },
+        {
+          "pair_id": "electronics-desk-reversed-first-two",
+          "scene_id": "electronics-desk",
+          "left_point_id": "electronics-desk-phone-first-r02",
+          "right_point_id": "electronics-desk-charger-first-r02",
+          "same_candidate_set": 1,
+          "left_history": "[\"phone\", \"charger\"]",
+          "right_history": "[\"charger\", \"phone\"]",
+          "left_ranking": "[]",
+          "right_ranking": "[]",
+          "ranking_changed": 0,
+          "top_candidate_changed": 0,
+          "q_l1_distance": 0,
+          "q_changed": 0
+        },
+        {
+          "pair_id": "kitchen-reversed-first-two",
+          "scene_id": "kitchen",
+          "left_point_id": "kitchen-apple-first-r02",
+          "right_point_id": "kitchen-knife-first-r02",
+          "same_candidate_set": 1,
+          "left_history": "[\"apple\", \"knife\"]",
+          "right_history": "[\"knife\", \"apple\"]",
+          "left_ranking": "[]",
+          "right_ranking": "[]",
+          "ranking_changed": 0,
+          "top_candidate_changed": 0,
+          "q_l1_distance": 0,
+          "q_changed": 0
+        },
+        {
+          "pair_id": "laundry-room-reversed-first-two",
+          "scene_id": "laundry-room",
+          "left_point_id": "laundry-room-shirt-first-r02",
+          "right_point_id": "laundry-room-basket-first-r02",
+          "same_candidate_set": 1,
+          "left_history": "[\"shirt\", \"basket\"]",
+          "right_history": "[\"basket\", \"shirt\"]",
+          "left_ranking": "[\"washer\", \"detergent\", \"jeans\", \"rack\", \"cabinet\", \"trash\"]",
+          "right_ranking": "[\"jeans\", \"washer\", \"detergent\", \"rack\", \"cabinet\", \"trash\"]",
+          "ranking_changed": 1,
+          "top_candidate_changed": 1,
+          "q_l1_distance": 0.484296,
+          "q_changed": 1
+        },
+        {
+          "pair_id": "mixed-ambiguous-reversed-first-two",
+          "scene_id": "mixed-ambiguous",
+          "left_point_id": "mixed-ambiguous-phone-first-r02",
+          "right_point_id": "mixed-ambiguous-charger-first-r02",
+          "same_candidate_set": 1,
+          "left_history": "[\"phone\", \"charger\"]",
+          "right_history": "[\"charger\", \"phone\"]",
+          "left_ranking": "[\"apple\", \"knife\", \"plate\", \"box\", \"shelf\", \"trash\"]",
+          "right_ranking": "[\"apple\", \"knife\", \"plate\", \"box\", \"shelf\", \"trash\"]",
+          "ranking_changed": 0,
+          "top_candidate_changed": 0,
+          "q_l1_distance": 0.0,
+          "q_changed": 0
+        },
+        {
+          "pair_id": "study-office-reversed-first-two",
+          "scene_id": "study-office",
+          "left_point_id": "study-office-book-first-r02",
+          "right_point_id": "study-office-shelf-first-r02",
+          "same_candidate_set": 1,
+          "left_history": "[\"book\", \"bookshelf\"]",
+          "right_history": "[\"bookshelf\", \"book\"]",
+          "left_ranking": "[]",
+          "right_ranking": "[]",
+          "ranking_changed": 0,
+          "top_candidate_changed": 0,
+          "q_l1_distance": 0,
+          "q_changed": 0
+        }
+      ]
+    }
+  },
+  "repeatability": {
+    "repeat_calls": 8,
+    "structural_exact": {
+      "numerator": 6,
+      "denominator": 8,
+      "rate": 0.75
+    },
+    "relation_structure_exact": {
+      "numerator": 6,
+      "denominator": 8,
+      "rate": 0.75
+    },
+    "q_l1_distance_mean": 0.107482,
+    "q_l1_distance_median": 0.0,
+    "per_point": [
+      {
+        "point_id": "laundry-room-shirt-first-r02",
+        "run_status": "completed",
+        "structural_exact": 0,
+        "relations_exact": 0,
+        "q_l1_distance": 0.859855,
+        "repeat_latency_ms": 3037.178
+      },
+      {
+        "point_id": "kitchen-knife-first-r02",
+        "run_status": "completed",
+        "structural_exact": 1,
+        "relations_exact": 1,
+        "q_l1_distance": 0,
+        "repeat_latency_ms": 0.0
+      },
+      {
+        "point_id": "study-office-book-first-r03",
+        "run_status": "completed",
+        "structural_exact": 1,
+        "relations_exact": 1,
+        "q_l1_distance": 0,
+        "repeat_latency_ms": 0.0
+      },
+      {
+        "point_id": "bedroom-clothing-hanger-first-r02",
+        "run_status": "completed",
+        "structural_exact": 1,
+        "relations_exact": 1,
+        "q_l1_distance": 0.0,
+        "repeat_latency_ms": 3120.5
+      },
+      {
+        "point_id": "electronics-desk-phone-first-r02",
+        "run_status": "completed",
+        "structural_exact": 1,
+        "relations_exact": 1,
+        "q_l1_distance": 0,
+        "repeat_latency_ms": 0.0
+      },
+      {
+        "point_id": "mixed-ambiguous-phone-first-r02",
+        "run_status": "completed",
+        "structural_exact": 0,
+        "relations_exact": 0,
+        "q_l1_distance": 0.0,
+        "repeat_latency_ms": 2904.855
+      },
+      {
+        "point_id": "kitchen-apple-first-r04",
+        "run_status": "completed",
+        "structural_exact": 1,
+        "relations_exact": 1,
+        "q_l1_distance": 0,
+        "repeat_latency_ms": 0.0
+      },
+      {
+        "point_id": "electronics-desk-charger-first-r03",
+        "run_status": "completed",
+        "structural_exact": 1,
+        "relations_exact": 1,
+        "q_l1_distance": 0,
+        "repeat_latency_ms": 0.0
+      }
+    ]
+  },
+  "kitchen_three_round_walkthrough": [
+    {
+      "point_id": "kitchen-apple-first-r01",
+      "selection_history": [
+        "红色苹果"
+      ],
+      "candidate_count": 7,
+      "q_dimension": 0,
+      "q_sum": 0,
+      "status": "invalid",
+      "q_global": []
+    },
+    {
+      "point_id": "kitchen-apple-first-r02",
+      "selection_history": [
+        "红色苹果",
+        "水果刀"
+      ],
+      "candidate_count": 6,
+      "q_dimension": 0,
+      "q_sum": 0,
+      "status": "invalid",
+      "q_global": []
+    },
+    {
+      "point_id": "kitchen-apple-first-r03",
+      "selection_history": [
+        "红色苹果",
+        "水果刀",
+        "白色盘子"
+      ],
+      "candidate_count": 5,
+      "q_dimension": 0,
+      "q_sum": 0,
+      "status": "invalid",
+      "q_global": []
+    }
+  ],
+  "boundaries": {
+    "eeg_used": false,
+    "quest_used": false,
+    "image_input_implemented": false,
+    "real_vla_dispatch": false,
+    "api_key_persisted": false
+  }
+}

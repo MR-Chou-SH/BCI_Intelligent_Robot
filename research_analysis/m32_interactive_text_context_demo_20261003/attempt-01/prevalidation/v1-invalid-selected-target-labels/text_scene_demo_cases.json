@@ -1,0 +1,405 @@
+{
+  "schema_version": "m32-text-scene-sequence-benchmark-v1",
+  "scenes": [
+    {
+      "scene_id": "laundry-room",
+      "family": "laundry",
+      "scene_text": "这是一个洗衣房。房间里有白色衬衫、蓝色牛仔裤、洗衣篮、洗衣机、洗衣液、晾衣架、关闭的储物柜和垃圾桶。",
+      "objects": [
+        {
+          "object_id": "shirt",
+          "mention": "白色衬衫",
+          "object_type": "shirt",
+          "explicit_color": "white"
+        },
+        {
+          "object_id": "jeans",
+          "mention": "蓝色牛仔裤",
+          "object_type": "jeans",
+          "explicit_color": "blue"
+        },
+        {
+          "object_id": "basket",
+          "mention": "洗衣篮",
+          "object_type": "laundry_basket"
+        },
+        {
+          "object_id": "washer",
+          "mention": "洗衣机",
+          "object_type": "washing_machine"
+        },
+        {
+          "object_id": "detergent",
+          "mention": "洗衣液",
+          "object_type": "detergent"
+        },
+        {
+          "object_id": "rack",
+          "mention": "晾衣架",
+          "object_type": "drying_rack"
+        },
+        {
+          "object_id": "cabinet",
+          "mention": "关闭的储物柜",
+          "object_type": "cabinet",
+          "explicit_state": {
+            "lid": "closed"
+          }
+        },
+        {
+          "object_id": "trash",
+          "mention": "垃圾桶",
+          "object_type": "trash_bin"
+        }
+      ],
+      "suggested_sequences": [
+        [
+          "shirt",
+          "basket",
+          "washer",
+          "detergent",
+          "rack"
+        ],
+        [
+          "basket",
+          "shirt",
+          "detergent",
+          "washer",
+          "cabinet"
+        ]
+      ]
+    },
+    {
+      "scene_id": "kitchen",
+      "family": "kitchen",
+      "scene_text": "这是一个厨房。台面和周围有红色苹果、水果刀、白色盘子、橙子、榨汁机、水槽、储物柜和垃圾桶。",
+      "objects": [
+        {
+          "object_id": "apple",
+          "mention": "红色苹果",
+          "object_type": "apple",
+          "explicit_color": "red"
+        },
+        {
+          "object_id": "knife",
+          "mention": "水果刀",
+          "object_type": "knife"
+        },
+        {
+          "object_id": "plate",
+          "mention": "白色盘子",
+          "object_type": "plate",
+          "explicit_color": "white"
+        },
+        {
+          "object_id": "orange",
+          "mention": "橙子",
+          "object_type": "orange"
+        },
+        {
+          "object_id": "juicer",
+          "mention": "榨汁机",
+          "object_type": "juicer"
+        },
+        {
+          "object_id": "sink",
+          "mention": "水槽",
+          "object_type": "sink"
+        },
+        {
+          "object_id": "cabinet",
+          "mention": "储物柜",
+          "object_type": "cabinet"
+        },
+        {
+          "object_id": "trash",
+          "mention": "垃圾桶",
+          "object_type": "trash_bin"
+        }
+      ],
+      "suggested_sequences": [
+        [
+          "apple",
+          "knife",
+          "plate",
+          "sink",
+          "orange"
+        ],
+        [
+          "knife",
+          "apple",
+          "orange",
+          "juicer",
+          "plate"
+        ]
+      ]
+    },
+    {
+      "scene_id": "study-office",
+      "family": "study_office",
+      "scene_text": "这是一个书房。桌边有一本书、书架、蓝色钢笔、笔筒、文件、托盘、关闭的抽屉和垃圾桶。",
+      "objects": [
+        {
+          "object_id": "book",
+          "mention": "一本书",
+          "object_type": "book"
+        },
+        {
+          "object_id": "bookshelf",
+          "mention": "书架",
+          "object_type": "bookshelf"
+        },
+        {
+          "object_id": "pen",
+          "mention": "蓝色钢笔",
+          "object_type": "pen",
+          "explicit_color": "blue"
+        },
+        {
+          "object_id": "holder",
+          "mention": "笔筒",
+          "object_type": "pen_holder"
+        },
+        {
+          "object_id": "document",
+          "mention": "文件",
+          "object_type": "document"
+        },
+        {
+          "object_id": "tray",
+          "mention": "托盘",
+          "object_type": "tray"
+        },
+        {
+          "object_id": "drawer",
+          "mention": "关闭的抽屉",
+          "object_type": "drawer",
+          "explicit_state": {
+            "lid": "closed"
+          }
+        },
+        {
+          "object_id": "trash",
+          "mention": "垃圾桶",
+          "object_type": "trash_bin"
+        }
+      ],
+      "suggested_sequences": [
+        [
+          "book",
+          "bookshelf",
+          "pen",
+          "holder",
+          "document"
+        ],
+        [
+          "bookshelf",
+          "book",
+          "document",
+          "tray",
+          "holder"
+        ]
+      ]
+    },
+    {
+      "scene_id": "bedroom-clothing",
+      "family": "bedroom_clothing",
+      "scene_text": "这是一个卧室和衣物整理区。房间里有红色衬衫、蓝色外套、衣架、关闭的衣柜、洗衣篮、床、床头柜和抽屉。",
+      "objects": [
+        {
+          "object_id": "shirt",
+          "mention": "红色衬衫",
+          "object_type": "shirt",
+          "explicit_color": "red"
+        },
+        {
+          "object_id": "jacket",
+          "mention": "蓝色外套",
+          "object_type": "jacket",
+          "explicit_color": "blue"
+        },
+        {
+          "object_id": "hanger",
+          "mention": "衣架",
+          "object_type": "clothes_hanger"
+        },
+        {
+          "object_id": "wardrobe",
+          "mention": "关闭的衣柜",
+          "object_type": "wardrobe",
+          "explicit_state": {
+            "lid": "closed"
+          }
+        },
+        {
+          "object_id": "basket",
+          "mention": "洗衣篮",
+          "object_type": "laundry_basket"
+        },
+        {
+          "object_id": "bed",
+          "mention": "床",
+          "object_type": "bed"
+        },
+        {
+          "object_id": "bedside",
+          "mention": "床头柜",
+          "object_type": "bedside_table"
+        },
+        {
+          "object_id": "drawer",
+          "mention": "抽屉",
+          "object_type": "drawer"
+        }
+      ],
+      "suggested_sequences": [
+        [
+          "shirt",
+          "hanger",
+          "wardrobe",
+          "basket",
+          "bed"
+        ],
+        [
+          "hanger",
+          "shirt",
+          "bed",
+          "wardrobe",
+          "drawer"
+        ]
+      ]
+    },
+    {
+      "scene_id": "electronics-desk",
+      "family": "electronics_desk",
+      "scene_text": "这是一个电子设备桌面。桌面附近有黑色手机、无线充电座、USB线、笔记本电脑、杯子、书桌、抽屉和用户交接区。",
+      "objects": [
+        {
+          "object_id": "phone",
+          "mention": "黑色手机",
+          "object_type": "smartphone",
+          "explicit_color": "black"
+        },
+        {
+          "object_id": "charger",
+          "mention": "无线充电座",
+          "object_type": "wireless_charger"
+        },
+        {
+          "object_id": "cable",
+          "mention": "USB线",
+          "object_type": "usb_cable"
+        },
+        {
+          "object_id": "laptop",
+          "mention": "笔记本电脑",
+          "object_type": "laptop"
+        },
+        {
+          "object_id": "mug",
+          "mention": "杯子",
+          "object_type": "mug"
+        },
+        {
+          "object_id": "desk",
+          "mention": "书桌",
+          "object_type": "desk"
+        },
+        {
+          "object_id": "drawer",
+          "mention": "抽屉",
+          "object_type": "drawer"
+        },
+        {
+          "object_id": "user-zone",
+          "mention": "用户交接区",
+          "object_type": "user_zone"
+        }
+      ],
+      "suggested_sequences": [
+        [
+          "phone",
+          "charger",
+          "cable",
+          "laptop",
+          "drawer"
+        ],
+        [
+          "charger",
+          "phone",
+          "cable",
+          "desk",
+          "mug"
+        ]
+      ]
+    },
+    {
+      "scene_id": "mixed-ambiguous",
+      "family": "mixed_adversarial_ambiguous",
+      "scene_text": "这是一个混合生活场景。场景里有红色苹果、水果刀、白色盘子、手机、无线充电座、关闭的收纳盒、书架和垃圾桶。",
+      "objects": [
+        {
+          "object_id": "apple",
+          "mention": "红色苹果",
+          "object_type": "apple",
+          "explicit_color": "red"
+        },
+        {
+          "object_id": "knife",
+          "mention": "水果刀",
+          "object_type": "knife"
+        },
+        {
+          "object_id": "plate",
+          "mention": "白色盘子",
+          "object_type": "plate",
+          "explicit_color": "white"
+        },
+        {
+          "object_id": "phone",
+          "mention": "手机",
+          "object_type": "smartphone"
+        },
+        {
+          "object_id": "charger",
+          "mention": "无线充电座",
+          "object_type": "wireless_charger"
+        },
+        {
+          "object_id": "box",
+          "mention": "关闭的收纳盒",
+          "object_type": "storage_box",
+          "explicit_state": {
+            "lid": "closed"
+          }
+        },
+        {
+          "object_id": "shelf",
+          "mention": "书架",
+          "object_type": "bookshelf"
+        },
+        {
+          "object_id": "trash",
+          "mention": "垃圾桶",
+          "object_type": "trash_bin"
+        }
+      ],
+      "suggested_sequences": [
+        [
+          "phone",
+          "charger",
+          "box",
+          "shelf",
+          "apple"
+        ],
+        [
+          "charger",
+          "phone",
+          "apple",
+          "knife",
+          "plate"
+        ]
+      ]
+    }
+  ]
+}

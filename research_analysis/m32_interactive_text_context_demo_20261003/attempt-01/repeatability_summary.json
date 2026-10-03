@@ -1,0 +1,81 @@
+{
+  "repeat_calls": 8,
+  "structural_exact": {
+    "numerator": 5,
+    "denominator": 8,
+    "rate": 0.625
+  },
+  "relation_structure_exact": {
+    "numerator": 5,
+    "denominator": 8,
+    "rate": 0.625
+  },
+  "q_l1_distance_mean": 0.493525,
+  "q_l1_distance_median": 0.213966,
+  "per_point": [
+    {
+      "point_id": "laundry-room-shirt-first-r02",
+      "run_status": "completed",
+      "structural_exact": 1,
+      "relations_exact": 1,
+      "q_l1_distance": 0.106291,
+      "repeat_latency_ms": 2563.273
+    },
+    {
+      "point_id": "kitchen-knife-first-r02",
+      "run_status": "completed",
+      "structural_exact": 0,
+      "relations_exact": 0,
+      "q_l1_distance": 1.287395,
+      "repeat_latency_ms": 2692.632
+    },
+    {
+      "point_id": "study-office-book-first-r03",
+      "run_status": "completed",
+      "structural_exact": 1,
+      "relations_exact": 1,
+      "q_l1_distance": 0.0,
+      "repeat_latency_ms": 2890.812
+    },
+    {
+      "point_id": "bedroom-clothing-hanger-first-r02",
+      "run_status": "completed",
+      "structural_exact": 1,
+      "relations_exact": 1,
+      "q_l1_distance": 0.32164,
+      "repeat_latency_ms": 2786.08
+    },
+    {
+      "point_id": "electronics-desk-phone-first-r02",
+      "run_status": "completed",
+      "structural_exact": 0,
+      "relations_exact": 0,
+      "q_l1_distance": 1.41063,
+      "repeat_latency_ms": 2607.98
+    },
+    {
+      "point_id": "mixed-ambiguous-phone-first-r02",
+      "run_status": "completed",
+      "structural_exact": 1,
+      "relations_exact": 1,
+      "q_l1_distance": 0.0,
+      "repeat_latency_ms": 2695.021
+    },
+    {
+      "point_id": "kitchen-apple-first-r04",
+      "run_status": "completed",
+      "structural_exact": 1,
+      "relations_exact": 1,
+      "q_l1_distance": 0.0,
+      "repeat_latency_ms": 1424.893
+    },
+    {
+      "point_id": "electronics-desk-charger-first-r03",
+      "run_status": "completed",
+      "structural_exact": 0,
+      "relations_exact": 0,
+      "q_l1_distance": 0.822243,
+      "repeat_latency_ms": 2491.898
+    }
+  ]
+}

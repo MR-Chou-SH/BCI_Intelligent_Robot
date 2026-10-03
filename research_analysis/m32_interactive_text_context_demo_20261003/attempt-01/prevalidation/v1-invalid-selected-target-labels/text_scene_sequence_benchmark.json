@@ -1,0 +1,2329 @@
+{
+  "schema_version": "m32-text-scene-sequence-benchmark-v1",
+  "benchmark_id": "m32_interactive_text_context_20261003_attempt01",
+  "frozen_at_utc": "2026-10-03T00:20:23.124Z",
+  "scene_count": 6,
+  "scene_family_count": 6,
+  "trajectory_count": 12,
+  "decision_point_count": 60,
+  "repeatability_point_ids": [
+    "laundry-room-shirt-first-r02",
+    "kitchen-knife-first-r02",
+    "study-office-book-first-r03",
+    "bedroom-clothing-hanger-first-r02",
+    "electronics-desk-phone-first-r02",
+    "mixed-ambiguous-phone-first-r02",
+    "kitchen-apple-first-r04",
+    "electronics-desk-charger-first-r03"
+  ],
+  "ground_truth_source": "independently authored scene/object/relation alternatives; never generated from model output",
+  "model_input_contract": "runner sends only scene_text to TextSceneParser and parsed scene/history/task state/candidates to M30; expected labels are scorer-only",
+  "scenes": [
+    {
+      "scene_id": "laundry-room",
+      "family": "laundry",
+      "scene_type": "洗衣房",
+      "scene_text": "这是一个洗衣房。房间里有白色衬衫、蓝色牛仔裤、洗衣篮、洗衣机、洗衣液、晾衣架、关闭的储物柜和垃圾桶。",
+      "objects": [
+        {
+          "object_id": "shirt",
+          "mention": "白色衬衫",
+          "object_type": "shirt",
+          "expected_affordance_tags": [
+            "clothing",
+            "washable",
+            "laundry"
+          ],
+          "acceptable_aliases": [
+            "衬衫",
+            "shirt"
+          ],
+          "explicit_color": "white"
+        },
+        {
+          "object_id": "jeans",
+          "mention": "蓝色牛仔裤",
+          "object_type": "jeans",
+          "expected_affordance_tags": [
+            "clothing",
+            "washable",
+            "laundry"
+          ],
+          "acceptable_aliases": [
+            "牛仔裤",
+            "jeans"
+          ],
+          "explicit_color": "blue"
+        },
+        {
+          "object_id": "basket",
+          "mention": "洗衣篮",
+          "object_type": "laundry_basket",
+          "expected_affordance_tags": [
+            "container",
+            "laundry",
+            "storage_surface"
+          ],
+          "acceptable_aliases": [
+            "篮子",
+            "basket"
+          ]
+        },
+        {
+          "object_id": "washer",
+          "mention": "洗衣机",
+          "object_type": "washing_machine",
+          "expected_affordance_tags": [
+            "washing_equipment",
+            "washing_machine",
+            "appliance"
+          ],
+          "acceptable_aliases": [
+            "washer"
+          ]
+        },
+        {
+          "object_id": "detergent",
+          "mention": "洗衣液",
+          "object_type": "detergent",
+          "expected_affordance_tags": [
+            "washing_equipment",
+            "detergent"
+          ],
+          "acceptable_aliases": [
+            "洗衣剂",
+            "detergent"
+          ]
+        },
+        {
+          "object_id": "rack",
+          "mention": "晾衣架",
+          "object_type": "drying_rack",
+          "expected_affordance_tags": [
+            "drying_rack",
+            "drying_surface",
+            "support_surface"
+          ],
+          "acceptable_aliases": [
+            "衣架",
+            "drying rack"
+          ]
+        },
+        {
+          "object_id": "cabinet",
+          "mention": "关闭的储物柜",
+          "object_type": "cabinet",
+          "expected_affordance_tags": [
+            "container",
+            "openable",
+            "storage_surface"
+          ],
+          "acceptable_aliases": [
+            "储物柜",
+            "cabinet"
+          ],
+          "explicit_state": {
+            "lid": "closed"
+          }
+        },
+        {
+          "object_id": "trash",
+          "mention": "垃圾桶",
+          "object_type": "trash_bin",
+          "expected_affordance_tags": [
+            "container"
+          ],
+          "acceptable_aliases": [
+            "垃圾箱",
+            "trash bin"
+          ]
+        }
+      ],
+      "selectable_object_ids": [
+        "shirt",
+        "jeans",
+        "basket",
+        "washer",
+        "detergent",
+        "rack",
+        "cabinet",
+        "trash"
+      ],
+      "trajectories": [
+        {
+          "trajectory_id": "laundry-room-shirt-first",
+          "selection_order": [
+            "shirt",
+            "basket",
+            "washer",
+            "detergent",
+            "rack"
+          ],
+          "decision_points": [
+            {
+              "point_id": "laundry-room-shirt-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "shirt"
+              ],
+              "candidate_object_ids": [
+                "jeans",
+                "basket",
+                "washer",
+                "detergent",
+                "rack",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "basket",
+                "washer",
+                "detergent",
+                "rack"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "laundry-room-shirt-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "shirt",
+                "basket"
+              ],
+              "candidate_object_ids": [
+                "jeans",
+                "washer",
+                "detergent",
+                "rack",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "washer",
+                "detergent",
+                "rack"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "laundry-room-reversed-first-two"
+            },
+            {
+              "point_id": "laundry-room-shirt-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "shirt",
+                "basket",
+                "washer"
+              ],
+              "candidate_object_ids": [
+                "jeans",
+                "detergent",
+                "rack",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "detergent",
+                "rack",
+                "cabinet"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "laundry-room-shirt-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "shirt",
+                "basket",
+                "washer",
+                "detergent"
+              ],
+              "candidate_object_ids": [
+                "jeans",
+                "rack",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "rack",
+                "cabinet"
+              ],
+              "expected_ambiguity": false,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "laundry-room-shirt-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "shirt",
+                "basket",
+                "washer",
+                "detergent",
+                "rack"
+              ],
+              "candidate_object_ids": [
+                "jeans",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "cabinet",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        },
+        {
+          "trajectory_id": "laundry-room-basket-first",
+          "selection_order": [
+            "basket",
+            "shirt",
+            "detergent",
+            "washer",
+            "cabinet"
+          ],
+          "decision_points": [
+            {
+              "point_id": "laundry-room-basket-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "basket"
+              ],
+              "candidate_object_ids": [
+                "shirt",
+                "jeans",
+                "washer",
+                "detergent",
+                "rack",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "shirt",
+                "jeans",
+                "washer"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "laundry-room-basket-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "basket",
+                "shirt"
+              ],
+              "candidate_object_ids": [
+                "jeans",
+                "washer",
+                "detergent",
+                "rack",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "washer",
+                "detergent",
+                "rack"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "laundry-room-reversed-first-two"
+            },
+            {
+              "point_id": "laundry-room-basket-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "basket",
+                "shirt",
+                "detergent"
+              ],
+              "candidate_object_ids": [
+                "jeans",
+                "washer",
+                "rack",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "washer",
+                "rack"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "laundry-room-basket-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "basket",
+                "shirt",
+                "detergent",
+                "washer"
+              ],
+              "candidate_object_ids": [
+                "jeans",
+                "rack",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "rack",
+                "cabinet"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "laundry-room-basket-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "basket",
+                "shirt",
+                "detergent",
+                "washer",
+                "cabinet"
+              ],
+              "candidate_object_ids": [
+                "jeans",
+                "rack",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "rack",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scene_id": "kitchen",
+      "family": "kitchen",
+      "scene_type": "厨房",
+      "scene_text": "这是一个厨房。台面和周围有红色苹果、水果刀、白色盘子、橙子、榨汁机、水槽、储物柜和垃圾桶。",
+      "objects": [
+        {
+          "object_id": "apple",
+          "mention": "红色苹果",
+          "object_type": "apple",
+          "expected_affordance_tags": [
+            "food",
+            "cuttable",
+            "juicable"
+          ],
+          "acceptable_aliases": [
+            "苹果",
+            "apple"
+          ],
+          "explicit_color": "red"
+        },
+        {
+          "object_id": "knife",
+          "mention": "水果刀",
+          "object_type": "knife",
+          "expected_affordance_tags": [
+            "knife",
+            "cutting_tool",
+            "tool"
+          ],
+          "acceptable_aliases": [
+            "刀",
+            "fruit knife"
+          ]
+        },
+        {
+          "object_id": "plate",
+          "mention": "白色盘子",
+          "object_type": "plate",
+          "expected_affordance_tags": [
+            "dish",
+            "support_surface"
+          ],
+          "acceptable_aliases": [
+            "盘子",
+            "plate"
+          ],
+          "explicit_color": "white"
+        },
+        {
+          "object_id": "orange",
+          "mention": "橙子",
+          "object_type": "orange",
+          "expected_affordance_tags": [
+            "food",
+            "juicable"
+          ],
+          "acceptable_aliases": [
+            "orange"
+          ]
+        },
+        {
+          "object_id": "juicer",
+          "mention": "榨汁机",
+          "object_type": "juicer",
+          "expected_affordance_tags": [
+            "juicer",
+            "juicing_appliance",
+            "appliance"
+          ],
+          "acceptable_aliases": [
+            "榨汁器",
+            "juicer"
+          ]
+        },
+        {
+          "object_id": "sink",
+          "mention": "水槽",
+          "object_type": "sink",
+          "expected_affordance_tags": [
+            "water_source",
+            "sink",
+            "tap"
+          ],
+          "acceptable_aliases": [
+            "洗碗池",
+            "sink"
+          ]
+        },
+        {
+          "object_id": "cabinet",
+          "mention": "储物柜",
+          "object_type": "cabinet",
+          "expected_affordance_tags": [
+            "container",
+            "openable",
+            "storage_surface"
+          ],
+          "acceptable_aliases": [
+            "柜子",
+            "cabinet"
+          ]
+        },
+        {
+          "object_id": "trash",
+          "mention": "垃圾桶",
+          "object_type": "trash_bin",
+          "expected_affordance_tags": [
+            "container"
+          ],
+          "acceptable_aliases": [
+            "垃圾箱",
+            "trash bin"
+          ]
+        }
+      ],
+      "selectable_object_ids": [
+        "apple",
+        "knife",
+        "plate",
+        "orange",
+        "juicer",
+        "sink",
+        "cabinet",
+        "trash"
+      ],
+      "trajectories": [
+        {
+          "trajectory_id": "kitchen-apple-first",
+          "selection_order": [
+            "apple",
+            "knife",
+            "plate",
+            "sink",
+            "orange"
+          ],
+          "decision_points": [
+            {
+              "point_id": "kitchen-apple-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "apple"
+              ],
+              "candidate_object_ids": [
+                "knife",
+                "plate",
+                "orange",
+                "juicer",
+                "sink",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "knife",
+                "plate",
+                "sink",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "kitchen-apple-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "apple",
+                "knife"
+              ],
+              "candidate_object_ids": [
+                "plate",
+                "orange",
+                "juicer",
+                "sink",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "plate",
+                "sink",
+                "orange"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "kitchen-reversed-first-two"
+            },
+            {
+              "point_id": "kitchen-apple-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "apple",
+                "knife",
+                "plate"
+              ],
+              "candidate_object_ids": [
+                "orange",
+                "juicer",
+                "sink",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "sink",
+                "cabinet",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "kitchen-apple-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "apple",
+                "knife",
+                "plate",
+                "sink"
+              ],
+              "candidate_object_ids": [
+                "orange",
+                "juicer",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "orange",
+                "juicer",
+                "cabinet"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "kitchen-apple-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "apple",
+                "knife",
+                "plate",
+                "sink",
+                "orange"
+              ],
+              "candidate_object_ids": [
+                "juicer",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "juicer",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        },
+        {
+          "trajectory_id": "kitchen-knife-first",
+          "selection_order": [
+            "knife",
+            "apple",
+            "orange",
+            "juicer",
+            "plate"
+          ],
+          "decision_points": [
+            {
+              "point_id": "kitchen-knife-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "knife"
+              ],
+              "candidate_object_ids": [
+                "apple",
+                "plate",
+                "orange",
+                "juicer",
+                "sink",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "apple",
+                "orange",
+                "plate"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "kitchen-knife-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "knife",
+                "apple"
+              ],
+              "candidate_object_ids": [
+                "plate",
+                "orange",
+                "juicer",
+                "sink",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "plate",
+                "sink",
+                "orange"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "kitchen-reversed-first-two"
+            },
+            {
+              "point_id": "kitchen-knife-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "knife",
+                "apple",
+                "orange"
+              ],
+              "candidate_object_ids": [
+                "plate",
+                "juicer",
+                "sink",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "juicer",
+                "sink",
+                "plate"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "kitchen-knife-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "knife",
+                "apple",
+                "orange",
+                "juicer"
+              ],
+              "candidate_object_ids": [
+                "plate",
+                "sink",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "sink",
+                "plate"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "kitchen-knife-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "knife",
+                "apple",
+                "orange",
+                "juicer",
+                "plate"
+              ],
+              "candidate_object_ids": [
+                "sink",
+                "cabinet",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "sink",
+                "cabinet",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scene_id": "study-office",
+      "family": "study_office",
+      "scene_type": "书房",
+      "scene_text": "这是一个书房。桌边有一本书、书架、蓝色钢笔、笔筒、文件、托盘、关闭的抽屉和垃圾桶。",
+      "objects": [
+        {
+          "object_id": "book",
+          "mention": "一本书",
+          "object_type": "book",
+          "expected_affordance_tags": [
+            "book"
+          ],
+          "acceptable_aliases": [
+            "书",
+            "book"
+          ]
+        },
+        {
+          "object_id": "bookshelf",
+          "mention": "书架",
+          "object_type": "bookshelf",
+          "expected_affordance_tags": [
+            "support_surface",
+            "storage_surface",
+            "shelf"
+          ],
+          "acceptable_aliases": [
+            "书柜",
+            "bookshelf"
+          ]
+        },
+        {
+          "object_id": "pen",
+          "mention": "蓝色钢笔",
+          "object_type": "pen",
+          "expected_affordance_tags": [
+            "tool"
+          ],
+          "acceptable_aliases": [
+            "钢笔",
+            "pen"
+          ],
+          "explicit_color": "blue"
+        },
+        {
+          "object_id": "holder",
+          "mention": "笔筒",
+          "object_type": "pen_holder",
+          "expected_affordance_tags": [
+            "container",
+            "storage_surface"
+          ],
+          "acceptable_aliases": [
+            "笔架",
+            "pen holder"
+          ]
+        },
+        {
+          "object_id": "document",
+          "mention": "文件",
+          "object_type": "document",
+          "expected_affordance_tags": [
+            "paper"
+          ],
+          "acceptable_aliases": [
+            "文档",
+            "document"
+          ]
+        },
+        {
+          "object_id": "tray",
+          "mention": "托盘",
+          "object_type": "tray",
+          "expected_affordance_tags": [
+            "support_surface",
+            "storage_surface"
+          ],
+          "acceptable_aliases": [
+            "文件托盘",
+            "tray"
+          ]
+        },
+        {
+          "object_id": "drawer",
+          "mention": "关闭的抽屉",
+          "object_type": "drawer",
+          "expected_affordance_tags": [
+            "container",
+            "openable"
+          ],
+          "acceptable_aliases": [
+            "抽屉",
+            "drawer"
+          ],
+          "explicit_state": {
+            "lid": "closed"
+          }
+        },
+        {
+          "object_id": "trash",
+          "mention": "垃圾桶",
+          "object_type": "trash_bin",
+          "expected_affordance_tags": [
+            "container"
+          ],
+          "acceptable_aliases": [
+            "垃圾箱",
+            "trash bin"
+          ]
+        }
+      ],
+      "selectable_object_ids": [
+        "book",
+        "bookshelf",
+        "pen",
+        "holder",
+        "document",
+        "tray",
+        "drawer",
+        "trash"
+      ],
+      "trajectories": [
+        {
+          "trajectory_id": "study-office-book-first",
+          "selection_order": [
+            "book",
+            "bookshelf",
+            "pen",
+            "holder",
+            "document"
+          ],
+          "decision_points": [
+            {
+              "point_id": "study-office-book-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "book"
+              ],
+              "candidate_object_ids": [
+                "bookshelf",
+                "pen",
+                "holder",
+                "document",
+                "tray",
+                "drawer",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "bookshelf",
+                "tray",
+                "drawer"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "study-office-book-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "book",
+                "bookshelf"
+              ],
+              "candidate_object_ids": [
+                "pen",
+                "holder",
+                "document",
+                "tray",
+                "drawer",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "pen",
+                "document",
+                "tray"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "study-office-reversed-first-two"
+            },
+            {
+              "point_id": "study-office-book-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "book",
+                "bookshelf",
+                "pen"
+              ],
+              "candidate_object_ids": [
+                "holder",
+                "document",
+                "tray",
+                "drawer",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "holder",
+                "tray",
+                "drawer"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "study-office-book-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "book",
+                "bookshelf",
+                "pen",
+                "holder"
+              ],
+              "candidate_object_ids": [
+                "document",
+                "tray",
+                "drawer",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "document",
+                "drawer",
+                "bookshelf"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "study-office-book-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "book",
+                "bookshelf",
+                "pen",
+                "holder",
+                "document"
+              ],
+              "candidate_object_ids": [
+                "tray",
+                "drawer",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "tray",
+                "drawer",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        },
+        {
+          "trajectory_id": "study-office-shelf-first",
+          "selection_order": [
+            "bookshelf",
+            "book",
+            "document",
+            "tray",
+            "holder"
+          ],
+          "decision_points": [
+            {
+              "point_id": "study-office-shelf-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "bookshelf"
+              ],
+              "candidate_object_ids": [
+                "book",
+                "pen",
+                "holder",
+                "document",
+                "tray",
+                "drawer",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "book",
+                "document",
+                "tray"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "study-office-shelf-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "bookshelf",
+                "book"
+              ],
+              "candidate_object_ids": [
+                "pen",
+                "holder",
+                "document",
+                "tray",
+                "drawer",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "pen",
+                "document",
+                "tray"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "study-office-reversed-first-two"
+            },
+            {
+              "point_id": "study-office-shelf-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "bookshelf",
+                "book",
+                "document"
+              ],
+              "candidate_object_ids": [
+                "pen",
+                "holder",
+                "tray",
+                "drawer",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "tray",
+                "drawer",
+                "bookshelf"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "study-office-shelf-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "bookshelf",
+                "book",
+                "document",
+                "tray"
+              ],
+              "candidate_object_ids": [
+                "pen",
+                "holder",
+                "drawer",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "holder",
+                "drawer",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "study-office-shelf-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "bookshelf",
+                "book",
+                "document",
+                "tray",
+                "holder"
+              ],
+              "candidate_object_ids": [
+                "pen",
+                "drawer",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "drawer",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scene_id": "bedroom-clothing",
+      "family": "bedroom_clothing",
+      "scene_type": "卧室和衣物整理区",
+      "scene_text": "这是一个卧室和衣物整理区。房间里有红色衬衫、蓝色外套、衣架、关闭的衣柜、洗衣篮、床、床头柜和抽屉。",
+      "objects": [
+        {
+          "object_id": "shirt",
+          "mention": "红色衬衫",
+          "object_type": "shirt",
+          "expected_affordance_tags": [
+            "clothing",
+            "washable",
+            "laundry"
+          ],
+          "acceptable_aliases": [
+            "衬衫",
+            "shirt"
+          ],
+          "explicit_color": "red"
+        },
+        {
+          "object_id": "jacket",
+          "mention": "蓝色外套",
+          "object_type": "jacket",
+          "expected_affordance_tags": [
+            "clothing",
+            "washable",
+            "laundry"
+          ],
+          "acceptable_aliases": [
+            "外套",
+            "jacket"
+          ],
+          "explicit_color": "blue"
+        },
+        {
+          "object_id": "hanger",
+          "mention": "衣架",
+          "object_type": "clothes_hanger",
+          "expected_affordance_tags": [
+            "support_surface",
+            "clothing"
+          ],
+          "acceptable_aliases": [
+            "hanger"
+          ]
+        },
+        {
+          "object_id": "wardrobe",
+          "mention": "关闭的衣柜",
+          "object_type": "wardrobe",
+          "expected_affordance_tags": [
+            "container",
+            "openable",
+            "storage_surface"
+          ],
+          "acceptable_aliases": [
+            "衣柜",
+            "wardrobe"
+          ],
+          "explicit_state": {
+            "lid": "closed"
+          }
+        },
+        {
+          "object_id": "basket",
+          "mention": "洗衣篮",
+          "object_type": "laundry_basket",
+          "expected_affordance_tags": [
+            "container",
+            "laundry",
+            "storage_surface"
+          ],
+          "acceptable_aliases": [
+            "篮子",
+            "laundry basket"
+          ]
+        },
+        {
+          "object_id": "bed",
+          "mention": "床",
+          "object_type": "bed",
+          "expected_affordance_tags": [
+            "support_surface",
+            "furniture"
+          ],
+          "acceptable_aliases": [
+            "bed"
+          ]
+        },
+        {
+          "object_id": "bedside",
+          "mention": "床头柜",
+          "object_type": "bedside_table",
+          "expected_affordance_tags": [
+            "support_surface",
+            "storage_surface",
+            "furniture"
+          ],
+          "acceptable_aliases": [
+            "床边柜",
+            "bedside table"
+          ]
+        },
+        {
+          "object_id": "drawer",
+          "mention": "抽屉",
+          "object_type": "drawer",
+          "expected_affordance_tags": [
+            "container",
+            "openable"
+          ],
+          "acceptable_aliases": [
+            "drawer"
+          ]
+        }
+      ],
+      "selectable_object_ids": [
+        "shirt",
+        "jacket",
+        "hanger",
+        "wardrobe",
+        "basket",
+        "bed",
+        "bedside",
+        "drawer"
+      ],
+      "trajectories": [
+        {
+          "trajectory_id": "bedroom-clothing-shirt-first",
+          "selection_order": [
+            "shirt",
+            "hanger",
+            "wardrobe",
+            "basket",
+            "bed"
+          ],
+          "decision_points": [
+            {
+              "point_id": "bedroom-clothing-shirt-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "shirt"
+              ],
+              "candidate_object_ids": [
+                "jacket",
+                "hanger",
+                "wardrobe",
+                "basket",
+                "bed",
+                "bedside",
+                "drawer"
+              ],
+              "acceptable_next_targets": [
+                "hanger",
+                "wardrobe",
+                "basket",
+                "bed"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "bedroom-clothing-shirt-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "shirt",
+                "hanger"
+              ],
+              "candidate_object_ids": [
+                "jacket",
+                "wardrobe",
+                "basket",
+                "bed",
+                "bedside",
+                "drawer"
+              ],
+              "acceptable_next_targets": [
+                "wardrobe",
+                "basket",
+                "bedside",
+                "drawer"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "bedroom-clothing-reversed-first-two"
+            },
+            {
+              "point_id": "bedroom-clothing-shirt-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "shirt",
+                "hanger",
+                "wardrobe"
+              ],
+              "candidate_object_ids": [
+                "jacket",
+                "basket",
+                "bed",
+                "bedside",
+                "drawer"
+              ],
+              "acceptable_next_targets": [
+                "basket",
+                "bedside",
+                "drawer"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "bedroom-clothing-shirt-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "shirt",
+                "hanger",
+                "wardrobe",
+                "basket"
+              ],
+              "candidate_object_ids": [
+                "jacket",
+                "bed",
+                "bedside",
+                "drawer"
+              ],
+              "acceptable_next_targets": [
+                "bed",
+                "bedside",
+                "drawer"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "bedroom-clothing-shirt-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "shirt",
+                "hanger",
+                "wardrobe",
+                "basket",
+                "bed"
+              ],
+              "candidate_object_ids": [
+                "jacket",
+                "bedside",
+                "drawer"
+              ],
+              "acceptable_next_targets": [
+                "bedside",
+                "drawer",
+                "jacket"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        },
+        {
+          "trajectory_id": "bedroom-clothing-hanger-first",
+          "selection_order": [
+            "hanger",
+            "shirt",
+            "bed",
+            "wardrobe",
+            "drawer"
+          ],
+          "decision_points": [
+            {
+              "point_id": "bedroom-clothing-hanger-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "hanger"
+              ],
+              "candidate_object_ids": [
+                "shirt",
+                "jacket",
+                "wardrobe",
+                "basket",
+                "bed",
+                "bedside",
+                "drawer"
+              ],
+              "acceptable_next_targets": [
+                "shirt",
+                "jacket",
+                "wardrobe"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "bedroom-clothing-hanger-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "hanger",
+                "shirt"
+              ],
+              "candidate_object_ids": [
+                "jacket",
+                "wardrobe",
+                "basket",
+                "bed",
+                "bedside",
+                "drawer"
+              ],
+              "acceptable_next_targets": [
+                "wardrobe",
+                "basket",
+                "bed",
+                "drawer"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "bedroom-clothing-reversed-first-two"
+            },
+            {
+              "point_id": "bedroom-clothing-hanger-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "hanger",
+                "shirt",
+                "bed"
+              ],
+              "candidate_object_ids": [
+                "jacket",
+                "wardrobe",
+                "basket",
+                "bedside",
+                "drawer"
+              ],
+              "acceptable_next_targets": [
+                "bedside",
+                "wardrobe",
+                "basket"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "bedroom-clothing-hanger-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "hanger",
+                "shirt",
+                "bed",
+                "wardrobe"
+              ],
+              "candidate_object_ids": [
+                "jacket",
+                "basket",
+                "bedside",
+                "drawer"
+              ],
+              "acceptable_next_targets": [
+                "drawer",
+                "basket",
+                "bedside"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "bedroom-clothing-hanger-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "hanger",
+                "shirt",
+                "bed",
+                "wardrobe",
+                "drawer"
+              ],
+              "candidate_object_ids": [
+                "jacket",
+                "basket",
+                "bedside"
+              ],
+              "acceptable_next_targets": [
+                "bedside",
+                "basket"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scene_id": "electronics-desk",
+      "family": "electronics_desk",
+      "scene_type": "电子设备桌面",
+      "scene_text": "这是一个电子设备桌面。桌面附近有黑色手机、无线充电座、USB线、笔记本电脑、杯子、书桌、抽屉和用户交接区。",
+      "objects": [
+        {
+          "object_id": "phone",
+          "mention": "黑色手机",
+          "object_type": "smartphone",
+          "expected_affordance_tags": [
+            "chargeable",
+            "electronic_device"
+          ],
+          "acceptable_aliases": [
+            "手机",
+            "phone",
+            "smartphone"
+          ],
+          "explicit_color": "black"
+        },
+        {
+          "object_id": "charger",
+          "mention": "无线充电座",
+          "object_type": "wireless_charger",
+          "expected_affordance_tags": [
+            "charging_target",
+            "appliance"
+          ],
+          "acceptable_aliases": [
+            "充电器",
+            "wireless charger"
+          ]
+        },
+        {
+          "object_id": "cable",
+          "mention": "USB线",
+          "object_type": "usb_cable",
+          "expected_affordance_tags": [
+            "cable",
+            "electronic_device"
+          ],
+          "acceptable_aliases": [
+            "数据线",
+            "USB cable"
+          ]
+        },
+        {
+          "object_id": "laptop",
+          "mention": "笔记本电脑",
+          "object_type": "laptop",
+          "expected_affordance_tags": [
+            "electronic_device",
+            "chargeable"
+          ],
+          "acceptable_aliases": [
+            "电脑",
+            "laptop"
+          ]
+        },
+        {
+          "object_id": "mug",
+          "mention": "杯子",
+          "object_type": "mug",
+          "expected_affordance_tags": [
+            "container",
+            "dish"
+          ],
+          "acceptable_aliases": [
+            "水杯",
+            "mug"
+          ]
+        },
+        {
+          "object_id": "desk",
+          "mention": "书桌",
+          "object_type": "desk",
+          "expected_affordance_tags": [
+            "support_surface",
+            "storage_surface",
+            "furniture"
+          ],
+          "acceptable_aliases": [
+            "桌子",
+            "desk"
+          ]
+        },
+        {
+          "object_id": "drawer",
+          "mention": "抽屉",
+          "object_type": "drawer",
+          "expected_affordance_tags": [
+            "container",
+            "openable"
+          ],
+          "acceptable_aliases": [
+            "drawer"
+          ]
+        },
+        {
+          "object_id": "user-zone",
+          "mention": "用户交接区",
+          "object_type": "user_zone",
+          "expected_affordance_tags": [
+            "user_zone",
+            "handover_target"
+          ],
+          "acceptable_aliases": [
+            "user zone",
+            "交接区"
+          ]
+        }
+      ],
+      "selectable_object_ids": [
+        "phone",
+        "charger",
+        "cable",
+        "laptop",
+        "mug",
+        "desk",
+        "drawer",
+        "user-zone"
+      ],
+      "trajectories": [
+        {
+          "trajectory_id": "electronics-desk-phone-first",
+          "selection_order": [
+            "phone",
+            "charger",
+            "cable",
+            "laptop",
+            "drawer"
+          ],
+          "decision_points": [
+            {
+              "point_id": "electronics-desk-phone-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "phone"
+              ],
+              "candidate_object_ids": [
+                "charger",
+                "cable",
+                "laptop",
+                "mug",
+                "desk",
+                "drawer",
+                "user-zone"
+              ],
+              "acceptable_next_targets": [
+                "charger",
+                "cable",
+                "drawer",
+                "user-zone"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "electronics-desk-phone-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "phone",
+                "charger"
+              ],
+              "candidate_object_ids": [
+                "cable",
+                "laptop",
+                "mug",
+                "desk",
+                "drawer",
+                "user-zone"
+              ],
+              "acceptable_next_targets": [
+                "cable",
+                "laptop",
+                "drawer"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "electronics-desk-reversed-first-two"
+            },
+            {
+              "point_id": "electronics-desk-phone-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "phone",
+                "charger",
+                "cable"
+              ],
+              "candidate_object_ids": [
+                "laptop",
+                "mug",
+                "desk",
+                "drawer",
+                "user-zone"
+              ],
+              "acceptable_next_targets": [
+                "laptop",
+                "drawer",
+                "user-zone"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "electronics-desk-phone-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "phone",
+                "charger",
+                "cable",
+                "laptop"
+              ],
+              "candidate_object_ids": [
+                "mug",
+                "desk",
+                "drawer",
+                "user-zone"
+              ],
+              "acceptable_next_targets": [
+                "charger",
+                "desk",
+                "user-zone"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "electronics-desk-phone-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "phone",
+                "charger",
+                "cable",
+                "laptop",
+                "drawer"
+              ],
+              "candidate_object_ids": [
+                "mug",
+                "desk",
+                "user-zone"
+              ],
+              "acceptable_next_targets": [
+                "user-zone",
+                "desk"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        },
+        {
+          "trajectory_id": "electronics-desk-charger-first",
+          "selection_order": [
+            "charger",
+            "phone",
+            "cable",
+            "desk",
+            "mug"
+          ],
+          "decision_points": [
+            {
+              "point_id": "electronics-desk-charger-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "charger"
+              ],
+              "candidate_object_ids": [
+                "phone",
+                "cable",
+                "laptop",
+                "mug",
+                "desk",
+                "drawer",
+                "user-zone"
+              ],
+              "acceptable_next_targets": [
+                "phone",
+                "cable",
+                "laptop"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "electronics-desk-charger-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "charger",
+                "phone"
+              ],
+              "candidate_object_ids": [
+                "cable",
+                "laptop",
+                "mug",
+                "desk",
+                "drawer",
+                "user-zone"
+              ],
+              "acceptable_next_targets": [
+                "cable",
+                "laptop",
+                "drawer"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "electronics-desk-reversed-first-two"
+            },
+            {
+              "point_id": "electronics-desk-charger-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "charger",
+                "phone",
+                "cable"
+              ],
+              "candidate_object_ids": [
+                "laptop",
+                "mug",
+                "desk",
+                "drawer",
+                "user-zone"
+              ],
+              "acceptable_next_targets": [
+                "laptop",
+                "desk",
+                "user-zone"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "electronics-desk-charger-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "charger",
+                "phone",
+                "cable",
+                "desk"
+              ],
+              "candidate_object_ids": [
+                "laptop",
+                "mug",
+                "drawer",
+                "user-zone"
+              ],
+              "acceptable_next_targets": [
+                "mug",
+                "drawer",
+                "user-zone"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "electronics-desk-charger-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "charger",
+                "phone",
+                "cable",
+                "desk",
+                "mug"
+              ],
+              "candidate_object_ids": [
+                "laptop",
+                "drawer",
+                "user-zone"
+              ],
+              "acceptable_next_targets": [
+                "user-zone",
+                "drawer"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scene_id": "mixed-ambiguous",
+      "family": "mixed_adversarial_ambiguous",
+      "scene_type": "混合生活场景",
+      "scene_text": "这是一个混合生活场景。场景里有红色苹果、水果刀、白色盘子、手机、无线充电座、关闭的收纳盒、书架和垃圾桶。",
+      "objects": [
+        {
+          "object_id": "apple",
+          "mention": "红色苹果",
+          "object_type": "apple",
+          "expected_affordance_tags": [
+            "food",
+            "cuttable",
+            "juicable"
+          ],
+          "acceptable_aliases": [
+            "苹果",
+            "apple"
+          ],
+          "explicit_color": "red"
+        },
+        {
+          "object_id": "knife",
+          "mention": "水果刀",
+          "object_type": "knife",
+          "expected_affordance_tags": [
+            "knife",
+            "cutting_tool",
+            "tool"
+          ],
+          "acceptable_aliases": [
+            "刀",
+            "knife"
+          ]
+        },
+        {
+          "object_id": "plate",
+          "mention": "白色盘子",
+          "object_type": "plate",
+          "expected_affordance_tags": [
+            "dish",
+            "support_surface"
+          ],
+          "acceptable_aliases": [
+            "盘子",
+            "plate"
+          ],
+          "explicit_color": "white"
+        },
+        {
+          "object_id": "phone",
+          "mention": "手机",
+          "object_type": "smartphone",
+          "expected_affordance_tags": [
+            "chargeable",
+            "electronic_device"
+          ],
+          "acceptable_aliases": [
+            "phone",
+            "smartphone"
+          ]
+        },
+        {
+          "object_id": "charger",
+          "mention": "无线充电座",
+          "object_type": "wireless_charger",
+          "expected_affordance_tags": [
+            "charging_target",
+            "appliance"
+          ],
+          "acceptable_aliases": [
+            "充电器",
+            "wireless charger"
+          ]
+        },
+        {
+          "object_id": "box",
+          "mention": "关闭的收纳盒",
+          "object_type": "storage_box",
+          "expected_affordance_tags": [
+            "container",
+            "openable",
+            "storage_surface"
+          ],
+          "acceptable_aliases": [
+            "盒子",
+            "storage box"
+          ],
+          "explicit_state": {
+            "lid": "closed"
+          }
+        },
+        {
+          "object_id": "shelf",
+          "mention": "书架",
+          "object_type": "bookshelf",
+          "expected_affordance_tags": [
+            "support_surface",
+            "storage_surface",
+            "shelf"
+          ],
+          "acceptable_aliases": [
+            "书柜",
+            "shelf"
+          ]
+        },
+        {
+          "object_id": "trash",
+          "mention": "垃圾桶",
+          "object_type": "trash_bin",
+          "expected_affordance_tags": [
+            "container"
+          ],
+          "acceptable_aliases": [
+            "垃圾箱",
+            "trash bin"
+          ]
+        }
+      ],
+      "selectable_object_ids": [
+        "apple",
+        "knife",
+        "plate",
+        "phone",
+        "charger",
+        "box",
+        "shelf",
+        "trash"
+      ],
+      "trajectories": [
+        {
+          "trajectory_id": "mixed-ambiguous-phone-first",
+          "selection_order": [
+            "phone",
+            "charger",
+            "box",
+            "shelf",
+            "apple"
+          ],
+          "decision_points": [
+            {
+              "point_id": "mixed-ambiguous-phone-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "phone"
+              ],
+              "candidate_object_ids": [
+                "apple",
+                "knife",
+                "plate",
+                "charger",
+                "box",
+                "shelf",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "charger",
+                "box",
+                "shelf"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "mixed-ambiguous-phone-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "phone",
+                "charger"
+              ],
+              "candidate_object_ids": [
+                "apple",
+                "knife",
+                "plate",
+                "box",
+                "shelf",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "box",
+                "shelf",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "mixed-ambiguous-reversed-first-two"
+            },
+            {
+              "point_id": "mixed-ambiguous-phone-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "phone",
+                "charger",
+                "box"
+              ],
+              "candidate_object_ids": [
+                "apple",
+                "knife",
+                "plate",
+                "shelf",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "shelf",
+                "trash",
+                "plate"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "mixed-ambiguous-phone-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "phone",
+                "charger",
+                "box",
+                "shelf"
+              ],
+              "candidate_object_ids": [
+                "apple",
+                "knife",
+                "plate",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "apple",
+                "plate",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "mixed-ambiguous-phone-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "phone",
+                "charger",
+                "box",
+                "shelf",
+                "apple"
+              ],
+              "candidate_object_ids": [
+                "knife",
+                "plate",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "knife",
+                "plate",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        },
+        {
+          "trajectory_id": "mixed-ambiguous-charger-first",
+          "selection_order": [
+            "charger",
+            "phone",
+            "apple",
+            "knife",
+            "plate"
+          ],
+          "decision_points": [
+            {
+              "point_id": "mixed-ambiguous-charger-first-r01",
+              "selection_round": 1,
+              "history_object_ids": [
+                "charger"
+              ],
+              "candidate_object_ids": [
+                "apple",
+                "knife",
+                "plate",
+                "phone",
+                "box",
+                "shelf",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "phone",
+                "box",
+                "shelf"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "mixed-ambiguous-charger-first-r02",
+              "selection_round": 2,
+              "history_object_ids": [
+                "charger",
+                "phone"
+              ],
+              "candidate_object_ids": [
+                "apple",
+                "knife",
+                "plate",
+                "box",
+                "shelf",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "box",
+                "shelf",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek",
+              "history_sensitivity_pair_id": "mixed-ambiguous-reversed-first-two"
+            },
+            {
+              "point_id": "mixed-ambiguous-charger-first-r03",
+              "selection_round": 3,
+              "history_object_ids": [
+                "charger",
+                "phone",
+                "apple"
+              ],
+              "candidate_object_ids": [
+                "knife",
+                "plate",
+                "box",
+                "shelf",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "knife",
+                "plate",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "mixed-ambiguous-charger-first-r04",
+              "selection_round": 4,
+              "history_object_ids": [
+                "charger",
+                "phone",
+                "apple",
+                "knife"
+              ],
+              "candidate_object_ids": [
+                "plate",
+                "box",
+                "shelf",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "plate",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            },
+            {
+              "point_id": "mixed-ambiguous-charger-first-r05",
+              "selection_round": 5,
+              "history_object_ids": [
+                "charger",
+                "phone",
+                "apple",
+                "knife",
+                "plate"
+              ],
+              "candidate_object_ids": [
+                "box",
+                "shelf",
+                "trash"
+              ],
+              "acceptable_next_targets": [
+                "box",
+                "shelf",
+                "trash"
+              ],
+              "expected_ambiguity": true,
+              "label_note": "independently authored semantic alternatives; not generated by DeepSeek"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
