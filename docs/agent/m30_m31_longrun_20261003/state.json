@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "runId": "m30_m31_longrun_20261003",
-  "status": "IN_PROGRESS",
+  "status": "COMPLETE",
   "startedAtUtc": "2026-10-02T20:21:55Z",
-  "updatedAtUtc": "2026-10-03T01:18:05Z",
+  "updatedAtUtc": "2026-10-03T01:22:37Z",
   "repository": {
     "path": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot",
     "branch": "codex/m30-m31-nextgen-semantic-context-vla-bridge",
@@ -13,7 +13,7 @@
     "workingTreeClean": false,
     "preflight": "docs\\agent\\m30_m31_longrun_20261003\\preflight\\preflight.json"
   },
-  "phase": "M32_POSTPUSH_FINALIZE",
+  "phase": "COMPLETE_WITH_REPORTED_LIMITATIONS",
   "completedSteps": [
     "preflight_recorded",
     "full_goal_contract_read",
@@ -49,11 +49,14 @@
     "m32_parser_and_session_vertical_slices",
     "m32_v1_live_run_archived_and_root_caused",
     "m32_revision3_benchmark_frozen_and_live_run_complete",
-    "m32_final_audit_and_targeted_regressions_passed"
+    "m32_final_audit_and_targeted_regressions_passed",
+    "m32_implementation_pushed_remote_sha_verified",
+    "m32_compile_count_correction_pushed",
+    "m32_final_handoff_authored"
   ],
-  "nextStep": "commit and push the corrected M32 compile-count audit evidence, then complete and push FINAL_HANDOFF.md",
+  "nextStep": "none; final handoff is ready for human manual CLI review",
   "lastGreenVerification": {
-    "recordedAtUtc": "2026-10-02T23:48:45Z",
+    "recordedAtUtc": "2026-10-03T01:22:37Z",
     "m30FinalValidation": "PASS (read-only; gzip transfer table verified; 467280 rows; 14 valid SVG plots; M25 inputs unchanged)",
     "m31FinalValidation": "PASS_WITH_REPORTED_LIMITATIONS (software implementation PASS; semantic quality PARTIAL)",
     "m31BenchmarkSha256": "7d386f8ee1ab4fcee3f932719a49cff23a7cd23491cd913e8c9a8ccfe00dacee",
@@ -73,9 +76,11 @@
       "M30 has zero positive-lambda safe-supported conditions; 246 wrong early-stop rows.",
       "M31 ambiguity recognition is 2/7; one frozen development-label conflict remains reported."
     ],
-    "next": "push corrected M32 verification metadata, then publish final handoff with exact commit and walkthrough",
+    "next": "none; the M32 CLI is ready for human manual review",
     "m32Final": "PASS_WITH_REPORTED_LIMITATIONS; 56 focused tests PASS; corrected py_compile evidence verifies 18 source/test files PASS",
-    "m32BenchmarkSha256": "c2eda933995158c0d96f3e5f64e5ee44e7422d787cfd1276c019ac6c703dff31"
+    "m32BenchmarkSha256": "c2eda933995158c0d96f3e5f64e5ee44e7422d787cfd1276c019ac6c703dff31",
+    "m32FinalCheckpointSha": "a03a60adf1cb9bcf5de7f4f7c2531d7e9e0e11ed",
+    "m32RemoteVerified": true
   },
   "checkpoint": {
     "kind": "m30_m31_branch_base",
@@ -107,7 +112,7 @@
     "deepseekKeyPersisted": false
   },
   "m32": {
-    "status": "implementation_pushed_with_reported_limitations",
+    "status": "PASS_WITH_REPORTED_LIMITATIONS",
     "baseCheckpointSha": "ebc2ef5c7210e86d78a3977cb2b280d33f86c7b9",
     "promptFreezePending": false,
     "liveBenchmarkPending": false,
@@ -117,6 +122,10 @@
     "validationStatus": "PASS_WITH_REPORTED_LIMITATIONS",
     "qualityLimitations": "ambiguity status 3/60 labeled points; repeat structural exact 5/8; top-1 acceptable 34/55",
     "implementationCommit": "2a2f6b7f8bb745b6c987312ac79afabe4ce97200",
-    "implementationRemoteSha": "2a2f6b7f8bb745b6c987312ac79afabe4ce97200"
+    "implementationRemoteSha": "2a2f6b7f8bb745b6c987312ac79afabe4ce97200",
+    "finalCheckpointSha": "a03a60adf1cb9bcf5de7f4f7c2531d7e9e0e11ed",
+    "finalCheckpointRemoteSha": "a03a60adf1cb9bcf5de7f4f7c2531d7e9e0e11ed",
+    "finalValidation": "research_analysis/m32_interactive_text_context_demo_20261003/attempt-01/final_validation.json",
+    "manualReviewStatus": "READY_NOT_PERFORMED"
   }
 }
