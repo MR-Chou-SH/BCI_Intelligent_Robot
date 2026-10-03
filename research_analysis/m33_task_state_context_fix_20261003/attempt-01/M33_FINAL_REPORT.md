@@ -46,6 +46,8 @@ The read-only replay reused the frozen 88-trial M25 cohort, its M23 operating-po
 | MEDIUM | 0.441 s | 0.158 s | N/A (0 applied) | 0.000 s | 6 → 0 |
 | CONSERVATIVE | 0.573 s | 0.261 s | N/A (0 applied) | 0.000 s | 6 → 0 |
 
+The transfer authorization required informative/non-ambiguous M33 output, the frozen train/dev confidence gate, projected page-prior top mass of at least `0.70`, and agreement with the instantaneous raw EEG top. The emitted class remained the raw EEG top. Context used M25's stricter selected thresholds (`top=0.55`, `margin=0.20`) versus the unchanged FAST/MEDIUM/CONSERVATIVE EEG-only thresholds (`top=0.40/0.40/0.45`, `margin=0.01/0.10/0.10–0.15`); minimum evidence (`0.50 s`) and stability (`0.40 s`) were retained. Failed authorization returns the paired EEG-only result.
+
 M33 semantic authorization occurred for 17/46 held-out decisions (36.96%). The downstream Context application rate was 0/8,800 trial-seed pairs (0%) at each of FAST, MEDIUM, and CONSERVATIVE: none passed the unchanged M25 page-mass, raw-EEG-top agreement, and EEG evidence/margin/stability conditions early enough to stop sooner. Accuracy delta was 0 pp, wrong early stops 0, and no-delay violations 0. This is a safe exact-EEG fallback result with no demonstrated acceleration; it is not prospective EEG validation.
 
 ## Verification and boundaries
