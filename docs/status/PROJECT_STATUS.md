@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-09-22
+Last updated: 2026-10-03
 
 ## Overall Phase
 
@@ -13,6 +13,8 @@ Current software state: **M10 Sequential Task Benchmark COMPLETE / SOFTWARE + MU
 M18 Unified Phase 2 + Phase 3 acquisition framework: **SOFTWARE READY FOR PHYSICAL SMOKE**. The frozen one-wear plan is Focused 18 + Natural 60 + Self-paced 24, True Idle 9 minutes, Passive Browse 12 minutes, and 12 embedded sham READY cues. Deterministic matrix/schedule, immutable prospective Context snapshots, fail-closed episode state machine, append-only per-block continuous raw-EEG layout, resume/abort safety, canonical Phase 2/3 exports, synthetic dry-run, a bounded `--confirm-live-human` physical-smoke runner, and software/hardware preflight reports are complete in `artifacts/m18_unified_acquisition_20260921T161522Z/`. The synthetic run passed matrix/causality/state/raw-continuity/export checks with 102 intentional episode records; no accuracy, TPR, FPR, Context benefit, human EEG, Quest, ND8, or physical timing claim is made. The next authorized action is operator-run physical smoke only after human Quest/ND8/electrode/cue checks; production decoder, thresholds, Context runtime, robot semantics, and Unity canonical target mapping were unchanged.
 
 Pre-live operational state: **PRE-LIVE BASELINE FROZEN — READY FOR PHYSICAL VALIDATION.** The reproducibility snapshot, operator runbook, pre-live sentinel, evidence index, and isolated future-analysis/adaptive harness are recorded under `docs/agent/baselines/pre-live-nd8-demo-baseline-20260918/`, `docs/acceptance/`, and `docs/agent/overnight/runs/20260918-m13-pre-live-freeze-overnight/`. No M13.6 visual path or production Demo behavior was changed in this freeze; the only operator-boundary correction allows the existing M8 live smoke CLI to accept the explicitly discovered `COMx` rather than assuming COM11. Physical ND8/driver/packet/contact and human Quest/controller checks remain pending.
+
+M30/M31/M32 software research track: **COMPLETE WITH REPORTED LIMITATIONS** as of 2026-10-03. The selectively pushed checkpoint and full evidence are recorded in [the final handoff](../agent/m30_m31_longrun_20261003/FINAL_HANDOFF.md). M30 remains exploratory historical EEG transfer simulation with no positive-Context condition passing the zero-wrong-stop safety gate; M31 remains software-only with weak ambiguity recognition and dispatch disabled; M32's CLI/runbook are ready for human review, which has not been performed. No Quest, ND8, COM11, live EEG, raw EEG modification, physical robot, or real VLA dispatch was used. This software research track does not change the separate M19 physical validation boundary.
 
 The real-world Passthrough / Quest Camera / YOLO / StableTarget / EnvironmentRaycast route is a completed capability and future extension. It is preserved, but is not the current research benchmark and should not be revalidated by default.
 

@@ -17,6 +17,30 @@
 - Final M32 checkpoint SHA, including the corrected compile-count audit record: `a03a60adf1cb9bcf5de7f4f7c2531d7e9e0e11ed`.
 - The M32 checkpoint was pushed to `origin/codex/m30-m31-nextgen-semantic-context-vla-bridge`; `git ls-remote` matched `a03a60adf1cb9bcf5de7f4f7c2531d7e9e0e11ed`. This handoff is a later documentation/state commit.
 
+## M30 morning summary
+
+- Frozen benchmark: 33 episodes, 126 decisions, 8 semantic families; train/dev/held-out = 56/24/46. Benchmark SHA-256: `899aae6febb96cb6a63f0589fd7ad8e5bd0b317e97ac81de23c71ff062d237b0`.
+- Held-out C65/C85/C100 overall participation was 69.6% / 87.0% / 89.1%; eligible-informative participation was 70.6% / 94.1% / 97.1%. Active precision was 68.8% / 60.0% / 61.0%. Held-out top-1 was 26/34 (76.5%), top-3 recall 33/34 (97.1%), relation accuracy among correctly active C100 rows 68.0%, ambiguity accuracy 1/9 (11.1%), and invalid/completed rejection 100%.
+- C100 family results: kitchen 9/10 top-1, 75.0% active precision; ambiguous/adversarial 4/5, 60.0%; assistive/handover 7/10, 58.3%; state-dependent 6/9, 50.0%. Round top-1 was 5/5, 7/8, 6/11, and 8/10 for rounds 1–4; round 3 fell to 54.5% before round 4 recovered to 80.0%.
+- Page projection covered 279 deterministic pages: 66.7% had three candidates, 11.1% had two; projected page top matched the global top in 44.4%, and a unique acceptable target appeared in 47.0%. These all-page figures are not page-selection accuracy.
+- DeepSeek was called on 123/126 decisions. Latency: mean 1,914.9 ms, median 1,639.4 ms, p90 3,035.1 ms, p95 3,243.9 ms, max 3,541.2 ms; one correction retry on 37/126 calls (29.4%). Repeatability on 16 points: status 100%, top candidate 100%, full ranking 87.5%.
+- At λ=1, C65/C85/C100 × FAST/MEDIUM/CONSERVATIVE Context-active mean gains were 0.377/0.440/0.575 s, 0.373/0.442/0.574 s, and 0.382/0.441/0.573 s. Corresponding all-trial gains were 0.097/0.147/0.245 s, 0.100/0.154/0.258 s, and 0.104/0.158/0.261 s. Paired accuracy deltas were −0.02/−0.11/−0.07 percentage points; the corresponding wrong early-stop counts were 2/10/6.
+- Raw precomputed active means reached 0.4 s for MEDIUM and CONSERVATIVE at all gates, and 0.5 s for CONSERVATIVE only. Across the full matrix there were 246 wrong early stops and zero no-delay violations. Only λ=0 had zero wrong Context early stops, and it is the exact EEG-only baseline with no Context gain. Therefore no positive-λ condition is safe-supported; none of the raw 0.4/0.5 s crossings qualifies as supported.
+- M28's descriptive baseline was 47.5% coverage, 100% active precision, and 0.574 s active / 0.262 s all-trial conservative gain with zero wrong stops. M30 increased participation but reduced active precision; held-out top-1 was 76.5% versus M28's 91.7%. The datasets differ, so this is not a controlled comparison and does not demonstrate improved generalization. All EEG integration remains historical transfer simulation, not prospective human-task evidence.
+
+## M31 morning summary
+
+- Frozen independent benchmark: 84 cases (48/12/24 train/dev/held-out). Status accuracy 76/84 (90.5%; held-out 22/24), relation accuracy 62/70 (88.6%; held-out 19/20), and grounding-reference correctness 84/84. No unsupported structured object references or independently audited third-object mentions were accepted (0/84 each; the phrase audit is finite). Explicit color fidelity was 4/4 and explicit state safe outcome 3/3.
+- Required example summaries: `药盒 + 收纳盒` → STORE_IN, “把药盒放进收纳盒里”; closed storage box → open, place the small medicine box inside, close; `苹果 + 水果刀` → CUT_WITH without inventing color; `红色苹果 + 水果刀` → CUT_WITH and preserves red; `橙子 + 榨汁机` → JUICE_WITH; `书 + 书架` → PLACE_ON; `手机 + 无线充电座` → CHARGE_WITH. Every result keeps dispatch disabled.
+- Ambiguous/invalid status accuracy was 9/14 (64.3%); only 2/7 ambiguity cases were recognized, while invalid task traps were rejected 7/7. Structural repeatability was 14/16 (87.5%); bilingual prose repeatability was 12/16 (75.0%). API latency: mean 1,227 ms, median 1,139 ms, p90 1,500 ms, p95 2,295 ms, max 2,692 ms; correction retry on 8/84 calls.
+- Manual review is ready but not performed. Launch the open-world bridge from the repository root with:
+
+```powershell
+& '.venv\Scripts\python.exe' -m integration.semantic_bridge_cli
+```
+
+The strict-scene mode remains optional. No real VLA is connected or dispatched.
+
 ## M32 launch and manual review
 
 From the repository root:
