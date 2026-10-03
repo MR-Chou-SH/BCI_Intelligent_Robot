@@ -234,6 +234,39 @@ class SemanticContextSequenceTests(unittest.TestCase):
         self.assertNotEqual(forward["context_prior"], reversed_order["context_prior"])
         self.assertEqual(forward["task_state"]["progress_code"], reversed_order["task_state"]["progress_code"])
 
+    def test_red_apple_then_knife_survives_one_invalid_secondary_relation(self):
+        class OneInvalidSecondaryClient(FakeSequentialContextClient):
+            def complete(self, messages, **kwargs):
+                response = super().complete(messages, **kwargs)
+                request = json.loads(messages[1]["content"])
+                if request["context_input"]["selection_history"] == ["apple", "knife"]:
+                    payload = json.loads(response["content"])
+                    for row in payload["candidate_scores"]:
+                        if row["candidate_id"] == "box":
+                            row["source_object_id"] = "knife"
+                            row["relation_type"] = "STORE_IN"
+                            row["relation_confidence"] = 0.66
+                    response["content"] = json.dumps(payload)
+                return response
+
+        result = SemanticContextEngine(OneInvalidSecondaryClient(), "fake").predict_next_target(
+            scene=_scene(full_container=True), selection_history=["apple", "knife"]
+        )
+
+        self.assertEqual(result["status"], "informative")
+        self.assertTrue(result["eligible_informative"])
+        self.assertEqual(result["provenance"]["attempts"], 1)
+        self.assertGreater(len(set(round(value, 8) for value in result["context_prior"])), 1)
+        box = next(row for row in result["candidate_scores"] if row["candidate_id"] == "box")
+        self.assertEqual(box["relation_type"], "NONE")
+        self.assertEqual(box["relation_confidence"], 0.0)
+        self.assertEqual(box["candidate_task_continuation_score"], 0.66)
+        self.assertEqual(box["task_switch_penalty"], 0.1)
+        plate = next(row for row in result["candidate_scores"] if row["candidate_id"] == "plate")
+        self.assertEqual(plate["relation_type"], "PLACE_ON")
+        self.assertTrue(any("candidate_relation_downgraded:box:destination_unavailable_from_explicit_state"
+                            in str(item) for item in result["provenance"]["diagnostics"]))
+
     def test_ambiguous_status_has_normalized_q_but_is_not_eligible(self):
         class AmbiguousClient(FakeSequentialContextClient):
             def complete(self, messages, **kwargs):

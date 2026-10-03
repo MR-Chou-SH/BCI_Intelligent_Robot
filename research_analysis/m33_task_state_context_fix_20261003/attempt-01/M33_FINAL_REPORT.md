@@ -21,14 +21,15 @@ The train/dev-only gate froze at `0.3039226`: **20/21 correct active cases (95.2
 | Held-out `CONTEXT_OFF` | 2/46 (4.35%) | 12/46 (26.09%) |
 | Repeated-call status agreement | 16/16 (100%) | 6/6 dev repeats (100%) |
 | Repeated-call top-1 agreement | 16/16 (100%) | 5/5 informative dev repeats (100%) |
+| Raw task hypothesis/progress agreement | Not represented in pairwise M30 | 4/6 dev repeats (66.67%) |
 | Exact repeated full ranking | 14/16 (87.50%) | 3/5 informative dev repeats (60.00%) |
 | Mean q L1 on repeats | 0.0729 | 0.2729 over informative dev repeats |
 
-The raw provider response is still less repeatable than the previous M30 run on full ranking and q values. To make M32 Undo/Reset stable within a running process, `SemanticContextEngine` now memoizes up to 128 successful sequential results in memory, keyed by the canonical scene, ordered history, candidate list, task state, model, and prompt. It does not write scene data to disk; a cache miss still makes one model call. Identical cached inputs return the exact same status, ranking and q. The cache does not make a claim that the remote model itself is deterministic. The official [DeepSeek Chat Completions API](https://api-docs.deepseek.com/api/create-chat-completion/) documents temperature/top-p controls but no request seed, so no server seed was added.
+The raw provider response is still less repeatable than the previous M30 run on full ranking and q values; task hypothesis/progress matched in 4/6 repeats. To make M32 Undo/Reset stable within a running process, `SemanticContextEngine` now memoizes up to 128 successful sequential results in memory, keyed by the canonical scene, ordered history, candidate list, task state, model, and prompt. It does not write scene data to disk; a cache miss still makes one model call. Identical cached inputs return the exact same status, task state, ranking and q. The cache does not make a claim that the remote model itself is deterministic. The official [DeepSeek Chat Completions API](https://api-docs.deepseek.com/api/create-chat-completion/) documents temperature/top-p controls but no request seed, so no server seed was added.
 
 ## M32 ordered-history regressions
 
-- `apple → knife`: inferred `cut_fruit_with_knife`, progress `fruit_and_tool_selected`. The same remaining candidate IDs were used for the reverse order. The forward q ranked the plate first (`q=0.632`), then sink (`0.148`), orange (`0.086`); orange was not promoted just because the knife can cut it. Reversing the history changed task progress and q (L1 distance `0.440`).
+- Manual regression `红色苹果 → 水果刀` (`apple → knife`): inferred `cut_fruit_with_knife`, progress `fruit_and_tool_selected`. The complete history supports continuing the apple-preparation task; it does not make the knife a fresh intent to cut any available fruit. With the same remaining candidate IDs as the reversed-order case, q ranked the plate first (`q=0.632`), then sink (`0.148`), orange (`0.086`). Reversing the history changed task progress and q (L1 distance `0.440`). A focused automated regression combines this exact ordered history with one full-box `STORE_IN` violation: only that row is downgraded to `NONE`, the prior remains informative/non-uniform, and valid rows/scores remain intact.
 - `knife → apple`: inferred the same broad cutting task but a different progress code (`knife_selected_fruit_selected`); q changed with the order.
 - `phone → wireless charger` and the reverse order used the same candidate IDs. The reverse response was conservatively marked ambiguous and returned uniform q; it did not produce a sharp EEG prior. Pair q L1 distance was `1.195`.
 - The mixed phone/food scene returned ambiguous with uniform q and `eligible_informative=false`.
@@ -45,7 +46,7 @@ The read-only replay reused the frozen 88-trial M25 cohort, its M23 operating-po
 | MEDIUM | 0.441 s | 0.158 s | N/A (0 applied) | 0.000 s | 6 → 0 |
 | CONSERVATIVE | 0.573 s | 0.261 s | N/A (0 applied) | 0.000 s | 6 → 0 |
 
-M33 semantic authorization occurred for 17/46 held-out decisions, but none passed the unchanged M25 page-mass, raw-EEG-top agreement, and EEG evidence/margin/stability conditions early enough to stop sooner. Accuracy delta was 0 pp, wrong early stops 0, and no-delay violations 0. This is a safe exact-EEG fallback result with no demonstrated acceleration; it is not prospective EEG validation.
+M33 semantic authorization occurred for 17/46 held-out decisions (36.96%). The downstream Context application rate was 0/8,800 trial-seed pairs (0%) at each of FAST, MEDIUM, and CONSERVATIVE: none passed the unchanged M25 page-mass, raw-EEG-top agreement, and EEG evidence/margin/stability conditions early enough to stop sooner. Accuracy delta was 0 pp, wrong early stops 0, and no-delay violations 0. This is a safe exact-EEG fallback result with no demonstrated acceleration; it is not prospective EEG validation.
 
 ## Verification and boundaries
 
