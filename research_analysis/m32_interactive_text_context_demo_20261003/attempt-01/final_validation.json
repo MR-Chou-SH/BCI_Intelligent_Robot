@@ -24,7 +24,7 @@
   },
   "software_tests": {
     "focused_m32_and_m30_semantic_regressions": "PASS (56 tests)",
-    "targeted_py_compile": "PASS (17 source/test files)"
+    "targeted_py_compile": "PASS (18 source/test files)"
   },
   "software_contract_checks": {
     "six_scene_families_and_7_to_8_selectable_objects": "PASS",

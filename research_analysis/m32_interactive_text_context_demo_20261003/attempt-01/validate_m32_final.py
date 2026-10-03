@@ -34,7 +34,7 @@ def validate() -> dict[str, Any]:
     runbook_path = ROOT / "M32_MANUAL_REVIEW_RUNBOOK.md"
     report_path = ROOT / "M32_FINAL_REPORT.md"
     regression_log = ROOT / "iterations" / "live-run-v2-final-audit" / "focused_regression_tests.log"
-    compile_log = ROOT / "iterations" / "live-run-v2-final-audit" / "focused_py_compile.log"
+    compile_log = ROOT / "iterations" / "live-run-v2-final-audit" / "focused_py_compile.txt"
     lock = json.loads(lock_path.read_text(encoding="utf-8"))
     benchmark = json.loads(benchmark_path.read_text(encoding="utf-8"))
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
@@ -122,7 +122,7 @@ def validate() -> dict[str, Any]:
     regression_text = regression_log.read_text(encoding="utf-8")
     compile_text = compile_log.read_text(encoding="utf-8")
     assert "Ran 56 tests" in regression_text and "OK" in regression_text
-    assert "PASS: 17 targeted Python source/test files compiled." in compile_text
+    assert "PASS: 18 targeted Python source/test files compiled." in compile_text
 
     archive = ROOT / "iterations" / "live-run-v1"
     archive_manifest_path = archive / "archive_manifest.json"
@@ -150,7 +150,7 @@ def validate() -> dict[str, Any]:
                     "repeatability_calls": 8},
         "software_tests": {
             "focused_m32_and_m30_semantic_regressions": "PASS (56 tests)",
-            "targeted_py_compile": "PASS (17 source/test files)",
+            "targeted_py_compile": "PASS (18 source/test files)",
         },
         "software_contract_checks": {
             "six_scene_families_and_7_to_8_selectable_objects": "PASS",
