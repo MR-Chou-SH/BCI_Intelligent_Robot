@@ -1,0 +1,115 @@
+{
+  "record_type": "m33_heldout_summary",
+  "status": "PASS",
+  "created_at_utc": "2026-10-03T08:20:21Z",
+  "benchmark_sha256": "899aae6febb96cb6a63f0589fd7ad8e5bd0b317e97ac81de23c71ff062d237b0",
+  "gate_sha256": "9b0904a167218fb520a5a93cc3056a2424841bc04513c5ca36d27ad15b59c2dc",
+  "gate_threshold": 0.3039226230247065,
+  "held_out_calls": 46,
+  "repeat_calls": 0,
+  "held_out_used_for_gate_selection": false,
+  "overall": {
+    "count": 46,
+    "labeled_target_count": 43,
+    "top1_accuracy_labeled": 0.5581395348837209,
+    "informative_top1_accuracy": 0.782608695652174,
+    "engine_eligible_count": 22,
+    "engine_eligible_coverage": 0.4782608695652174,
+    "engine_eligible_precision": 0.7727272727272727,
+    "predicted_status_counts": {
+      "informative": 23,
+      "context_off": 12,
+      "ambiguous": 9,
+      "invalid": 2
+    },
+    "expected_ambiguous_count": 9,
+    "expected_ambiguous_recognized": 3,
+    "false_informative_on_expected_ambiguous": 4,
+    "candidate_row_downgrade_count": 62,
+    "fallback_context_off_count": 12
+  },
+  "gate_active_count": 17,
+  "gate_active_coverage": 0.3695652173913043,
+  "gate_active_correct": 16,
+  "gate_active_precision": 0.9411764705882353,
+  "by_scene_family": {
+    "ambiguous_adversarial": {
+      "count": 9,
+      "labeled_target_count": 7,
+      "top1_accuracy_labeled": 0.7142857142857143,
+      "informative_top1_accuracy": 1.0,
+      "engine_eligible_count": 3,
+      "engine_eligible_coverage": 0.3333333333333333,
+      "engine_eligible_precision": 1.0,
+      "predicted_status_counts": {
+        "ambiguous": 2,
+        "informative": 3,
+        "context_off": 3,
+        "invalid": 1
+      },
+      "expected_ambiguous_count": 2,
+      "expected_ambiguous_recognized": 1,
+      "false_informative_on_expected_ambiguous": 1,
+      "candidate_row_downgrade_count": 3,
+      "fallback_context_off_count": 3
+    },
+    "assistive_handover": {
+      "count": 12,
+      "labeled_target_count": 12,
+      "top1_accuracy_labeled": 0.4166666666666667,
+      "informative_top1_accuracy": 0.5714285714285714,
+      "engine_eligible_count": 7,
+      "engine_eligible_coverage": 0.5833333333333334,
+      "engine_eligible_precision": 0.5714285714285714,
+      "predicted_status_counts": {
+        "ambiguous": 2,
+        "informative": 7,
+        "context_off": 3
+      },
+      "expected_ambiguous_count": 2,
+      "expected_ambiguous_recognized": 1,
+      "false_informative_on_expected_ambiguous": 1,
+      "candidate_row_downgrade_count": 8,
+      "fallback_context_off_count": 3
+    },
+    "kitchen_food_preparation": {
+      "count": 12,
+      "labeled_target_count": 12,
+      "top1_accuracy_labeled": 0.5,
+      "informative_top1_accuracy": 0.8571428571428571,
+      "engine_eligible_count": 7,
+      "engine_eligible_coverage": 0.5833333333333334,
+      "engine_eligible_precision": 0.8571428571428571,
+      "predicted_status_counts": {
+        "informative": 7,
+        "context_off": 3,
+        "ambiguous": 2
+      },
+      "expected_ambiguous_count": 2,
+      "expected_ambiguous_recognized": 1,
+      "false_informative_on_expected_ambiguous": 1,
+      "candidate_row_downgrade_count": 25,
+      "fallback_context_off_count": 3
+    },
+    "state_dependent": {
+      "count": 13,
+      "labeled_target_count": 12,
+      "top1_accuracy_labeled": 0.6666666666666666,
+      "informative_top1_accuracy": 0.8333333333333334,
+      "engine_eligible_count": 5,
+      "engine_eligible_coverage": 0.38461538461538464,
+      "engine_eligible_precision": 0.8,
+      "predicted_status_counts": {
+        "informative": 6,
+        "ambiguous": 3,
+        "context_off": 3,
+        "invalid": 1
+      },
+      "expected_ambiguous_count": 3,
+      "expected_ambiguous_recognized": 0,
+      "false_informative_on_expected_ambiguous": 1,
+      "candidate_row_downgrade_count": 26,
+      "fallback_context_off_count": 3
+    }
+  }
+}

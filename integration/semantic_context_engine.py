@@ -7,7 +7,10 @@ after this method returns and are never an engine argument.
 
 from __future__ import annotations
 
+from collections import OrderedDict
+import copy
 from datetime import datetime, timezone
+import hashlib
 import json
 import math
 import re
@@ -235,6 +238,13 @@ class SemanticContextEngine:
         self.model_id = model_id
         self.base_url = base_url.rstrip("/")
         self.max_correction_retries = max_correction_retries
+        # Session-local only: this stabilizes Undo/Reset recomputation without
+        # persisting scene or selection data to disk.
+        self._sequence_result_cache: OrderedDict[str, dict[str, Any]] = OrderedDict()
+
+    def clear_sequence_result_cache(self) -> None:
+        """Forget memoized sequential priors without changing session state."""
+        self._sequence_result_cache.clear()
 
     def metadata(self) -> dict[str, Any]:
         return {
@@ -262,9 +272,41 @@ class SemanticContextEngine:
         The historical M28 ``predict`` API remains unchanged. M32 uses this
         method so its CLI exercises the same sequential Context implementation.
         """
-        from integration.semantic_context_sequence import predict_next_target
+        cache_lookup_started = time.perf_counter()
+        from integration.semantic_context_sequence import (
+            M30_CONTEXT_ENGINE_VERSION,
+            M30_CONTEXT_PROMPT_VERSION,
+            predict_next_target,
+        )
 
-        return predict_next_target(
+        scene_data = scene.scene if isinstance(scene, SemanticSceneCore) else scene
+        cache_input = {
+            "model_id": self.model_id,
+            "base_url": self.base_url,
+            "engine_version": M30_CONTEXT_ENGINE_VERSION,
+            "prompt_version": M30_CONTEXT_PROMPT_VERSION,
+            "scene": scene_data,
+            "selection_history": selection_history,
+            "remaining_candidates": remaining_candidates,
+            "current_task_state": current_task_state,
+        }
+        try:
+            key = hashlib.sha256(json.dumps(cache_input, ensure_ascii=False, sort_keys=True,
+                                            separators=(",", ":")).encode("utf-8")).hexdigest()
+        except (TypeError, ValueError):
+            key = None
+        cached = self._sequence_result_cache.get(key) if key is not None else None
+        if cached is not None:
+            self._sequence_result_cache.move_to_end(key)
+            reused = copy.deepcopy(cached)
+            provenance = reused.setdefault("provenance", {})
+            provenance["cache_hit"] = True
+            provenance["cached_original_api_latency_ms"] = provenance.get("api_latency_ms", 0.0)
+            provenance["api_latency_ms"] = 0.0
+            provenance["total_latency_ms"] = round((time.perf_counter() - cache_lookup_started) * 1000.0, 3)
+            return reused
+
+        result = predict_next_target(
             self.client,
             self.model_id,
             scene=scene,
@@ -274,6 +316,14 @@ class SemanticContextEngine:
             base_url=self.base_url,
             max_correction_retries=self.max_correction_retries,
         )
+        if key is not None and result.get("status") in {"informative", "ambiguous", "context_off"} and result.get("reason_code") not in {
+            "api_failure", "invalid_model_output_after_bounded_retry",
+        }:
+            self._sequence_result_cache[key] = copy.deepcopy(result)
+            self._sequence_result_cache.move_to_end(key)
+            while len(self._sequence_result_cache) > 128:
+                self._sequence_result_cache.popitem(last=False)
+        return result
 
     def predict(self, context_input: dict[str, Any]) -> dict[str, Any]:
         started = time.perf_counter()

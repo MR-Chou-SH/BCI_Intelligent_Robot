@@ -56,8 +56,14 @@ class SequenceCompletionClient:
         scores = [0.9 - index * 0.1 for index in range(len(order))]
         return {"content": json.dumps({
             "status": "context_off", "reason_code": "no_clear_relation",
+            "task_state": {
+                "hypothesis_code": "uncertain", "hypothesis_summary": "No clear task hypothesis is available.",
+                "progress_code": "unknown", "progress_summary": "The task progress is unknown.",
+                "confidence": 0.2, "stability": 0.2,
+            },
             "candidate_scores": [
-                {"candidate_id": object_id, "source_object_id": None, "semantic_score": score,
+                {"candidate_id": object_id, "source_object_id": None,
+                 "candidate_task_continuation_score": score, "task_switch_penalty": 0.8,
                  "relation_type": "NONE", "relation_confidence": 0.0,
                  "short_rationale_code": "no_clear_link"}
                 for object_id, score in zip(order, scores)

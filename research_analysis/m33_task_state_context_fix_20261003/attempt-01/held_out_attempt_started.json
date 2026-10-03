@@ -1,0 +1,6 @@
+{
+  "started_at_utc": "2026-10-03T08:18:03Z",
+  "gate_sha256": "9b0904a167218fb520a5a93cc3056a2424841bc04513c5ca36d27ad15b59c2dc",
+  "prompt_version": "m33-task-state-context-v1",
+  "held_out_calls": 0
+}

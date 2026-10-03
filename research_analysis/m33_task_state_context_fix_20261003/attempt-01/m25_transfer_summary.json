@@ -1,0 +1,78 @@
+{
+  "record_type": "m33_m25_transfer_simulation",
+  "status": "PASS",
+  "evidence_boundary": "historical EEG feature replay; no raw EEG waveform, hardware, Quest, ND8, or COM used",
+  "m25_manifest_sha256_before": "0bc5b2032df564342562d3af085a174d81f707db42dfc161c14db4715d5fec5a",
+  "m25_manifest_sha256_after": "0bc5b2032df564342562d3af085a174d81f707db42dfc161c14db4715d5fec5a",
+  "m25_source_hashes_unchanged": true,
+  "m25_cohort": {
+    "checks": {
+      "formalN88": true,
+      "sessionCountsA30B129B229": true,
+      "b1Trial011Excluded": true,
+      "b2Trial023Excluded": true,
+      "sourceRate250HzProvenance": true,
+      "operatingPointHashMatchesSidecar": true,
+      "rawWaveformNotRead": true
+    },
+    "formalN": 88,
+    "sessionCounts": {
+      "A": 30,
+      "B1": 29,
+      "B2": 29
+    }
+  },
+  "heldout_semantic_gate_sha256": "9b0904a167218fb520a5a93cc3056a2424841bc04513c5ca36d27ad15b59c2dc",
+  "heldout_gate_rate": 0.3695652173913043,
+  "heldout_active_semantic_rows": 17,
+  "deterministic_seed_count": 100,
+  "lambda_ctx": 1.0,
+  "paired_lambda_zero_baseline": "exact M25 frozen EEG stop",
+  "m25_frozen_operating_points": {
+    "FAST": {
+      "n_trial_seed_pairs": 8800,
+      "baseline_accuracy": 1.0,
+      "context_accuracy": 1.0,
+      "accuracy_delta_pp": 0.0,
+      "mean_all_trial_gain_seconds": 0.0,
+      "context_applied_count": 0,
+      "mean_context_active_gain_seconds": null,
+      "assignment_rate": 0.36954545454545457,
+      "application_rate": 0.0,
+      "mapping_failures": 568,
+      "wrong_early_stops": 0,
+      "context_caused_errors": 0,
+      "no_delay_violations": 0
+    },
+    "MEDIUM": {
+      "n_trial_seed_pairs": 8800,
+      "baseline_accuracy": 1.0,
+      "context_accuracy": 1.0,
+      "accuracy_delta_pp": 0.0,
+      "mean_all_trial_gain_seconds": 0.0,
+      "context_applied_count": 0,
+      "mean_context_active_gain_seconds": null,
+      "assignment_rate": 0.36954545454545457,
+      "application_rate": 0.0,
+      "mapping_failures": 568,
+      "wrong_early_stops": 0,
+      "context_caused_errors": 0,
+      "no_delay_violations": 0
+    },
+    "CONSERVATIVE": {
+      "n_trial_seed_pairs": 8800,
+      "baseline_accuracy": 1.0,
+      "context_accuracy": 1.0,
+      "accuracy_delta_pp": 0.0,
+      "mean_all_trial_gain_seconds": 0.0,
+      "context_applied_count": 0,
+      "mean_context_active_gain_seconds": null,
+      "assignment_rate": 0.36954545454545457,
+      "application_rate": 0.0,
+      "mapping_failures": 568,
+      "wrong_early_stops": 0,
+      "context_caused_errors": 0,
+      "no_delay_violations": 0
+    }
+  }
+}

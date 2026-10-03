@@ -28,14 +28,20 @@ from integration.semantic_context_relations import (
 )
 
 
-M30_CONTEXT_PROMPT_VERSION = "m30-sequential-relational-context-v4"
-M30_CONTEXT_SCHEMA_VERSION = "m30-context-response-v1"
-M30_CONTEXT_ENGINE_VERSION = "m30-context-precondition-guard-v1"
+M30_CONTEXT_PROMPT_VERSION = "m33-task-state-context-v1"
+M30_CONTEXT_SCHEMA_VERSION = "m33-task-state-context-response-v1"
+M30_CONTEXT_ENGINE_VERSION = "m33-task-state-context-v1"
 M30_SOFTMAX_TEMPERATURE = 0.20  # Frozen to M28's transform; not calibrated.
 M30_TEMPERATURE = 0.0
-M30_MAX_OUTPUT_TOKENS = 1800
+M30_MAX_OUTPUT_TOKENS = 2200
 M30_MAX_CORRECTION_RETRIES = 1
 M30_STATUSES = frozenset({"informative", "ambiguous", "context_off", "invalid"})
+M33_FINAL_SCORE_WEIGHTS = (0.70, 0.20, 0.10)
+M33_MIN_TASK_STATE_CONFIDENCE = 0.50
+M33_MIN_TASK_STATE_STABILITY = 0.50
+M33_AMBIGUOUS_FINAL_MARGIN = 0.06
+M33_AMBIGUOUS_CONTINUATION_MARGIN = 0.06
+M33_AMBIGUOUS_HIGH_ENTROPY = 0.92
 _EVALUATION_KEYS = frozenset({
     "evaluation_only", "expected_target", "expected_target_ids", "acceptable_next_targets",
     "expected_relation", "true_label", "future_selection", "future_eeg", "answer_key",
@@ -53,17 +59,21 @@ def _system_prompt() -> str:
             requirements.append("candidate target any-of " + "/".join(sorted(_TARGET_TAGS[relation])))
         tag_rules.append(relation + " requires " + " and ".join(requirements))
     relation_rules = "; ".join(tag_rules)
-    return f"""You rank the next selectable object from a structured scene and the complete already-accepted selection history.
+    return f"""Infer a current task hypothesis and task progress from the COMPLETE ORDERED selection_history before ranking any remaining candidate.
 Return exactly one JSON object. Do not use markdown, chain-of-thought, hidden reasoning, or prose outside JSON.
 This is a pre-decision semantic Context prior, not a robot plan and not an EEG target label.
 
-Use only facts explicitly present in scene objects, their declared affordance_tags/current_state, selection_history, current_task_state, and candidate_next_object_ids. Do not add objects, colors, states, affordances, or future selections. An absent state is unknown. Rank every remaining candidate exactly once. Use informative when one candidate has a clear task-consistent advantage from the current task and accepted history, even though other candidates may be plausible in a broader sense. Use ambiguous only when at least two distinct candidates are comparably plausible as the immediate next step for the same current task state and the task/history give no cue to prefer one. Do not mark a case ambiguous merely because multiple future steps could eventually be useful, because the scene contains several compatible objects, or because a more specific/default option exists. Do not claim a unique user intention when two current next steps remain equally supported. Unrelated distractors do not create ambiguity. If no useful semantic evidence exists, use context_off. Use invalid only for an impossible or contradictory supplied state.
+Use only facts explicitly present in scene objects, declared affordance_tags/current_state, the full ordered selection_history, current_task_state, and candidate_next_object_ids. Do not add objects, colors, states, affordances, or future selections. An absent state is unknown. Do not treat the most recent object as a new independent intent by default: an object selected later may be a tool or intermediate step for an earlier selected object. Infer the likely ongoing task and its progress from the whole sequence. Relational affordance is evidence, not the ranking rule. A candidate's task-continuation score must carry more weight than a pairwise relation; penalize a candidate that would switch to a different task.
 
-For each candidate return: candidate_id, source_object_id (one already in selection_history or null), semantic_score (ordinal 0..1; not calibrated), relation_type (one of: {relations}), relation_confidence (ordinal 0..1; not calibrated), and short_rationale_code (one short snake_case token, no explanation).
-Specific relation affordance requirements: {relation_rules}. Check the declared tags before assigning a specific relation. For a candidate that does not meet the required target tags, or a source that does not meet the required source tags, use NONE or RELATED_TO instead of guessing. A source_object_id must be an exact ID from selection_history; never use an unselected candidate as the source. Do not invent a relation for every distractor. Explicit full, occupied, unavailable, or blocked state rejects capacity-dependent relations. A closed non-openable container cannot be a STORE_IN/PLACE_IN/DISCARD_IN/POUR_INTO target. OPEN/CLOSE require openable and consistent known state.
-Do not claim probabilities. The local program computes an uncalibrated softmax prior.
+First return task_state with hypothesis_code and progress_code (short snake_case tokens), hypothesis_summary and progress_summary (one short factual sentence each), confidence (0..1), and stability (0..1; confidence that this task-state interpretation is a single coherent reading of the full ordered history). Do not reveal reasoning.
 
-Required top-level keys: status, candidate_scores, reason_code. Status is one of informative, ambiguous, context_off, invalid. reason_code is a short snake_case token."""
+For every candidate return exactly one row containing candidate_id, candidate_task_continuation_score (0..1), source_object_id (one ID already in selection_history or null), relation_type (one of: {relations}), relation_confidence (0..1), task_switch_penalty (0..1; higher means more likely to begin an unrelated task), final_semantic_score (0..1), and short_rationale_code (one short snake_case token). Compute final_semantic_score as 0.70*candidate_task_continuation_score + 0.20*relation_confidence + 0.10*(1-task_switch_penalty). This makes task continuation dominant; a strong pairwise relation alone must not promote an unrelated branch. Scores are ordinal, not calibrated probabilities.
+
+Specific relation affordance requirements: {relation_rules}. Check declared tags and explicit state before assigning a specific relation. For an incompatible candidate relation use RELATED_TO or NONE; never let one candidate's invalid relation invalidate other rows. A source_object_id must be an exact ID from selection_history; never use an unselected candidate as the source. Do not invent a relation for every distractor. Explicit full, occupied, unavailable, or blocked state rejects capacity-dependent relations. A closed non-openable container cannot be a STORE_IN/PLACE_IN/DISCARD_IN/POUR_INTO target. OPEN/CLOSE require openable and consistent known state.
+
+Use informative only if the task-state interpretation is sufficiently confident/stable and one immediate continuation has a clear advantage. Use ambiguous when two or more immediate continuations are comparably supported, task state is unstable, or uncertainty remains; do not force a sharp top candidate. Use context_off when no useful task-state evidence exists. Use invalid only for an impossible or contradictory supplied state. Unrelated distractors do not create ambiguity. Do not claim probabilities; local software computes an uncalibrated q_global prior.
+
+Required top-level keys: status, task_state, candidate_scores, reason_code. Status is one of informative, ambiguous, context_off, invalid. reason_code is a short snake_case token."""
 
 
 def _reject_evaluation_fields(value: Any, path: str = "input") -> None:
@@ -130,6 +140,7 @@ def _candidate_result(
     retries: int = 0,
     usage: dict[str, int] | None = None,
     diagnostics: list[dict[str, Any]] | None = None,
+    task_state: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     prior = list(prior or [])
     rows = list(rows or [])
@@ -138,6 +149,14 @@ def _candidate_result(
     return {
         "status": status,
         "reason_code": reason_code,
+        "task_state": dict(task_state or {
+            "hypothesis_code": "unknown",
+            "hypothesis_summary": "Task state unavailable.",
+            "progress_code": "unknown",
+            "progress_summary": "Task progress unavailable.",
+            "confidence": 0.0,
+            "stability": 0.0,
+        }),
         "candidate_ids": list(candidate_ids),
         "candidate_scores": rows,
         "candidate_ranking": ranking,
@@ -179,8 +198,10 @@ def _validate_response(
     candidate_ids: list[str],
     scene: SemanticSceneCore,
     history: list[str],
+    row_warnings: list[str] | None = None,
 ) -> list[str]:
     errors: list[str] = []
+    warnings = row_warnings if row_warnings is not None else []
     if not isinstance(response, dict):
         return ["response must be a JSON object"]
     if response.get("status") not in M30_STATUSES:
@@ -188,12 +209,25 @@ def _validate_response(
     reason = response.get("reason_code")
     if not isinstance(reason, str) or not re.fullmatch(r"[a-z0-9_]{1,64}", reason):
         errors.append("reason_code must be a short snake_case token")
+    task_state = response.get("task_state")
+    if not isinstance(task_state, dict):
+        errors.append("task_state must be an object")
+    else:
+        for key in ("hypothesis_code", "progress_code"):
+            if not isinstance(task_state.get(key), str) or not re.fullmatch(r"[a-z0-9_]{1,48}", task_state[key]):
+                errors.append(f"task_state.{key} must be a short snake_case token")
+        for key in ("hypothesis_summary", "progress_summary"):
+            if not isinstance(task_state.get(key), str) or not task_state[key].strip() or len(task_state[key]) > 240:
+                errors.append(f"task_state.{key} must be a short factual sentence")
+        for key in ("confidence", "stability"):
+            value = task_state.get(key)
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(float(value)) or not 0.0 <= float(value) <= 1.0:
+                errors.append(f"task_state.{key} must be a finite number from 0 through 1")
     items = response.get("candidate_scores")
     if not isinstance(items, list) or len(items) != len(candidate_ids):
         return errors + ["candidate_scores must contain each remaining candidate exactly once"]
     seen: set[str] = set()
     source_by_id = scene.objects
-    relation_count = 0
     for index, item in enumerate(items):
         if not isinstance(item, dict):
             errors.append(f"candidate_scores[{index}] must be an object")
@@ -205,37 +239,54 @@ def _validate_response(
         if candidate_id in seen:
             errors.append("duplicate_candidate_id")
         seen.add(candidate_id)
-        score = item.get("semantic_score")
-        if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(float(score)) or not 0.0 <= float(score) <= 1.0:
-            errors.append(f"semantic_score_invalid:{candidate_id}")
-        confidence = item.get("relation_confidence")
-        if isinstance(confidence, bool) or not isinstance(confidence, (int, float)) or not math.isfinite(float(confidence)) or not 0.0 <= float(confidence) <= 1.0:
-            errors.append(f"relation_confidence_invalid:{candidate_id}")
+        for key in ("candidate_task_continuation_score", "relation_confidence", "task_switch_penalty"):
+            value = item.get(key)
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(float(value)) or not 0.0 <= float(value) <= 1.0:
+                warnings.append(f"{key}_invalid:{candidate_id}")
+                item[key] = 0.0 if key != "task_switch_penalty" else 1.0
         relation = item.get("relation_type")
         if not isinstance(relation, str) or relation.upper() not in RELATION_TYPES:
-            errors.append(f"relation_type_invalid:{candidate_id}")
-            continue
+            warnings.append(f"relation_type_invalid:{candidate_id}")
+            item["relation_type"] = "NONE"
+            item["relation_confidence"] = 0.0
+            item["source_object_id"] = None
+            relation = "NONE"
         relation = relation.upper()
-        if relation != "NONE":
-            relation_count += 1
         source_id = item.get("source_object_id")
         if source_id is not None and (not isinstance(source_id, str) or source_id not in history or source_id not in source_by_id):
-            errors.append(f"source_not_in_accepted_history:{candidate_id}")
-            continue
+            warnings.append(f"source_not_in_accepted_history:{candidate_id}")
+            item["source_object_id"] = None
+            item["relation_type"] = "NONE"
+            item["relation_confidence"] = 0.0
+            source_id = None
+            relation = "NONE"
         if relation in _SOURCE_TAGS and source_id is None:
-            errors.append(f"source_required_for_relation:{candidate_id}")
+            warnings.append(f"source_required_for_relation:{candidate_id}")
+            item["relation_type"] = "NONE"
+            item["relation_confidence"] = 0.0
         source = source_by_id.get(source_id) if source_id else None
         compatible, why = relation_compatibility(relation, source, source_by_id[candidate_id])
         if not compatible:
-            errors.append(f"state_or_affordance_contradiction:{candidate_id}:{why}")
+            warnings.append(f"candidate_relation_downgraded:{candidate_id}:{why}")
+            item["relation_type"] = "NONE"
+            item["relation_confidence"] = 0.0
+            item["source_object_id"] = None
         rationale = item.get("short_rationale_code")
         if not isinstance(rationale, str) or not re.fullmatch(r"[a-z0-9_]{1,48}", rationale):
-            errors.append(f"short_rationale_code_invalid:{candidate_id}")
+            warnings.append(f"short_rationale_code_invalid:{candidate_id}")
+            item["short_rationale_code"] = "conservative_fallback"
     if seen != set(candidate_ids):
         errors.append("candidate_ids_mismatch")
-    if response.get("status") == "informative" and relation_count == 0:
-        errors.append("informative_status_without_any_relation")
     return errors
+
+
+def _canonical_candidate_score(row: dict[str, Any]) -> float:
+    continuation, relation_confidence, task_switch_penalty = M33_FINAL_SCORE_WEIGHTS
+    return (
+        continuation * float(row["candidate_task_continuation_score"])
+        + relation_confidence * float(row["relation_confidence"])
+        + task_switch_penalty * (1.0 - float(row["task_switch_penalty"]))
+    )
 
 
 def predict_next_target(
@@ -357,25 +408,64 @@ def predict_next_target(
             response_obj = json.loads(content) if isinstance(content, str) else content
         except (TypeError, json.JSONDecodeError):
             response_obj = None
-        errors = _validate_response(response_obj, candidate_ids=candidate_ids, scene=core, history=history)
+        row_warnings: list[str] = []
+        errors = _validate_response(response_obj, candidate_ids=candidate_ids, scene=core, history=history,
+                                    row_warnings=row_warnings)
         if not errors:
             by_id = {row["candidate_id"]: row for row in response_obj["candidate_scores"]}
             ordered_rows = [dict(by_id[candidate_id]) for candidate_id in candidate_ids]
             for row in ordered_rows:
                 row["relation_type"] = row["relation_type"].upper()
-            scores = [float(row["semantic_score"]) for row in ordered_rows]
+                score = _canonical_candidate_score(row)
+                row["final_semantic_score"] = score
+                # Keep the existing consumer field while M32 and downstream callers migrate.
+                row["semantic_score"] = score
+            scores = [float(row["final_semantic_score"]) for row in ordered_rows]
             prior = _softmax(scores)
             ranking = [candidate_ids[i] for i in sorted(range(len(candidate_ids)), key=lambda i: (-scores[i], i))]
-            status = response_obj["status"]
-            eligible = status == "informative" and any(row["relation_type"] != "NONE" for row in ordered_rows)
-            return _candidate_result(status, response_obj["reason_code"], candidate_ids, prior=prior, rows=ordered_rows,
+            task_state_result = dict(response_obj["task_state"])
+            task_confidence = float(task_state_result["confidence"])
+            task_stability = float(task_state_result["stability"])
+            info = prior_diagnostics(prior)
+            top_row = next((row for row in ordered_rows if ranking and row["candidate_id"] == ranking[0]), {})
+            model_status = response_obj["status"]
+            status = model_status
+            reason_code = response_obj["reason_code"]
+            if model_status == "informative" and (
+                task_confidence < M33_MIN_TASK_STATE_CONFIDENCE
+                or task_stability < M33_MIN_TASK_STATE_STABILITY
+                or (info["margin"] is not None and info["margin"] < M33_AMBIGUOUS_FINAL_MARGIN)
+                or (info["normalized_entropy"] is not None and info["normalized_entropy"] > M33_AMBIGUOUS_HIGH_ENTROPY)
+            ):
+                status = "ambiguous"
+                reason_code = "task_state_or_continuation_uncertain"
+            if model_status == "informative" and info["margin"] is not None:
+                continuation_scores = sorted(
+                    (float(row["candidate_task_continuation_score"]) for row in ordered_rows), reverse=True
+                )
+                if len(continuation_scores) > 1 and continuation_scores[0] - continuation_scores[1] < M33_AMBIGUOUS_CONTINUATION_MARGIN:
+                    status = "ambiguous"
+                    reason_code = "task_continuation_tie"
+            if status in {"ambiguous", "context_off", "invalid"}:
+                prior = [1.0 / len(candidate_ids)] * len(candidate_ids)
+            eligible = (
+                status == "informative"
+                and task_confidence >= M33_MIN_TASK_STATE_CONFIDENCE
+                and task_stability >= M33_MIN_TASK_STATE_STABILITY
+                and float(top_row.get("task_switch_penalty", 1.0)) <= 0.50
+                and any(row["relation_type"] != "NONE" for row in ordered_rows)
+            )
+            if row_warnings:
+                diagnostics.append({"attempt": attempts, "candidate_row_downgrades": row_warnings})
+            return _candidate_result(status, reason_code, candidate_ids, prior=prior, rows=ordered_rows,
                                      ranking=ranking, eligible=eligible,
                                      total_latency_ms=(time.perf_counter()-started)*1000, api_latency_ms=api_latency_ms,
                                      model_id=model_id, base_url=base_url, attempts=attempts,
-                                     retries=max(0, attempts-1), usage=usage, diagnostics=diagnostics)
+                                     retries=max(0, attempts-1), usage=usage, diagnostics=diagnostics,
+                                     task_state=task_state_result)
         diagnostics.append({"attempt": attempts, "validation_errors": errors})
         correction = {
-            "instruction": "Return a corrected JSON object. Use every supplied remaining candidate exactly once. For each reported validation error, set the relation to NONE or RELATED_TO unless the exact required tags and an accepted history source are present in the supplied facts. Do not infer missing tags or use an unselected source. If the task is ambiguous, impossible, complete, or has no useful relation, return ambiguous, invalid, or context_off as appropriate.",
+            "instruction": "Return a corrected JSON object matching the required task_state and candidate row schema. Use every supplied remaining candidate exactly once. For each reported top-level/schema error, correct it. Candidate relation/precondition disagreements should be represented as NONE or RELATED_TO; they do not invalidate other candidate rows. Do not infer missing tags or use an unselected source. If the task is ambiguous, impossible, complete, or has no useful evidence, return ambiguous, invalid, or context_off as appropriate.",
             "validation_errors": errors,
             "prior_response": response_obj if isinstance(response_obj, dict) else None,
         }

@@ -170,18 +170,29 @@ def _render_context(context: dict[str, Any] | None, scene: dict[str, Any], outpu
     q_values = {row.get("candidate_id"): row.get("q") for row in context.get("q_global", [])
                 if isinstance(row, dict)}
     output_fn("[Semantic Context after accepted history]")
-    output_fn("Candidate                 Relation        Semantic score     q_global     Rationale")
-    output_fn("-" * 86)
+    task_state = context.get("task_state", {})
+    if isinstance(task_state, dict):
+        output_fn("Task: {} | progress: {} | confidence: {} | stability: {}".format(
+            task_state.get("hypothesis_summary", "unknown"),
+            task_state.get("progress_summary", "unknown"),
+            _fmt(task_state.get("confidence")), _fmt(task_state.get("stability")),
+        ))
+    output_fn("Candidate                 Continue  Relation        Switch  Final score   q_global     Rationale")
+    output_fn("-" * 112)
     for candidate_id in candidate_ids:
         row = scores.get(candidate_id, {})
         relation = row.get("relation_type", "NONE")
-        score = row.get("semantic_score")
+        continuation = row.get("candidate_task_continuation_score")
+        switch_penalty = row.get("task_switch_penalty")
+        score = row.get("final_semantic_score", row.get("semantic_score"))
         q_value = q_values.get(candidate_id)
         score_text = "—" if score is None else "{:.3f}".format(float(score))
+        continuation_text = "—" if continuation is None else "{:.3f}".format(float(continuation))
+        switch_text = "—" if switch_penalty is None else "{:.3f}".format(float(switch_penalty))
         q_text = "—" if q_value is None else "{:.4f}".format(float(q_value))
         rationale = row.get("short_rationale_code", "")
-        output_fn("{:<25} {:<15} {:>14} {:>12}     {}".format(
-            names.get(candidate_id, candidate_id), relation, score_text, q_text, rationale
+        output_fn("{:<25} {:>8}  {:<15} {:>6}  {:>11}  {:>9}     {}".format(
+            names.get(candidate_id, candidate_id), continuation_text, relation, switch_text, score_text, q_text, rationale
         ))
     output_fn("Status: {}".format(str(context.get("status", "unknown")).upper()))
     top_id = context.get("top_candidate")
@@ -191,7 +202,8 @@ def _render_context(context: dict[str, Any] | None, scene: dict[str, Any], outpu
         _fmt(context.get("normalized_entropy")),
     ))
     provenance = context.get("provenance", {})
-    output_fn("DeepSeek latency: {} ms".format(_fmt(provenance.get("api_latency_ms"))))
+    latency_source = " (session memory cache)" if provenance.get("cache_hit") else ""
+    output_fn("DeepSeek latency: {} ms{}".format(_fmt(provenance.get("api_latency_ms")), latency_source))
     output_fn("q_global is an uncalibrated semantic prior, not a probability.")
 
 

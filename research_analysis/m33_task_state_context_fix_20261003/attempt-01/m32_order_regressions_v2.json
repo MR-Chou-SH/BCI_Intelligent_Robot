@@ -1,0 +1,369 @@
+{
+  "record_type": "m33_m32_order_regression",
+  "created_at_utc": "2026-10-03T08:34:14Z",
+  "m32_benchmark_sha256": "87b35cc0b1f7b1ce46a1162aafb3328d23fd350e392615ed763b731b4708f2d7",
+  "cases": [
+    {
+      "case": "A_kitchen_apple_knife",
+      "trajectory_id": "kitchen-apple-first",
+      "history_names": [
+        "apple",
+        "knife"
+      ],
+      "candidate_ids": [
+        "obj_003",
+        "obj_004",
+        "obj_005",
+        "obj_006",
+        "obj_007",
+        "obj_008"
+      ],
+      "task_state": {
+        "hypothesis_code": "cut_fruit_with_knife",
+        "progress_code": "fruit_and_tool_selected",
+        "hypothesis_summary": "The user selected a red apple and then a fruit knife, indicating preparation to cut the apple.",
+        "progress_summary": "The apple and fruit knife have been selected, so cutting is the likely next step.",
+        "confidence": 0.85,
+        "stability": 0.9
+      },
+      "status": "informative",
+      "eligible_informative": true,
+      "ranking": [
+        "obj_003",
+        "obj_006",
+        "obj_004",
+        "obj_005",
+        "obj_007",
+        "obj_008"
+      ],
+      "q_global": [
+        {
+          "candidate_id": "obj_003",
+          "q": 0.6320139127004859
+        },
+        {
+          "candidate_id": "obj_004",
+          "q": 0.08553378188480013
+        },
+        {
+          "candidate_id": "obj_005",
+          "q": 0.05733500861062154
+        },
+        {
+          "candidate_id": "obj_006",
+          "q": 0.1482516855814413
+        },
+        {
+          "candidate_id": "obj_007",
+          "q": 0.03843280561132561
+        },
+        {
+          "candidate_id": "obj_008",
+          "q": 0.03843280561132561
+        }
+      ],
+      "reason_code": "cutting_task_continuation",
+      "diagnostics": [
+        {
+          "attempt": 1,
+          "validation_errors": [
+            "task_state.progress_summary must be a short factual sentence"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "A_kitchen_apple_knife",
+      "trajectory_id": "kitchen-knife-first",
+      "history_names": [
+        "knife",
+        "apple"
+      ],
+      "candidate_ids": [
+        "obj_003",
+        "obj_004",
+        "obj_005",
+        "obj_006",
+        "obj_007",
+        "obj_008"
+      ],
+      "task_state": {
+        "hypothesis_code": "cut_fruit_with_knife",
+        "progress_code": "knife_selected_fruit_selected",
+        "hypothesis_summary": "A fruit knife was selected first and a red apple second, indicating preparation to cut the apple.",
+        "progress_summary": "The knife and apple have been selected, so cutting is ready to proceed.",
+        "confidence": 0.75,
+        "stability": 0.8
+      },
+      "status": "informative",
+      "eligible_informative": true,
+      "ranking": [
+        "obj_003",
+        "obj_004",
+        "obj_005",
+        "obj_006",
+        "obj_008",
+        "obj_007"
+      ],
+      "q_global": [
+        {
+          "candidate_id": "obj_003",
+          "q": 0.49316255208482607
+        },
+        {
+          "candidate_id": "obj_004",
+          "q": 0.24489727574559034
+        },
+        {
+          "candidate_id": "obj_005",
+          "q": 0.10467275244723008
+        },
+        {
+          "candidate_id": "obj_006",
+          "q": 0.07376164196763833
+        },
+        {
+          "candidate_id": "obj_007",
+          "q": 0.03152682718202448
+        },
+        {
+          "candidate_id": "obj_008",
+          "q": 0.051978950572690724
+        }
+      ],
+      "reason_code": "cutting_task_continuation",
+      "diagnostics": [
+        {
+          "attempt": 1,
+          "validation_errors": [
+            "task_state.progress_summary must be a short factual sentence"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "B_electronics_phone_charger",
+      "trajectory_id": "electronics-desk-phone-first",
+      "history_names": [
+        "phone",
+        "charger"
+      ],
+      "candidate_ids": [
+        "obj_003",
+        "obj_004",
+        "obj_005",
+        "obj_006",
+        "obj_007",
+        "obj_008"
+      ],
+      "task_state": {
+        "hypothesis_code": "charge_phone_on_dock",
+        "progress_code": "phone_placed_dock_selected",
+        "hypothesis_summary": "The user selected the black phone and then the wireless charging dock, indicating a phone-charging setup.",
+        "progress_summary": "The phone has been selected and the charging dock has been selected, so the next step is likely to connect or complete the charging setup.",
+        "confidence": 0.82,
+        "stability": 0.86
+      },
+      "status": "informative",
+      "eligible_informative": true,
+      "ranking": [
+        "obj_003",
+        "obj_006",
+        "obj_008",
+        "obj_004",
+        "obj_005",
+        "obj_007"
+      ],
+      "q_global": [
+        {
+          "candidate_id": "obj_003",
+          "q": 0.7643403383144268
+        },
+        {
+          "candidate_id": "obj_004",
+          "q": 0.04555922641570107
+        },
+        {
+          "candidate_id": "obj_005",
+          "q": 0.035838156827229746
+        },
+        {
+          "candidate_id": "obj_006",
+          "q": 0.06149852304358338
+        },
+        {
+          "candidate_id": "obj_007",
+          "q": 0.033082788391583594
+        },
+        {
+          "candidate_id": "obj_008",
+          "q": 0.05968096700747549
+        }
+      ],
+      "reason_code": "phone_charging_setup_continues",
+      "diagnostics": [
+        {
+          "attempt": 1,
+          "candidate_row_downgrades": [
+            "candidate_relation_downgraded:obj_003:target_affordance_missing"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "B_electronics_phone_charger",
+      "trajectory_id": "electronics-desk-charger-first",
+      "history_names": [
+        "charger",
+        "phone"
+      ],
+      "candidate_ids": [
+        "obj_003",
+        "obj_004",
+        "obj_005",
+        "obj_006",
+        "obj_007",
+        "obj_008"
+      ],
+      "task_state": {
+        "hypothesis_code": "charge_phone_on_dock",
+        "progress_code": "dock_selected_phone_placed",
+        "hypothesis_summary": "The user is charging the black phone using the wireless charging dock.",
+        "progress_summary": "The wireless charging dock and black phone have been selected in that order, so the phone is likely placed on the dock.",
+        "confidence": 0.78,
+        "stability": 0.82
+      },
+      "status": "ambiguous",
+      "eligible_informative": false,
+      "ranking": [
+        "obj_003",
+        "obj_008",
+        "obj_006",
+        "obj_004",
+        "obj_007",
+        "obj_005"
+      ],
+      "q_global": [
+        {
+          "candidate_id": "obj_003",
+          "q": 0.16666666666666666
+        },
+        {
+          "candidate_id": "obj_004",
+          "q": 0.16666666666666666
+        },
+        {
+          "candidate_id": "obj_005",
+          "q": 0.16666666666666666
+        },
+        {
+          "candidate_id": "obj_006",
+          "q": 0.16666666666666666
+        },
+        {
+          "candidate_id": "obj_007",
+          "q": 0.16666666666666666
+        },
+        {
+          "candidate_id": "obj_008",
+          "q": 0.16666666666666666
+        }
+      ],
+      "reason_code": "task_state_or_continuation_uncertain",
+      "diagnostics": [
+        {
+          "attempt": 1,
+          "validation_errors": [
+            "response must be a JSON object"
+          ]
+        },
+        {
+          "attempt": 2,
+          "candidate_row_downgrades": [
+            "candidate_relation_downgraded:obj_003:target_affordance_missing"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "E_mixed_ambiguous",
+      "history_names": [
+        "phone",
+        "charger"
+      ],
+      "candidate_ids": [
+        "obj_001",
+        "obj_002",
+        "obj_003",
+        "obj_006",
+        "obj_007",
+        "obj_008"
+      ],
+      "task_state": {
+        "hypothesis_code": "charge_phone_on_stand",
+        "progress_code": "phone_placed_stand_selected",
+        "hypothesis_summary": "The user selected the phone and then the wireless charging stand, indicating a phone-charging task.",
+        "progress_summary": "The phone and charging stand have both been selected, so the next step is to place the phone on the stand or complete the charging setup.",
+        "confidence": 0.82,
+        "stability": 0.86
+      },
+      "status": "ambiguous",
+      "eligible_informative": false,
+      "ranking": [
+        "obj_001",
+        "obj_002",
+        "obj_003",
+        "obj_006",
+        "obj_007",
+        "obj_008"
+      ],
+      "q_global": [
+        {
+          "candidate_id": "obj_001",
+          "q": 0.16666666666666666
+        },
+        {
+          "candidate_id": "obj_002",
+          "q": 0.16666666666666666
+        },
+        {
+          "candidate_id": "obj_003",
+          "q": 0.16666666666666666
+        },
+        {
+          "candidate_id": "obj_006",
+          "q": 0.16666666666666666
+        },
+        {
+          "candidate_id": "obj_007",
+          "q": 0.16666666666666666
+        },
+        {
+          "candidate_id": "obj_008",
+          "q": 0.16666666666666666
+        }
+      ],
+      "reason_code": "task_continuation_tie",
+      "diagnostics": []
+    }
+  ],
+  "reversed_order_pairs": [
+    {
+      "pair": "A_kitchen_apple_knife",
+      "same_candidate_ids": true,
+      "task_state_changed": true,
+      "ranking_changed": true,
+      "q_l1": 0.4404947653175278
+    },
+    {
+      "pair": "B_electronics_phone_charger",
+      "same_candidate_ids": true,
+      "task_state_changed": true,
+      "ranking_changed": true,
+      "q_l1": 1.1953473432955202
+    }
+  ],
+  "all_pairs_preserve_same_candidates": true,
+  "all_pairs_change_task_or_prior": true,
+  "mixed_case_not_authorized": true
+}

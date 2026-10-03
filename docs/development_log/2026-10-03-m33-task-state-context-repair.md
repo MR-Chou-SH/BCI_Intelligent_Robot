@@ -1,0 +1,9 @@
+# 2026-10-03 — M33 Task-State Semantic Context Repair
+
+M33 replaces pairwise-relation-first ranking in the shared M30/M32 sequence engine with explicit ordered task hypothesis/progress, candidate continuation and task-switch scores. The engine computes its weighted final score locally and downgrades one incompatible relation row without discarding the other candidates. M32 uses this same engine and now retains identical successful same-input results in a bounded process-local cache, making Undo/Reset output stable without persisting scene data.
+
+The frozen M30 benchmark passed its input-leakage validator. On train/dev, a gate selected only from those splits achieved 20/21 active precision (95.24%) at 21/80 coverage. One held-out pass after gate freeze measured 16/17 (94.12%) at 17/46 coverage; it was not used to retune. M32's same-candidate reversed-history cases changed task progress/q, and the mixed scene stayed ambiguous. A read-only 100-seed replay of the frozen M25 88-trial cohort produced no wrong early stops and no delay violations, but Context never authorized an earlier stop, so transfer gain was zero.
+
+Known limitations are held-out precision 0.88 percentage points below the train/dev target, two held-out schema outputs rejected after bounded correction, and variable raw-model full-ranking/q repeatability. The same-process cache stabilizes repeated identical M32 inputs; it does not make a remote model determinism claim. Full measurements and the red-apple-to-knife regression are in [M33_FINAL_REPORT.md](../../research_analysis/m33_task_state_context_fix_20261003/attempt-01/M33_FINAL_REPORT.md).
+
+Verification: 29 focused Python tests passed; M30 benchmark validator passed; M32 final validator reported its pre-existing limitations. No Quest, ADB, ND8, COM11, live EEG, raw EEG, physical robot, production M19, or real VLA dispatch was used.

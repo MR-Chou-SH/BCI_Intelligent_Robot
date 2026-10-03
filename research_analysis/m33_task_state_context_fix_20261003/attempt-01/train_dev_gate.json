@@ -1,0 +1,20 @@
+{
+  "record_type": "m33_train_dev_gate",
+  "status": "FROZEN",
+  "created_at_utc": "2026-10-03T08:14:24Z",
+  "benchmark_sha256": "899aae6febb96cb6a63f0589fd7ad8e5bd0b317e97ac81de23c71ff062d237b0",
+  "prompt_version": "m33-task-state-context-v1",
+  "engine_version": "m33-task-state-context-v1",
+  "precision_floor": 0.95,
+  "minimum_active_support": 5,
+  "threshold": 0.3039226230247065,
+  "train_dev_active_count": 21,
+  "train_dev_correct_count": 20,
+  "train_dev_precision": 0.9523809523809523,
+  "train_dev_coverage": 0.2625,
+  "train_dev_all_count": 80,
+  "train_dev_eligible_count": 35,
+  "feature_formula": "min(task_state_confidence, task_state_stability, top_continuation, 1-top_task_switch_penalty, min(1, final_score_margin/0.20), 1-normalized_entropy)",
+  "held_out_used_for_gate_selection": false,
+  "training_episode_round_keys_sha256": "afbfd423ad61c00c3efe8754f73bea31abcc4b19959bf29c87589e7ae493f5d2"
+}

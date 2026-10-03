@@ -51,9 +51,11 @@ class FakeSequentialContextClient:
         candidate_ids = context["candidate_next_object_ids"]
         history = context["selection_history"]
         if self.invalid_first and len(self.messages) == 1:
-            rows = [{"candidate_id": "invented", "source_object_id": None, "semantic_score": 1.0,
+            rows = [{"candidate_id": "invented", "source_object_id": None, "candidate_task_continuation_score": 1.0,
+                     "task_switch_penalty": 0.0,
                      "relation_type": "RELATED_TO", "relation_confidence": 0.9, "short_rationale_code": "invented"}]
-            rows.extend({"candidate_id": candidate, "source_object_id": None, "semantic_score": 0.1,
+            rows.extend({"candidate_id": candidate, "source_object_id": None, "candidate_task_continuation_score": 0.1,
+                         "task_switch_penalty": 0.8,
                          "relation_type": "NONE", "relation_confidence": 0.0, "short_rationale_code": "no_relation"}
                         for candidate in candidate_ids[1:])
         else:
@@ -77,13 +79,27 @@ class FakeSequentialContextClient:
                         score, relation = 0.66, "STORE_IN"
                 rows.append({
                     "candidate_id": candidate,
+                    "candidate_task_continuation_score": score,
                     "source_object_id": last,
-                    "semantic_score": score,
+                    "task_switch_penalty": 0.1 if score >= 0.5 else 0.8,
                     "relation_type": relation,
                     "relation_confidence": score if relation != "NONE" else 0.0,
                     "short_rationale_code": "test_relation" if relation != "NONE" else "no_clear_relation",
                 })
-        payload = {"status": "informative", "candidate_scores": rows, "reason_code": "history_sensitive"}
+        ordered_task = "_then_".join(history) if history else "no_history"
+        payload = {
+            "status": "informative",
+            "task_state": {
+                "hypothesis_code": "task_" + ordered_task,
+                "hypothesis_summary": "The accepted ordered history defines the active task hypothesis.",
+                "progress_code": "step_" + str(len(history)),
+                "progress_summary": "The accepted history contains {} completed selection steps.".format(len(history)),
+                "confidence": 0.9,
+                "stability": 0.9,
+            },
+            "candidate_scores": rows,
+            "reason_code": "history_sensitive",
+        }
         return {"content": json.dumps(payload), "usage": {"prompt_tokens": 2, "completion_tokens": 3, "total_tokens": 5}}
 
 
@@ -96,6 +112,29 @@ class SemanticContextSequenceTests(unittest.TestCase):
         self.assertNotIn("apple", result["candidate_ids"])
         self.assertAlmostEqual(sum(result["context_prior"]), 1.0)
         self.assertEqual([row["candidate_id"] for row in result["q_global"]], result["candidate_ids"])
+
+    def test_identical_sequential_input_reuses_exact_session_result_without_mutable_aliasing(self):
+        client = FakeSequentialContextClient()
+        engine = SemanticContextEngine(client, "fake")
+        first = engine.predict_next_target(scene=_scene(), selection_history=["apple", "knife"])
+        expected_status = first["status"]
+        expected_task_state = json.dumps(first["task_state"], sort_keys=True)
+        expected_ranking = list(first["candidate_ranking"])
+        expected_prior = list(first["context_prior"])
+        expected_scores = json.dumps(first["candidate_scores"], sort_keys=True)
+        first["candidate_scores"][0]["semantic_score"] = 999.0
+        repeated = engine.predict_next_target(scene=_scene(), selection_history=["apple", "knife"])
+        self.assertEqual(repeated["status"], expected_status)
+        self.assertEqual(json.dumps(repeated["task_state"], sort_keys=True), expected_task_state)
+        self.assertEqual(repeated["candidate_ranking"], expected_ranking)
+        self.assertEqual(repeated["context_prior"], expected_prior)
+        self.assertEqual(json.dumps(repeated["candidate_scores"], sort_keys=True), expected_scores)
+        self.assertTrue(repeated["provenance"]["cache_hit"])
+        self.assertEqual(repeated["provenance"]["api_latency_ms"], 0.0)
+        self.assertEqual(len(client.messages), 1)
+        engine.clear_sequence_result_cache()
+        engine.predict_next_target(scene=_scene(), selection_history=["apple", "knife"])
+        self.assertEqual(len(client.messages), 2)
 
     def test_history_is_sent_and_changes_same_candidates_prior_ranking(self):
         client = FakeSequentialContextClient()
@@ -138,14 +177,17 @@ class SemanticContextSequenceTests(unittest.TestCase):
         self.assertEqual(result["provenance"]["retries"], 1)
         self.assertTrue(any("unknown_candidate_id" in str(item) for item in result["provenance"]["diagnostics"]))
 
-    def test_full_container_relation_is_corrected_and_contradiction_logged(self):
+    def test_full_container_relation_only_downgrades_that_candidate(self):
         client = FakeSequentialContextClient()
         engine = SemanticContextEngine(client, "fake")
         result = engine.predict_next_target(scene=_scene(full_container=True), selection_history=["apple"])
         self.assertEqual(result["status"], "informative")
-        self.assertEqual(result["provenance"]["attempts"], 2)
+        self.assertEqual(result["provenance"]["attempts"], 1)
+        box = next(row for row in result["candidate_scores"] if row["candidate_id"] == "box")
+        self.assertEqual(box["relation_type"], "NONE")
         self.assertTrue(any("destination_unavailable_from_explicit_state" in str(item)
                             for item in result["provenance"]["diagnostics"]))
+        self.assertGreater(len(set(round(value, 8) for value in result["context_prior"])), 1)
 
     def test_source_tag_relation_requires_a_selected_source_id(self):
         class MissingSourceClient:
@@ -159,22 +201,38 @@ class SemanticContextSequenceTests(unittest.TestCase):
                 rows = [{
                     "candidate_id": candidate,
                     "source_object_id": None,
-                    "semantic_score": 0.9 if candidate == "knife" else 0.1,
+                    "candidate_task_continuation_score": 0.9 if candidate == "knife" else 0.1,
+                    "task_switch_penalty": 0.1 if candidate == "knife" else 0.9,
                     "relation_type": "CUT_WITH" if candidate == "knife" else "NONE",
                     "relation_confidence": 0.8 if candidate == "knife" else 0.0,
                     "short_rationale_code": "cutting_tool" if candidate == "knife" else "no_relation",
                 } for candidate in candidates]
-                return {"content": json.dumps({"status": "informative", "candidate_scores": rows,
+                return {"content": json.dumps({"status": "informative", "task_state": {
+                                                "hypothesis_code": "apple_prep", "hypothesis_summary": "Prepare the apple.",
+                                                "progress_code": "tool_needed", "progress_summary": "A cutting tool is the next step.",
+                                                "confidence": 0.9, "stability": 0.9}, "candidate_scores": rows,
                                                 "reason_code": "selected_source_missing"})}
 
         client = MissingSourceClient()
         result = SemanticContextEngine(client, "fake").predict_next_target(scene=_scene(), selection_history=["apple"])
-        self.assertEqual(result["status"], "context_off")
-        self.assertEqual(result["provenance"]["attempts"], 2)
-        self.assertFalse(result["eligible_informative"])
+        self.assertEqual(result["provenance"]["attempts"], 1)
+        knife = next(row for row in result["candidate_scores"] if row["candidate_id"] == "knife")
+        self.assertEqual(knife["relation_type"], "NONE")
+        self.assertEqual(result["status"], "informative")
         self.assertIn("source_required_for_relation", str(result["provenance"]["diagnostics"]))
-        correction = json.loads(client.messages[1][1]["content"])["correction"]
-        self.assertIn("accepted history source", correction["instruction"])
+
+    def test_red_apple_then_knife_task_state_uses_ordered_history_and_same_candidates(self):
+        client = FakeSequentialContextClient()
+        engine = SemanticContextEngine(client, "fake")
+        forward = engine.predict_next_target(scene=_scene(), selection_history=["apple", "knife"])
+        reversed_order = engine.predict_next_target(scene=_scene(), selection_history=["knife", "apple"])
+        self.assertEqual(forward["candidate_ids"], reversed_order["candidate_ids"])
+        self.assertEqual(forward["task_state"]["hypothesis_code"], "task_apple_then_knife")
+        self.assertIn("2 completed selection steps", forward["task_state"]["progress_summary"])
+        self.assertNotEqual(forward["task_state"]["hypothesis_code"], reversed_order["task_state"]["hypothesis_code"])
+        self.assertNotEqual(forward["candidate_ranking"], reversed_order["candidate_ranking"])
+        self.assertNotEqual(forward["context_prior"], reversed_order["context_prior"])
+        self.assertEqual(forward["task_state"]["progress_code"], reversed_order["task_state"]["progress_code"])
 
     def test_ambiguous_status_has_normalized_q_but_is_not_eligible(self):
         class AmbiguousClient(FakeSequentialContextClient):
