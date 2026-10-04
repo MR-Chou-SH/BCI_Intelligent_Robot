@@ -1,0 +1,12 @@
+{
+  "acceptedTriggerCount": 30,
+  "acceptedTriggerSources": {
+    "pc_simulated_same_handler": 30
+  },
+  "allInjectedTriggersUsedSharedCoordinatorHandler": true,
+  "completedTrialCount": 30,
+  "duplicateOrStaleTriggerRejectedCount": 1,
+  "physicalLaserTriggerTested": false,
+  "recordType": "m37_simulated_trigger_validation",
+  "status": "PASS"
+}

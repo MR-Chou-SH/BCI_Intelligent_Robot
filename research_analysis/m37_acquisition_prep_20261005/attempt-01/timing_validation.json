@@ -1,0 +1,31 @@
+{
+  "allPrepIntervalsPass": true,
+  "allStimulusIntervalsPass": true,
+  "allStimulusOnsetsHavePostOnsetSampleAnchor": true,
+  "interTargetBeepSilenceSeconds": 0.45,
+  "physicalOpticalTimingVerified": false,
+  "prepDurationsObservedSeconds": [
+    1.5
+  ],
+  "preparationSeconds": 1.5,
+  "recordType": "m37_software_timing_validation",
+  "restSeconds": 6.0,
+  "slotFrequenciesHz": [
+    7.2,
+    9.0,
+    12.0
+  ],
+  "slotToneFrequenciesHz": [
+    660.0,
+    880.0,
+    1320.0
+  ],
+  "sourceType": "synthetic accelerated rehearsal",
+  "stimulusDurationsObservedSeconds": [
+    4.0
+  ],
+  "stimulusSeconds": 4.0,
+  "targetBeepSeconds": 0.22,
+  "targetGroupSeparationSeconds": 0.7,
+  "trialCount": 30
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "runId": "m37-prep-night-20261005",
+  "status": "IN_PROGRESS",
+  "startedAtUtc": "2026-10-04T20:14:40Z",
+  "updatedAtUtc": "2026-10-04T21:44:23Z",
+  "planPath": "docs/agent/overnight/runs/m37-prep-night-20261005/plan.md",
+  "repository": {
+    "absolutePath": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot",
+    "gitRoot": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot",
+    "branch": "codex/m37-acquisition-prep",
+    "head": "c4b74670b56de3ce800e0f410e6d58e69bea69cd",
+    "upstream": null,
+    "workingTreeClean": false,
+    "preExistingChanges": [
+      "5 tracked modifications: docs/agent/overnight/runs/20261002-full-overnight/task2/TASK2_FINAL_REPORT.md; docs/agent/overnight/runs/20261002-full-overnight/task2/quest_runtime_validation.json; integration/m20_scene_layout_snapshot.py; integration/test_m20_quest_pc_acceptance.py; integration/test_m20_scene_layout_snapshot.py",
+      "4363 pre-existing untracked paths (full `git status --porcelain=v1 --untracked-files=all` count was 4368); preserve and do not stage"
+    ]
+  },
+  "currentStepId": "6",
+  "completedStepIds": [
+    "1",
+    "2",
+    "3",
+    "5"
+  ],
+  "lastGreenVerification": {
+    "command": "py_compile + 27 targeted M37/M8 Python tests + PowerShell parser + Unity generated Editor C# compile + 14-file artifact audit",
+    "exitCode": 0,
+    "result": "PASS; Python 27 tests; C# 0 errors; artifact software checks all pass",
+    "sourceHead": "c4b74670b56de3ce800e0f410e6d58e69bea69cd",
+    "resultPath": "research_analysis/m37_acquisition_prep_20261005/attempt-01/artifact_audit_final3.json",
+    "verifiedAtUtc": "2026-10-04T21:30:28Z"
+  },
+  "checkpoint": {
+    "kind": "m37-selective-stage-reviewed",
+    "reference": "31 M37-specific paths; git diff --cached --check PASS; no file >5 MiB; sensitive-pattern scan clean",
+    "branch": "codex/m37-acquisition-prep",
+    "head": "c4b74670b56de3ce800e0f410e6d58e69bea69cd",
+    "workingTreeState": "M37 paths staged; unrelated dirty/untracked paths remain unstaged",
+    "recordedAtUtc": "2026-10-04T21:44:23Z"
+  },
+  "changedPaths": [
+    "docs/agent/overnight/runs/m37-prep-night-20261005/plan.md",
+    "docs/agent/overnight/runs/m37-prep-night-20261005/state.json",
+    "docs/agent/overnight/runs/m37-prep-night-20261005/worklog.jsonl",
+    "docs/agent/overnight/runs/m37-prep-night-20261005/handoff.md",
+    "research_analysis/m37_acquisition_prep_20261005/attempt-01",
+    "integration/m37_acquisition_prep.py",
+    "integration/test_m37_acquisition_prep.py",
+    "integration/m8_selection_orchestration.py",
+    "integration/test_m8_selection_orchestration.py",
+    "m7_unity6000/Assets/BCI/Integration/BciM19ResearchAcquisitionController.cs",
+    "m7_unity6000/Assets/BCI/Integration/BciSelectionTransportClient.cs",
+    "m7_unity6000/Assets/Tests/Editor/BciM19ResearchPresentationTests.cs",
+    "scripts/m37_preflight.ps1",
+    "scripts/m37_start_acquisition.ps1"
+  ],
+  "lastWorklogSequence": 3,
+  "blocker": {
+    "kind": "external_hardware_authorization_and_availability",
+    "evidence": "Quest TCP probe received no peer/ready event; auto approval rejected COM11 open/start under earlier no-hardware boundary. All independent software checks and fakes are complete; do not retry COM11 without explicit user response.",
+    "userInputRequested": "One bounded COM11 3-second sample-transport test"
+  },
+  "resumeInstruction": "Commit and push the reviewed M37-only staged paths to origin, verify remote hash, then wait for explicit user resolution of the COM11 authorization request. Do not open COM11 without that direct reply. Quest was not connected; tomorrow wake it and launch Research over Wi-Fi/LAN. USB/ADB is not required."
+}

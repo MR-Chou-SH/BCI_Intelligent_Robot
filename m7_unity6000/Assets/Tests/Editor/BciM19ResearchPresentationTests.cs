@@ -34,7 +34,7 @@ namespace BCIIntelligentRobot.Tests
             build.Invoke(controller, new object[] { m_camera });
 
             FieldInfo statusField = typeof(BciM19ResearchAcquisitionController).GetField(
-                "m_statusText", BindingFlags.Instance | BindingFlags.NonPublic);
+                "m_triggerText", BindingFlags.Instance | BindingFlags.NonPublic);
             FieldInfo stimulusField = typeof(BciM19ResearchAcquisitionController).GetField(
                 "m_stimulusController", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.That(statusField, Is.Not.Null);
@@ -85,7 +85,8 @@ namespace BCIIntelligentRobot.Tests
         [Test]
         public void ResearchUsesIdenticalBlackWhiteStimuliAndFrozenSlotTiming()
         {
-            Assert.That(m_stimulus.IsVisualFlickerEnabled, Is.True);
+            Assert.That(m_stimulus.IsVisualFlickerEnabled, Is.False,
+                "Research targets remain static while waiting for the participant trigger.");
             MultiTargetStimulusController.TargetRuntimeSnapshot[] targets =
                 m_stimulus.GetTargetRuntimeSnapshots();
             Assert.That(targets.Length, Is.EqualTo(3));
@@ -115,6 +116,17 @@ namespace BCIIntelligentRobot.Tests
             AssertAllStimulusColors(Color.white);
             applyStates.Invoke(m_stimulus, new object[] { 5 });
             AssertAllStimulusColors(Color.black);
+
+            for (int slot = 0; slot < 3; slot++)
+                m_stimulus.SetSlotCandidateActive(slot, true);
+            m_stimulus.BeginFormalStimulusEpoch();
+            Assert.That(m_stimulus.IsFormalStimulusActive, Is.True);
+            Assert.That(m_stimulus.IsVisualFlickerEnabled, Is.True);
+            m_stimulus.EndFormalStimulusEpoch();
+            for (int slot = 0; slot < 3; slot++)
+                m_stimulus.SetSlotStaticPreview(slot, true);
+            Assert.That(m_stimulus.IsFormalStimulusActive, Is.False);
+            Assert.That(m_stimulus.IsVisualFlickerEnabled, Is.False);
 
             Assert.That(m_hudObject.transform.Find("M19_ResearchYellowLabel"), Is.Null);
             Assert.That(m_hudObject.transform.Find("M19_ResearchBlueLabel"), Is.Null);

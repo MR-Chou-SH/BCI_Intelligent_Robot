@@ -1,0 +1,18 @@
+{
+  "artifactDir": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\research_analysis\\m37_acquisition_prep_20261005\\attempt-01",
+  "failedSoftwareChecks": [],
+  "missingArtifacts": [],
+  "requiredArtifactCount": 14,
+  "softwareChecks": {
+    "disconnectFaultInjectionPass": true,
+    "dummyManifestHasCompletedTrials": true,
+    "epoch4500AndEightChannelsPass": true,
+    "noRawEegOrEpochArraysInBundle": true,
+    "onsetAnchorsPass": true,
+    "scheduleBalancedSizePass": true,
+    "slotFrequencyMapPass": true,
+    "timingIntervalsPass": true,
+    "triggerSimulationPass": true
+  },
+  "status": "PASS"
+}

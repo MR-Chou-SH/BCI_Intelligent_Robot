@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using BCIIntelligentRobot.VRStimulus;
@@ -40,6 +41,9 @@ namespace BCIIntelligentRobot.Integration
         private bool m_isPaused;
         private bool m_sessionComplete;
         private bool m_waitingForTriggerGazeExit;
+        private bool m_formalStimulusActive;
+        private string m_stimulusAttemptId;
+        private Coroutine m_stimulusStopCoroutine;
         private bool m_initialized;
 
         public bool IsInitialized => m_initialized;
@@ -65,9 +69,9 @@ namespace BCIIntelligentRobot.Integration
 
             BuildPresentation(camera);
             m_initialized = true;
-            Debug.Log("M19_RESEARCH_UI_READY targets=YELLOW:7.2,BLUE:9, GREEN:12 " +
+            Debug.Log("M19_RESEARCH_UI_READY targets=YELLOW:7.2,BLUE:9,GREEN:12 " +
                 "trigger_dwell_s=1.5 page_queue=false persistent_selection=false robot_dispatch=false " +
-                "continuous_browse_flicker=true physical_refresh_verified=false", this);
+                "flicker_during_formal_epoch_only=true physical_refresh_verified=false", this);
             Publish("m19_research_ready");
         }
 
@@ -128,7 +132,7 @@ namespace BCIIntelligentRobot.Integration
             for (int slot = 0; slot < 3; slot++)
             {
                 m_stimulusController.SetSlotVisible(slot, true);
-                m_stimulusController.SetSlotBrowseFlicker(slot, true);
+                m_stimulusController.SetSlotStaticPreview(slot, true);
             }
             stimulusControllerObject.AddComponent<MultiTargetTimingDiagnostics>();
 
@@ -356,6 +360,14 @@ namespace BCIIntelligentRobot.Integration
                 m_pausedBlockId = message.blockId;
                 m_triggerText.text = "GAZE HERE TO CONTINUE AFTER YOUR BREAK";
             }
+            else if (message.messageType == "m19_research_stimulus_start")
+            {
+                StartFormalStimulus(message);
+            }
+            else if (message.messageType == "m19_research_stimulus_stop")
+            {
+                StopFormalStimulus(message, acknowledge: true);
+            }
             else if (message.messageType == "m19_research_trial_complete")
             {
                 if (m_offer == null || !MatchesCurrentOffer(message))
@@ -364,6 +376,7 @@ namespace BCIIntelligentRobot.Integration
                     return;
                 }
                 string status = string.IsNullOrWhiteSpace(message.status) ? "completed" : message.status;
+                StopFormalStimulus(message, acknowledge: false);
                 ClearOffer();
                 m_triggerPending = false;
                 m_triggerText.text = "TRIAL " + status.ToUpperInvariant() + " — WAITING FOR NEXT CUE";
@@ -388,6 +401,81 @@ namespace BCIIntelligentRobot.Integration
                 string.Equals(message.sessionId, m_offer.sessionId, StringComparison.Ordinal) &&
                 string.Equals(message.trialId, m_offer.trialId, StringComparison.Ordinal) &&
                 string.Equals(message.attemptId, m_offer.attemptId, StringComparison.Ordinal);
+        }
+
+        private void StartFormalStimulus(BciSelectionTransportMessage message)
+        {
+            bool sameOffer = MatchesCurrentOffer(message);
+            if (!sameOffer || m_sessionComplete || (!m_triggerPending && !message.simulatedTrigger))
+            {
+                Debug.LogWarning("M19_RESEARCH stimulus_start_rejected reason=stale_or_untriggered trial_id=" + (message.trialId ?? ""), this);
+                return;
+            }
+
+            if (m_formalStimulusActive && string.Equals(m_stimulusAttemptId, message.attemptId, StringComparison.Ordinal))
+            {
+                Publish("m19_research_stimulus_started", message, null);
+                return;
+            }
+            if (m_formalStimulusActive)
+            {
+                Debug.LogWarning("M19_RESEARCH stimulus_start_rejected reason=another_attempt_active", this);
+                return;
+            }
+
+            m_triggerPending = true;
+            m_formalStimulusActive = true;
+            m_stimulusAttemptId = message.attemptId;
+            for (int slot = 0; slot < 3; slot++)
+                m_stimulusController.SetSlotCandidateActive(slot, true);
+            m_stimulusController.BeginFormalStimulusEpoch();
+            if (m_triggerText != null)
+                m_triggerText.text = "STIMULUS RUNNING — PLEASE KEEP STILL";
+
+            float durationSeconds = message.durationSeconds > 0f ? message.durationSeconds : 4f;
+            if (Application.isPlaying)
+                m_stimulusStopCoroutine = StartCoroutine(StopStimulusAfterDuration(message.attemptId, durationSeconds));
+            Publish("m19_research_stimulus_started", message, null);
+            Debug.Log("M19_RESEARCH stimulus_started trial_id=" + message.trialId +
+                " attempt_id=" + message.attemptId + " duration_seconds=" + durationSeconds.ToString("F3") +
+                " software_frame=" + Time.frameCount, this);
+            RefreshReticleVisibility();
+        }
+
+        private IEnumerator StopStimulusAfterDuration(string attemptId, float durationSeconds)
+        {
+            yield return new WaitForSecondsRealtime(Mathf.Max(0.1f, durationSeconds));
+            EndStimulusVisual(attemptId);
+            m_stimulusStopCoroutine = null;
+        }
+
+        private void StopFormalStimulus(BciSelectionTransportMessage message, bool acknowledge)
+        {
+            if (message == null || !MatchesCurrentOffer(message) ||
+                (!string.IsNullOrEmpty(m_stimulusAttemptId) && !string.Equals(m_stimulusAttemptId, message.attemptId, StringComparison.Ordinal)))
+                return;
+
+            EndStimulusVisual(message.attemptId);
+            if (acknowledge)
+                Publish("m19_research_stimulus_stopped", message, null);
+        }
+
+        private void EndStimulusVisual(string attemptId)
+        {
+            if (!string.Equals(m_stimulusAttemptId, attemptId, StringComparison.Ordinal))
+                return;
+            if (m_stimulusStopCoroutine != null)
+            {
+                StopCoroutine(m_stimulusStopCoroutine);
+                m_stimulusStopCoroutine = null;
+            }
+            if (m_stimulusController != null)
+            {
+                m_stimulusController.EndFormalStimulusEpoch();
+                for (int slot = 0; slot < 3; slot++)
+                    m_stimulusController.SetSlotStaticPreview(slot, true);
+            }
+            m_formalStimulusActive = false;
         }
 
         private bool Publish(string messageType, BciSelectionTransportMessage offer = null, string reason = null)
@@ -415,6 +503,9 @@ namespace BCIIntelligentRobot.Integration
 
         private void ClearOffer()
         {
+            if (m_formalStimulusActive && !string.IsNullOrWhiteSpace(m_stimulusAttemptId))
+                EndStimulusVisual(m_stimulusAttemptId);
+            m_stimulusAttemptId = null;
             m_offer = null;
             m_triggerPending = false;
             m_triggerRetryRequired = false;

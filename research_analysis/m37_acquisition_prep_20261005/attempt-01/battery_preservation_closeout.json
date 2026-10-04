@@ -1,0 +1,10 @@
+{
+  "activeHardwareStreamsAfterChecks": false,
+  "deviceBatteryLossObserved": "NOT_OBSERVABLE",
+  "nd8HandleOpenAtCloseout": false,
+  "nd8StreamStarted": false,
+  "physicalTriggerOperated": false,
+  "questTelemetry": "NOT_AVAILABLE; TCP probe did not connect",
+  "recordType": "m37_device_battery_closeout",
+  "usbOrAdbLeftConnected": false
+}

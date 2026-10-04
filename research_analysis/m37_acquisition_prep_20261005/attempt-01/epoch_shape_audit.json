@@ -1,0 +1,17 @@
+{
+  "allEightChannelsRecorded": true,
+  "allEpochs4500PerChannel": true,
+  "allEpochsHaveAnchor": true,
+  "expectedPostOnsetSamples": 4000,
+  "expectedPreOnsetSamples": 500,
+  "expectedSamplesPerChannel": 4500,
+  "expectedShape": [
+    8,
+    4500
+  ],
+  "packetGapCount": 0,
+  "rawContinuousSyntheticDataCopiedToRepository": false,
+  "recordType": "m37_epoch_shape_audit",
+  "sourceType": "synthetic accelerated rehearsal",
+  "trialCount": 30
+}

@@ -204,6 +204,8 @@ class QuestSelectionTcpServer:
             "m19_research_block_pause",
             "m19_research_trial_complete",
             "m19_research_session_complete",
+            "m19_research_stimulus_start",
+            "m19_research_stimulus_stop",
         ):
             raise QuestSelectionTransportError("unsupported PC-to-Quest Research message type")
         forbidden = {"context", "contextcondition", "condition", "split", "logicalblockid", "targetid", "classindex", "eeg"}
@@ -542,6 +544,8 @@ class QuestSelectionTcpServer:
             "m19_research_trigger",
             "m19_research_cancel",
             "m19_research_resume",
+            "m19_research_stimulus_started",
+            "m19_research_stimulus_stopped",
         ):
             self._m19_research_message_count += 1
             self._controller_events.append(dict(payload))

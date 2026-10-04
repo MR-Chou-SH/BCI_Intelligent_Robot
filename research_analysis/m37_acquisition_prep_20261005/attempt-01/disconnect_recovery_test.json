@@ -1,0 +1,12 @@
+{
+  "completedTrialsPreservedAcrossSyntheticStopRestart": true,
+  "evidence": "integration.test_m37_acquisition_prep.test_mid_epoch_disconnect_is_invalid_without_fabricated_samples",
+  "fakeSamplesAdded": false,
+  "incompleteAttemptMarkedTechnicalInvalid": true,
+  "liveNd8DisconnectAndReopen": "NOT_TESTED",
+  "fakeAdapterImmediateFirstPacket": "PASS",
+  "fakeAdapterAppendOnlyStopRestartOffsets": "PASS",
+  "questDisconnectAndReconnect": "NOT_TESTED",
+  "recordType": "m37_disconnect_recovery_validation",
+  "softwareFaultInjection": "PASS"
+}

@@ -227,6 +227,35 @@ class M8SelectionOrchestrationTests(unittest.TestCase):
 
 
 class QuestSelectionTcpServerTests(unittest.TestCase):
+    def test_research_stimulus_acknowledgements_are_queued_for_the_controller(self):
+        server = QuestSelectionTcpServer()
+        fake_connection = object()
+        for message_type in ("m19_research_stimulus_started", "m19_research_stimulus_stopped"):
+            self.assertTrue(server._handle_controller_event({"messageType": message_type, "trialId": "trial-1"}, fake_connection))
+        self.assertEqual(
+            ["m19_research_stimulus_started", "m19_research_stimulus_stopped"],
+            [event["messageType"] for event in server.drain_controller_events()],
+        )
+
+    def test_research_offer_requires_fixed_block_and_slot_identity(self):
+        class FakeConnection:
+            def __init__(self):
+                self.sent = []
+
+            def sendall(self, data):
+                self.sent.append(data)
+
+        server = QuestSelectionTcpServer()
+        server._connection = FakeConnection()
+        payload = {
+            "protocolVersion": 1, "messageType": "m19_research_offer",
+            "sessionId": "session-1", "trialId": "trial-1", "attemptId": "attempt-1", "blockId": "M37",
+            "ordinal": 1, "slotIndex": 2, "frequencyHz": 12.0, "targetLabel": "GREEN", "cueBeepCount": 3,
+        }
+        sent = server.send_research_message(payload)
+        self.assertEqual("M37", sent["blockId"])
+        self.assertIn(b'"frequencyHz":12.0', server._connection.sent[0])
+
     def test_open_and_final_decision_use_newline_json_and_return_the_quest_ack(self):
         transport = QuestSelectionTcpServer("127.0.0.1", 0, accept_timeout_seconds=1.0, ack_timeout_seconds=1.0)
         transport.start()

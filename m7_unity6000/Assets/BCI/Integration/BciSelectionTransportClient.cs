@@ -67,6 +67,8 @@ namespace BCIIntelligentRobot.Integration
         public int ordinal = -1;
         public float frequencyHz;
         public int cueBeepCount;
+        public float durationSeconds;
+        public bool simulatedTrigger;
         public int softwareFrame = -1;
         public long eventMonotonicNs;
         public string selectionId;
@@ -234,11 +236,15 @@ namespace BCIIntelligentRobot.Integration
                  message.messageType != "m19_research_offer_ack" &&
                  message.messageType != "m19_research_trigger" &&
                  message.messageType != "m19_research_cancel" &&
-                 message.messageType != "m19_research_resume"))
+                 message.messageType != "m19_research_resume" &&
+                 message.messageType != "m19_research_stimulus_started" &&
+                 message.messageType != "m19_research_stimulus_stopped"))
                 return false;
             if ((message.messageType == "m19_research_trigger" ||
                  message.messageType == "m19_research_cancel" ||
-                 message.messageType == "m19_research_offer_ack") &&
+                 message.messageType == "m19_research_offer_ack" ||
+                 message.messageType == "m19_research_stimulus_started" ||
+                 message.messageType == "m19_research_stimulus_stopped") &&
                 (string.IsNullOrWhiteSpace(message.sessionId) || string.IsNullOrWhiteSpace(message.trialId) ||
                  string.IsNullOrWhiteSpace(message.attemptId)))
                 return false;

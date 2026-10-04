@@ -1,0 +1,62 @@
+{
+  "configuredComPort": "COM11",
+  "configuredComPortEnumerated": true,
+  "configuredPortDescriptor": {
+    "description": "USB 串行设备 (COM11)",
+    "device": "COM11",
+    "hwid": "USB VID:PID=0000:0000 SER=000000000000",
+    "pid": 0,
+    "vid": 0
+  },
+  "enumeratedSerialPorts": [
+    {
+      "description": "USB 串行设备 (COM11)",
+      "device": "COM11",
+      "hwid": "USB VID:PID=0000:0000 SER=000000000000",
+      "pid": 0,
+      "vid": 0
+    },
+    {
+      "description": "蓝牙链接上的标准串行 (COM9)",
+      "device": "COM9",
+      "hwid": "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0046\\9&2D35CF3F&0&C82478C0FB85_C00000000",
+      "pid": null,
+      "vid": null
+    },
+    {
+      "description": "蓝牙链接上的标准串行 (COM7)",
+      "device": "COM7",
+      "hwid": "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_VID&000105D6_PID&000A\\9&2D35CF3F&0&EB7CC98BCD5D_C00000000",
+      "pid": null,
+      "vid": null
+    },
+    {
+      "description": "蓝牙链接上的标准串行 (COM6)",
+      "device": "COM6",
+      "hwid": "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0000\\9&2D35CF3F&0&000000000000_0000000B",
+      "pid": null,
+      "vid": null
+    },
+    {
+      "description": "蓝牙链接上的标准串行 (COM10)",
+      "device": "COM10",
+      "hwid": "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG&0000\\9&2D35CF3F&0&000000000000_0000000E",
+      "pid": null,
+      "vid": null
+    }
+  ],
+  "observedUtc": "2026-10-04T21:10:14.044308+00:00",
+  "pythonVersion": "3.9.13 (tags/v3.9.13:6de2ca5, May 17 2022, 16:36:42) [MSC v.1929 64 bit (AMD64)]",
+  "questProbe": {
+    "error": "M37Error: Quest did not publish m19_research_ready before the bounded connection timeout",
+    "host": "0.0.0.0",
+    "peer": null,
+    "port": 11001,
+    "status": "NOT_CONNECTED",
+    "usbOrAdbRequired": false
+  },
+  "questUsbAdbRequired": false,
+  "recordType": "m37_device_discovery",
+  "serialEnumerationError": null,
+  "vendorPython": "C:\\Users\\zsh21\\.local-tools\\neurodance-sdk-venv\\Scripts\\python.exe"
+}

@@ -1,0 +1,65 @@
+{
+  "channelCount": 8,
+  "channelIdsInSdkOrder": [
+    "ND8_CH_0",
+    "ND8_CH_1",
+    "ND8_CH_2",
+    "ND8_CH_3",
+    "ND8_CH_4",
+    "ND8_CH_5",
+    "ND8_CH_6",
+    "ND8_CH_7"
+  ],
+  "decoderEvaluation": "NOT_RUN",
+  "dummy": {
+    "formalRoot": "D:\\EEG_Study\\m37_prospective\\formal",
+    "root": "D:\\EEG_Study\\m37_prospective\\_dummy"
+  },
+  "formalSchedule": {
+    "maxSameTargetRun": 3,
+    "seed": 37005,
+    "sessionCount": 6,
+    "trialsPerSession": 63
+  },
+  "network": {
+    "ipcPort": 12021,
+    "questPort": 11001,
+    "telemetryPort": 11002
+  },
+  "physicalLaserTriggerTested": false,
+  "physicalOpticalTimingVerified": false,
+  "protocolVersion": "m37-prospective-acquisition-v1",
+  "sampleRateHz": 1000,
+  "slots": [
+    {
+      "cueToneHz": 660.0,
+      "label": "YELLOW",
+      "slotIndex": 0,
+      "targetFrequencyHz": 7.2,
+      "targetSlot": 0
+    },
+    {
+      "cueToneHz": 880.0,
+      "label": "BLUE",
+      "slotIndex": 1,
+      "targetFrequencyHz": 9.0,
+      "targetSlot": 1
+    },
+    {
+      "cueToneHz": 1320.0,
+      "label": "GREEN",
+      "slotIndex": 2,
+      "targetFrequencyHz": 12.0,
+      "targetSlot": 2
+    }
+  ],
+  "timing": {
+    "epochSamplesPerChannel": 4500,
+    "postOnsetSamples": 4000,
+    "preOnsetSamples": 500,
+    "preparationSeconds": 1.5,
+    "restSeconds": 6.0,
+    "ringBufferSeconds": 10,
+    "stimulusSeconds": 4.0
+  }
+}
