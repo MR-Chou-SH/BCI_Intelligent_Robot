@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "runId": "m36-context-safe-scaling-20261004",
-  "status": "IN_PROGRESS",
+  "status": "COMPLETE",
   "startedAtUtc": "2026-10-04T10:53:22Z",
-  "updatedAtUtc": "2026-10-04T12:32:05Z",
+  "updatedAtUtc": "2026-10-04T12:44:21Z",
   "planPath": "docs/agent/overnight/runs/m36-context-safe-scaling-20261004/plan.md",
   "repository": {
     "absolutePath": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot",
@@ -19,7 +19,7 @@
       "4350 untracked paths in baseline_untracked.txt"
     ]
   },
-  "currentStepId": "10",
+  "currentStepId": null,
   "completedStepIds": [
     "1",
     "2",
@@ -29,23 +29,23 @@
     "6",
     "7",
     "8",
-    "9"
+    "9",
+    "10"
   ],
   "lastGreenVerification": {
-    "profile": "m36-final-audit+software-default-v1",
-    "stepId": "9",
-    "command": "m36_final_audit.py; scripts/agent/verify.ps1 with local CPython 3.9.13",
+    "profile": "m36-final-audit",
+    "stepId": "10",
+    "command": "m36_final_audit.py",
     "exitCode": 0,
     "summaryPath": "research_analysis/m36_context_safe_scaling_20261004/attempt-01/final_audit.json",
-    "repositoryProfileSummaryPath": "research_analysis/m36_context_safe_scaling_20261004/attempt-01/repo-verification/verify-20261004T122740649Z-108688/summary.json",
-    "sourceHead": "41c0f36c83cc0a4effde549f013c41f433dbfcc3",
-    "inputIdentity": "M36 protocol, all OOF artifacts and diagnostics, 4 manifested raw EEG files read-only, and repository software-default profile",
+    "sourceHead": "fc9fd9ebf59ad6367a9d3075a6ad283f65640324",
+    "inputIdentity": "Final report and all 118-trial M36 OOF artifacts; four manifested raw EEG files read-only",
     "sourceWorkingTree": {
       "clean": false,
-      "status": "All 4355 baseline status entries preserved; 84 M36 entries present; zero staged paths before Step 10",
+      "status": "M36 artifact commit pushed; all 4355 baseline entries preserved; local large outputs retained",
       "gitDiffCheckExitCode": 0
     },
-    "recordedAtUtc": "2026-10-04T12:32:05Z"
+    "recordedAtUtc": "2026-10-04T12:44:21Z"
   },
   "checkpoint": {
     "kind": "M36 branch and grouping audit",
@@ -112,17 +112,26 @@
     "docs/agent/overnight/runs/m36-context-safe-scaling-20261004/**",
     "research_analysis/m36_context_safe_scaling_20261004/attempt-01/**"
   ],
-  "lastWorklogSequence": 45,
+  "lastWorklogSequence": 48,
   "blocker": null,
-  "resumeInstruction": "Continue Step 10 from this point. Revalidate branch, HEAD, origin, baseline status entries, and an empty staged index before selecting only M36 allowlisted paths. Never reset or clean.",
-  "currentRepositoryState": {
+  "resumeInstruction": "M36 scientific/software goal and artifact checkpoint are complete. The only local M36 files are the documented large derived tables, repository-profile snapshots, and the small calibration table included in final closeout; preserve all original dirty user paths.",
+  "gitCheckpointVerification": {
     "branch": "codex/m36-context-safe-scaling",
-    "head": "41c0f36c83cc0a4effde549f013c41f433dbfcc3",
-    "upstream": null,
+    "artifactCommit": "fc9fd9ebf59ad6367a9d3075a6ad283f65640324",
+    "upstream": "origin/codex/m36-context-safe-scaling",
     "origin": "https://github.com/MR-Chou-SH/BCI_Intelligent_Robot.git",
-    "statusEntries": 4439,
+    "remoteHashAfterArtifactPush": "fc9fd9ebf59ad6367a9d3075a6ad283f65640324",
+    "remoteHashMatched": true,
+    "stagedPathsInArtifactCommit": 77,
+    "baselineEntriesAtPush": 4355,
     "baselineEntriesMissing": 0,
-    "expectedM36Entries": 84,
-    "stagedPaths": 0
+    "preexistingTrackedDiffPathsPreserved": 5,
+    "remainingM36PathsAtPush": 14,
+    "remainingM36PathGroups": [
+      "10 large generated CSVs with byte counts and SHA-256 in M36_FINAL_REPORT.md",
+      "3 repository-profile summary JSON snapshots listing unrelated dirty paths",
+      "1 compact OOF calibration table to include in the documentation closeout commit"
+    ],
+    "verifiedAtUtc": "2026-10-04T12:41:00Z"
   }
 }

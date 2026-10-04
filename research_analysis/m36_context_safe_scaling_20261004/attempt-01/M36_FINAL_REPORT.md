@@ -190,6 +190,6 @@ Controlled congruent/incongruent 结果表明主要瓶颈是短时 EEG raw top �
 
 `PROSPECTIVE DATA REQUIRED:` YES
 
-`FINAL COMMIT:` will be reported with the final Git checkpoint after push
+`FINAL COMMIT:` M36 artifact checkpoint `fc9fd9ebf59ad6367a9d3075a6ad283f65640324`; final closeout commit hash is in the task completion record
 
-`REMOTE HASH VERIFIED:` pending final push audit
+`REMOTE HASH VERIFIED:` YES; after the M36 artifact push, the remote branch hash matched `fc9fd9ebf59ad6367a9d3075a6ad283f65640324`; the final closeout branch hash is in the task completion record

@@ -5,7 +5,7 @@
 - Run ID: m36-context-safe-scaling-20261004
 - Owner / requesting task: M36 autonomous software research run
 - Created at (UTC): 2026-10-04T10:53:22Z
-- Status: IN PROGRESS
+- Status: COMPLETE
 
 ## Objective
 
@@ -53,7 +53,7 @@
 | 7 | Failure mining, session-shift analysis, oracle efficiency, stored M33 secondary | Deterministic audit | Every induced failure traced; no real semantic calls; trial/scenario counts separated | 3; 90 min | COMPLETE |
 | 8 | Required figures, central tables, final report, self-review | Artifact verifier / SVG parse / report audit | All 22 report questions, all 12 required figure types, claim boundaries | 3; 120 min | COMPLETE |
 | 9 | Python compile, M36 audits, repository software-default profile | Bundled runtime; scripts/agent/verify.ps1 with run output directory | M36 checks PASS; repository profile has no enabled failures | 3; 120 min | COMPLETE |
-| 10 | Selective Git checkpoint and remote verification | git diff --cached --check, exact path allowlist, commit/push, git ls-remote | Only M36 deliverables; local, upstream, and remote SHA match | 2; 45 min | IN PROGRESS |
+| 10 | Selective Git checkpoint and remote verification | git diff --cached --check, exact path allowlist, commit/push, git ls-remote | Only M36 deliverables; local, upstream, and remote SHA match | 2; 45 min | COMPLETE |
 
 ## Runtime and recovery
 

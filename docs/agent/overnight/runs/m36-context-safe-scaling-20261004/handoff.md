@@ -1,7 +1,7 @@
 # M36 Handoff
 
 - Run ID: `m36-context-safe-scaling-20261004`
-- Scientific/software analysis: COMPLETE; selective Git checkpoint is the active final step.
+- Scientific/software analysis and authorized Git checkpoint: COMPLETE.
 - Repository: `C:\Users\zsh21\Desktop\BCI_Intelligent_Robot`
 - Branch: `codex/m36-context-safe-scaling`
 - Starting HEAD: `41c0f36c83cc0a4effde549f013c41f433dbfcc3`
@@ -27,4 +27,6 @@ Full answers, the primary table, all 12 plots, artifact checks, and hashes for l
 
 ## Git closeout
 
-The M36 goal authorizes selective staging, commit, and push on `codex/m36-context-safe-scaling`. Before staging, compare the live porcelain list to `baseline_status.txt`, confirm all 4,355 entries remain, confirm only M36 paths are staged, and run `git diff --cached --check`. Keep the five original tracked M20 diffs and all unrelated untracked paths untouched. Exclude raw data, caches, `__pycache__`, verification logs from failed attempts, and the large CSVs listed in the report. After push, verify the local HEAD and `git ls-remote origin refs/heads/codex/m36-context-safe-scaling` match; include that commit and hash in the final task completion message.
+The M36 artifact checkpoint is `fc9fd9ebf59ad6367a9d3075a6ad283f65640324` on `codex/m36-context-safe-scaling`; it was pushed to origin without force, and `git ls-remote` matched the local HEAD. The 77-path allowlist contained M36 source, report, audit outputs, compact tables and 12 figures; staged whitespace validation passed and no staged file exceeded 1 MB. The final closeout commit hash is supplied in the task completion record.
+
+All 4,355 baseline status entries remain present. The five pre-existing tracked user changes remain unstaged. Large derived CSVs listed with byte counts and SHA-256 in the report, the three repository-profile summary snapshots, exhaustive baseline path inventories, verification logs, and Python caches remain local and were not added to Git. Raw EEG was never staged.
