@@ -1,28 +1,29 @@
 {
   "schemaVersion": 1,
   "runId": "m37-prep-night-20261005",
-  "status": "IN_PROGRESS",
+  "status": "BLOCKED",
   "startedAtUtc": "2026-10-04T20:14:40Z",
-  "updatedAtUtc": "2026-10-04T21:44:23Z",
+  "updatedAtUtc": "2026-10-04T21:47:47Z",
   "planPath": "docs/agent/overnight/runs/m37-prep-night-20261005/plan.md",
   "repository": {
     "absolutePath": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot",
     "gitRoot": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot",
     "branch": "codex/m37-acquisition-prep",
-    "head": "c4b74670b56de3ce800e0f410e6d58e69bea69cd",
-    "upstream": null,
+    "head": "ad5885a423c5ac9a894cb160e3ebe997cf163e18",
+    "upstream": "origin/codex/m37-acquisition-prep",
     "workingTreeClean": false,
     "preExistingChanges": [
       "5 tracked modifications: docs/agent/overnight/runs/20261002-full-overnight/task2/TASK2_FINAL_REPORT.md; docs/agent/overnight/runs/20261002-full-overnight/task2/quest_runtime_validation.json; integration/m20_scene_layout_snapshot.py; integration/test_m20_quest_pc_acceptance.py; integration/test_m20_scene_layout_snapshot.py",
       "4363 pre-existing untracked paths (full `git status --porcelain=v1 --untracked-files=all` count was 4368); preserve and do not stage"
     ]
   },
-  "currentStepId": "6",
+  "currentStepId": "4",
   "completedStepIds": [
     "1",
     "2",
     "3",
-    "5"
+    "5",
+    "6"
   ],
   "lastGreenVerification": {
     "command": "py_compile + 27 targeted M37/M8 Python tests + PowerShell parser + Unity generated Editor C# compile + 14-file artifact audit",
@@ -33,12 +34,13 @@
     "verifiedAtUtc": "2026-10-04T21:30:28Z"
   },
   "checkpoint": {
-    "kind": "m37-selective-stage-reviewed",
-    "reference": "31 M37-specific paths; git diff --cached --check PASS; no file >5 MiB; sensitive-pattern scan clean",
+    "kind": "git-push-verified",
+    "reference": "feat/research: prepare M37 acquisition readiness",
     "branch": "codex/m37-acquisition-prep",
-    "head": "c4b74670b56de3ce800e0f410e6d58e69bea69cd",
-    "workingTreeState": "M37 paths staged; unrelated dirty/untracked paths remain unstaged",
-    "recordedAtUtc": "2026-10-04T21:44:23Z"
+    "localHead": "ad5885a423c5ac9a894cb160e3ebe997cf163e18",
+    "remoteRef": "refs/heads/codex/m37-acquisition-prep",
+    "remoteHead": "ad5885a423c5ac9a894cb160e3ebe997cf163e18",
+    "recordedAtUtc": "2026-10-04T21:47:47Z"
   },
   "changedPaths": [
     "docs/agent/overnight/runs/m37-prep-night-20261005/plan.md",
@@ -56,11 +58,11 @@
     "scripts/m37_preflight.ps1",
     "scripts/m37_start_acquisition.ps1"
   ],
-  "lastWorklogSequence": 3,
+  "lastWorklogSequence": 4,
   "blocker": {
-    "kind": "external_hardware_authorization_and_availability",
-    "evidence": "Quest TCP probe received no peer/ready event; auto approval rejected COM11 open/start under earlier no-hardware boundary. All independent software checks and fakes are complete; do not retry COM11 without explicit user response.",
-    "userInputRequested": "One bounded COM11 3-second sample-transport test"
+    "kind": "external_device_authorization_and_availability",
+    "evidence": "Quest Wi-Fi/TCP probe received no peer or m19_research_ready in 20 seconds. COM11 was enumerated only; automatic approval review rejected the open/start attempt before process launch and no COM handle was opened. A direct user authorization request for one bounded 3-second COM11 transport test remains unanswered. Physical laser trigger is not tested.",
+    "userInputRequested": "Reply explicitly whether to authorize one bounded COM11 3-second transport/sample test. For Quest, wake it and start the Research app tomorrow for Wi-Fi/LAN preflight; no USB/ADB is needed."
   },
-  "resumeInstruction": "Commit and push the reviewed M37-only staged paths to origin, verify remote hash, then wait for explicit user resolution of the COM11 authorization request. Do not open COM11 without that direct reply. Quest was not connected; tomorrow wake it and launch Research over Wi-Fi/LAN. USB/ADB is not required."
+  "resumeInstruction": "Do not repeat any COM11 operation until the user explicitly answers the pending authorization request. If authorized, perform only the single bounded 3-second open/sample/stop/close check. Tomorrow, wake Quest, start Research over Wi-Fi/LAN, prove the actual external trigger enters m19_research_trigger, and run 3–5 smoke trials before formal session_001. Do not claim live device readiness before those gates pass."
 }

@@ -1,8 +1,10 @@
 # M37 Morning Handoff
 
 - Run ID: `m37-prep-night-20261005`
-- Status: software preparation PASS; Git checkpoint staged and reviewed; hardware readiness remains BLOCKED / NEEDS HUMAN
-- Repository: `C:\Users\zsh21\Desktop\BCI_Intelligent_Robot`, branch `codex/m37-acquisition-prep`, source HEAD `c4b74670b56de3ce800e0f410e6d58e69bea69cd`
+- Status: software preparation PASS; Git checkpoint pushed; live device validation BLOCKED / NEEDS HUMAN
+- Repository: `C:\Users\zsh21\Desktop\BCI_Intelligent_Robot`, branch `codex/m37-acquisition-prep`
+- M37 code checkpoint: `ad5885a423c5ac9a894cb160e3ebe997cf163e18` (`feat(research): prepare M37 acquisition readiness`)
+- At push verification, `origin/codex/m37-acquisition-prep` matched the same SHA. Upstream is configured.
 - The five pre-existing tracked modifications and all 4363 pre-existing untracked paths remain unstaged and preserved.
 
 ## Completed and verified
@@ -14,17 +16,13 @@
 - Fake Quest TCP offer/stimulus ACK path and fake ND8 stream callback/restart-offset path passed.
 - Frozen formal schedule: 6 sessions × 63 trials, 21 per class/session, seed 37005. Formal root and tomorrow checklist are prepared.
 - Artifact bundle passed its software audit; no raw EEG or NPZ file is included.
+- Selective Git audit: 31 M37 files only, no staged path outside the M37 allowlist, no file over 5 MiB, sensitive-pattern scan clean, `git diff --cached --check` PASS.
 
 ## Device boundary
 
 - Quest TCP probe: no peer or `m19_research_ready` during the bounded 20-second probe. Quest was not manipulated; wake it and start the Research app tomorrow for Wi-Fi/LAN preflight. USB/ADB is not required.
 - ND8: COM11 was enumerated but never opened. The attempted operation was rejected by automatic approval review; a direct user authorization request for one bounded 3-second transport test remains unanswered. Do not retry COM11 before that reply.
 - Physical laser trigger: NOT TESTED. Tomorrow, first confirm that the real external trigger reaches the current `m19_research_trigger` event handler; then run 3–5 smoke trials before formal acquisition. If the external laser event does not enter that handler, stop before formal acquisition.
-
-## Git checkpoint
-
-- 31 M37-specific paths are staged and reviewed. `git diff --cached --check` passes; no file exceeds 5 MiB; the sensitive-pattern scan found no matches.
-- Commit and push remain pending. No M20/M36 changes, raw EEG, Unity caches, or unrelated untracked paths are staged.
 
 ## Tomorrow commands
 

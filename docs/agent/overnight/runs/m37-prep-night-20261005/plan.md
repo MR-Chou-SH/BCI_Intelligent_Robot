@@ -6,7 +6,7 @@
 - Owner / requesting GPT task: Codex continuation of the user's M37 goal contract
 - Created at (UTC): 2026-10-04T20:14:40Z
 - Planned duration / deadline: bounded overnight preparation; stop hardware work after 20–30 dummy trials or any external device blocker
-- Status: IN PROGRESS
+- Status: SOFTWARE COMPLETE; LIVE DEVICE VALIDATION BLOCKED / NEEDS HUMAN
 
 ## Objective
 
@@ -50,7 +50,7 @@ Machine-verifiable completion requires: isolated formal/dummy roots; a reproduci
 | 3 | Run synthetic 30-trial rehearsal, all slots, duplicate trigger, invalid/disconnect, restart and no-overwrite | python -m integration.m37_acquisition_prep rehearse --trials 30 --seed 37005 | Current-code rehearsal PASS, 30/30, 10/slot, 4500/channel, 500 pre + 4000 post; no EEG quality/decoder claim | 1 final run, 3.7 s | DONE |
 | 4 | Check bounded Quest network path and live ND8 transport/continuity if authorized | probe-quest once; COM11 probe-nd8 rejected by automatic approval review | Quest did not connect in 20 s; ND8 remained unopened. Fake Quest TCP and fake ND8 streaming/resume paths PASS. Physical laser NOT_TESTED. | Quest 1 attempt; ND8 0 port opens after review rejection | BLOCKED / NEEDS HUMAN |
 | 5 | Final shape/timing/trigger/disconnect audit, shutdown closeout, artifacts and tomorrow commands | python -m integration.m37_acquisition_prep audit --artifact-dir research_analysis/m37_acquisition_prep_20261005/attempt-01 | 14 required artifacts present; all software checks PASS; no raw/epoch arrays in repository artifact bundle; no hardware streams left open | 1 pass | DONE |
-| 6 | Selectively stage M37 files, review staged diff/secrets/sizes, commit and push authorized branch | git diff --cached --check; git diff --cached --stat; git diff --cached --name-only; git commit; git push -u origin HEAD | Only M37-specific files staged; push without force; verify remote hash equals local HEAD | 31 M37-only files staged and reviewed; commit/push pending | IN PROGRESS |
+| 6 | Selectively stage M37 files, review staged diff/secrets/sizes, commit and push authorized branch | git diff --cached --check; git diff --cached --stat; git diff --cached --name-only; git commit; git push -u origin HEAD | Only M37-specific files staged; push without force; verify remote hash equals local HEAD | PASS; code checkpoint `ad5885a` pushed and remote hash verified | DONE |
 ## Runtime and recovery
 
 - Exact executable/runtime and version: `C:\Users\zsh21\.local-tools\neurodance-sdk-venv\Scripts\python.exe`, CPython 3.9.13.
