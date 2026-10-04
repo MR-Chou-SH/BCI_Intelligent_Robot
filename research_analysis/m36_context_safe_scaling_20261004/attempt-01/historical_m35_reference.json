@@ -1,0 +1,8 @@
+{
+  "applicationRate": 0.06779661016949153,
+  "appliedMeanGainSeconds": 0.17500000000000002,
+  "appliedTrials": 4,
+  "meanGainSeconds": 0.011864406779661017,
+  "realEegTrials": 59,
+  "source": "M35 controlled_context_per_trial.csv; historical A/B1 development split, not M36 OOF"
+}

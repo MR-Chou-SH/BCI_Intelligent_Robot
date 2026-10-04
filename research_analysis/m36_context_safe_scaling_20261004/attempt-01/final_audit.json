@@ -1,0 +1,150 @@
+{
+  "compiledPythonFiles": [
+    "m36_diagnostics.py",
+    "m36_feature_effects.py",
+    "m36_feature_pipeline.py",
+    "m36_figures.py",
+    "m36_final_audit.py",
+    "m36_fold_builder.py",
+    "m36_logistic_evaluation.py",
+    "m36_results_aggregate.py",
+    "m36_rule_evaluation.py",
+    "m36_view_guard_logistic_evaluation.py",
+    "verify_m36_artifacts.py"
+  ],
+  "deepseekCalls": 0,
+  "hardwareTouched": false,
+  "m34ManifestSha256": "4d15b9996e7f4586371283f6d436901ecdc9d98b352aefe8408766cc4c1d8687",
+  "m36ProtocolSha256": "ce041320e92ef91d5f0939845fa48223769ae414fbb618497f7bacc845c200a6",
+  "rawEegFiles": [
+    {
+      "expectedManifestSha256": "35d30ea8ba92f36acf04f32970cc310c1217bd890fb7b7b817de013e5f69e568",
+      "matchesManifest": true,
+      "observedFinalSha256": "35d30ea8ba92f36acf04f32970cc310c1217bd890fb7b7b817de013e5f69e568",
+      "path": "D:\\EEG_Study\\m6_1b\\m6_1b-dataset-20260819T090215Z-d70eaa0d\\raw-eeg-packets.jsonl",
+      "sessionKey": "A"
+    },
+    {
+      "expectedManifestSha256": "4a117b119bf631ff39d09a28d70792ad990167e6fe6c75e4b5355f851266dac2",
+      "matchesManifest": true,
+      "observedFinalSha256": "4a117b119bf631ff39d09a28d70792ad990167e6fe6c75e4b5355f851266dac2",
+      "path": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T155147Z-386f95dd\\raw-eeg-packets.jsonl",
+      "sessionKey": "B1"
+    },
+    {
+      "expectedManifestSha256": "4b6da19af61ead8bd49bc298054fa53d2c24da9a44348439af43367b847cc176",
+      "matchesManifest": true,
+      "observedFinalSha256": "4b6da19af61ead8bd49bc298054fa53d2c24da9a44348439af43367b847cc176",
+      "path": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T161943Z-afaac607\\raw-eeg-packets.jsonl",
+      "sessionKey": "B2"
+    },
+    {
+      "expectedManifestSha256": "425cca80fc0cf08129f192bbc83a653391e9652d6c184e153d46c52cba2f200b",
+      "matchesManifest": true,
+      "observedFinalSha256": "425cca80fc0cf08129f192bbc83a653391e9652d6c184e153d46c52cba2f200b",
+      "path": "D:\\EEG_Study\\m6_7\\m6_7-formal-20260820T160940Z-0ef360f6\\raw-eeg.jsonl",
+      "sessionKey": "S7"
+    }
+  ],
+  "reportAnswers": 22,
+  "runId": "m36-context-safe-scaling-20261004",
+  "sourceRawEegReadOnly": true,
+  "status": "PASS",
+  "svgFigureCount": 12,
+  "track1Trials": 88,
+  "track2Trials": 118,
+  "uniqueRealTrials": 118,
+  "verificationModes": [
+    {
+      "exitCode": 0,
+      "mode": "--folds-only",
+      "result": {
+        "checks": [
+          "track1_5ch acquisitionCampaignGroup outer groups and trial IDs are isolated; all 88 trials tested once",
+          "track1_5ch recordingSessionGroup outer groups and trial IDs are isolated; all 88 trials tested once",
+          "track2_common3 acquisitionCampaignGroup outer groups and trial IDs are isolated; all 118 trials tested once",
+          "track2_common3 recordingSessionGroup outer groups and trial IDs are isolated; all 118 trials tested once",
+          "34 inner validation folds have no train/validation/embargo leakage and cover each outer-train trial once"
+        ],
+        "status": "PASS"
+      }
+    },
+    {
+      "exitCode": 0,
+      "mode": "--rules-only",
+      "result": {
+        "checks": [
+          "M35 fixed policy reproduces 1,416 stored controlled-context decisions at q=.45/.95 across both grouping schemes",
+          "all Context conditions preserve the raw EEG argmax and never delay the frozen EEG-only decision",
+          "neutral Context is exact EEG-only fallback",
+          "nested deterministic gate outputs cover primary and session-sensitivity OOF tracks"
+        ],
+        "status": "PASS"
+      }
+    },
+    {
+      "exitCode": 0,
+      "mode": "--logistic-only",
+      "result": {
+        "checks": [
+          "logistic probabilities are out-of-fold and use only the 36 causal feature columns",
+          "calibrators and thresholds are selected from nested training-only OOF scores",
+          "all learned-gate outputs preserve the raw EEG argmax, do not delay, and neutral Context exactly falls back"
+        ],
+        "status": "PASS"
+      }
+    },
+    {
+      "exitCode": 0,
+      "mode": "--view-guard-only",
+      "result": {
+        "checks": [
+          "separate-view guard and reliability thresholds are selected only from nested inner folds",
+          "every output trial belongs to the recorded outer test group and is absent from outer training IDs",
+          "view-guard Context never reranks EEG, never delays, and neutral fallback is exact"
+        ],
+        "status": "PASS"
+      }
+    },
+    {
+      "exitCode": 0,
+      "mode": "--results-only",
+      "result": {
+        "checks": [
+          "both tracks account for all 88/118 real trials under both OOF grouping schemes",
+          "both wrong-target replay cases are retained per trial and q without inflating EEG trial counts",
+          "saved aggregate metrics recompute from OOF decisions; raw argmax, no-delay, and neutral fallback invariants hold",
+          "historical M35 development reference is 4/59 (6.78%) and is labeled non-OOF"
+        ],
+        "status": "PASS"
+      }
+    },
+    {
+      "exitCode": 0,
+      "mode": "--diagnostics-only",
+      "result": {
+        "checks": [
+          "all induced-error records map to their recorded outer-test trial and contain all nine causal trace points",
+          "session-shift and OOF calibration summaries retain group/timepoint denominators",
+          "oracle bounds use complete outer-OOF trials and compare achieved gains without changing saved OOF decisions",
+          "stored M33 replay is exactly 5,900 historical scenarios / 59 EEG trials; 59,000 method-policy evaluations are not treated as independent trials",
+          "diagnostics make zero semantic-model calls"
+        ],
+        "status": "PASS"
+      }
+    },
+    {
+      "exitCode": 0,
+      "mode": "--presentation-only",
+      "result": {
+        "checks": [
+          "all 12 required figures are valid, manifested SVG files",
+          "central success table metrics recompute from OOF, oracle, and stored-M33 tables",
+          "representative success, rejection, and failure traces match saved OOF decisions",
+          "final report answers all 22 questions and includes every required completion field"
+        ],
+        "status": "PASS"
+      }
+    }
+  ]
+}

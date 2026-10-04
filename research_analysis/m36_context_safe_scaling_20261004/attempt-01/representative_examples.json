@@ -1,0 +1,24 @@
+{
+  "congruent_success": {
+    "baselineEvidenceSeconds": "0.25",
+    "method": "M36_LOGISTIC_VIEW_GUARDED",
+    "selectedEvidenceSeconds": "0.2",
+    "trialKey": "A::m6_1b-trial-007",
+    "trueSlotIndex": "1"
+  },
+  "safe_incongruent_rejection": {
+    "baselineEvidenceSeconds": "0.25",
+    "contextSlotIndex": "0",
+    "method": "M36_LOGISTIC_VIEW_GUARDED",
+    "trialKey": "A::m6_1b-trial-003",
+    "trueSlotIndex": "2"
+  },
+  "wrong_context_failure": {
+    "baselineEvidenceSeconds": "1.0",
+    "earlyStopEvidenceSeconds": "0.25",
+    "method": "M36_MULTI_VIEW_RULE",
+    "trialKey": "S7::stress_online-trial-005",
+    "trueSlotIndex": "1",
+    "wrongContextSlotIndex": "0"
+  }
+}

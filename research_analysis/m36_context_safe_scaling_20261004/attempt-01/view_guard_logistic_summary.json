@@ -1,0 +1,52 @@
+{
+  "allProbabilitiesAreOuterOof": true,
+  "argmaxInvariant": "selectedPrediction remains the raw EEG top; guard affects only authorization",
+  "contextDecisionRows": 42024,
+  "guardGrid": [
+    {
+      "minBandAgreement": 0.0,
+      "minBandMargin": 0.0,
+      "minHarmonicAgreement": 0.0
+    },
+    {
+      "minBandAgreement": 0.6666666666666666,
+      "minBandMargin": 0.0,
+      "minHarmonicAgreement": 0.0
+    },
+    {
+      "minBandAgreement": 0.0,
+      "minBandMargin": 0.0,
+      "minHarmonicAgreement": 0.6666666666666666
+    },
+    {
+      "minBandAgreement": 0.6666666666666666,
+      "minBandMargin": 0.0,
+      "minHarmonicAgreement": 0.6666666666666666
+    },
+    {
+      "minBandAgreement": 0.6666666666666666,
+      "minBandMargin": 0.05,
+      "minHarmonicAgreement": 0.6666666666666666
+    },
+    {
+      "minBandAgreement": 0.6666666666666666,
+      "minBandMargin": 0.05,
+      "minHarmonicAgreement": 1.0
+    },
+    {
+      "minBandAgreement": 1.0,
+      "minBandMargin": 0.05,
+      "minHarmonicAgreement": 0.6666666666666666
+    },
+    {
+      "minBandAgreement": 1.0,
+      "minBandMargin": 0.1,
+      "minHarmonicAgreement": 1.0
+    }
+  ],
+  "hypothesis": "separate harmonic and filter-band agreement prevents one consensus family from masking another family's disagreement",
+  "innerGuardThresholdRows": 8064,
+  "policyRows": 36,
+  "probabilitiesSource": "logistic_reliability_oof.csv",
+  "status": "PASS"
+}

@@ -1,0 +1,9 @@
+{
+  "comparedStrengths": [
+    0.45,
+    0.95
+  ],
+  "comparedTrackPolicy": "5ch for A/B1/B2; common-three for S7",
+  "matchedRows": 1416,
+  "status": "PASS"
+}

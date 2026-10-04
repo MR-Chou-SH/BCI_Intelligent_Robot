@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "generatedAtUtc": "2026-10-04T10:53:22Z",
+  "sourceManifest": "research_analysis/m34_high_speed_ssvep_context_20261004/attempt-01/data_manifest.json",
+  "sourceManifestSha256": "4d15b9996e7f4586371283f6d436901ecdc9d98b352aefe8408766cc4c1d8687",
+  "totalUniqueUsableTrials": 118,
+  "participantIdentity": "No participant ID is present in source manifests; same-subject status follows the project acquisition history and is not independently verifiable from these files.",
+  "recordingSessionFinding": "Four distinct recording/session IDs, separate acquisition directories, manifests and raw files. This does not establish four independent participants; source manifests contain no participant identifier.",
+  "sessions": [
+    {
+      "sessionKey": "A",
+      "sessionId": "m6_1b-dataset-20260819T090215Z-d70eaa0d",
+      "recordType": "m6_1b_dataset_session",
+      "sourcePath": "D:\\EEG_Study\\m6_1b\\m6_1b-dataset-20260819T090215Z-d70eaa0d",
+      "manifestPath": "D:\\EEG_Study\\m6_1b\\m6_1b-dataset-20260819T090215Z-d70eaa0d\\session-manifest.json",
+      "experiment": "M6.1b",
+      "manifestStatus": "completed_pending_verification",
+      "createdUtc": "2026-08-19T17:02:15.287416+08:00",
+      "stoppedUtc": "2026-08-19T09:09:36.8544338Z",
+      "usableTrials": 30,
+      "plannedTrials": 30,
+      "availableChannels": [
+        null
+      ],
+      "selectedChannels": [
+        2,
+        3,
+        4,
+        5,
+        7
+      ],
+      "sampleRateHz": 1000.0,
+      "frequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "taskMode": "formal historical M6",
+      "protocol": {
+        "preparationSeconds": 13.0,
+        "cueSeconds": 2.0,
+        "preStimulusRestSeconds": 1.0,
+        "stimulusSeconds": 4.0,
+        "postStimulusRestSeconds": 2.0,
+        "breakAfterTrials": [
+          10,
+          20
+        ],
+        "breakSeconds": 25.0,
+        "rawWindow": "complete_formal_stimulation_context"
+      },
+      "manifestGitCommit": "8966691e9c09fef942274e6752b453ff5e7f61f2",
+      "sessionIdIsUnique": true
+    },
+    {
+      "sessionKey": "B1",
+      "sessionId": "m6_4-dataset-20260819T155147Z-386f95dd",
+      "recordType": "m6_dataset_session",
+      "sourcePath": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T155147Z-386f95dd",
+      "manifestPath": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T155147Z-386f95dd\\session-manifest.json",
+      "experiment": "M6.4",
+      "manifestStatus": "incomplete",
+      "createdUtc": "2026-08-19T23:51:48.096556+08:00",
+      "stoppedUtc": null,
+      "usableTrials": 29,
+      "plannedTrials": 30,
+      "availableChannels": [
+        null
+      ],
+      "selectedChannels": [
+        2,
+        3,
+        4,
+        5,
+        7
+      ],
+      "sampleRateHz": 1000.0,
+      "frequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "taskMode": "formal historical M6",
+      "protocol": {
+        "preparationSeconds": 13.0,
+        "cueSeconds": 2.0,
+        "preStimulusRestSeconds": 1.0,
+        "stimulusSeconds": 4.0,
+        "postStimulusRestSeconds": 2.0,
+        "breakAfterTrials": [
+          10,
+          20
+        ],
+        "breakSeconds": 25.0,
+        "rawWindow": "complete_formal_stimulation_context"
+      },
+      "manifestGitCommit": "9f7ef335a2525cf853d93784cb9d814f51359260",
+      "sessionIdIsUnique": true
+    },
+    {
+      "sessionKey": "B2",
+      "sessionId": "m6_4-dataset-20260819T161943Z-afaac607",
+      "recordType": "m6_dataset_session",
+      "sourcePath": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T161943Z-afaac607",
+      "manifestPath": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T161943Z-afaac607\\session-manifest.json",
+      "experiment": "M6.4",
+      "manifestStatus": "incomplete",
+      "createdUtc": "2026-08-20T00:19:43.107144+08:00",
+      "stoppedUtc": null,
+      "usableTrials": 29,
+      "plannedTrials": 30,
+      "availableChannels": [
+        null
+      ],
+      "selectedChannels": [
+        2,
+        3,
+        4,
+        5,
+        7
+      ],
+      "sampleRateHz": 1000.0,
+      "frequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "taskMode": "formal historical M6",
+      "protocol": {
+        "preparationSeconds": 13.0,
+        "cueSeconds": 2.0,
+        "preStimulusRestSeconds": 1.0,
+        "stimulusSeconds": 4.0,
+        "postStimulusRestSeconds": 2.0,
+        "breakAfterTrials": [
+          10,
+          20
+        ],
+        "breakSeconds": 25.0,
+        "rawWindow": "complete_formal_stimulation_context"
+      },
+      "manifestGitCommit": "6080c07946a59e77aea82f5cee18fdb051bd2610",
+      "sessionIdIsUnique": true
+    },
+    {
+      "sessionKey": "S7",
+      "sessionId": "m6_7-formal-20260820T160940Z-0ef360f6",
+      "recordType": null,
+      "sourcePath": "D:\\EEG_Study\\m6_7\\m6_7-formal-20260820T160940Z-0ef360f6",
+      "manifestPath": "D:\\EEG_Study\\m6_7\\m6_7-formal-20260820T160940Z-0ef360f6\\manifest.json",
+      "experiment": null,
+      "manifestStatus": "completed",
+      "createdUtc": "2026-08-20T16:09:40Z (recovered from sessionId; manifest has no createdUtc)",
+      "stoppedUtc": null,
+      "usableTrials": 30,
+      "plannedTrials": 30,
+      "availableChannels": [
+        null
+      ],
+      "selectedChannels": [
+        2,
+        4,
+        7
+      ],
+      "sampleRateHz": 1000.0,
+      "frequenciesHz": [
+        7.2,
+        9.0,
+        12.0
+      ],
+      "taskMode": "stress_online",
+      "protocol": null,
+      "manifestGitCommit": "4fda88091cae6867d6c546d03449aeac78f9be68",
+      "sessionIdIsUnique": true
+    }
+  ],
+  "acquisitionCampaigns": [
+    {
+      "campaignGroup": "A_campaign",
+      "sessionKeys": [
+        "A"
+      ],
+      "rationale": "Separate M6.1b formal dataset and acquisition session."
+    },
+    {
+      "campaignGroup": "M6_4_campaign",
+      "sessionKeys": [
+        "B1",
+        "B2"
+      ],
+      "rationale": "B1 and B2 are distinct recording sessions with separate IDs/manifests/raw files and seeds, but share the M6.4 experiment/root, collection date and same short acquisition series; B2 began 27m55s after B1. Group together for conservative primary outer validation."
+    },
+    {
+      "campaignGroup": "S7_stress_campaign",
+      "sessionKeys": [
+        "S7"
+      ],
+      "rationale": "Distinct next-day M6.7 stress_online session with a different task state and common 3-channel subset."
+    }
+  ],
+  "groupingDecision": {
+    "primaryOuterGroups": [
+      "A_campaign",
+      "M6_4_campaign",
+      "S7_stress_campaign"
+    ],
+    "recordingSessionSensitivityGroups": [
+      "A",
+      "B1",
+      "B2",
+      "S7"
+    ],
+    "track1": {
+      "sessionKeys": [
+        "A",
+        "B1",
+        "B2"
+      ],
+      "trials": 88,
+      "primaryGroupCount": 2,
+      "sessionSensitivityGroupCount": 3,
+      "channels": [
+        2,
+        3,
+        4,
+        5,
+        7
+      ]
+    },
+    "track2": {
+      "sessionKeys": [
+        "A",
+        "B1",
+        "B2",
+        "S7"
+      ],
+      "trials": 118,
+      "primaryGroupCount": 3,
+      "sessionSensitivityGroupCount": 4,
+      "channels": [
+        2,
+        4,
+        7
+      ]
+    },
+    "innerValidation": "Leave whole acquisition groups out when two or more groups exist. If outer training leaves only one campaign, use chronological contiguous trial blocks with one-trial boundary embargo; every time window for a trial remains together."
+  },
+  "evidenceBoundaries": {
+    "slotFrequencyMapping": "slot0/1/2 = 7.2/9/12 Hz",
+    "sampleRateHz": 1000,
+    "hardwareTimingVerified": false,
+    "physicalOpticalTimingVerified": false,
+    "hardwareSampleAnchorVerified": false,
+    "B1B2Quality": "M34 usable-trial audit retains 29/30 each; original acquisition manifests are incomplete with distinct association exclusions.",
+    "S7": "Stress-online condition; report separately/stratified, never silently pool as equivalent formal trials."
+  },
+  "protocolCopy": {
+    "source": "C:\\Users\\zsh21\\Downloads\\M36_CONTEXT_SAFE_SCALING_PROTOCOL.md",
+    "repositoryCopy": "research_analysis/m36_context_safe_scaling_20261004/attempt-01/M36_PROTOCOL.md",
+    "sourceSha256": "ce041320e92ef91d5f0939845fa48223769ae414fbb618497f7bacc845c200a6",
+    "copySha256": "ce041320e92ef91d5f0939845fa48223769ae414fbb618497f7bacc845c200a6"
+  },
+  "rawHashSnapshot": [
+    {
+      "sessionKey": "A",
+      "sessionId": "m6_1b-dataset-20260819T090215Z-d70eaa0d",
+      "rawPath": "D:\\EEG_Study\\m6_1b\\m6_1b-dataset-20260819T090215Z-d70eaa0d\\raw-eeg-packets.jsonl",
+      "sizeBytes": 62217231,
+      "manifestSha256": "35d30ea8ba92f36acf04f32970cc310c1217bd890fb7b7b817de013e5f69e568",
+      "observedBeforeM36Sha256": "35d30ea8ba92f36acf04f32970cc310c1217bd890fb7b7b817de013e5f69e568",
+      "matchesManifest": true
+    },
+    {
+      "sessionKey": "B1",
+      "sessionId": "m6_4-dataset-20260819T155147Z-386f95dd",
+      "rawPath": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T155147Z-386f95dd\\raw-eeg-packets.jsonl",
+      "sizeBytes": 61628373,
+      "manifestSha256": "4a117b119bf631ff39d09a28d70792ad990167e6fe6c75e4b5355f851266dac2",
+      "observedBeforeM36Sha256": "4a117b119bf631ff39d09a28d70792ad990167e6fe6c75e4b5355f851266dac2",
+      "matchesManifest": true
+    },
+    {
+      "sessionKey": "B2",
+      "sessionId": "m6_4-dataset-20260819T161943Z-afaac607",
+      "rawPath": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T161943Z-afaac607\\raw-eeg-packets.jsonl",
+      "sizeBytes": 70930067,
+      "manifestSha256": "4b6da19af61ead8bd49bc298054fa53d2c24da9a44348439af43367b847cc176",
+      "observedBeforeM36Sha256": "4b6da19af61ead8bd49bc298054fa53d2c24da9a44348439af43367b847cc176",
+      "matchesManifest": true
+    },
+    {
+      "sessionKey": "S7",
+      "sessionId": "m6_7-formal-20260820T160940Z-0ef360f6",
+      "rawPath": "D:\\EEG_Study\\m6_7\\m6_7-formal-20260820T160940Z-0ef360f6\\raw-eeg.jsonl",
+      "sizeBytes": 99153462,
+      "manifestSha256": "425cca80fc0cf08129f192bbc83a653391e9652d6c184e153d46c52cba2f200b",
+      "observedBeforeM36Sha256": "425cca80fc0cf08129f192bbc83a653391e9652d6c184e153d46c52cba2f200b",
+      "matchesManifest": true
+    }
+  ]
+}

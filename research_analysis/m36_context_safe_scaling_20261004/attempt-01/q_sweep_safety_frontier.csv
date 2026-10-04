@@ -1,0 +1,89 @@
+track,method,safetyOperatingPoint,qTop,congruentApplications,congruentCoverage,wrongContextApplications,inducedWrongEarlyStops,wrongContextInterventionPrecision,allWrongContextApplicationsCorrect,inducedRiskAmongWrongContextApplications,riskEstimable,zeroObservedInducedErrors,interpretation
+track1_5ch,M35_CONSERVATIVE,FIXED,0.45,3,0.03409090909090909,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M35_CONSERVATIVE,FIXED,0.5,3,0.03409090909090909,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M35_CONSERVATIVE,FIXED,0.55,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M35_CONSERVATIVE,FIXED,0.6,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M35_CONSERVATIVE,FIXED,0.65,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M35_CONSERVATIVE,FIXED,0.7,5,0.056818181818181816,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M35_CONSERVATIVE,FIXED,0.75,5,0.056818181818181816,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M35_CONSERVATIVE,FIXED,0.8,5,0.056818181818181816,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M35_CONSERVATIVE,FIXED,0.85,5,0.056818181818181816,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M35_CONSERVATIVE,FIXED,0.9,5,0.056818181818181816,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M35_CONSERVATIVE,FIXED,0.95,5,0.056818181818181816,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.45,5,0.056818181818181816,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.5,5,0.056818181818181816,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.55,8,0.09090909090909091,1,0,0.0,False,0.0,True,True,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.6,9,0.10227272727272728,1,0,0.0,False,0.0,True,True,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.65,11,0.125,1,0,0.0,False,0.0,True,True,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.7,12,0.13636363636363635,1,0,0.0,False,0.0,True,True,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.75,14,0.1590909090909091,1,0,0.0,False,0.0,True,True,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.8,16,0.18181818181818182,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.85,18,0.20454545454545456,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.9,20,0.22727272727272727,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.95,20,0.22727272727272727,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.45,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.5,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.55,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.6,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.65,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.7,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.75,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.8,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.85,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.9,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.95,4,0.045454545454545456,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track1_5ch,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.45,6,0.06818181818181818,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.5,6,0.06818181818181818,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.55,6,0.06818181818181818,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.6,6,0.06818181818181818,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.65,6,0.06818181818181818,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.7,6,0.06818181818181818,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.75,6,0.06818181818181818,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.8,6,0.06818181818181818,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.85,6,0.06818181818181818,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.9,6,0.06818181818181818,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track1_5ch,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.95,6,0.06818181818181818,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M35_CONSERVATIVE,FIXED,0.45,0,0.0,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track2_common3,M35_CONSERVATIVE,FIXED,0.5,0,0.0,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track2_common3,M35_CONSERVATIVE,FIXED,0.55,1,0.00847457627118644,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track2_common3,M35_CONSERVATIVE,FIXED,0.6,2,0.01694915254237288,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M35_CONSERVATIVE,FIXED,0.65,2,0.01694915254237288,2,2,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M35_CONSERVATIVE,FIXED,0.7,2,0.01694915254237288,2,2,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M35_CONSERVATIVE,FIXED,0.75,4,0.03389830508474576,2,2,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M35_CONSERVATIVE,FIXED,0.8,5,0.0423728813559322,2,2,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M35_CONSERVATIVE,FIXED,0.85,6,0.05084745762711865,2,2,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M35_CONSERVATIVE,FIXED,0.9,6,0.05084745762711865,2,2,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M35_CONSERVATIVE,FIXED,0.95,6,0.05084745762711865,2,2,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.45,2,0.01694915254237288,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track2_common3,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.5,4,0.03389830508474576,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track2_common3,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.55,7,0.059322033898305086,0,0,,,,False,True,observed zero errors; wrong-context risk denominator is zero
+track2_common3,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.6,8,0.06779661016949153,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.65,8,0.06779661016949153,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.7,11,0.09322033898305085,1,1,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.75,11,0.09322033898305085,2,2,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.8,13,0.11016949152542373,2,2,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.85,15,0.1271186440677966,2,2,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.9,15,0.1271186440677966,3,3,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_MULTI_VIEW_RULE,SAFE-STRICT,0.95,15,0.1271186440677966,3,3,0.0,False,1.0,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.45,7,0.059322033898305086,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.5,7,0.059322033898305086,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.55,7,0.059322033898305086,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.6,7,0.059322033898305086,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.65,7,0.059322033898305086,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.7,7,0.059322033898305086,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.75,7,0.059322033898305086,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.8,7,0.059322033898305086,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.85,7,0.059322033898305086,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.9,7,0.059322033898305086,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_SAFE_GATE,SAFE-STRICT,0.95,7,0.059322033898305086,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.45,10,0.0847457627118644,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.5,10,0.0847457627118644,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.55,10,0.0847457627118644,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.6,10,0.0847457627118644,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.65,10,0.0847457627118644,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.7,10,0.0847457627118644,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.75,10,0.0847457627118644,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.8,10,0.0847457627118644,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.85,10,0.0847457627118644,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.9,10,0.0847457627118644,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios
+track2_common3,M36_LOGISTIC_VIEW_GUARDED,SAFE-STRICT,0.95,10,0.0847457627118644,2,1,0.0,False,0.5,True,False,risk evaluated on applied wrong-context replay scenarios

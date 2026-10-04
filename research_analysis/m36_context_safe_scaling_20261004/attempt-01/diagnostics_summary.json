@@ -1,0 +1,12 @@
+{
+  "deepseekCalls": 0,
+  "failureCaseRows": 309,
+  "failureClusterRows": 37,
+  "oofCalibrationRows": 92,
+  "oracleSummaryRows": 20,
+  "sessionShiftRows": 63,
+  "status": "PASS",
+  "storedM33GateEvaluationRows": 59000,
+  "storedM33RealTrials": 59,
+  "storedM33SourceReplayScenarios": 5900
+}

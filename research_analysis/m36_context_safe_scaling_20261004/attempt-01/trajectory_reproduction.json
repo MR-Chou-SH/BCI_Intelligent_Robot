@@ -1,0 +1,32 @@
+{
+  "allRawInputsMatchFrozenManifestBeforeAndAfter": true,
+  "featureRows": 1854,
+  "frozenStack": "FBCCA-003 / 0.5 s guard / 3-band / H=3 / raw argmax; E200_M175_S2 labels",
+  "labelRows": 1854,
+  "noFutureSamplesInFeatureWindows": true,
+  "sampleRateHz": 1000,
+  "scheduleSeconds": [
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4,
+    0.5,
+    0.6,
+    0.8,
+    1.0
+  ],
+  "status": "PASS",
+  "tolerance": {
+    "atol": 1e-12,
+    "rtol": 0.0
+  },
+  "track1FiveChannelRawParity": {
+    "expectedScoreVectors": 792,
+    "matchedScoreVectors": 792
+  },
+  "track2S7CommonThreeRawParity": {
+    "expectedScoreVectors": 270,
+    "matchedScoreVectors": 270
+  }
+}

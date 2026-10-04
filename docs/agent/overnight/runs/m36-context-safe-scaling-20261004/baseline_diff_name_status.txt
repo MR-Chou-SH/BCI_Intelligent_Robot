@@ -1,0 +1,5 @@
+M	docs/agent/overnight/runs/20261002-full-overnight/task2/TASK2_FINAL_REPORT.md
+M	docs/agent/overnight/runs/20261002-full-overnight/task2/quest_runtime_validation.json
+M	integration/m20_scene_layout_snapshot.py
+M	integration/test_m20_quest_pc_acceptance.py
+M	integration/test_m20_scene_layout_snapshot.py

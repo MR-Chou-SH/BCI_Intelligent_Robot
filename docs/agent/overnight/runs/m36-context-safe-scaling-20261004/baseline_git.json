@@ -1,0 +1,13 @@
+{
+  "repository": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot",
+  "gitRoot": "C:/Users/zsh21/Desktop/BCI_Intelligent_Robot",
+  "branch": "codex/m35-controlled-context-causality",
+  "head": "41c0f36c83cc0a4effde549f013c41f433dbfcc3",
+  "upstream": "origin/codex/m35-controlled-context-causality",
+  "origin": "https://github.com/MR-Chou-SH/BCI_Intelligent_Robot.git",
+  "statusCount": 4355,
+  "trackedDiffCount": 5,
+  "stagedCount": 0,
+  "untrackedCount": 4350,
+  "capturedAtUtc": "2026-10-04T10:53:22Z"
+}

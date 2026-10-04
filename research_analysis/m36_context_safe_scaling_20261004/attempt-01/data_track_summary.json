@@ -1,0 +1,104 @@
+{
+  "featureNames": [
+    "top_score",
+    "second_score",
+    "third_score",
+    "absolute_margin",
+    "relative_margin",
+    "top_second_ratio",
+    "normalized_score_entropy",
+    "score_concentration",
+    "evidence_seconds",
+    "window_index",
+    "consecutive_same_top",
+    "prior_top_flips",
+    "time_since_last_top_flip",
+    "top_score_slope_last3",
+    "second_score_slope_last3",
+    "relative_margin_slope_last3",
+    "entropy_slope_last3",
+    "margin_increasing_fraction",
+    "top_score_increasing_fraction",
+    "band_agreement_count",
+    "band_agreement_fraction",
+    "band_min_relative_margin",
+    "harmonic_agreement_count",
+    "harmonic_agreement_fraction",
+    "h1_top_agrees",
+    "h2_top_agrees",
+    "secondary_view_count",
+    "secondary_view_agreement_count",
+    "secondary_view_agreement_fraction",
+    "secondary_view_margin_mean",
+    "secondary_view_margin_min",
+    "secondary_view_margin_std",
+    "secondary_view_margin_delta",
+    "main_top_is_0",
+    "main_top_is_1",
+    "main_top_is_2"
+  ],
+  "featureRowsTotal": 1854,
+  "reliabilityLabelRowsTotal": 1854,
+  "runtimeFeaturePolicy": "Only current/past EEG through evidenceSeconds; trial truth and frozen final class appear only in separate label table.",
+  "slotFrequencyHz": {
+    "0": 7.2,
+    "1": 9.0,
+    "2": 12.0
+  },
+  "timepointsPerTrial": 9,
+  "tracks": {
+    "track1_5ch": {
+      "channels": [
+        2,
+        3,
+        4,
+        5,
+        7
+      ],
+      "featureRows": 792,
+      "realTrialCount": 88,
+      "sessionKeys": [
+        "A",
+        "B1",
+        "B2"
+      ],
+      "trialCountBySession": {
+        "A": 30,
+        "B1": 29,
+        "B2": 29
+      },
+      "trialCountBySlot": {
+        "0": 30,
+        "1": 29,
+        "2": 29
+      }
+    },
+    "track2_common3": {
+      "channels": [
+        2,
+        4,
+        7
+      ],
+      "featureRows": 1062,
+      "realTrialCount": 118,
+      "sessionKeys": [
+        "A",
+        "B1",
+        "B2",
+        "S7"
+      ],
+      "trialCountBySession": {
+        "A": 30,
+        "B1": 29,
+        "B2": 29,
+        "S7": 30
+      },
+      "trialCountBySlot": {
+        "0": 40,
+        "1": 39,
+        "2": 39
+      }
+    }
+  },
+  "uniqueRealTrials": 118
+}

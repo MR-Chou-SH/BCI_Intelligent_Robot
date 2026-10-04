@@ -1,0 +1,794 @@
+{
+  "coefficientInterpretation": "descriptive standardized logistic weights; correlated features mean these are not causal or independent importance estimates",
+  "familySummary": [
+    {
+      "featureCount": 8,
+      "featureFamily": "score_geometry",
+      "meanFeatureAbsoluteCoefficient": 0.13080900058724954,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "score_geometry",
+          "feature": "absolute_margin",
+          "meanAbsoluteStandardizedCoefficient": 0.2218025254571993,
+          "meanSignedStandardizedCoefficient": 0.2218025254571993,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "score_geometry",
+          "feature": "relative_margin",
+          "meanAbsoluteStandardizedCoefficient": 0.21168938489849565,
+          "meanSignedStandardizedCoefficient": 0.21168938489849565,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "score_geometry",
+          "feature": "score_concentration",
+          "meanAbsoluteStandardizedCoefficient": 0.19008913283568069,
+          "meanSignedStandardizedCoefficient": 0.19008913283568069,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "score_geometry",
+          "feature": "top_second_ratio",
+          "meanAbsoluteStandardizedCoefficient": 0.1714660794631709,
+          "meanSignedStandardizedCoefficient": 0.1714660794631709,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        }
+      ],
+      "track": "track1_5ch"
+    },
+    {
+      "featureCount": 11,
+      "featureFamily": "temporal_trajectory",
+      "meanFeatureAbsoluteCoefficient": 0.11384156890169206,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "temporal_trajectory",
+          "feature": "time_since_last_top_flip",
+          "meanAbsoluteStandardizedCoefficient": 0.26097013976937167,
+          "meanSignedStandardizedCoefficient": 0.26097013976937167,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "temporal_trajectory",
+          "feature": "prior_top_flips",
+          "meanAbsoluteStandardizedCoefficient": 0.17390277553096037,
+          "meanSignedStandardizedCoefficient": -0.17390277553096037,
+          "negativeFoldFraction": 1.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 0.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "temporal_trajectory",
+          "feature": "margin_increasing_fraction",
+          "meanAbsoluteStandardizedCoefficient": 0.1516628389478672,
+          "meanSignedStandardizedCoefficient": 0.1516628389478672,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "temporal_trajectory",
+          "feature": "consecutive_same_top",
+          "meanAbsoluteStandardizedCoefficient": 0.1324974106449549,
+          "meanSignedStandardizedCoefficient": 0.1324974106449549,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        }
+      ],
+      "track": "track1_5ch"
+    },
+    {
+      "featureCount": 3,
+      "featureFamily": "filter_band_views",
+      "meanFeatureAbsoluteCoefficient": 0.10618221953492542,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "filter_band_views",
+          "feature": "band_agreement_count",
+          "meanAbsoluteStandardizedCoefficient": 0.11967283239752732,
+          "meanSignedStandardizedCoefficient": 0.11967283239752732,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "filter_band_views",
+          "feature": "band_agreement_fraction",
+          "meanAbsoluteStandardizedCoefficient": 0.11967283239752705,
+          "meanSignedStandardizedCoefficient": 0.11967283239752705,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "filter_band_views",
+          "feature": "band_min_relative_margin",
+          "meanAbsoluteStandardizedCoefficient": 0.07920099380972193,
+          "meanSignedStandardizedCoefficient": 0.07920099380972193,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        }
+      ],
+      "track": "track1_5ch"
+    },
+    {
+      "featureCount": 4,
+      "featureFamily": "harmonic_views",
+      "meanFeatureAbsoluteCoefficient": 0.11212135507540658,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "harmonic_views",
+          "feature": "h2_top_agrees",
+          "meanAbsoluteStandardizedCoefficient": 0.14886072960608987,
+          "meanSignedStandardizedCoefficient": 0.14886072960608987,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "harmonic_views",
+          "feature": "h1_top_agrees",
+          "meanAbsoluteStandardizedCoefficient": 0.12580258392030366,
+          "meanSignedStandardizedCoefficient": -0.11726463306047331,
+          "negativeFoldFraction": 0.5,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 0.5,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "harmonic_views",
+          "feature": "harmonic_agreement_fraction",
+          "meanAbsoluteStandardizedCoefficient": 0.08691105338761645,
+          "meanSignedStandardizedCoefficient": 0.0009518815731387256,
+          "negativeFoldFraction": 0.5,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 0.5,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "harmonic_views",
+          "feature": "harmonic_agreement_count",
+          "meanAbsoluteStandardizedCoefficient": 0.08691105338761632,
+          "meanSignedStandardizedCoefficient": 0.0009518815731389477,
+          "negativeFoldFraction": 0.5,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 0.5,
+          "track": "track1_5ch"
+        }
+      ],
+      "track": "track1_5ch"
+    },
+    {
+      "featureCount": 7,
+      "featureFamily": "channel_subset_views",
+      "meanFeatureAbsoluteCoefficient": 0.09195406984549248,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "channel_subset_views",
+          "feature": "secondary_view_agreement_count",
+          "meanAbsoluteStandardizedCoefficient": 0.16264297677126782,
+          "meanSignedStandardizedCoefficient": 0.16264297677126782,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "channel_subset_views",
+          "feature": "secondary_view_agreement_fraction",
+          "meanAbsoluteStandardizedCoefficient": 0.16264297677126782,
+          "meanSignedStandardizedCoefficient": 0.16264297677126782,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "channel_subset_views",
+          "feature": "secondary_view_margin_mean",
+          "meanAbsoluteStandardizedCoefficient": 0.14851585798585232,
+          "meanSignedStandardizedCoefficient": 0.14851585798585232,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "channel_subset_views",
+          "feature": "secondary_view_margin_min",
+          "meanAbsoluteStandardizedCoefficient": 0.14851585798585232,
+          "meanSignedStandardizedCoefficient": 0.14851585798585232,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        }
+      ],
+      "track": "track1_5ch"
+    },
+    {
+      "featureCount": 3,
+      "featureFamily": "raw_top_identity",
+      "meanFeatureAbsoluteCoefficient": 0.10989942096537098,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "raw_top_identity",
+          "feature": "main_top_is_0",
+          "meanAbsoluteStandardizedCoefficient": 0.1159426938946416,
+          "meanSignedStandardizedCoefficient": 0.1159426938946416,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 1.0,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "raw_top_identity",
+          "feature": "main_top_is_2",
+          "meanAbsoluteStandardizedCoefficient": 0.10764671196995883,
+          "meanSignedStandardizedCoefficient": -0.10487417052118973,
+          "negativeFoldFraction": 0.5,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 0.5,
+          "track": "track1_5ch"
+        },
+        {
+          "family": "raw_top_identity",
+          "feature": "main_top_is_1",
+          "meanAbsoluteStandardizedCoefficient": 0.10610885703151249,
+          "meanSignedStandardizedCoefficient": -0.006347397995087566,
+          "negativeFoldFraction": 0.5,
+          "outerFoldCount": 2,
+          "positiveFoldFraction": 0.5,
+          "track": "track1_5ch"
+        }
+      ],
+      "track": "track1_5ch"
+    },
+    {
+      "featureCount": 8,
+      "featureFamily": "score_geometry",
+      "meanFeatureAbsoluteCoefficient": 0.1773863324908715,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "score_geometry",
+          "feature": "absolute_margin",
+          "meanAbsoluteStandardizedCoefficient": 0.2675542057710276,
+          "meanSignedStandardizedCoefficient": 0.2675542057710276,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 1.0,
+          "track": "track2_common3"
+        },
+        {
+          "family": "score_geometry",
+          "feature": "relative_margin",
+          "meanAbsoluteStandardizedCoefficient": 0.24752014950543985,
+          "meanSignedStandardizedCoefficient": 0.24752014950543985,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 1.0,
+          "track": "track2_common3"
+        },
+        {
+          "family": "score_geometry",
+          "feature": "score_concentration",
+          "meanAbsoluteStandardizedCoefficient": 0.2333126396476469,
+          "meanSignedStandardizedCoefficient": 0.2333126396476469,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 1.0,
+          "track": "track2_common3"
+        },
+        {
+          "family": "score_geometry",
+          "feature": "top_second_ratio",
+          "meanAbsoluteStandardizedCoefficient": 0.19356341372171015,
+          "meanSignedStandardizedCoefficient": 0.19356341372171015,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 1.0,
+          "track": "track2_common3"
+        }
+      ],
+      "track": "track2_common3"
+    },
+    {
+      "featureCount": 11,
+      "featureFamily": "temporal_trajectory",
+      "meanFeatureAbsoluteCoefficient": 0.14550015311531997,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "temporal_trajectory",
+          "feature": "consecutive_same_top",
+          "meanAbsoluteStandardizedCoefficient": 0.49009648067919914,
+          "meanSignedStandardizedCoefficient": 0.49009648067919914,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 1.0,
+          "track": "track2_common3"
+        },
+        {
+          "family": "temporal_trajectory",
+          "feature": "prior_top_flips",
+          "meanAbsoluteStandardizedCoefficient": 0.2718177110260831,
+          "meanSignedStandardizedCoefficient": 0.25132486539478666,
+          "negativeFoldFraction": 0.3333333333333333,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 0.6666666666666666,
+          "track": "track2_common3"
+        },
+        {
+          "family": "temporal_trajectory",
+          "feature": "window_index",
+          "meanAbsoluteStandardizedCoefficient": 0.17878893297003937,
+          "meanSignedStandardizedCoefficient": 0.17878893297003937,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 1.0,
+          "track": "track2_common3"
+        },
+        {
+          "family": "temporal_trajectory",
+          "feature": "time_since_last_top_flip",
+          "meanAbsoluteStandardizedCoefficient": 0.17596331803596418,
+          "meanSignedStandardizedCoefficient": 0.15553578933785508,
+          "negativeFoldFraction": 0.3333333333333333,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 0.6666666666666666,
+          "track": "track2_common3"
+        }
+      ],
+      "track": "track2_common3"
+    },
+    {
+      "featureCount": 3,
+      "featureFamily": "filter_band_views",
+      "meanFeatureAbsoluteCoefficient": 0.08552843987743002,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "filter_band_views",
+          "feature": "band_min_relative_margin",
+          "meanAbsoluteStandardizedCoefficient": 0.09646009754451278,
+          "meanSignedStandardizedCoefficient": -0.06225077203839471,
+          "negativeFoldFraction": 0.6666666666666666,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 0.3333333333333333,
+          "track": "track2_common3"
+        },
+        {
+          "family": "filter_band_views",
+          "feature": "band_agreement_fraction",
+          "meanAbsoluteStandardizedCoefficient": 0.08006261104388879,
+          "meanSignedStandardizedCoefficient": 0.05594942227337222,
+          "negativeFoldFraction": 0.3333333333333333,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 0.6666666666666666,
+          "track": "track2_common3"
+        },
+        {
+          "family": "filter_band_views",
+          "feature": "band_agreement_count",
+          "meanAbsoluteStandardizedCoefficient": 0.08006261104388844,
+          "meanSignedStandardizedCoefficient": 0.05594942227337222,
+          "negativeFoldFraction": 0.3333333333333333,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 0.6666666666666666,
+          "track": "track2_common3"
+        }
+      ],
+      "track": "track2_common3"
+    },
+    {
+      "featureCount": 4,
+      "featureFamily": "harmonic_views",
+      "meanFeatureAbsoluteCoefficient": 0.2474478783991741,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "harmonic_views",
+          "feature": "h1_top_agrees",
+          "meanAbsoluteStandardizedCoefficient": 0.44019485731754254,
+          "meanSignedStandardizedCoefficient": -0.44019485731754254,
+          "negativeFoldFraction": 1.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 0.0,
+          "track": "track2_common3"
+        },
+        {
+          "family": "harmonic_views",
+          "feature": "h2_top_agrees",
+          "meanAbsoluteStandardizedCoefficient": 0.27923100334457235,
+          "meanSignedStandardizedCoefficient": 0.27923100334457235,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 1.0,
+          "track": "track2_common3"
+        },
+        {
+          "family": "harmonic_views",
+          "feature": "harmonic_agreement_fraction",
+          "meanAbsoluteStandardizedCoefficient": 0.13518282646729085,
+          "meanSignedStandardizedCoefficient": -0.13518282646729085,
+          "negativeFoldFraction": 1.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 0.0,
+          "track": "track2_common3"
+        },
+        {
+          "family": "harmonic_views",
+          "feature": "harmonic_agreement_count",
+          "meanAbsoluteStandardizedCoefficient": 0.1351828264672906,
+          "meanSignedStandardizedCoefficient": -0.1351828264672906,
+          "negativeFoldFraction": 1.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 0.0,
+          "track": "track2_common3"
+        }
+      ],
+      "track": "track2_common3"
+    },
+    {
+      "featureCount": 7,
+      "featureFamily": "channel_subset_views",
+      "meanFeatureAbsoluteCoefficient": 0.15785699416203008,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "channel_subset_views",
+          "feature": "secondary_view_margin_mean",
+          "meanAbsoluteStandardizedCoefficient": 0.3314723169669988,
+          "meanSignedStandardizedCoefficient": 0.3314723169669988,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 1.0,
+          "track": "track2_common3"
+        },
+        {
+          "family": "channel_subset_views",
+          "feature": "secondary_view_agreement_count",
+          "meanAbsoluteStandardizedCoefficient": 0.21111030070136214,
+          "meanSignedStandardizedCoefficient": 0.21111030070136214,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 1.0,
+          "track": "track2_common3"
+        },
+        {
+          "family": "channel_subset_views",
+          "feature": "secondary_view_agreement_fraction",
+          "meanAbsoluteStandardizedCoefficient": 0.21111030070136103,
+          "meanSignedStandardizedCoefficient": 0.21111030070136103,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 1.0,
+          "track": "track2_common3"
+        },
+        {
+          "family": "channel_subset_views",
+          "feature": "secondary_view_margin_std",
+          "meanAbsoluteStandardizedCoefficient": 0.18790430327156615,
+          "meanSignedStandardizedCoefficient": 0.18790430327156615,
+          "negativeFoldFraction": 0.0,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 1.0,
+          "track": "track2_common3"
+        }
+      ],
+      "track": "track2_common3"
+    },
+    {
+      "featureCount": 3,
+      "featureFamily": "raw_top_identity",
+      "meanFeatureAbsoluteCoefficient": 0.10876281499917655,
+      "topFeaturesByAbsoluteCoefficient": [
+        {
+          "family": "raw_top_identity",
+          "feature": "main_top_is_2",
+          "meanAbsoluteStandardizedCoefficient": 0.1625210648459479,
+          "meanSignedStandardizedCoefficient": 0.02392959958067802,
+          "negativeFoldFraction": 0.6666666666666666,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 0.3333333333333333,
+          "track": "track2_common3"
+        },
+        {
+          "family": "raw_top_identity",
+          "feature": "main_top_is_0",
+          "meanAbsoluteStandardizedCoefficient": 0.0960308668670173,
+          "meanSignedStandardizedCoefficient": 0.022361633483415702,
+          "negativeFoldFraction": 0.3333333333333333,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 0.6666666666666666,
+          "track": "track2_common3"
+        },
+        {
+          "family": "raw_top_identity",
+          "feature": "main_top_is_1",
+          "meanAbsoluteStandardizedCoefficient": 0.06773651328456445,
+          "meanSignedStandardizedCoefficient": -0.04273401136506589,
+          "negativeFoldFraction": 0.3333333333333333,
+          "outerFoldCount": 3,
+          "positiveFoldFraction": 0.6666666666666666,
+          "track": "track2_common3"
+        }
+      ],
+      "track": "track2_common3"
+    }
+  ],
+  "featureCount": 36,
+  "outerModelCount": 5,
+  "outerTestTrialsExcludedFromFit": true,
+  "outerTrainOnly": true,
+  "status": "PASS",
+  "target": "safeTrue; labels used only for outer-train logistic fitting",
+  "topFeaturesByTrack": {
+    "track1_5ch": [
+      {
+        "family": "temporal_trajectory",
+        "feature": "time_since_last_top_flip",
+        "meanAbsoluteStandardizedCoefficient": 0.26097013976937167,
+        "meanSignedStandardizedCoefficient": 0.26097013976937167,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 1.0,
+        "track": "track1_5ch"
+      },
+      {
+        "family": "score_geometry",
+        "feature": "absolute_margin",
+        "meanAbsoluteStandardizedCoefficient": 0.2218025254571993,
+        "meanSignedStandardizedCoefficient": 0.2218025254571993,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 1.0,
+        "track": "track1_5ch"
+      },
+      {
+        "family": "score_geometry",
+        "feature": "relative_margin",
+        "meanAbsoluteStandardizedCoefficient": 0.21168938489849565,
+        "meanSignedStandardizedCoefficient": 0.21168938489849565,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 1.0,
+        "track": "track1_5ch"
+      },
+      {
+        "family": "score_geometry",
+        "feature": "score_concentration",
+        "meanAbsoluteStandardizedCoefficient": 0.19008913283568069,
+        "meanSignedStandardizedCoefficient": 0.19008913283568069,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 1.0,
+        "track": "track1_5ch"
+      },
+      {
+        "family": "temporal_trajectory",
+        "feature": "prior_top_flips",
+        "meanAbsoluteStandardizedCoefficient": 0.17390277553096037,
+        "meanSignedStandardizedCoefficient": -0.17390277553096037,
+        "negativeFoldFraction": 1.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 0.0,
+        "track": "track1_5ch"
+      },
+      {
+        "family": "score_geometry",
+        "feature": "top_second_ratio",
+        "meanAbsoluteStandardizedCoefficient": 0.1714660794631709,
+        "meanSignedStandardizedCoefficient": 0.1714660794631709,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 1.0,
+        "track": "track1_5ch"
+      },
+      {
+        "family": "channel_subset_views",
+        "feature": "secondary_view_agreement_count",
+        "meanAbsoluteStandardizedCoefficient": 0.16264297677126782,
+        "meanSignedStandardizedCoefficient": 0.16264297677126782,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 1.0,
+        "track": "track1_5ch"
+      },
+      {
+        "family": "channel_subset_views",
+        "feature": "secondary_view_agreement_fraction",
+        "meanAbsoluteStandardizedCoefficient": 0.16264297677126782,
+        "meanSignedStandardizedCoefficient": 0.16264297677126782,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 1.0,
+        "track": "track1_5ch"
+      },
+      {
+        "family": "temporal_trajectory",
+        "feature": "margin_increasing_fraction",
+        "meanAbsoluteStandardizedCoefficient": 0.1516628389478672,
+        "meanSignedStandardizedCoefficient": 0.1516628389478672,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 1.0,
+        "track": "track1_5ch"
+      },
+      {
+        "family": "harmonic_views",
+        "feature": "h2_top_agrees",
+        "meanAbsoluteStandardizedCoefficient": 0.14886072960608987,
+        "meanSignedStandardizedCoefficient": 0.14886072960608987,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 1.0,
+        "track": "track1_5ch"
+      },
+      {
+        "family": "channel_subset_views",
+        "feature": "secondary_view_margin_mean",
+        "meanAbsoluteStandardizedCoefficient": 0.14851585798585232,
+        "meanSignedStandardizedCoefficient": 0.14851585798585232,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 1.0,
+        "track": "track1_5ch"
+      },
+      {
+        "family": "channel_subset_views",
+        "feature": "secondary_view_margin_min",
+        "meanAbsoluteStandardizedCoefficient": 0.14851585798585232,
+        "meanSignedStandardizedCoefficient": 0.14851585798585232,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 2,
+        "positiveFoldFraction": 1.0,
+        "track": "track1_5ch"
+      }
+    ],
+    "track2_common3": [
+      {
+        "family": "temporal_trajectory",
+        "feature": "consecutive_same_top",
+        "meanAbsoluteStandardizedCoefficient": 0.49009648067919914,
+        "meanSignedStandardizedCoefficient": 0.49009648067919914,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 1.0,
+        "track": "track2_common3"
+      },
+      {
+        "family": "harmonic_views",
+        "feature": "h1_top_agrees",
+        "meanAbsoluteStandardizedCoefficient": 0.44019485731754254,
+        "meanSignedStandardizedCoefficient": -0.44019485731754254,
+        "negativeFoldFraction": 1.0,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 0.0,
+        "track": "track2_common3"
+      },
+      {
+        "family": "channel_subset_views",
+        "feature": "secondary_view_margin_mean",
+        "meanAbsoluteStandardizedCoefficient": 0.3314723169669988,
+        "meanSignedStandardizedCoefficient": 0.3314723169669988,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 1.0,
+        "track": "track2_common3"
+      },
+      {
+        "family": "harmonic_views",
+        "feature": "h2_top_agrees",
+        "meanAbsoluteStandardizedCoefficient": 0.27923100334457235,
+        "meanSignedStandardizedCoefficient": 0.27923100334457235,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 1.0,
+        "track": "track2_common3"
+      },
+      {
+        "family": "temporal_trajectory",
+        "feature": "prior_top_flips",
+        "meanAbsoluteStandardizedCoefficient": 0.2718177110260831,
+        "meanSignedStandardizedCoefficient": 0.25132486539478666,
+        "negativeFoldFraction": 0.3333333333333333,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 0.6666666666666666,
+        "track": "track2_common3"
+      },
+      {
+        "family": "score_geometry",
+        "feature": "absolute_margin",
+        "meanAbsoluteStandardizedCoefficient": 0.2675542057710276,
+        "meanSignedStandardizedCoefficient": 0.2675542057710276,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 1.0,
+        "track": "track2_common3"
+      },
+      {
+        "family": "score_geometry",
+        "feature": "relative_margin",
+        "meanAbsoluteStandardizedCoefficient": 0.24752014950543985,
+        "meanSignedStandardizedCoefficient": 0.24752014950543985,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 1.0,
+        "track": "track2_common3"
+      },
+      {
+        "family": "score_geometry",
+        "feature": "score_concentration",
+        "meanAbsoluteStandardizedCoefficient": 0.2333126396476469,
+        "meanSignedStandardizedCoefficient": 0.2333126396476469,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 1.0,
+        "track": "track2_common3"
+      },
+      {
+        "family": "channel_subset_views",
+        "feature": "secondary_view_agreement_count",
+        "meanAbsoluteStandardizedCoefficient": 0.21111030070136214,
+        "meanSignedStandardizedCoefficient": 0.21111030070136214,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 1.0,
+        "track": "track2_common3"
+      },
+      {
+        "family": "channel_subset_views",
+        "feature": "secondary_view_agreement_fraction",
+        "meanAbsoluteStandardizedCoefficient": 0.21111030070136103,
+        "meanSignedStandardizedCoefficient": 0.21111030070136103,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 1.0,
+        "track": "track2_common3"
+      },
+      {
+        "family": "score_geometry",
+        "feature": "top_second_ratio",
+        "meanAbsoluteStandardizedCoefficient": 0.19356341372171015,
+        "meanSignedStandardizedCoefficient": 0.19356341372171015,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 1.0,
+        "track": "track2_common3"
+      },
+      {
+        "family": "score_geometry",
+        "feature": "top_score",
+        "meanAbsoluteStandardizedCoefficient": 0.18940366866352512,
+        "meanSignedStandardizedCoefficient": 0.18940366866352512,
+        "negativeFoldFraction": 0.0,
+        "outerFoldCount": 3,
+        "positiveFoldFraction": 1.0,
+        "track": "track2_common3"
+      }
+    ]
+  },
+  "track": "primary acquisitionCampaignGroup only"
+}

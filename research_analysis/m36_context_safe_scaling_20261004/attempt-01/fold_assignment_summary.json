@@ -1,0 +1,220 @@
+{
+  "allWindowsStayWithTrial": true,
+  "chronologicalFallback": {
+    "blocks": 5,
+    "boundaryEmbargoTrials": 1,
+    "sortOrder": "A, B1, B2, S7 then trialIndex"
+  },
+  "featureInput": "eeg_trajectory_features.csv",
+  "groupingSchemes": [
+    "acquisitionCampaignGroup",
+    "recordingSessionGroup"
+  ],
+  "innerAssignments": "inner_fold_assignments.csv",
+  "outerAssignments": "outer_fold_assignments.csv",
+  "schemaVersion": 1,
+  "tracks": {
+    "track1_5ch": {
+      "schemes": {
+        "acquisitionCampaignGroup": {
+          "folds": [
+            {
+              "innerFoldCount": 5,
+              "innerMethods": [
+                "chronological_blocked_5_fold_embargo_1"
+              ],
+              "outerFoldId": "track1_5ch|campaign|outer-01",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 30,
+              "outerTrainGroupCount": 1,
+              "outerTrainTrials": 58,
+              "outerTrialOverlap": false,
+              "testGroup": "A_campaign"
+            },
+            {
+              "innerFoldCount": 5,
+              "innerMethods": [
+                "chronological_blocked_5_fold_embargo_1"
+              ],
+              "outerFoldId": "track1_5ch|campaign|outer-02",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 58,
+              "outerTrainGroupCount": 1,
+              "outerTrainTrials": 30,
+              "outerTrialOverlap": false,
+              "testGroup": "M6_4_campaign"
+            }
+          ],
+          "groupCount": 2,
+          "innerAssignmentRows": 88,
+          "outerAssignmentRows": 88,
+          "outerFoldCount": 2,
+          "outerTestedEveryTrialExactlyOnce": true
+        },
+        "recordingSessionGroup": {
+          "folds": [
+            {
+              "innerFoldCount": 2,
+              "innerMethods": [
+                "leave_one_group_out"
+              ],
+              "outerFoldId": "track1_5ch|session|outer-01",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 30,
+              "outerTrainGroupCount": 2,
+              "outerTrainTrials": 58,
+              "outerTrialOverlap": false,
+              "testGroup": "m6_1b-dataset-20260819T090215Z-d70eaa0d"
+            },
+            {
+              "innerFoldCount": 2,
+              "innerMethods": [
+                "leave_one_group_out"
+              ],
+              "outerFoldId": "track1_5ch|session|outer-02",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 29,
+              "outerTrainGroupCount": 2,
+              "outerTrainTrials": 59,
+              "outerTrialOverlap": false,
+              "testGroup": "m6_4-dataset-20260819T155147Z-386f95dd"
+            },
+            {
+              "innerFoldCount": 2,
+              "innerMethods": [
+                "leave_one_group_out"
+              ],
+              "outerFoldId": "track1_5ch|session|outer-03",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 29,
+              "outerTrainGroupCount": 2,
+              "outerTrainTrials": 59,
+              "outerTrialOverlap": false,
+              "testGroup": "m6_4-dataset-20260819T161943Z-afaac607"
+            }
+          ],
+          "groupCount": 3,
+          "innerAssignmentRows": 176,
+          "outerAssignmentRows": 88,
+          "outerFoldCount": 3,
+          "outerTestedEveryTrialExactlyOnce": true
+        }
+      },
+      "uniqueTrials": 88
+    },
+    "track2_common3": {
+      "schemes": {
+        "acquisitionCampaignGroup": {
+          "folds": [
+            {
+              "innerFoldCount": 2,
+              "innerMethods": [
+                "leave_one_group_out"
+              ],
+              "outerFoldId": "track2_common3|campaign|outer-01",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 30,
+              "outerTrainGroupCount": 2,
+              "outerTrainTrials": 88,
+              "outerTrialOverlap": false,
+              "testGroup": "A_campaign"
+            },
+            {
+              "innerFoldCount": 2,
+              "innerMethods": [
+                "leave_one_group_out"
+              ],
+              "outerFoldId": "track2_common3|campaign|outer-02",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 58,
+              "outerTrainGroupCount": 2,
+              "outerTrainTrials": 60,
+              "outerTrialOverlap": false,
+              "testGroup": "M6_4_campaign"
+            },
+            {
+              "innerFoldCount": 2,
+              "innerMethods": [
+                "leave_one_group_out"
+              ],
+              "outerFoldId": "track2_common3|campaign|outer-03",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 30,
+              "outerTrainGroupCount": 2,
+              "outerTrainTrials": 88,
+              "outerTrialOverlap": false,
+              "testGroup": "S7_stress_campaign"
+            }
+          ],
+          "groupCount": 3,
+          "innerAssignmentRows": 236,
+          "outerAssignmentRows": 118,
+          "outerFoldCount": 3,
+          "outerTestedEveryTrialExactlyOnce": true
+        },
+        "recordingSessionGroup": {
+          "folds": [
+            {
+              "innerFoldCount": 3,
+              "innerMethods": [
+                "leave_one_group_out"
+              ],
+              "outerFoldId": "track2_common3|session|outer-01",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 30,
+              "outerTrainGroupCount": 3,
+              "outerTrainTrials": 88,
+              "outerTrialOverlap": false,
+              "testGroup": "m6_1b-dataset-20260819T090215Z-d70eaa0d"
+            },
+            {
+              "innerFoldCount": 3,
+              "innerMethods": [
+                "leave_one_group_out"
+              ],
+              "outerFoldId": "track2_common3|session|outer-02",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 29,
+              "outerTrainGroupCount": 3,
+              "outerTrainTrials": 89,
+              "outerTrialOverlap": false,
+              "testGroup": "m6_4-dataset-20260819T155147Z-386f95dd"
+            },
+            {
+              "innerFoldCount": 3,
+              "innerMethods": [
+                "leave_one_group_out"
+              ],
+              "outerFoldId": "track2_common3|session|outer-03",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 29,
+              "outerTrainGroupCount": 3,
+              "outerTrainTrials": 89,
+              "outerTrialOverlap": false,
+              "testGroup": "m6_4-dataset-20260819T161943Z-afaac607"
+            },
+            {
+              "innerFoldCount": 3,
+              "innerMethods": [
+                "leave_one_group_out"
+              ],
+              "outerFoldId": "track2_common3|session|outer-04",
+              "outerGroupOverlap": false,
+              "outerTestTrials": 30,
+              "outerTrainGroupCount": 3,
+              "outerTrainTrials": 88,
+              "outerTrialOverlap": false,
+              "testGroup": "m6_7-formal-20260820T160940Z-0ef360f6"
+            }
+          ],
+          "groupCount": 4,
+          "innerAssignmentRows": 354,
+          "outerAssignmentRows": 118,
+          "outerFoldCount": 4,
+          "outerTestedEveryTrialExactlyOnce": true
+        }
+      },
+      "uniqueTrials": 118
+    }
+  }
+}

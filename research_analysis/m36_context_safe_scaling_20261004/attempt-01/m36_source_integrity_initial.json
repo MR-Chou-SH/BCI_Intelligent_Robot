@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "generatedAtUtc": "2026-10-04T10:53:22Z",
+  "rawEegReadOnly": true,
+  "rawSources": [
+    {
+      "sessionKey": "A",
+      "sessionId": "m6_1b-dataset-20260819T090215Z-d70eaa0d",
+      "rawPath": "D:\\EEG_Study\\m6_1b\\m6_1b-dataset-20260819T090215Z-d70eaa0d\\raw-eeg-packets.jsonl",
+      "sizeBytes": 62217231,
+      "manifestSha256": "35d30ea8ba92f36acf04f32970cc310c1217bd890fb7b7b817de013e5f69e568",
+      "observedBeforeM36Sha256": "35d30ea8ba92f36acf04f32970cc310c1217bd890fb7b7b817de013e5f69e568",
+      "matchesManifest": true
+    },
+    {
+      "sessionKey": "B1",
+      "sessionId": "m6_4-dataset-20260819T155147Z-386f95dd",
+      "rawPath": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T155147Z-386f95dd\\raw-eeg-packets.jsonl",
+      "sizeBytes": 61628373,
+      "manifestSha256": "4a117b119bf631ff39d09a28d70792ad990167e6fe6c75e4b5355f851266dac2",
+      "observedBeforeM36Sha256": "4a117b119bf631ff39d09a28d70792ad990167e6fe6c75e4b5355f851266dac2",
+      "matchesManifest": true
+    },
+    {
+      "sessionKey": "B2",
+      "sessionId": "m6_4-dataset-20260819T161943Z-afaac607",
+      "rawPath": "D:\\EEG_Study\\m6_4\\m6_4-dataset-20260819T161943Z-afaac607\\raw-eeg-packets.jsonl",
+      "sizeBytes": 70930067,
+      "manifestSha256": "4b6da19af61ead8bd49bc298054fa53d2c24da9a44348439af43367b847cc176",
+      "observedBeforeM36Sha256": "4b6da19af61ead8bd49bc298054fa53d2c24da9a44348439af43367b847cc176",
+      "matchesManifest": true
+    },
+    {
+      "sessionKey": "S7",
+      "sessionId": "m6_7-formal-20260820T160940Z-0ef360f6",
+      "rawPath": "D:\\EEG_Study\\m6_7\\m6_7-formal-20260820T160940Z-0ef360f6\\raw-eeg.jsonl",
+      "sizeBytes": 99153462,
+      "manifestSha256": "425cca80fc0cf08129f192bbc83a653391e9652d6c184e153d46c52cba2f200b",
+      "observedBeforeM36Sha256": "425cca80fc0cf08129f192bbc83a653391e9652d6c184e153d46c52cba2f200b",
+      "matchesManifest": true
+    }
+  ],
+  "analysisInputs": [
+    {
+      "path": "research_analysis/m34_high_speed_ssvep_context_20261004/attempt-01/data_manifest.json",
+      "sha256": "4d15b9996e7f4586371283f6d436901ecdc9d98b352aefe8408766cc4c1d8687"
+    },
+    {
+      "path": "research_analysis/m34_high_speed_ssvep_context_20261004/attempt-01/m34_decoders.py",
+      "sha256": "5e7c101ebbc4900f7047d76f186f8a2cd76b4a1af904450905c7d64ad4c2488a"
+    },
+    {
+      "path": "research_analysis/m34_high_speed_ssvep_context_20261004/attempt-01/run_train_dev_search.py",
+      "sha256": "a543631a6864169c99beb370748b76634b603e2cab37a25032ac2e0d6babb960"
+    },
+    {
+      "path": "eeg/decoder/fbcca.py",
+      "sha256": "e309b852409f7990397fd0433150625c64de1083f8131727a810e4a0b23bc7ec"
+    },
+    {
+      "path": "research_analysis/m35_controlled_context_causality_20261004/attempt-01/run_m35_analysis.py",
+      "sha256": "b89d3f4f34b154c4a95e6db4433159e28cea724a3410741b11c81633fdafd49c"
+    },
+    {
+      "path": "research_analysis/m35_controlled_context_causality_20261004/attempt-01/controlled_context_per_trial.csv",
+      "sha256": "ef1cd282609657699f2e97ae7fb98b4481a094e59b70fd178f6a4b9412f16de7"
+    }
+  ],
+  "notes": "All four observed raw EEG hashes matched the frozen M34 manifest before M36 feature analysis."
+}
