@@ -1,0 +1,141 @@
+{
+  "status": "PASS",
+  "M33GateThreshold": 0.3039226230247065,
+  "M33SemanticHeldoutRows": 46,
+  "M33SemanticActivePoolRows": 17,
+  "M33SemanticHeldoutActiveRate": 0.3695652173913043,
+  "M33SelectedContextGateHash": "9b0904a167218fb520a5a93cc3056a2424841bc04513c5ca36d27ad15b59c2dc",
+  "ContextPolicy": {
+    "minimumEvidenceSeconds": 0.2,
+    "minimumEegRelativeMargin": 0.05,
+    "requiredConsecutiveTopUpdates": 2
+  },
+  "ContextPairing": "A frozen M33 semantic result is randomly assigned to each EEG trial/seed. Only the post-hoc expected-target label maps its 3-item page to the true EEG slot. Context sees its own original ordered history and candidate set only.",
+  "LeakageBoundary": "B2/S7 labels were audited into the frozen manifest before search, but no held-out predictions, scores, or outcomes were used for model or threshold selection. M33 expected-target labels are used only after semantic prediction to align synthetic pages to EEG slots, never as model input.",
+  "ContextResultsBySessionAndAvailability": {
+    "B2": {
+      "precomputed_before_eeg": {
+        "trialSeedPairs": 2900,
+        "baselineAccuracy": 0.896551724137931,
+        "contextAccuracy": 0.9010344827586206,
+        "accuracyDelta": 0.004482758620689655,
+        "meanBaselineDecisionSeconds": 0.9120689655172414,
+        "meanContextDecisionSeconds": 0.8857931034482759,
+        "medianContextDecisionSeconds": 0.8,
+        "p90ContextDecisionSeconds": 1.0,
+        "semanticGateActiveRate": 0.35413793103448277,
+        "mappedAssignmentRate": 0.29724137931034483,
+        "authorizationRate": 0.22655172413793104,
+        "authorizedPointCount": 657,
+        "applicationRate": 0.1579310344827586,
+        "meanAppliedGainSeconds": 0.1663755458515284,
+        "stopFractionsAtOrBeforeEvidenceSeconds": {
+          "0.2": 0.0,
+          "0.25": 0.30724137931034484,
+          "0.3": 0.5210344827586207,
+          "0.4": 0.7948275862068965,
+          "0.5": 0.9151724137931034
+        },
+        "wrongEarlyStopCount": 16,
+        "contextCausedErrorCount": 11,
+        "noDelayViolationCount": 0,
+        "alignmentFallbackCount": 165,
+        "ambiguousOrOffRowsInM33Source": 23,
+        "evidenceLabel": "seeded historical transfer simulation; not prospective EEG/context pairing"
+      },
+      "measured_m33_api_latency_sensitivity": {
+        "trialSeedPairs": 2900,
+        "baselineAccuracy": 0.896551724137931,
+        "contextAccuracy": 0.896551724137931,
+        "accuracyDelta": 0.0,
+        "meanBaselineDecisionSeconds": 0.9120689655172414,
+        "meanContextDecisionSeconds": 0.9120689655172414,
+        "medianContextDecisionSeconds": 0.85,
+        "p90ContextDecisionSeconds": 1.5,
+        "semanticGateActiveRate": 0.35413793103448277,
+        "mappedAssignmentRate": 0.29724137931034483,
+        "authorizationRate": 0.0,
+        "authorizedPointCount": 0,
+        "applicationRate": 0.0,
+        "meanAppliedGainSeconds": null,
+        "stopFractionsAtOrBeforeEvidenceSeconds": {
+          "0.2": 0.0,
+          "0.25": 0.20689655172413793,
+          "0.3": 0.4482758620689655,
+          "0.4": 0.7586206896551724,
+          "0.5": 0.896551724137931
+        },
+        "wrongEarlyStopCount": 0,
+        "contextCausedErrorCount": 0,
+        "noDelayViolationCount": 0,
+        "alignmentFallbackCount": 165,
+        "ambiguousOrOffRowsInM33Source": 23,
+        "evidenceLabel": "seeded historical transfer simulation; not prospective EEG/context pairing"
+      }
+    },
+    "S7": {
+      "precomputed_before_eeg": {
+        "trialSeedPairs": 3000,
+        "baselineAccuracy": 0.9333333333333333,
+        "contextAccuracy": 0.934,
+        "accuracyDelta": 0.0006666666666666666,
+        "meanBaselineDecisionSeconds": 0.9966666666666667,
+        "meanContextDecisionSeconds": 0.97295,
+        "medianContextDecisionSeconds": 0.85,
+        "p90ContextDecisionSeconds": 1.5,
+        "semanticGateActiveRate": 0.371,
+        "mappedAssignmentRate": 0.30733333333333335,
+        "authorizationRate": 0.23333333333333334,
+        "authorizedPointCount": 700,
+        "applicationRate": 0.111,
+        "meanAppliedGainSeconds": 0.21366366366366368,
+        "stopFractionsAtOrBeforeEvidenceSeconds": {
+          "0.2": 0.0,
+          "0.25": 0.35233333333333333,
+          "0.3": 0.485,
+          "0.4": 0.6396666666666667,
+          "0.5": 0.709
+        },
+        "wrongEarlyStopCount": 12,
+        "contextCausedErrorCount": 12,
+        "noDelayViolationCount": 0,
+        "alignmentFallbackCount": 191,
+        "ambiguousOrOffRowsInM33Source": 23,
+        "evidenceLabel": "seeded historical transfer simulation; not prospective EEG/context pairing"
+      },
+      "measured_m33_api_latency_sensitivity": {
+        "trialSeedPairs": 3000,
+        "baselineAccuracy": 0.9333333333333333,
+        "contextAccuracy": 0.9333333333333333,
+        "accuracyDelta": 0.0,
+        "meanBaselineDecisionSeconds": 0.9966666666666667,
+        "meanContextDecisionSeconds": 0.9966666666666667,
+        "medianContextDecisionSeconds": 0.875,
+        "p90ContextDecisionSeconds": 1.5,
+        "semanticGateActiveRate": 0.371,
+        "mappedAssignmentRate": 0.30733333333333335,
+        "authorizationRate": 0.0,
+        "authorizedPointCount": 0,
+        "applicationRate": 0.0,
+        "meanAppliedGainSeconds": null,
+        "stopFractionsAtOrBeforeEvidenceSeconds": {
+          "0.2": 0.0,
+          "0.25": 0.3,
+          "0.3": 0.4666666666666667,
+          "0.4": 0.6,
+          "0.5": 0.6666666666666666
+        },
+        "wrongEarlyStopCount": 0,
+        "contextCausedErrorCount": 0,
+        "noDelayViolationCount": 0,
+        "alignmentFallbackCount": 191,
+        "ambiguousOrOffRowsInM33Source": 23,
+        "evidenceLabel": "seeded historical transfer simulation; not prospective EEG/context pairing"
+      }
+    }
+  },
+  "sessionCounts": {
+    "B2": 29,
+    "S7": 30
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "protocolVersion": 1,
+  "milestone": "M34 High-Speed SSVEP Decoding and Context-Enhanced Dynamic Stopping",
+  "frozenBeforeM34DecoderSearch": true,
+  "freezeDateLocal": "2026-10-04",
+  "softwareOnly": true,
+  "rawDataPolicy": "Read-only external source files; source EEG is not copied, rewritten, or normalized in place.",
+  "dataManifest": "data_manifest.json",
+  "dataset": {
+    "uniqueUsableTrialCount": 118,
+    "primaryFormalCohort": {
+      "sessionKeys": ["A", "B1", "B2"],
+      "trialCount": 88,
+      "sessionCounts": {"A": 30, "B1": 29, "B2": 29},
+      "frequencyMappingHz": {"slot0": 7.2, "slot1": 9.0, "slot2": 12.0},
+      "note": "Session A's 30 trials are included in the 88-trial cohort and must not be double-counted."
+    },
+    "separateStressCohort": {
+      "sessionKey": "S7",
+      "trialCount": 30,
+      "mode": "M6.7 stress_online",
+      "channels": [2, 4, 7],
+      "use": "Separate stress-condition held-out analysis after all choices are frozen; never pool its accuracy into the primary formal-cohort score."
+    },
+    "subjectIdentity": "Source manifests do not carry participant IDs. The working assumption that these sessions are the same participant follows the project acquisition history and is not independently verifiable from the files.",
+    "timingBoundary": "Stimulus onset is the software stimulus_started_software event mapped to an estimated ND8 global sample index. Physical optical timing and hardware sample anchoring are unverified; all reported onset-relative times are nominal logged-onset-relative estimates."
+  },
+  "trialLevelSplit": {
+    "train": {"sessionKeys": ["A"], "trialCount": 30},
+    "dev": {"sessionKeys": ["B1"], "trialCount": 29},
+    "primaryHeldOut": {"sessionKeys": ["B2"], "trialCount": 29},
+    "stressHeldOut": {"sessionKeys": ["S7"], "trialCount": 30},
+    "fixedQualityExclusions": {
+      "B1/m6_4-trial-011": "Frozen M6 QC exclusion for stale clock-sync freshness.",
+      "B2/m6_4-trial-023": "Frozen M25 formal-88 boundary; replay-supplemented exploratory trial excluded."
+    },
+    "leakageRule": "A trial is indivisible. All windows from one trial remain in that trial's session split. Training/template statistics use A only during search. B1 is used only for model, preprocessing, guard, and stopping selection. After freezing, final supervised templates may be refit on A+B1. B2 and S7 are evaluated only after the complete pipeline is frozen; their labels or scores cannot change choices.",
+    "historicalReuseCaveat": "All source sessions were previously inspected in M6 baseline/replay work. A/B1/B2 also contributed to M21-M25 feature-cache/context analyses; S7 has a previously reported 30/30 long-window online stress result. Therefore M34 held-out scores are held out from M34 selection but are not historically untouched data."
+  },
+  "baselineReproduction": {
+    "decoder": "Existing NumPy FBCCA implementation (eeg/decoder/fbcca.py)",
+    "referencePreprocessing": "1000 Hz raw samples; selected channels [2,3,4,5,7] for A/B1; per-channel de-mean; no resampling; three harmonics; existing three-band raised-cosine zero-phase FFT filter bank; frozen legacy weighting.",
+    "searchSessions": ["A", "B1"],
+    "reproductionWindowSeconds": 1.5,
+    "reproductionGuardSeconds": 0.5,
+    "comparison": "Compare A and B1 to the established M6 fixed-window baseline. Do not evaluate B2 or S7 until final held-out evaluation."
+  },
+  "fixedEvidenceWindowsSeconds": [0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.8, 1.0],
+  "onsetGuardSearchSeconds": [0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5],
+  "searchBoundary": "All onset guard and preprocessing choices are selected using A/B1 only; B1 is the only dev session. No B2/S7 outcomes are opened before freeze.",
+  "guardSelectionRule": "Using the baseline 5-channel/H=3 FBCCA path on Dev B1, choose the guard with the highest mean balanced accuracy across 0.30, 0.40, and 0.50 s. Break ties by higher mean balanced accuracy over all fixed windows, then by the shorter guard. A metrics are reported but do not select the guard.",
+  "decoderSet": [
+    "FBCCA baseline",
+    "ensemble TRCA (eTRCA)",
+    "task-related component analysis (TDCA)"
+  ],
+  "methodReferences": [
+    {
+      "method": "TRCA/eTRCA",
+      "citation": "Nakanishi et al., Enhancing Detection of SSVEPs for a High-Speed Brain Speller Using Task-Related Component Analysis, IEEE TBME, 2018, DOI 10.1109/TBME.2017.2694818.",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5783827/"
+    },
+    {
+      "method": "TDCA",
+      "citation": "Liu et al., Improving the Performance of Individually Calibrated SSVEP-BCI by Task-Discriminant Component Analysis, IEEE TNSRE, 2021, DOI 10.1109/TNSRE.2021.3114340.",
+      "url": "https://bingchuanliu.github.io/assets/pdf/liu_tnsre.pdf"
+    }
+  ],
+  "boundedTrainDevSearch": {
+    "channelSets": [[2, 3, 4, 5, 7], [2, 4, 7]],
+    "harmonicCounts": [2, 3, 5],
+    "preprocessingFamilies": [
+      "per-channel de-mean only",
+      "existing NumPy raised-cosine filter bank"
+    ],
+    "resampling": "Keep 1000 Hz unless a deterministic NumPy-only rate conversion is justified and selected on A/B1; never tune on held-out.",
+    "FBCCA": {"harmonicCounts": [2, 3, 5], "filterVariants": ["single-wideband", "existing-three-band-filter-bank"]},
+    "eTRCA": {"ensembleComponentsPerClass": [1, 2], "filterVariants": ["single-wideband", "existing-three-band-filter-bank"]},
+    "TDCA": {"harmonicCounts": [3, 5], "delayCopies": 6, "delayStepSamplesAt1000Hz": [2, 4], "discriminantComponents": [2, 4, 8], "relativeSwRidge": [0.001, 0.01], "filterVariants": ["single-wideband", "existing-three-band-filter-bank"]},
+    "configurationSelectionRule": "Per decoder, choose the configuration with the highest mean Dev B1 balanced accuracy at 0.30/0.40/0.50 s. Break ties with mean balanced accuracy over all nine windows, then lower computation time, then the simpler configuration. Record every attempted configuration.",
+    "modelFit": "Supervised templates/spatial filters use A. Compare configurations on B1. After freeze, refit supervised statistics on A+B1 for final held-out evaluation.",
+    "repeatability": "Deterministic NumPy linear algebra and fixed source trial ordering; record software versions and exact configuration."
+  },
+  "dynamicStopping": {
+    "scheduleSeconds": [0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.6, 0.8, 1.0],
+    "selectionData": ["B1"],
+    "guardSeconds": 0.5,
+    "freezeAfterEegBackbone": true,
+    "candidateSignals": ["top-minus-second relative margin", "consecutive top-class stability"],
+    "finalMaximumEvidenceSeconds": 1.0,
+    "b1Search": {
+      "minimumEvidenceSeconds": [0.2, 0.25, 0.3, 0.35, 0.4, 0.5],
+      "minimumRelativeMargin": [0.0, 0.025, 0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325, 0.35, 0.375, 0.4, 0.425, 0.45, 0.475, 0.5],
+      "requiredConsecutiveTopUpdates": [2, 3],
+      "selectionRule": "On B1 only, maximize dynamic balanced accuracy; among ties minimize mean evidence duration, then prefer the larger minimum relative margin, then the longer required stability. If no dynamic policy matches the selected FBCCA fixed 0.50 s balanced accuracy, use fixed 0.50 s and report that dynamic stopping did not improve reliability.",
+      "relativeMargin": "(top fused FBCCA score - second fused FBCCA score) / max(abs(top fused FBCCA score), 1e-12)",
+      "note": "B1 stopping selection is exploratory and must be reported as DEV-tuned; B2/S7 remain unread for classification until the final frozen evaluation."
+    }
+  },
+  "contextIntegration": {
+    "startsAfter": "EEG-only decoder, preprocessing, channels, onset guard, and dynamic stopping are frozen.",
+    "decisionInvariant": "Context may authorize an earlier stop only when the M33 top candidate equals the current raw EEG top candidate. Emitted class is always the raw EEG top class; context cannot rerank.",
+    "requiredGates": [
+      "informative and non-ambiguous M33 status",
+      "DEV-frozen confidence, margin, stability, and minimum EEG evidence thresholds",
+      "candidate present on current EEG page",
+      "safe page projection and preserved off-page mass gate",
+      "context top equals raw EEG top",
+      "EEG top has sufficient DEV-frozen margin and temporal stability"
+    ],
+    "fallback": "If any authorization gate fails, return the exact paired EEG-only decision and stop time with no delay or score change.",
+    "sourceUse": "Use existing M33 task-state Context and historical observable selection histories only; label replay/simulation alignment explicitly. No future/current answer may enter the Context history.",
+    "b1Tuning": {
+      "contextSource": "Frozen M33 train/dev outputs and train/dev gate; M33 semantic gate threshold is not retuned.",
+      "assignmentSeeds": 100,
+      "minimumEvidenceSeconds": [0.2, 0.25, 0.3, 0.35, 0.4],
+      "minimumEegRelativeMargin": [0.05, 0.1, 0.15, 0.175, 0.2, 0.25],
+      "requiredConsecutiveTopUpdates": [2, 3],
+      "minimumProjectedPageTopMass": 0.7,
+      "minimumGlobalPageMass": 0.7,
+      "selectionRule": "On B1 only, select the candidate with the largest mean paired time gain among policies with a nonzero minimum EEG relative margin of at least 0.05, zero wrong early stops, no delay violations, and paired accuracy no lower than the frozen EEG-only dynamic policy. Break ties by more context applications, then higher EEG relative margin, then longer top stability. If none is safe, freeze exact EEG-only fallback.",
+      "availabilityScenarios": ["precomputed_before_eeg", "measured_m33_api_latency_sensitivity"],
+      "alignmentDisclosure": "Use post-hoc semantic expected-target labels only to map each synthetic three-choice page onto the historical EEG true slot. These labels are never context input. This is a seeded historical transfer simulation, not prospective paired EEG/context collection."
+    }
+  },
+  "heldOutExecution": {
+    "primary": "Run the complete frozen algorithm/window comparison on B2 once.",
+    "stress": "Run the same frozen selected pipeline on S7 once as a separate common-channel stress holdout.",
+    "technicalFailure": "If execution fails technically, record the failure; a code-fix rerun must not retune statistics or change frozen parameters."
+  },
+  "metrics": {
+    "perDecoderWindow": ["accuracy", "balanced accuracy", "per-class accuracy", "confusion matrix", "ITR", "evaluated trial count", "computation latency", "session breakdown"],
+    "timingNames": ["EEG evidence duration", "nominal logged-onset-relative decision time", "algorithm computation time"],
+    "itrAssumptions": "Report decision-only ITR using nominal onset-relative time and a separately labelled M6-like cycle estimate including the known 2 s cue, 1 s pre-stimulus rest, fixed 4 s stimulation, and 2 s post-stimulus rest. State the formula and assumptions; do not imply physical online throughput.",
+    "contextPaired": ["accuracy delta", "mean/median/p90 stop time", "authorization rate", "application rate", "fractions at <=0.20/0.25/0.30/0.40/0.50 s", "wrong early stops", "fallback count", "ambiguity/off count", "no-delay violations"]
+  },
+  "sanityChecks": [
+    "No train/dev/heldout trial overlap.",
+    "No short windows from the same trial cross splits.",
+    "No heldout label enters training, preprocessing selection, guard tuning, or stopping thresholds.",
+    "Fixed slot/frequency mapping: 0=7.2 Hz, 1=9 Hz, 2=12 Hz.",
+    "No Context current-target/future-history input or answer-key feature.",
+    "No source-specific or trial-ID-specific classifier logic.",
+    "Raw source hashes before and after the full run must match this manifest."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "recordType": "m34_heldout_attempt_started",
+  "startedAtUtc": "2026-10-03T21:18:47Z",
+  "sessions": [
+    "B2",
+    "S7"
+  ],
+  "pipelineFreezeSha256": "ba0704da500c97a3a4155dbd77d1f8e16f436cd3dc990acf65348893ef50f20f",
+  "protocolSha256": "e17f0d8c8ab52183ce5758da28bb7825ddb1ad36b6240c4f7339fe47de2510a3",
+  "dataManifestSha256": "4d15b9996e7f4586371283f6d436901ecdc9d98b352aefe8408766cc4c1d8687",
+  "attemptNumber": 1,
+  "technicalRetryAuthorized": false,
+  "heldoutMetricsBeforeStart": false
+}

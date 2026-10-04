@@ -1,0 +1,173 @@
+{
+  "status": "PASS",
+  "dataSplit": "B1 development only",
+  "decoderConfigId": "FBCCA-003",
+  "decoderConfig": {
+    "channels": [
+      2,
+      3,
+      4,
+      5,
+      7
+    ],
+    "decoder": "FBCCA",
+    "filterVariant": "three-band",
+    "harmonics": 3
+  },
+  "guardSeconds": 0.5,
+  "scheduleSeconds": [
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4,
+    0.5,
+    0.6,
+    0.8,
+    1.0
+  ],
+  "fixed050Baseline": {
+    "n": 29,
+    "correct": 26,
+    "accuracy": 0.896551724137931,
+    "balancedAccuracy": 0.8925925925925927,
+    "perClassAccuracyBySlot": [
+      1.0,
+      0.7777777777777778,
+      0.9
+    ],
+    "confusionMatrixTrueSlotByPredictedSlot": [
+      [
+        10,
+        0,
+        0
+      ],
+      [
+        2,
+        7,
+        0
+      ],
+      [
+        1,
+        0,
+        9
+      ]
+    ],
+    "meanEvidenceSeconds": 0.5,
+    "medianEvidenceSeconds": 0.5,
+    "p90EvidenceSeconds": 0.5,
+    "meanNominalLoggedOnsetRelativeDecisionSeconds": 1.0,
+    "medianNominalLoggedOnsetRelativeDecisionSeconds": 1.0,
+    "p90NominalLoggedOnsetRelativeDecisionSeconds": 1.0,
+    "meanCumulativeRecomputeLatencyMs": 2.48208275862069,
+    "p90CumulativeRecomputeLatencyMs": 3.0153199999999996,
+    "stoppedAtOrBefore": {
+      "0.2": 0,
+      "0.25": 0,
+      "0.3": 0,
+      "0.4": 0,
+      "0.5": 29
+    },
+    "forcedToMaximumCount": 0,
+    "wrongEarlyStopCount": 3
+  },
+  "selectedPolicy": {
+    "candidateId": "E200_M175_S2",
+    "minimumEvidenceSeconds": 0.2,
+    "minimumRelativeMargin": 0.175,
+    "requiredConsecutiveTopUpdates": 2,
+    "n": 29,
+    "correct": 28,
+    "accuracy": 0.9655172413793104,
+    "balancedAccuracy": 0.9629629629629629,
+    "perClassAccuracyBySlot": [
+      1.0,
+      0.8888888888888888,
+      1.0
+    ],
+    "confusionMatrixTrueSlotByPredictedSlot": [
+      [
+        10,
+        0,
+        0
+      ],
+      [
+        0,
+        8,
+        1
+      ],
+      [
+        0,
+        0,
+        10
+      ]
+    ],
+    "meanEvidenceSeconds": 0.4862068965517241,
+    "medianEvidenceSeconds": 0.4,
+    "p90EvidenceSeconds": 0.8399999999999999,
+    "meanNominalLoggedOnsetRelativeDecisionSeconds": 0.9862068965517242,
+    "medianNominalLoggedOnsetRelativeDecisionSeconds": 0.9,
+    "p90NominalLoggedOnsetRelativeDecisionSeconds": 1.3399999999999999,
+    "meanCumulativeRecomputeLatencyMs": 12.340010344827586,
+    "p90CumulativeRecomputeLatencyMs": 20.39594,
+    "stoppedAtOrBefore": {
+      "0.2": 0,
+      "0.25": 5,
+      "0.3": 10,
+      "0.4": 17,
+      "0.5": 18
+    },
+    "forcedToMaximumCount": 1,
+    "wrongEarlyStopCount": 0
+  },
+  "selectedDynamicMetrics": {
+    "n": 29,
+    "correct": 28,
+    "accuracy": 0.9655172413793104,
+    "balancedAccuracy": 0.9629629629629629,
+    "perClassAccuracyBySlot": [
+      1.0,
+      0.8888888888888888,
+      1.0
+    ],
+    "confusionMatrixTrueSlotByPredictedSlot": [
+      [
+        10,
+        0,
+        0
+      ],
+      [
+        0,
+        8,
+        1
+      ],
+      [
+        0,
+        0,
+        10
+      ]
+    ],
+    "meanEvidenceSeconds": 0.4862068965517241,
+    "medianEvidenceSeconds": 0.4,
+    "p90EvidenceSeconds": 0.8399999999999999,
+    "meanNominalLoggedOnsetRelativeDecisionSeconds": 0.9862068965517242,
+    "medianNominalLoggedOnsetRelativeDecisionSeconds": 0.9,
+    "p90NominalLoggedOnsetRelativeDecisionSeconds": 1.3399999999999999,
+    "meanCumulativeRecomputeLatencyMs": 12.340010344827586,
+    "p90CumulativeRecomputeLatencyMs": 20.39594,
+    "stoppedAtOrBefore": {
+      "0.2": 0,
+      "0.25": 5,
+      "0.3": 10,
+      "0.4": 17,
+      "0.5": 18
+    },
+    "forcedToMaximumCount": 1,
+    "wrongEarlyStopCount": 0
+  },
+  "fallbackReason": null,
+  "candidateCount": 252,
+  "selectionRule": "On B1 only, maximize dynamic balanced accuracy; among ties minimize mean evidence duration, then prefer the larger minimum relative margin, then the longer required stability. If no dynamic policy matches the selected FBCCA fixed 0.50 s balanced accuracy, use fixed 0.50 s and report that dynamic stopping did not improve reliability.",
+  "latencyNote": "Decision timing is nominal logged-onset-relative (0.5 s guard + evidence). Cumulative decode compute sums observed full-window calls at each schedule point, a conservative repeated-recompute estimate rather than an incremental streaming benchmark.",
+  "leakageNote": "No B2 or S7 predictions/metrics were used. Candidate thresholds were searched on B1 only after the fixed EEG decoder was selected."
+}

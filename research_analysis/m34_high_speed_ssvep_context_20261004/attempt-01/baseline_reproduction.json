@@ -1,0 +1,95 @@
+{
+  "status": "PASS",
+  "scope": "Train A and Dev B1 only; B2 and S7 were not evaluated.",
+  "decoder": "eeg.decoder.fbcca.predict_fbcca",
+  "configuration": {
+    "channelsZeroBased": [
+      2,
+      3,
+      4,
+      5,
+      7
+    ],
+    "rawSamplingRateHz": 1000,
+    "preprocessing": "per-channel de-mean; no resampling",
+    "harmonics": 3,
+    "filterBank": "existing default NumPy raised-cosine bands and weights",
+    "guardSeconds": 0.5,
+    "evidenceSeconds": 1.5,
+    "frequenciesHzBySlot": [
+      7.2,
+      9.0,
+      12.0
+    ]
+  },
+  "sessions": [
+    {
+      "sessionKey": "A",
+      "n": 30,
+      "correct": 30,
+      "accuracy": 1.0,
+      "balancedAccuracy": 1.0,
+      "perClassAccuracyBySlot": {
+        "0": 1.0,
+        "1": 1.0,
+        "2": 1.0
+      },
+      "confusionMatrixTrueSlotByPredictedSlot": {
+        "0": {
+          "0": 10,
+          "1": 0,
+          "2": 0
+        },
+        "1": {
+          "0": 0,
+          "1": 10,
+          "2": 0
+        },
+        "2": {
+          "0": 0,
+          "1": 0,
+          "2": 10
+        }
+      },
+      "meanAlgorithmComputeMs": 3.7926366666666667,
+      "medianAlgorithmComputeMs": 3.404,
+      "p90AlgorithmComputeMs": 4.077210000000003,
+      "expectedHistoricalAccuracy": 1.0,
+      "historicalAccuracyMatch": true
+    },
+    {
+      "sessionKey": "B1",
+      "n": 29,
+      "correct": 28,
+      "accuracy": 0.9655172413793104,
+      "balancedAccuracy": 0.9629629629629629,
+      "perClassAccuracyBySlot": {
+        "0": 1.0,
+        "1": 0.8888888888888888,
+        "2": 1.0
+      },
+      "confusionMatrixTrueSlotByPredictedSlot": {
+        "0": {
+          "0": 10,
+          "1": 0,
+          "2": 0
+        },
+        "1": {
+          "0": 0,
+          "1": 8,
+          "2": 1
+        },
+        "2": {
+          "0": 0,
+          "1": 0,
+          "2": 10
+        }
+      },
+      "meanAlgorithmComputeMs": 3.5173,
+      "medianAlgorithmComputeMs": 3.4093,
+      "p90AlgorithmComputeMs": 3.96218,
+      "expectedHistoricalAccuracy": 0.9655172413793104,
+      "historicalAccuracyMatch": true
+    }
+  ]
+}

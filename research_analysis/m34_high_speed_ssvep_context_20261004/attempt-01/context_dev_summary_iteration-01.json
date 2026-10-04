@@ -1,0 +1,424 @@
+{
+  "status": "PASS",
+  "dataSplit": "M34 Dev B1 only",
+  "eegBackboneFreeze": {
+    "status": "FROZEN_FOR_HELDOUT",
+    "frozenAfter": [
+      "baseline reproduction",
+      "bounded A/B1 decoder search",
+      "B1-only dynamic-stop tuning"
+    ],
+    "primaryEegBackbone": {
+      "configId": "FBCCA-003",
+      "config": {
+        "channels": [
+          2,
+          3,
+          4,
+          5,
+          7
+        ],
+        "decoder": "FBCCA",
+        "filterVariant": "three-band",
+        "harmonics": 3
+      },
+      "devMeanBalancedAccuracyAt030405": 0.8592592592592593,
+      "devMeanBalancedAccuracyAllWindows": 0.8526748971193414,
+      "devMeanComputeMs": 2.525519923371647,
+      "devMeanAccuracyAt030405": 0.8620689655172414,
+      "devPerWindow": [
+        {
+          "evidenceSeconds": 0.2,
+          "accuracy": 0.5517241379310345,
+          "balancedAccuracy": 0.5518518518518518,
+          "perClassAccuracyBySlot": [
+            0.6,
+            0.5555555555555556,
+            0.5
+          ],
+          "confusionMatrixTrueSlotByPredictedSlot": [
+            [
+              6,
+              2,
+              2
+            ],
+            [
+              2,
+              5,
+              2
+            ],
+            [
+              2,
+              3,
+              5
+            ]
+          ],
+          "meanComputeMs": 1.9945034482758621,
+          "medianComputeMs": 1.8576,
+          "p90ComputeMs": 2.2641
+        },
+        {
+          "evidenceSeconds": 0.25,
+          "accuracy": 0.7586206896551724,
+          "balancedAccuracy": 0.7592592592592592,
+          "perClassAccuracyBySlot": [
+            0.8,
+            0.7777777777777778,
+            0.7
+          ],
+          "confusionMatrixTrueSlotByPredictedSlot": [
+            [
+              8,
+              1,
+              1
+            ],
+            [
+              1,
+              7,
+              1
+            ],
+            [
+              2,
+              1,
+              7
+            ]
+          ],
+          "meanComputeMs": 2.584479310344827,
+          "medianComputeMs": 2.5611,
+          "p90ComputeMs": 3.32014
+        },
+        {
+          "evidenceSeconds": 0.3,
+          "accuracy": 0.7931034482758621,
+          "balancedAccuracy": 0.7925925925925926,
+          "perClassAccuracyBySlot": [
+            0.7,
+            0.7777777777777778,
+            0.9
+          ],
+          "confusionMatrixTrueSlotByPredictedSlot": [
+            [
+              7,
+              3,
+              0
+            ],
+            [
+              2,
+              7,
+              0
+            ],
+            [
+              1,
+              0,
+              9
+            ]
+          ],
+          "meanComputeMs": 2.164558620689655,
+          "medianComputeMs": 2.0397,
+          "p90ComputeMs": 2.4572
+        },
+        {
+          "evidenceSeconds": 0.35,
+          "accuracy": 0.896551724137931,
+          "balancedAccuracy": 0.8925925925925927,
+          "perClassAccuracyBySlot": [
+            0.9,
+            0.7777777777777778,
+            1.0
+          ],
+          "confusionMatrixTrueSlotByPredictedSlot": [
+            [
+              9,
+              1,
+              0
+            ],
+            [
+              2,
+              7,
+              0
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ],
+          "meanComputeMs": 3.2294896551724137,
+          "medianComputeMs": 3.2927,
+          "p90ComputeMs": 4.09224
+        },
+        {
+          "evidenceSeconds": 0.4,
+          "accuracy": 0.896551724137931,
+          "balancedAccuracy": 0.8925925925925927,
+          "perClassAccuracyBySlot": [
+            0.9,
+            0.7777777777777778,
+            1.0
+          ],
+          "confusionMatrixTrueSlotByPredictedSlot": [
+            [
+              9,
+              1,
+              0
+            ],
+            [
+              2,
+              7,
+              0
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ],
+          "meanComputeMs": 2.130858620689655,
+          "medianComputeMs": 2.0498,
+          "p90ComputeMs": 2.42442
+        },
+        {
+          "evidenceSeconds": 0.5,
+          "accuracy": 0.896551724137931,
+          "balancedAccuracy": 0.8925925925925925,
+          "perClassAccuracyBySlot": [
+            1.0,
+            0.7777777777777778,
+            0.9
+          ],
+          "confusionMatrixTrueSlotByPredictedSlot": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              2,
+              7,
+              0
+            ],
+            [
+              1,
+              0,
+              9
+            ]
+          ],
+          "meanComputeMs": 2.4820827586206895,
+          "medianComputeMs": 2.2187,
+          "p90ComputeMs": 3.0153199999999996
+        },
+        {
+          "evidenceSeconds": 0.6,
+          "accuracy": 1.0,
+          "balancedAccuracy": 1.0,
+          "perClassAccuracyBySlot": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "confusionMatrixTrueSlotByPredictedSlot": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              9,
+              0
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ],
+          "meanComputeMs": 2.8322172413793103,
+          "medianComputeMs": 2.4488,
+          "p90ComputeMs": 3.78264
+        },
+        {
+          "evidenceSeconds": 0.8,
+          "accuracy": 0.9310344827586207,
+          "balancedAccuracy": 0.9296296296296296,
+          "perClassAccuracyBySlot": [
+            0.9,
+            0.8888888888888888,
+            1.0
+          ],
+          "confusionMatrixTrueSlotByPredictedSlot": [
+            [
+              9,
+              0,
+              1
+            ],
+            [
+              0,
+              8,
+              1
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ],
+          "meanComputeMs": 2.4055793103448275,
+          "medianComputeMs": 2.3464,
+          "p90ComputeMs": 2.61912
+        },
+        {
+          "evidenceSeconds": 1.0,
+          "accuracy": 0.9655172413793104,
+          "balancedAccuracy": 0.9629629629629629,
+          "perClassAccuracyBySlot": [
+            1.0,
+            0.8888888888888888,
+            1.0
+          ],
+          "confusionMatrixTrueSlotByPredictedSlot": [
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              8,
+              1
+            ],
+            [
+              0,
+              0,
+              10
+            ]
+          ],
+          "meanComputeMs": 2.9059103448275865,
+          "medianComputeMs": 2.7419,
+          "p90ComputeMs": 3.6866
+        }
+      ]
+    },
+    "onsetGuardSeconds": 0.5,
+    "dynamicStopping": {
+      "candidateId": "E200_M175_S2",
+      "minimumEvidenceSeconds": 0.2,
+      "minimumRelativeMargin": 0.175,
+      "requiredConsecutiveTopUpdates": 2,
+      "n": 29,
+      "correct": 28,
+      "accuracy": 0.9655172413793104,
+      "balancedAccuracy": 0.9629629629629629,
+      "perClassAccuracyBySlot": [
+        1.0,
+        0.8888888888888888,
+        1.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          8,
+          1
+        ],
+        [
+          0,
+          0,
+          10
+        ]
+      ],
+      "meanEvidenceSeconds": 0.4862068965517241,
+      "medianEvidenceSeconds": 0.4,
+      "p90EvidenceSeconds": 0.8399999999999999,
+      "meanNominalLoggedOnsetRelativeDecisionSeconds": 0.9862068965517242,
+      "medianNominalLoggedOnsetRelativeDecisionSeconds": 0.9,
+      "p90NominalLoggedOnsetRelativeDecisionSeconds": 1.3399999999999999,
+      "meanCumulativeRecomputeLatencyMs": 12.340010344827586,
+      "p90CumulativeRecomputeLatencyMs": 20.39594,
+      "stoppedAtOrBefore": {
+        "0.2": 0,
+        "0.25": 5,
+        "0.3": 10,
+        "0.4": 17,
+        "0.5": 18
+      },
+      "forcedToMaximumCount": 1,
+      "wrongEarlyStopCount": 0
+    },
+    "dynamicFallback": null,
+    "heldoutSessions": [
+      "B2",
+      "S7"
+    ],
+    "heldoutTrialLabelsOrScoresLoaded": false,
+    "frozenAtLocalDate": "2026-10-04"
+  },
+  "m33TrainDevGate": {
+    "path": "research_analysis\\m33_task_state_context_fix_20261003\\attempt-01\\train_dev_gate.json",
+    "sha256": "9b0904a167218fb520a5a93cc3056a2424841bc04513c5ca36d27ad15b59c2dc",
+    "threshold": 0.3039226230247065,
+    "semanticOutputRows": 80,
+    "activePoolRows": 21,
+    "measuredGateRate": 0.2625
+  },
+  "assignmentSeedCount": 100,
+  "trialSeedPairsPerCandidate": 2900,
+  "mappingFailureCountAcrossAssignments": 148,
+  "selectedPolicy": {
+    "minimumEvidenceSeconds": 0.2,
+    "minimumEegRelativeMargin": 0.0,
+    "requiredConsecutiveTopUpdates": 2
+  },
+  "selectedCandidate": {
+    "candidateId": "E200_M000_S2",
+    "minimumEvidenceSeconds": 0.2,
+    "minimumEegRelativeMargin": 0.0,
+    "requiredConsecutiveTopUpdates": 2,
+    "trialSeedPairs": 2900,
+    "baselineCorrect": 2800,
+    "contextCorrect": 2813,
+    "baselineAccuracy": 0.9655172413793104,
+    "contextAccuracy": 0.97,
+    "accuracyDelta": 0.004482758620689655,
+    "meanBaselineStopSeconds": 0.4862068965517241,
+    "meanContextStopSeconds": 0.45879310344827584,
+    "medianContextStopSeconds": 0.35,
+    "p90ContextStopSeconds": 0.8,
+    "meanAllTrialGainSeconds": 0.027413793103448277,
+    "contextActiveAssignments": 652,
+    "semanticGateActiveAssignments": 800,
+    "semanticGateActiveRate": 0.27586206896551724,
+    "contextApplicationCount": 363,
+    "contextApplicationRate": 0.12517241379310345,
+    "meanAppliedGainSeconds": 0.2190082644628099,
+    "noDelayViolationCount": 0,
+    "wrongEarlyStopCount": 0,
+    "contextCausedErrorCount": 0,
+    "stopFractionsAtOrBeforeEvidenceSeconds": {
+      "0.2": 0.0,
+      "0.25": 0.23448275862068965,
+      "0.3": 0.41172413793103446,
+      "0.4": 0.6420689655172414,
+      "0.5": 0.6689655172413793
+    },
+    "mappingFailureCount": 148,
+    "sourceGateThreshold": 0.3039226230247065,
+    "measuredSemanticGateRate": 0.2625,
+    "selectionEligible": true
+  },
+  "contextEnabled": true,
+  "selectedMetricsPrecomputedContext": 363,
+  "measuredApiLatencySensitivity": {
+    "contextApplicationCount": 0,
+    "meanPairedGainSeconds": 0.0,
+    "trialSeedPairs": 2900
+  },
+  "selectionRule": "On B1 only, select the candidate with the largest mean paired time gain among policies with zero wrong early stops, no delay violations, and paired accuracy no lower than the frozen EEG-only dynamic policy. Break ties by more context applications, then higher EEG relative margin, then longer top stability. If none is safe, freeze exact EEG-only fallback.",
+  "alignmentDisclosure": "Use post-hoc semantic expected-target labels only to map each synthetic three-choice page onto the historical EEG true slot. These labels are never context input. This is a seeded historical transfer simulation, not prospective paired EEG/context collection.",
+  "pageMassRule": "Require both normalized projected page top mass >= 0.70 and pre-renormalization global probability mass on the mapped page >= 0.70; otherwise exact EEG-only fallback.",
+  "leakageNote": "No M34 B2/S7 EEG labels or scores were read. M33 expected-target labels were used only by the inherited seeded alignment helper after the semantic prediction, never as model input."
+}

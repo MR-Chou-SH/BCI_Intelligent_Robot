@@ -1,0 +1,12 @@
+{
+  "recordType": "m34_heldout_attempt_complete",
+  "completedAtUtc": "2026-10-03T21:19:02Z",
+  "status": "PASS",
+  "sessions": [
+    "B2",
+    "S7"
+  ],
+  "fixedTrialRows": 1593,
+  "contextTrialSeedScenarioRows": 11800,
+  "heldoutRetryUsed": false
+}

@@ -1,0 +1,2743 @@
+{
+  "fixed": [
+    {
+      "sessionKey": "B2",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.7,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 29,
+      "correct": 22,
+      "accuracy": 0.7586206896551724,
+      "balancedAccuracy": 0.7592592592592592,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.7,
+        0.7777777777777778
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          2,
+          7,
+          1
+        ],
+        [
+          0,
+          2,
+          7
+        ]
+      ],
+      "meanEvidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.7,
+      "meanComputeMs": 2.3377620689655174,
+      "p90ComputeMs": 2.86926,
+      "decisionOnlyItrBitsPerMin": 46.822001162475964,
+      "m6Like9sCycleItrBitsPerMin": 3.641711201525908,
+      "itrBitsPerSelection": 0.5462566802288862,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.75,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 29,
+      "correct": 22,
+      "accuracy": 0.7586206896551724,
+      "balancedAccuracy": 0.7592592592592592,
+      "perClassAccuracyBySlot": [
+        0.7,
+        0.8,
+        0.7777777777777778
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          0,
+          3
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          0,
+          2,
+          7
+        ]
+      ],
+      "meanEvidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.75,
+      "meanComputeMs": 2.9216172413793102,
+      "p90ComputeMs": 3.7391799999999997,
+      "decisionOnlyItrBitsPerMin": 43.700534418310895,
+      "m6Like9sCycleItrBitsPerMin": 3.641711201525908,
+      "itrBitsPerSelection": 0.5462566802288862,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.8,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 29,
+      "correct": 25,
+      "accuracy": 0.8620689655172413,
+      "balancedAccuracy": 0.8666666666666667,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.8,
+        1.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          0,
+          0,
+          9
+        ]
+      ],
+      "meanEvidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.8,
+      "meanComputeMs": 2.5047655172413794,
+      "p90ComputeMs": 2.9696199999999995,
+      "decisionOnlyItrBitsPerMin": 65.1177631204708,
+      "m6Like9sCycleItrBitsPerMin": 5.7882456107085165,
+      "itrBitsPerSelection": 0.8682368416062775,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.85,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 29,
+      "correct": 25,
+      "accuracy": 0.8620689655172413,
+      "balancedAccuracy": 0.8666666666666667,
+      "perClassAccuracyBySlot": [
+        0.7,
+        0.9,
+        1.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          1,
+          2
+        ],
+        [
+          0,
+          9,
+          1
+        ],
+        [
+          0,
+          0,
+          9
+        ]
+      ],
+      "meanEvidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.85,
+      "meanComputeMs": 2.4699758620689654,
+      "p90ComputeMs": 3.27626,
+      "decisionOnlyItrBitsPerMin": 61.28730646632547,
+      "m6Like9sCycleItrBitsPerMin": 5.7882456107085165,
+      "itrBitsPerSelection": 0.8682368416062775,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.9,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 29,
+      "correct": 26,
+      "accuracy": 0.896551724137931,
+      "balancedAccuracy": 0.9,
+      "perClassAccuracyBySlot": [
+        0.7,
+        1.0,
+        1.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          0,
+          3
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          0,
+          0,
+          9
+        ]
+      ],
+      "meanEvidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.9,
+      "meanComputeMs": 2.968451724137931,
+      "p90ComputeMs": 4.310239999999999,
+      "decisionOnlyItrBitsPerMin": 66.77881341619727,
+      "m6Like9sCycleItrBitsPerMin": 6.6778813416197265,
+      "itrBitsPerSelection": 1.001682201242959,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.0,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 29,
+      "correct": 25,
+      "accuracy": 0.8620689655172413,
+      "balancedAccuracy": 0.8666666666666667,
+      "perClassAccuracyBySlot": [
+        0.6,
+        1.0,
+        1.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          0,
+          4
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          0,
+          0,
+          9
+        ]
+      ],
+      "meanEvidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.0,
+      "meanComputeMs": 2.9497689655172414,
+      "p90ComputeMs": 3.64792,
+      "decisionOnlyItrBitsPerMin": 52.09421049637665,
+      "m6Like9sCycleItrBitsPerMin": 5.7882456107085165,
+      "itrBitsPerSelection": 0.8682368416062775,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.1,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 29,
+      "correct": 27,
+      "accuracy": 0.9310344827586207,
+      "balancedAccuracy": 0.9333333333333332,
+      "perClassAccuracyBySlot": [
+        0.8,
+        1.0,
+        1.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          0,
+          0,
+          9
+        ]
+      ],
+      "meanEvidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.1,
+      "meanComputeMs": 2.700462068965517,
+      "p90ComputeMs": 3.4603599999999997,
+      "decisionOnlyItrBitsPerMin": 62.942494458860644,
+      "m6Like9sCycleItrBitsPerMin": 7.692971544971858,
+      "itrBitsPerSelection": 1.1539457317457786,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.3,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 29,
+      "correct": 27,
+      "accuracy": 0.9310344827586207,
+      "balancedAccuracy": 0.9333333333333332,
+      "perClassAccuracyBySlot": [
+        0.8,
+        1.0,
+        1.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          0,
+          0,
+          9
+        ]
+      ],
+      "meanEvidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.3,
+      "meanComputeMs": 3.4159241379310346,
+      "p90ComputeMs": 4.34644,
+      "decisionOnlyItrBitsPerMin": 53.25903377288209,
+      "m6Like9sCycleItrBitsPerMin": 7.692971544971858,
+      "itrBitsPerSelection": 1.1539457317457786,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.5,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 29,
+      "correct": 27,
+      "accuracy": 0.9310344827586207,
+      "balancedAccuracy": 0.9296296296296296,
+      "perClassAccuracyBySlot": [
+        1.0,
+        0.9,
+        0.8888888888888888
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          9,
+          1
+        ],
+        [
+          0,
+          1,
+          8
+        ]
+      ],
+      "meanEvidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.5,
+      "meanComputeMs": 3.2966793103448278,
+      "p90ComputeMs": 3.78254,
+      "decisionOnlyItrBitsPerMin": 46.15782926983115,
+      "m6Like9sCycleItrBitsPerMin": 7.692971544971858,
+      "itrBitsPerSelection": 1.1539457317457786,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.7,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 79.9582,
+      "n": 29,
+      "correct": 10,
+      "accuracy": 0.3448275862068966,
+      "balancedAccuracy": 0.3444444444444444,
+      "perClassAccuracyBySlot": [
+        0.1,
+        0.6,
+        0.3333333333333333
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          1,
+          4,
+          5
+        ],
+        [
+          1,
+          6,
+          3
+        ],
+        [
+          2,
+          4,
+          3
+        ]
+      ],
+      "meanEvidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.7,
+      "meanComputeMs": 1.2816137931034484,
+      "p90ComputeMs": 1.7035,
+      "decisionOnlyItrBitsPerMin": 0.03655379265720603,
+      "m6Like9sCycleItrBitsPerMin": 0.0028430727622271354,
+      "itrBitsPerSelection": 0.0004264609143340703,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.75,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 71.5678,
+      "n": 29,
+      "correct": 11,
+      "accuracy": 0.3793103448275862,
+      "balancedAccuracy": 0.3814814814814815,
+      "perClassAccuracyBySlot": [
+        0.1,
+        0.6,
+        0.4444444444444444
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          1,
+          4,
+          5
+        ],
+        [
+          0,
+          6,
+          4
+        ],
+        [
+          1,
+          4,
+          4
+        ]
+      ],
+      "meanEvidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.75,
+      "meanComputeMs": 1.5537379310344828,
+      "p90ComputeMs": 2.0285599999999997,
+      "decisionOnlyItrBitsPerMin": 0.5375489467195216,
+      "m6Like9sCycleItrBitsPerMin": 0.04479574555996013,
+      "itrBitsPerSelection": 0.00671936183399402,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.8,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 74.2081,
+      "n": 29,
+      "correct": 12,
+      "accuracy": 0.41379310344827586,
+      "balancedAccuracy": 0.4185185185185185,
+      "perClassAccuracyBySlot": [
+        0.1,
+        0.6,
+        0.5555555555555556
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          1,
+          4,
+          5
+        ],
+        [
+          0,
+          6,
+          4
+        ],
+        [
+          0,
+          4,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.8,
+      "meanComputeMs": 1.407310344827586,
+      "p90ComputeMs": 1.65422,
+      "decisionOnlyItrBitsPerMin": 1.5229706175609703,
+      "m6Like9sCycleItrBitsPerMin": 0.13537516600541957,
+      "itrBitsPerSelection": 0.020306274900812937,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.85,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 66.6094,
+      "n": 29,
+      "correct": 12,
+      "accuracy": 0.41379310344827586,
+      "balancedAccuracy": 0.4185185185185185,
+      "perClassAccuracyBySlot": [
+        0.1,
+        0.6,
+        0.5555555555555556
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          1,
+          3,
+          6
+        ],
+        [
+          1,
+          6,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.85,
+      "meanComputeMs": 1.4761724137931034,
+      "p90ComputeMs": 1.93536,
+      "decisionOnlyItrBitsPerMin": 1.433384110645619,
+      "m6Like9sCycleItrBitsPerMin": 0.13537516600541957,
+      "itrBitsPerSelection": 0.020306274900812937,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.9,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 78.3809,
+      "n": 29,
+      "correct": 12,
+      "accuracy": 0.41379310344827586,
+      "balancedAccuracy": 0.4185185185185185,
+      "perClassAccuracyBySlot": [
+        0.1,
+        0.6,
+        0.5555555555555556
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          1,
+          3,
+          6
+        ],
+        [
+          1,
+          6,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.9,
+      "meanComputeMs": 1.7868103448275863,
+      "p90ComputeMs": 2.3851999999999998,
+      "decisionOnlyItrBitsPerMin": 1.353751660054196,
+      "m6Like9sCycleItrBitsPerMin": 0.13537516600541957,
+      "itrBitsPerSelection": 0.020306274900812937,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.0,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 68.9519,
+      "n": 29,
+      "correct": 11,
+      "accuracy": 0.3793103448275862,
+      "balancedAccuracy": 0.38518518518518513,
+      "perClassAccuracyBySlot": [
+        0.0,
+        0.6,
+        0.5555555555555556
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          0,
+          3,
+          7
+        ],
+        [
+          1,
+          6,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.0,
+      "meanComputeMs": 1.4772241379310345,
+      "p90ComputeMs": 1.85554,
+      "decisionOnlyItrBitsPerMin": 0.4031617100396412,
+      "m6Like9sCycleItrBitsPerMin": 0.04479574555996013,
+      "itrBitsPerSelection": 0.00671936183399402,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.1,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 91.9918,
+      "n": 29,
+      "correct": 11,
+      "accuracy": 0.3793103448275862,
+      "balancedAccuracy": 0.38518518518518513,
+      "perClassAccuracyBySlot": [
+        0.0,
+        0.6,
+        0.5555555555555556
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          0,
+          3,
+          7
+        ],
+        [
+          1,
+          6,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.1,
+      "meanComputeMs": 1.5132689655172413,
+      "p90ComputeMs": 2.00146,
+      "decisionOnlyItrBitsPerMin": 0.3665106454905829,
+      "m6Like9sCycleItrBitsPerMin": 0.04479574555996013,
+      "itrBitsPerSelection": 0.00671936183399402,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.3,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 81.5887,
+      "n": 29,
+      "correct": 11,
+      "accuracy": 0.3793103448275862,
+      "balancedAccuracy": 0.38518518518518513,
+      "perClassAccuracyBySlot": [
+        0.0,
+        0.6,
+        0.5555555555555556
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          0,
+          4,
+          6
+        ],
+        [
+          1,
+          6,
+          3
+        ],
+        [
+          0,
+          4,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.3,
+      "meanComputeMs": 1.723862068965517,
+      "p90ComputeMs": 2.2581999999999995,
+      "decisionOnlyItrBitsPerMin": 0.3101243923381855,
+      "m6Like9sCycleItrBitsPerMin": 0.04479574555996013,
+      "itrBitsPerSelection": 0.00671936183399402,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.5,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 97.8288,
+      "n": 29,
+      "correct": 10,
+      "accuracy": 0.3448275862068966,
+      "balancedAccuracy": 0.35185185185185186,
+      "perClassAccuracyBySlot": [
+        0.0,
+        0.5,
+        0.5555555555555556
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          0,
+          4,
+          6
+        ],
+        [
+          1,
+          5,
+          4
+        ],
+        [
+          0,
+          4,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.5,
+      "meanComputeMs": 1.6777586206896553,
+      "p90ComputeMs": 2.0225199999999997,
+      "decisionOnlyItrBitsPerMin": 0.017058436573362812,
+      "m6Like9sCycleItrBitsPerMin": 0.0028430727622271354,
+      "itrBitsPerSelection": 0.0004264609143340703,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.7,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 31.1814,
+      "n": 29,
+      "correct": 24,
+      "accuracy": 0.8275862068965517,
+      "balancedAccuracy": 0.825925925925926,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.9,
+        0.7777777777777778
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          1,
+          1
+        ],
+        [
+          1,
+          9,
+          0
+        ],
+        [
+          2,
+          0,
+          7
+        ]
+      ],
+      "meanEvidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.7,
+      "meanComputeMs": 0.3133862068965517,
+      "p90ComputeMs": 0.43757999999999997,
+      "decisionOnlyItrBitsPerMin": 64.23016006096107,
+      "m6Like9sCycleItrBitsPerMin": 4.9956791158525276,
+      "itrBitsPerSelection": 0.7493518673778791,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.75,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 33.617,
+      "n": 29,
+      "correct": 25,
+      "accuracy": 0.8620689655172413,
+      "balancedAccuracy": 0.8592592592592593,
+      "perClassAccuracyBySlot": [
+        0.8,
+        1.0,
+        0.7777777777777778
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          1,
+          1
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          2,
+          0,
+          7
+        ]
+      ],
+      "meanEvidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.75,
+      "meanComputeMs": 0.37464482758620693,
+      "p90ComputeMs": 0.48346,
+      "decisionOnlyItrBitsPerMin": 69.45894732850219,
+      "m6Like9sCycleItrBitsPerMin": 5.7882456107085165,
+      "itrBitsPerSelection": 0.8682368416062775,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.8,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 37.5153,
+      "n": 29,
+      "correct": 20,
+      "accuracy": 0.6896551724137931,
+      "balancedAccuracy": 0.6814814814814815,
+      "perClassAccuracyBySlot": [
+        0.6,
+        1.0,
+        0.4444444444444444
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          4,
+          0
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      "meanEvidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.8,
+      "meanComputeMs": 0.37247931034482756,
+      "p90ComputeMs": 0.48702,
+      "decisionOnlyItrBitsPerMin": 28.57849286105687,
+      "m6Like9sCycleItrBitsPerMin": 2.5403104765383886,
+      "itrBitsPerSelection": 0.38104657148075827,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.85,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 42.3755,
+      "n": 29,
+      "correct": 22,
+      "accuracy": 0.7586206896551724,
+      "balancedAccuracy": 0.7518518518518519,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.9,
+        0.5555555555555556
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          2,
+          0
+        ],
+        [
+          0,
+          9,
+          1
+        ],
+        [
+          3,
+          1,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.85,
+      "meanComputeMs": 0.40260344827586203,
+      "p90ComputeMs": 0.49716,
+      "decisionOnlyItrBitsPerMin": 38.5592950749802,
+      "m6Like9sCycleItrBitsPerMin": 3.641711201525908,
+      "itrBitsPerSelection": 0.5462566802288862,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.9,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 47.6293,
+      "n": 29,
+      "correct": 23,
+      "accuracy": 0.7931034482758621,
+      "balancedAccuracy": 0.7814814814814816,
+      "perClassAccuracyBySlot": [
+        0.9,
+        1.0,
+        0.4444444444444444
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          9,
+          0,
+          1
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          4,
+          1,
+          4
+        ]
+      ],
+      "meanEvidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.9,
+      "meanComputeMs": 0.5058103448275862,
+      "p90ComputeMs": 0.6574799999999998,
+      "decisionOnlyItrBitsPerMin": 42.83715782954522,
+      "m6Like9sCycleItrBitsPerMin": 4.283715782954522,
+      "itrBitsPerSelection": 0.6425573674431783,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.0,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 59.0218,
+      "n": 29,
+      "correct": 20,
+      "accuracy": 0.6896551724137931,
+      "balancedAccuracy": 0.6777777777777777,
+      "perClassAccuracyBySlot": [
+        0.7,
+        1.0,
+        0.3333333333333333
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          1,
+          2
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          3,
+          3,
+          3
+        ]
+      ],
+      "meanEvidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.0,
+      "meanComputeMs": 0.5106827586206897,
+      "p90ComputeMs": 0.63908,
+      "decisionOnlyItrBitsPerMin": 22.862794288845496,
+      "m6Like9sCycleItrBitsPerMin": 2.5403104765383886,
+      "itrBitsPerSelection": 0.38104657148075827,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.1,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 71.4339,
+      "n": 29,
+      "correct": 22,
+      "accuracy": 0.7586206896551724,
+      "balancedAccuracy": 0.7518518518518519,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.9,
+        0.5555555555555556
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          1,
+          9,
+          0
+        ],
+        [
+          3,
+          1,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.1,
+      "meanComputeMs": 0.5360896551724138,
+      "p90ComputeMs": 0.6584,
+      "decisionOnlyItrBitsPerMin": 29.79581892157561,
+      "m6Like9sCycleItrBitsPerMin": 3.641711201525908,
+      "itrBitsPerSelection": 0.5462566802288862,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.3,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 86.8382,
+      "n": 29,
+      "correct": 22,
+      "accuracy": 0.7586206896551724,
+      "balancedAccuracy": 0.7555555555555555,
+      "perClassAccuracyBySlot": [
+        0.6,
+        1.0,
+        0.6666666666666666
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          0,
+          4
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          1,
+          2,
+          6
+        ]
+      ],
+      "meanEvidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.3,
+      "meanComputeMs": 1.488996551724138,
+      "p90ComputeMs": 2.0963,
+      "decisionOnlyItrBitsPerMin": 25.211846779794747,
+      "m6Like9sCycleItrBitsPerMin": 3.641711201525908,
+      "itrBitsPerSelection": 0.5462566802288862,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "B2",
+      "decoder": "TDCA",
+      "evidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.5,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 3, 4, 5, 7]",
+      "modelFitMsThisWindow": 111.4033,
+      "n": 29,
+      "correct": 24,
+      "accuracy": 0.8275862068965517,
+      "balancedAccuracy": 0.825925925925926,
+      "perClassAccuracyBySlot": [
+        0.7,
+        1.0,
+        0.7777777777777778
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          0,
+          3
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          2,
+          0,
+          7
+        ]
+      ],
+      "meanEvidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.5,
+      "meanComputeMs": 1.3883931034482757,
+      "p90ComputeMs": 1.5698,
+      "decisionOnlyItrBitsPerMin": 29.974074695115164,
+      "m6Like9sCycleItrBitsPerMin": 4.9956791158525276,
+      "itrBitsPerSelection": 0.7493518673778791,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.7,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 30,
+      "correct": 16,
+      "accuracy": 0.5333333333333333,
+      "balancedAccuracy": 0.5333333333333333,
+      "perClassAccuracyBySlot": [
+        0.6,
+        0.7,
+        0.3
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          2,
+          2
+        ],
+        [
+          2,
+          7,
+          1
+        ],
+        [
+          3,
+          4,
+          3
+        ]
+      ],
+      "meanEvidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.7,
+      "meanComputeMs": 2.68152,
+      "p90ComputeMs": 3.49213,
+      "decisionOnlyItrBitsPerMin": 10.414645891958797,
+      "m6Like9sCycleItrBitsPerMin": 0.8100280138190175,
+      "itrBitsPerSelection": 0.12150420207285262,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.75,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 30,
+      "correct": 18,
+      "accuracy": 0.6,
+      "balancedAccuracy": 0.6,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.7,
+        0.3
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          2,
+          7,
+          1
+        ],
+        [
+          4,
+          3,
+          3
+        ]
+      ],
+      "meanEvidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.75,
+      "meanComputeMs": 2.52411,
+      "p90ComputeMs": 3.15181,
+      "decisionOnlyItrBitsPerMin": 17.12095250131899,
+      "m6Like9sCycleItrBitsPerMin": 1.4267460417765825,
+      "itrBitsPerSelection": 0.21401190626648736,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.8,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 30,
+      "correct": 20,
+      "accuracy": 0.6666666666666666,
+      "balancedAccuracy": 0.6666666666666666,
+      "perClassAccuracyBySlot": [
+        0.6,
+        0.8,
+        0.6
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          0,
+          4
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          2,
+          2,
+          6
+        ]
+      ],
+      "meanEvidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.8,
+      "meanComputeMs": 2.00353,
+      "p90ComputeMs": 2.2863,
+      "decisionOnlyItrBitsPerMin": 24.999999999999993,
+      "m6Like9sCycleItrBitsPerMin": 2.222222222222222,
+      "itrBitsPerSelection": 0.33333333333333326,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.85,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 30,
+      "correct": 24,
+      "accuracy": 0.8,
+      "balancedAccuracy": 0.8000000000000002,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.8,
+        0.8
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          2,
+          8,
+          0
+        ],
+        [
+          1,
+          1,
+          8
+        ]
+      ],
+      "meanEvidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.85,
+      "meanComputeMs": 2.5979900000000002,
+      "p90ComputeMs": 3.696770000000001,
+      "decisionOnlyItrBitsPerMin": 46.802428647091325,
+      "m6Like9sCycleItrBitsPerMin": 4.420229372225291,
+      "itrBitsPerSelection": 0.6630344058337938,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.9,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 30,
+      "correct": 27,
+      "accuracy": 0.9,
+      "balancedAccuracy": 0.9,
+      "perClassAccuracyBySlot": [
+        1.0,
+        0.9,
+        0.8
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          1,
+          9,
+          0
+        ],
+        [
+          2,
+          0,
+          8
+        ]
+      ],
+      "meanEvidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.9,
+      "meanComputeMs": 2.3526066666666665,
+      "p90ComputeMs": 2.7289800000000004,
+      "decisionOnlyItrBitsPerMin": 67.73112714212499,
+      "m6Like9sCycleItrBitsPerMin": 6.773112714212499,
+      "itrBitsPerSelection": 1.0159669071318749,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.0,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 30,
+      "correct": 27,
+      "accuracy": 0.9,
+      "balancedAccuracy": 0.9,
+      "perClassAccuracyBySlot": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          9,
+          0,
+          1
+        ],
+        [
+          0,
+          9,
+          1
+        ],
+        [
+          0,
+          1,
+          9
+        ]
+      ],
+      "meanEvidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.0,
+      "meanComputeMs": 2.8904566666666667,
+      "p90ComputeMs": 3.78317,
+      "decisionOnlyItrBitsPerMin": 60.958014427912495,
+      "m6Like9sCycleItrBitsPerMin": 6.773112714212499,
+      "itrBitsPerSelection": 1.0159669071318749,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.1,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 30,
+      "correct": 25,
+      "accuracy": 0.8333333333333334,
+      "balancedAccuracy": 0.8333333333333334,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.9,
+        0.8
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          0,
+          9,
+          1
+        ],
+        [
+          1,
+          1,
+          8
+        ]
+      ],
+      "meanEvidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.1,
+      "meanComputeMs": 2.7725133333333334,
+      "p90ComputeMs": 3.74158,
+      "decisionOnlyItrBitsPerMin": 41.905822494880105,
+      "m6Like9sCycleItrBitsPerMin": 5.121822749374235,
+      "itrBitsPerSelection": 0.7682734124061353,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.3,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 30,
+      "correct": 28,
+      "accuracy": 0.9333333333333333,
+      "balancedAccuracy": 0.9333333333333332,
+      "perClassAccuracyBySlot": [
+        0.9,
+        1.0,
+        0.9
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          9,
+          0,
+          1
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          1,
+          0,
+          9
+        ]
+      ],
+      "meanEvidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.3,
+      "meanComputeMs": 2.9429133333333337,
+      "p90ComputeMs": 3.6246100000000006,
+      "decisionOnlyItrBitsPerMin": 53.766299955372375,
+      "m6Like9sCycleItrBitsPerMin": 7.766243326887121,
+      "itrBitsPerSelection": 1.1649364990330682,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.5,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"decoder\":\"FBCCA\",\"filterVariant\":\"three-band\",\"harmonics\":3}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 0.0,
+      "n": 30,
+      "correct": 28,
+      "accuracy": 0.9333333333333333,
+      "balancedAccuracy": 0.9333333333333332,
+      "perClassAccuracyBySlot": [
+        0.9,
+        1.0,
+        0.9
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          9,
+          0,
+          1
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          1,
+          0,
+          9
+        ]
+      ],
+      "meanEvidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.5,
+      "meanComputeMs": 2.7870566666666665,
+      "p90ComputeMs": 3.6793400000000003,
+      "decisionOnlyItrBitsPerMin": 46.59745996132273,
+      "m6Like9sCycleItrBitsPerMin": 7.766243326887121,
+      "itrBitsPerSelection": 1.1649364990330682,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.7,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 61.8711,
+      "n": 30,
+      "correct": 10,
+      "accuracy": 0.3333333333333333,
+      "balancedAccuracy": 0.3333333333333333,
+      "perClassAccuracyBySlot": [
+        0.5,
+        0.5,
+        0.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          5,
+          4,
+          1
+        ],
+        [
+          4,
+          5,
+          1
+        ],
+        [
+          5,
+          5,
+          0
+        ]
+      ],
+      "meanEvidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.7,
+      "meanComputeMs": 1.53904,
+      "p90ComputeMs": 2.00287,
+      "decisionOnlyItrBitsPerMin": -1.9032394707859828e-14,
+      "m6Like9sCycleItrBitsPerMin": -1.4802973661668755e-15,
+      "itrBitsPerSelection": -2.220446049250313e-16,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.75,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 67.2208,
+      "n": 30,
+      "correct": 15,
+      "accuracy": 0.5,
+      "balancedAccuracy": 0.5,
+      "perClassAccuracyBySlot": [
+        0.6,
+        0.4,
+        0.5
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          2,
+          2
+        ],
+        [
+          4,
+          4,
+          2
+        ],
+        [
+          3,
+          2,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.75,
+      "meanComputeMs": 1.32731,
+      "p90ComputeMs": 1.53796,
+      "decisionOnlyItrBitsPerMin": 6.797000057692486,
+      "m6Like9sCycleItrBitsPerMin": 0.5664166714743738,
+      "itrBitsPerSelection": 0.08496250072115608,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.8,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 54.9159,
+      "n": 30,
+      "correct": 18,
+      "accuracy": 0.6,
+      "balancedAccuracy": 0.6,
+      "perClassAccuracyBySlot": [
+        0.6,
+        0.7,
+        0.5
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          2,
+          2
+        ],
+        [
+          2,
+          7,
+          1
+        ],
+        [
+          3,
+          2,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.8,
+      "meanComputeMs": 1.1246533333333335,
+      "p90ComputeMs": 1.31342,
+      "decisionOnlyItrBitsPerMin": 16.050892969986553,
+      "m6Like9sCycleItrBitsPerMin": 1.4267460417765825,
+      "itrBitsPerSelection": 0.21401190626648736,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.85,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 56.4623,
+      "n": 30,
+      "correct": 14,
+      "accuracy": 0.4666666666666667,
+      "balancedAccuracy": 0.4666666666666666,
+      "perClassAccuracyBySlot": [
+        0.3,
+        0.6,
+        0.5
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          3,
+          5,
+          2
+        ],
+        [
+          2,
+          6,
+          2
+        ],
+        [
+          2,
+          3,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.85,
+      "meanComputeMs": 1.4239766666666667,
+      "p90ComputeMs": 2.00393,
+      "decisionOnlyItrBitsPerMin": 3.87088485220137,
+      "m6Like9sCycleItrBitsPerMin": 0.36558356937457387,
+      "itrBitsPerSelection": 0.05483753540618608,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.9,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 67.5376,
+      "n": 30,
+      "correct": 20,
+      "accuracy": 0.6666666666666666,
+      "balancedAccuracy": 0.6666666666666666,
+      "perClassAccuracyBySlot": [
+        0.7,
+        0.8,
+        0.5
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          2,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          3,
+          2,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.9,
+      "meanComputeMs": 1.3467366666666665,
+      "p90ComputeMs": 1.66493,
+      "decisionOnlyItrBitsPerMin": 22.222222222222218,
+      "m6Like9sCycleItrBitsPerMin": 2.222222222222222,
+      "itrBitsPerSelection": 0.33333333333333326,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.0,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 58.1219,
+      "n": 30,
+      "correct": 20,
+      "accuracy": 0.6666666666666666,
+      "balancedAccuracy": 0.6666666666666666,
+      "perClassAccuracyBySlot": [
+        0.7,
+        0.7,
+        0.6
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          3,
+          0
+        ],
+        [
+          3,
+          7,
+          0
+        ],
+        [
+          2,
+          2,
+          6
+        ]
+      ],
+      "meanEvidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.0,
+      "meanComputeMs": 1.6361366666666666,
+      "p90ComputeMs": 2.29752,
+      "decisionOnlyItrBitsPerMin": 19.999999999999996,
+      "m6Like9sCycleItrBitsPerMin": 2.222222222222222,
+      "itrBitsPerSelection": 0.33333333333333326,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.1,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 55.7145,
+      "n": 30,
+      "correct": 18,
+      "accuracy": 0.6,
+      "balancedAccuracy": 0.6,
+      "perClassAccuracyBySlot": [
+        0.6,
+        0.7,
+        0.5
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          3,
+          1
+        ],
+        [
+          2,
+          7,
+          1
+        ],
+        [
+          3,
+          2,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.1,
+      "meanComputeMs": 1.4221566666666667,
+      "p90ComputeMs": 1.8628600000000002,
+      "decisionOnlyItrBitsPerMin": 11.673376705444765,
+      "m6Like9sCycleItrBitsPerMin": 1.4267460417765825,
+      "itrBitsPerSelection": 0.21401190626648736,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.3,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 76.0679,
+      "n": 30,
+      "correct": 17,
+      "accuracy": 0.5666666666666667,
+      "balancedAccuracy": 0.5666666666666667,
+      "perClassAccuracyBySlot": [
+        0.6,
+        0.6,
+        0.5
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          2,
+          2
+        ],
+        [
+          3,
+          6,
+          1
+        ],
+        [
+          3,
+          2,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.3,
+      "meanComputeMs": 1.5177866666666666,
+      "p90ComputeMs": 1.8355000000000001,
+      "decisionOnlyItrBitsPerMin": 7.591910446875522,
+      "m6Like9sCycleItrBitsPerMin": 1.0966092867709087,
+      "itrBitsPerSelection": 0.1644913930156363,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.5,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"eTRCA\",\"filterVariant\":\"three-band\"}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 70.9978,
+      "n": 30,
+      "correct": 16,
+      "accuracy": 0.5333333333333333,
+      "balancedAccuracy": 0.5333333333333333,
+      "perClassAccuracyBySlot": [
+        0.6,
+        0.6,
+        0.4
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          4,
+          0
+        ],
+        [
+          3,
+          6,
+          1
+        ],
+        [
+          2,
+          4,
+          4
+        ]
+      ],
+      "meanEvidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.5,
+      "meanComputeMs": 1.4596533333333332,
+      "p90ComputeMs": 1.92012,
+      "decisionOnlyItrBitsPerMin": 4.860168082914105,
+      "m6Like9sCycleItrBitsPerMin": 0.8100280138190175,
+      "itrBitsPerSelection": 0.12150420207285262,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.7,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 17.4252,
+      "n": 30,
+      "correct": 19,
+      "accuracy": 0.6333333333333333,
+      "balancedAccuracy": 0.6333333333333333,
+      "perClassAccuracyBySlot": [
+        0.7,
+        0.8,
+        0.4
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          1,
+          2
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          2,
+          4,
+          4
+        ]
+      ],
+      "meanEvidenceSeconds": 0.2,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.7,
+      "meanComputeMs": 0.38230333333333333,
+      "p90ComputeMs": 0.4679500000000003,
+      "decisionOnlyItrBitsPerMin": 23.161507753764347,
+      "m6Like9sCycleItrBitsPerMin": 1.8014506030705602,
+      "itrBitsPerSelection": 0.270217590460584,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.75,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 22.5682,
+      "n": 30,
+      "correct": 19,
+      "accuracy": 0.6333333333333333,
+      "balancedAccuracy": 0.6333333333333334,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.8,
+        0.3
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          6,
+          3
+        ]
+      ],
+      "meanEvidenceSeconds": 0.25,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.75,
+      "meanComputeMs": 0.4397933333333333,
+      "p90ComputeMs": 0.58713,
+      "decisionOnlyItrBitsPerMin": 21.61740723684672,
+      "m6Like9sCycleItrBitsPerMin": 1.8014506030705602,
+      "itrBitsPerSelection": 0.270217590460584,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.8,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 27.0411,
+      "n": 30,
+      "correct": 18,
+      "accuracy": 0.6,
+      "balancedAccuracy": 0.6,
+      "perClassAccuracyBySlot": [
+        0.6,
+        0.7,
+        0.5
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          4,
+          0
+        ],
+        [
+          1,
+          7,
+          2
+        ],
+        [
+          2,
+          3,
+          5
+        ]
+      ],
+      "meanEvidenceSeconds": 0.3,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.8,
+      "meanComputeMs": 0.28890666666666664,
+      "p90ComputeMs": 0.3200700000000001,
+      "decisionOnlyItrBitsPerMin": 16.050892969986553,
+      "m6Like9sCycleItrBitsPerMin": 1.4267460417765825,
+      "itrBitsPerSelection": 0.21401190626648736,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.85,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 26.6958,
+      "n": 30,
+      "correct": 18,
+      "accuracy": 0.6,
+      "balancedAccuracy": 0.6,
+      "perClassAccuracyBySlot": [
+        0.7,
+        0.8,
+        0.3
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          2,
+          1
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          3,
+          4,
+          3
+        ]
+      ],
+      "meanEvidenceSeconds": 0.35,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.85,
+      "meanComputeMs": 0.4017466666666667,
+      "p90ComputeMs": 0.6293600000000001,
+      "decisionOnlyItrBitsPerMin": 15.106722795281462,
+      "m6Like9sCycleItrBitsPerMin": 1.4267460417765825,
+      "itrBitsPerSelection": 0.21401190626648736,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 0.9,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 29.5963,
+      "n": 30,
+      "correct": 20,
+      "accuracy": 0.6666666666666666,
+      "balancedAccuracy": 0.6666666666666666,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.8,
+        0.4
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          1,
+          8,
+          1
+        ],
+        [
+          1,
+          5,
+          4
+        ]
+      ],
+      "meanEvidenceSeconds": 0.4,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.9,
+      "meanComputeMs": 0.358,
+      "p90ComputeMs": 0.44483000000000006,
+      "decisionOnlyItrBitsPerMin": 22.222222222222218,
+      "m6Like9sCycleItrBitsPerMin": 2.222222222222222,
+      "itrBitsPerSelection": 0.33333333333333326,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.0,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 36.4315,
+      "n": 30,
+      "correct": 16,
+      "accuracy": 0.5333333333333333,
+      "balancedAccuracy": 0.5333333333333333,
+      "perClassAccuracyBySlot": [
+        0.7,
+        0.7,
+        0.2
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          1,
+          2
+        ],
+        [
+          1,
+          7,
+          2
+        ],
+        [
+          5,
+          3,
+          2
+        ]
+      ],
+      "meanEvidenceSeconds": 0.5,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.0,
+      "meanComputeMs": 0.47843,
+      "p90ComputeMs": 0.5948200000000001,
+      "decisionOnlyItrBitsPerMin": 7.2902521243711575,
+      "m6Like9sCycleItrBitsPerMin": 0.8100280138190175,
+      "itrBitsPerSelection": 0.12150420207285262,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.1,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 43.4836,
+      "n": 30,
+      "correct": 19,
+      "accuracy": 0.6333333333333333,
+      "balancedAccuracy": 0.6333333333333333,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.7,
+        0.4
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          2,
+          0
+        ],
+        [
+          2,
+          7,
+          1
+        ],
+        [
+          2,
+          4,
+          4
+        ]
+      ],
+      "meanEvidenceSeconds": 0.6,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.1,
+      "meanComputeMs": 0.48153999999999997,
+      "p90ComputeMs": 0.76886,
+      "decisionOnlyItrBitsPerMin": 14.739141297850036,
+      "m6Like9sCycleItrBitsPerMin": 1.8014506030705602,
+      "itrBitsPerSelection": 0.270217590460584,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.3,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 58.6418,
+      "n": 30,
+      "correct": 14,
+      "accuracy": 0.4666666666666667,
+      "balancedAccuracy": 0.4666666666666666,
+      "perClassAccuracyBySlot": [
+        0.6,
+        0.7,
+        0.1
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          3,
+          1
+        ],
+        [
+          2,
+          7,
+          1
+        ],
+        [
+          5,
+          4,
+          1
+        ]
+      ],
+      "meanEvidenceSeconds": 0.8,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.3,
+      "meanComputeMs": 0.5885166666666667,
+      "p90ComputeMs": 0.7358500000000002,
+      "decisionOnlyItrBitsPerMin": 2.5309631725932036,
+      "m6Like9sCycleItrBitsPerMin": 0.36558356937457387,
+      "itrBitsPerSelection": 0.05483753540618608,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    },
+    {
+      "sessionKey": "S7",
+      "decoder": "TDCA",
+      "evidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionSeconds": 1.5,
+      "selectedConfig": "{\"channels\":[2,3,4,5,7],\"components\":2,\"decoder\":\"TDCA\",\"delayCopies\":6,\"delayStepSamples\":4,\"filterVariant\":\"demean-only\",\"harmonics\":3,\"relativeSwRidge\":0.01}",
+      "channelsUsed": "[2, 4, 7]",
+      "modelFitMsThisWindow": 65.0415,
+      "n": 30,
+      "correct": 16,
+      "accuracy": 0.5333333333333333,
+      "balancedAccuracy": 0.5333333333333333,
+      "perClassAccuracyBySlot": [
+        0.6,
+        0.6,
+        0.4
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          3,
+          1
+        ],
+        [
+          1,
+          6,
+          3
+        ],
+        [
+          4,
+          2,
+          4
+        ]
+      ],
+      "meanEvidenceSeconds": 1.0,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 1.5,
+      "meanComputeMs": 0.56816,
+      "p90ComputeMs": 0.67864,
+      "decisionOnlyItrBitsPerMin": 4.860168082914105,
+      "m6Like9sCycleItrBitsPerMin": 0.8100280138190175,
+      "itrBitsPerSelection": 0.12150420207285262,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle."
+    }
+  ],
+  "dynamic": {
+    "B2": {
+      "n": 29,
+      "correct": 26,
+      "accuracy": 0.896551724137931,
+      "balancedAccuracy": 0.9,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.9,
+        1.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          0,
+          9,
+          1
+        ],
+        [
+          0,
+          0,
+          9
+        ]
+      ],
+      "meanEvidenceSeconds": 0.41206896551724137,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.9120689655172414,
+      "meanComputeMs": 2.5055896551724137,
+      "p90ComputeMs": 3.11946,
+      "decisionOnlyItrBitsPerMin": 65.89516182089787,
+      "m6Like9sCycleItrBitsPerMin": 6.6778813416197265,
+      "itrBitsPerSelection": 1.001682201242959,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle.",
+      "meanCumulativeRecomputeLatencyMs": 11.23263448275862,
+      "p90CumulativeRecomputeLatencyMs": 17.958599999999993,
+      "wrongEarlyStopCount": 2,
+      "maximumEvidenceFallbackCount": 3,
+      "stopFractionsAtOrBeforeEvidenceSeconds": {
+        "0.2": 0.0,
+        "0.25": 0.20689655172413793,
+        "0.3": 0.4482758620689655,
+        "0.4": 0.7586206896551724,
+        "0.5": 0.896551724137931
+      },
+      "policy": {
+        "candidateId": "E200_M175_S2",
+        "minimumEvidenceSeconds": 0.2,
+        "minimumRelativeMargin": 0.175,
+        "requiredConsecutiveTopUpdates": 2,
+        "n": 29,
+        "correct": 28,
+        "accuracy": 0.9655172413793104,
+        "balancedAccuracy": 0.9629629629629629,
+        "perClassAccuracyBySlot": [
+          1.0,
+          0.8888888888888888,
+          1.0
+        ],
+        "confusionMatrixTrueSlotByPredictedSlot": [
+          [
+            10,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            1
+          ],
+          [
+            0,
+            0,
+            10
+          ]
+        ],
+        "meanEvidenceSeconds": 0.4862068965517241,
+        "medianEvidenceSeconds": 0.4,
+        "p90EvidenceSeconds": 0.8399999999999999,
+        "meanNominalLoggedOnsetRelativeDecisionSeconds": 0.9862068965517242,
+        "medianNominalLoggedOnsetRelativeDecisionSeconds": 0.9,
+        "p90NominalLoggedOnsetRelativeDecisionSeconds": 1.3399999999999999,
+        "meanCumulativeRecomputeLatencyMs": 12.340010344827586,
+        "p90CumulativeRecomputeLatencyMs": 20.39594,
+        "stoppedAtOrBefore": {
+          "0.2": 0,
+          "0.25": 5,
+          "0.3": 10,
+          "0.4": 17,
+          "0.5": 18
+        },
+        "forcedToMaximumCount": 1,
+        "wrongEarlyStopCount": 0
+      }
+    },
+    "S7": {
+      "n": 30,
+      "correct": 28,
+      "accuracy": 0.9333333333333333,
+      "balancedAccuracy": 0.9333333333333332,
+      "perClassAccuracyBySlot": [
+        1.0,
+        1.0,
+        0.8
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          1,
+          1,
+          8
+        ]
+      ],
+      "meanEvidenceSeconds": 0.4966666666666667,
+      "nominalLoggedOnsetRelativeDecisionTimeSeconds": 0.9966666666666667,
+      "meanComputeMs": 2.43358,
+      "p90ComputeMs": 3.0193700000000003,
+      "decisionOnlyItrBitsPerMin": 70.12995646352918,
+      "m6Like9sCycleItrBitsPerMin": 7.766243326887121,
+      "itrBitsPerSelection": 1.1649364990330682,
+      "itrFormula": "B = log2(3)+p*log2(p)+(1-p)*log2((1-p)/2); ITR = B*60/T. Decision-only T=nominal logged-onset-relative time; M6-like T=9 s cue+rest+fixed stimulus+post-rest cycle.",
+      "meanCumulativeRecomputeLatencyMs": 12.177033333333332,
+      "p90CumulativeRecomputeLatencyMs": 22.18543,
+      "wrongEarlyStopCount": 1,
+      "maximumEvidenceFallbackCount": 6,
+      "stopFractionsAtOrBeforeEvidenceSeconds": {
+        "0.2": 0.0,
+        "0.25": 0.3,
+        "0.3": 0.4666666666666667,
+        "0.4": 0.6,
+        "0.5": 0.6666666666666666
+      },
+      "policy": {
+        "candidateId": "E200_M175_S2",
+        "minimumEvidenceSeconds": 0.2,
+        "minimumRelativeMargin": 0.175,
+        "requiredConsecutiveTopUpdates": 2,
+        "n": 29,
+        "correct": 28,
+        "accuracy": 0.9655172413793104,
+        "balancedAccuracy": 0.9629629629629629,
+        "perClassAccuracyBySlot": [
+          1.0,
+          0.8888888888888888,
+          1.0
+        ],
+        "confusionMatrixTrueSlotByPredictedSlot": [
+          [
+            10,
+            0,
+            0
+          ],
+          [
+            0,
+            8,
+            1
+          ],
+          [
+            0,
+            0,
+            10
+          ]
+        ],
+        "meanEvidenceSeconds": 0.4862068965517241,
+        "medianEvidenceSeconds": 0.4,
+        "p90EvidenceSeconds": 0.8399999999999999,
+        "meanNominalLoggedOnsetRelativeDecisionSeconds": 0.9862068965517242,
+        "medianNominalLoggedOnsetRelativeDecisionSeconds": 0.9,
+        "p90NominalLoggedOnsetRelativeDecisionSeconds": 1.3399999999999999,
+        "meanCumulativeRecomputeLatencyMs": 12.340010344827586,
+        "p90CumulativeRecomputeLatencyMs": 20.39594,
+        "stoppedAtOrBefore": {
+          "0.2": 0,
+          "0.25": 5,
+          "0.3": 10,
+          "0.4": 17,
+          "0.5": 18
+        },
+        "forcedToMaximumCount": 1,
+        "wrongEarlyStopCount": 0
+      }
+    }
+  },
+  "context": {
+    "B2": {
+      "precomputed_before_eeg": {
+        "trialSeedPairs": 2900,
+        "baselineAccuracy": 0.896551724137931,
+        "contextAccuracy": 0.9010344827586206,
+        "accuracyDelta": 0.004482758620689655,
+        "meanBaselineDecisionSeconds": 0.9120689655172414,
+        "meanContextDecisionSeconds": 0.8857931034482759,
+        "medianContextDecisionSeconds": 0.8,
+        "p90ContextDecisionSeconds": 1.0,
+        "semanticGateActiveRate": 0.35413793103448277,
+        "mappedAssignmentRate": 0.29724137931034483,
+        "authorizationRate": 0.22655172413793104,
+        "authorizedPointCount": 657,
+        "applicationRate": 0.1579310344827586,
+        "meanAppliedGainSeconds": 0.1663755458515284,
+        "stopFractionsAtOrBeforeEvidenceSeconds": {
+          "0.2": 0.0,
+          "0.25": 0.30724137931034484,
+          "0.3": 0.5210344827586207,
+          "0.4": 0.7948275862068965,
+          "0.5": 0.9151724137931034
+        },
+        "wrongEarlyStopCount": 16,
+        "contextCausedErrorCount": 11,
+        "noDelayViolationCount": 0,
+        "alignmentFallbackCount": 165,
+        "ambiguousOrOffRowsInM33Source": 23,
+        "evidenceLabel": "seeded historical transfer simulation; not prospective EEG/context pairing"
+      },
+      "measured_m33_api_latency_sensitivity": {
+        "trialSeedPairs": 2900,
+        "baselineAccuracy": 0.896551724137931,
+        "contextAccuracy": 0.896551724137931,
+        "accuracyDelta": 0.0,
+        "meanBaselineDecisionSeconds": 0.9120689655172414,
+        "meanContextDecisionSeconds": 0.9120689655172414,
+        "medianContextDecisionSeconds": 0.85,
+        "p90ContextDecisionSeconds": 1.5,
+        "semanticGateActiveRate": 0.35413793103448277,
+        "mappedAssignmentRate": 0.29724137931034483,
+        "authorizationRate": 0.0,
+        "authorizedPointCount": 0,
+        "applicationRate": 0.0,
+        "meanAppliedGainSeconds": null,
+        "stopFractionsAtOrBeforeEvidenceSeconds": {
+          "0.2": 0.0,
+          "0.25": 0.20689655172413793,
+          "0.3": 0.4482758620689655,
+          "0.4": 0.7586206896551724,
+          "0.5": 0.896551724137931
+        },
+        "wrongEarlyStopCount": 0,
+        "contextCausedErrorCount": 0,
+        "noDelayViolationCount": 0,
+        "alignmentFallbackCount": 165,
+        "ambiguousOrOffRowsInM33Source": 23,
+        "evidenceLabel": "seeded historical transfer simulation; not prospective EEG/context pairing"
+      }
+    },
+    "S7": {
+      "precomputed_before_eeg": {
+        "trialSeedPairs": 3000,
+        "baselineAccuracy": 0.9333333333333333,
+        "contextAccuracy": 0.934,
+        "accuracyDelta": 0.0006666666666666666,
+        "meanBaselineDecisionSeconds": 0.9966666666666667,
+        "meanContextDecisionSeconds": 0.97295,
+        "medianContextDecisionSeconds": 0.85,
+        "p90ContextDecisionSeconds": 1.5,
+        "semanticGateActiveRate": 0.371,
+        "mappedAssignmentRate": 0.30733333333333335,
+        "authorizationRate": 0.23333333333333334,
+        "authorizedPointCount": 700,
+        "applicationRate": 0.111,
+        "meanAppliedGainSeconds": 0.21366366366366368,
+        "stopFractionsAtOrBeforeEvidenceSeconds": {
+          "0.2": 0.0,
+          "0.25": 0.35233333333333333,
+          "0.3": 0.485,
+          "0.4": 0.6396666666666667,
+          "0.5": 0.709
+        },
+        "wrongEarlyStopCount": 12,
+        "contextCausedErrorCount": 12,
+        "noDelayViolationCount": 0,
+        "alignmentFallbackCount": 191,
+        "ambiguousOrOffRowsInM33Source": 23,
+        "evidenceLabel": "seeded historical transfer simulation; not prospective EEG/context pairing"
+      },
+      "measured_m33_api_latency_sensitivity": {
+        "trialSeedPairs": 3000,
+        "baselineAccuracy": 0.9333333333333333,
+        "contextAccuracy": 0.9333333333333333,
+        "accuracyDelta": 0.0,
+        "meanBaselineDecisionSeconds": 0.9966666666666667,
+        "meanContextDecisionSeconds": 0.9966666666666667,
+        "medianContextDecisionSeconds": 0.875,
+        "p90ContextDecisionSeconds": 1.5,
+        "semanticGateActiveRate": 0.371,
+        "mappedAssignmentRate": 0.30733333333333335,
+        "authorizationRate": 0.0,
+        "authorizedPointCount": 0,
+        "applicationRate": 0.0,
+        "meanAppliedGainSeconds": null,
+        "stopFractionsAtOrBeforeEvidenceSeconds": {
+          "0.2": 0.0,
+          "0.25": 0.3,
+          "0.3": 0.4666666666666667,
+          "0.4": 0.6,
+          "0.5": 0.6666666666666666
+        },
+        "wrongEarlyStopCount": 0,
+        "contextCausedErrorCount": 0,
+        "noDelayViolationCount": 0,
+        "alignmentFallbackCount": 191,
+        "ambiguousOrOffRowsInM33Source": 23,
+        "evidenceLabel": "seeded historical transfer simulation; not prospective EEG/context pairing"
+      }
+    }
+  },
+  "modelFitTimesMsBySessionAndEvidence": {
+    "B2": {
+      "0.2": {
+        "eTRCA": 79.9582,
+        "TDCA": 31.1814
+      },
+      "0.25": {
+        "eTRCA": 71.5678,
+        "TDCA": 33.617
+      },
+      "0.3": {
+        "eTRCA": 74.2081,
+        "TDCA": 37.5153
+      },
+      "0.35": {
+        "eTRCA": 66.6094,
+        "TDCA": 42.3755
+      },
+      "0.4": {
+        "eTRCA": 78.3809,
+        "TDCA": 47.6293
+      },
+      "0.5": {
+        "eTRCA": 68.9519,
+        "TDCA": 59.0218
+      },
+      "0.6": {
+        "eTRCA": 91.9918,
+        "TDCA": 71.4339
+      },
+      "0.8": {
+        "eTRCA": 81.5887,
+        "TDCA": 86.8382
+      },
+      "1.0": {
+        "eTRCA": 97.8288,
+        "TDCA": 111.4033
+      }
+    },
+    "S7": {
+      "0.2": {
+        "eTRCA": 61.8711,
+        "TDCA": 17.4252
+      },
+      "0.25": {
+        "eTRCA": 67.2208,
+        "TDCA": 22.5682
+      },
+      "0.3": {
+        "eTRCA": 54.9159,
+        "TDCA": 27.0411
+      },
+      "0.35": {
+        "eTRCA": 56.4623,
+        "TDCA": 26.6958
+      },
+      "0.4": {
+        "eTRCA": 67.5376,
+        "TDCA": 29.5963
+      },
+      "0.5": {
+        "eTRCA": 58.1219,
+        "TDCA": 36.4315
+      },
+      "0.6": {
+        "eTRCA": 55.7145,
+        "TDCA": 43.4836
+      },
+      "0.8": {
+        "eTRCA": 76.0679,
+        "TDCA": 58.6418
+      },
+      "1.0": {
+        "eTRCA": 70.9978,
+        "TDCA": 65.0415
+      }
+    }
+  },
+  "rawSourceHashesAfter": {
+    "A": "35d30ea8ba92f36acf04f32970cc310c1217bd890fb7b7b817de013e5f69e568",
+    "B1": "4a117b119bf631ff39d09a28d70792ad990167e6fe6c75e4b5355f851266dac2",
+    "B2": "4b6da19af61ead8bd49bc298054fa53d2c24da9a44348439af43367b847cc176",
+    "S7": "425cca80fc0cf08129f192bbc83a653391e9652d6c184e153d46c52cba2f200b"
+  },
+  "rawSourceHashesBefore": {
+    "A": "35d30ea8ba92f36acf04f32970cc310c1217bd890fb7b7b817de013e5f69e568",
+    "B1": "4a117b119bf631ff39d09a28d70792ad990167e6fe6c75e4b5355f851266dac2",
+    "B2": "4b6da19af61ead8bd49bc298054fa53d2c24da9a44348439af43367b847cc176",
+    "S7": "425cca80fc0cf08129f192bbc83a653391e9652d6c184e153d46c52cba2f200b"
+  },
+  "rawSourceHashesMatchManifest": true,
+  "protocolSha256": "e17f0d8c8ab52183ce5758da28bb7825ddb1ad36b6240c4f7339fe47de2510a3",
+  "pipelineFreezeSha256": "ba0704da500c97a3a4155dbd77d1f8e16f436cd3dc990acf65348893ef50f20f",
+  "startedAtUtc": "2026-10-03T21:18:47Z",
+  "finishedAtUtc": "2026-10-03T21:19:02Z",
+  "frequencyMapping": {
+    "slot0": 7.2,
+    "slot1": 9.0,
+    "slot2": 12.0
+  },
+  "timingBoundary": "All decision times are nominal logged-onset-relative using the software event-to-sample estimate; physical optical onset and hardware anchor are unverified."
+}

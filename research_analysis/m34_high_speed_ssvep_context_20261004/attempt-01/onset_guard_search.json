@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "selectionSession": "B1",
+  "reportedButNotSelectedSession": "A",
+  "decoder": "existing default FBCCA, 5 channels, 3 harmonics",
+  "selectionRule": "Using the baseline 5-channel/H=3 FBCCA path on Dev B1, choose the guard with the highest mean balanced accuracy across 0.30, 0.40, and 0.50 s. Break ties by higher mean balanced accuracy over all fixed windows, then by the shorter guard. A metrics are reported but do not select the guard.",
+  "candidates": [
+    {
+      "guardSeconds": 0.5,
+      "devMeanBalancedAccuracyAt030405": 0.8592592592592593,
+      "devMeanBalancedAccuracyAllWindows": 0.8526748971193414,
+      "devAccuracyAt030405": {
+        "0.3": 0.7931034482758621,
+        "0.4": 0.896551724137931,
+        "0.5": 0.896551724137931
+      }
+    },
+    {
+      "guardSeconds": 0.4,
+      "devMeanBalancedAccuracyAt030405": 0.8061728395061728,
+      "devMeanBalancedAccuracyAllWindows": 0.8032921810699588,
+      "devAccuracyAt030405": {
+        "0.3": 0.6896551724137931,
+        "0.4": 0.8275862068965517,
+        "0.5": 0.896551724137931
+      }
+    },
+    {
+      "guardSeconds": 0.3,
+      "devMeanBalancedAccuracyAt030405": 0.5456790123456791,
+      "devMeanBalancedAccuracyAllWindows": 0.5946502057613169,
+      "devAccuracyAt030405": {
+        "0.3": 0.41379310344827586,
+        "0.4": 0.5862068965517241,
+        "0.5": 0.6206896551724138
+      }
+    },
+    {
+      "guardSeconds": 0.25,
+      "devMeanBalancedAccuracyAt030405": 0.38518518518518513,
+      "devMeanBalancedAccuracyAllWindows": 0.49506172839506174,
+      "devAccuracyAt030405": {
+        "0.3": 0.2413793103448276,
+        "0.4": 0.3448275862068966,
+        "0.5": 0.5517241379310345
+      }
+    },
+    {
+      "guardSeconds": 0.1,
+      "devMeanBalancedAccuracyAt030405": 0.35061728395061725,
+      "devMeanBalancedAccuracyAllWindows": 0.46090534979423875,
+      "devAccuracyAt030405": {
+        "0.3": 0.4482758620689655,
+        "0.4": 0.3103448275862069,
+        "0.5": 0.27586206896551724
+      }
+    },
+    {
+      "guardSeconds": 0.2,
+      "devMeanBalancedAccuracyAt030405": 0.32839506172839505,
+      "devMeanBalancedAccuracyAllWindows": 0.47489711934156376,
+      "devAccuracyAt030405": {
+        "0.3": 0.2413793103448276,
+        "0.4": 0.3103448275862069,
+        "0.5": 0.41379310344827586
+      }
+    },
+    {
+      "guardSeconds": 0.15,
+      "devMeanBalancedAccuracyAt030405": 0.3049382716049383,
+      "devMeanBalancedAccuracyAllWindows": 0.48395061728395056,
+      "devAccuracyAt030405": {
+        "0.3": 0.3448275862068966,
+        "0.4": 0.1724137931034483,
+        "0.5": 0.3793103448275862
+      }
+    }
+  ],
+  "selectedGuardSeconds": 0.5,
+  "note": "This is a nominal software event-to-sample guard, not a physical visual latency measurement."
+}

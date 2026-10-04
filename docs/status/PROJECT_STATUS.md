@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-10-03
+Last updated: 2026-10-04
 
 ## Overall Phase
 
@@ -17,6 +17,8 @@ Pre-live operational state: **PRE-LIVE BASELINE FROZEN — READY FOR PHYSICAL VA
 M30/M31/M32 software research track: **COMPLETE WITH REPORTED LIMITATIONS** as of 2026-10-03. The selectively pushed checkpoint and full evidence are recorded in [the final handoff](../agent/m30_m31_longrun_20261003/FINAL_HANDOFF.md). M30 remains exploratory historical EEG transfer simulation with no positive-Context condition passing the zero-wrong-stop safety gate; M31 remains software-only with weak ambiguity recognition and dispatch disabled; M32's CLI/runbook are ready for human review, which has not been performed. No Quest, ND8, COM11, live EEG, raw EEG modification, physical robot, or real VLA dispatch was used. This software research track does not change the separate M19 physical validation boundary.
 
 M33 Semantic Context repair: **SOFTWARE CHANGES AND FOCUSED VALIDATION COMPLETE WITH HELD-OUT / REPEATABILITY LIMITATIONS** as of 2026-10-03. The shared M30/M32 engine reasons over ordered task state, degrades incompatible relations per candidate, and uses a train/dev-only high-precision Context gate. Its frozen gate achieved 95.24% train/dev active precision at 26.25% coverage; the one-shot held-out result was 94.12% at 36.96% coverage and was not retuned. The M25/M23 historical replay had zero wrong early stops and zero no-delay violations, but also zero Context-applied stops or measured gain. Raw model ranking/q repeatability remains variable; same-process exact-input results are memoized in memory for stable M32 Undo/Reset. See the [M33 final report](../../research_analysis/m33_task_state_context_fix_20261003/attempt-01/M33_FINAL_REPORT.md). M33 is analysis-only and does not change the M19 Quest/ND8 validation boundary.
+
+M34 high-speed SSVEP / Context analysis: **SOFTWARE ANALYSIS COMPLETE WITH RELIABILITY AND TRANSFER LIMITATIONS** as of 2026-10-04. The 118 usable historical trials were split by session into A train, B1 dev, B2 primary heldout, and separate S7 stress heldout. The existing FBCCA baseline reproduced its recorded A/B1 results; a bounded FBCCA/eTRCA/TDCA comparison and DEV-only dynamic stop were frozen before one B2/S7 evaluation. FBCCA reached 89.7% at 0.40 s on B2 and 90.0% at 0.40/0.50 s on S7; no heldout reached 95%. A seeded historical Context transfer simulation accelerated some pairings into ≤0.30 s, but caused wrong early stops, so no safe Context acceleration claim is made. Further tuning on the already-used heldout sessions would invalidate the protocol; prospective EEG, real Context pairing, and physical timing evidence are required for stronger claims. Raw EEG remains external and read-only. See the [M34 final report](../../research_analysis/m34_high_speed_ssvep_context_20261004/attempt-01/M34_FINAL_REPORT.md). This analysis does not change M19 as the active operational milestone or authorize Quest/ND8/COM11 use.
 
 The real-world Passthrough / Quest Camera / YOLO / StableTarget / EnvironmentRaycast route is a completed capability and future extension. It is preserved, but is not the current research benchmark and should not be revalidated by default.
 

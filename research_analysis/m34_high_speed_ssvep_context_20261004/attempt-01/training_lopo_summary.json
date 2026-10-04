@@ -1,0 +1,296 @@
+{
+  "status": "PASS",
+  "scope": "Train A only. Each test trial was absent from that fold's supervised templates. No B1/B2/S7 labels were used.",
+  "guardSeconds": 0.5,
+  "summaries": [
+    {
+      "sessionKey": "A",
+      "fold": "leave-one-trial-out",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.3,
+      "n": 30,
+      "correct": 20,
+      "accuracy": 0.6666666666666666,
+      "balancedAccuracy": 0.6666666666666666,
+      "perClassAccuracyBySlot": [
+        0.6,
+        0.8,
+        0.6
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          6,
+          3,
+          1
+        ],
+        [
+          2,
+          8,
+          0
+        ],
+        [
+          1,
+          3,
+          6
+        ]
+      ]
+    },
+    {
+      "sessionKey": "A",
+      "fold": "leave-one-trial-out",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 0.5,
+      "n": 30,
+      "correct": 23,
+      "accuracy": 0.7666666666666667,
+      "balancedAccuracy": 0.7666666666666666,
+      "perClassAccuracyBySlot": [
+        0.7,
+        0.8,
+        0.8
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          1,
+          2
+        ],
+        [
+          2,
+          8,
+          0
+        ],
+        [
+          1,
+          1,
+          8
+        ]
+      ]
+    },
+    {
+      "sessionKey": "A",
+      "fold": "leave-one-trial-out",
+      "decoder": "FBCCA",
+      "evidenceSeconds": 1.0,
+      "n": 30,
+      "correct": 30,
+      "accuracy": 1.0,
+      "balancedAccuracy": 1.0,
+      "perClassAccuracyBySlot": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          10,
+          0
+        ],
+        [
+          0,
+          0,
+          10
+        ]
+      ]
+    },
+    {
+      "sessionKey": "A",
+      "fold": "leave-one-trial-out",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.3,
+      "n": 30,
+      "correct": 22,
+      "accuracy": 0.7333333333333333,
+      "balancedAccuracy": 0.7333333333333334,
+      "perClassAccuracyBySlot": [
+        0.7,
+        0.5,
+        1.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          2,
+          1
+        ],
+        [
+          2,
+          5,
+          3
+        ],
+        [
+          0,
+          0,
+          10
+        ]
+      ]
+    },
+    {
+      "sessionKey": "A",
+      "fold": "leave-one-trial-out",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 0.5,
+      "n": 30,
+      "correct": 22,
+      "accuracy": 0.7333333333333333,
+      "balancedAccuracy": 0.7333333333333334,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.6,
+        0.8
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          0,
+          2
+        ],
+        [
+          1,
+          6,
+          3
+        ],
+        [
+          0,
+          2,
+          8
+        ]
+      ]
+    },
+    {
+      "sessionKey": "A",
+      "fold": "leave-one-trial-out",
+      "decoder": "eTRCA",
+      "evidenceSeconds": 1.0,
+      "n": 30,
+      "correct": 23,
+      "accuracy": 0.7666666666666667,
+      "balancedAccuracy": 0.7666666666666666,
+      "perClassAccuracyBySlot": [
+        0.8,
+        0.7,
+        0.8
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          8,
+          1,
+          1
+        ],
+        [
+          0,
+          7,
+          3
+        ],
+        [
+          0,
+          2,
+          8
+        ]
+      ]
+    },
+    {
+      "sessionKey": "A",
+      "fold": "leave-one-trial-out",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.3,
+      "n": 30,
+      "correct": 16,
+      "accuracy": 0.5333333333333333,
+      "balancedAccuracy": 0.5333333333333333,
+      "perClassAccuracyBySlot": [
+        0.7,
+        0.4,
+        0.5
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          7,
+          2,
+          1
+        ],
+        [
+          2,
+          4,
+          4
+        ],
+        [
+          3,
+          2,
+          5
+        ]
+      ]
+    },
+    {
+      "sessionKey": "A",
+      "fold": "leave-one-trial-out",
+      "decoder": "TDCA",
+      "evidenceSeconds": 0.5,
+      "n": 30,
+      "correct": 25,
+      "accuracy": 0.8333333333333334,
+      "balancedAccuracy": 0.8333333333333334,
+      "perClassAccuracyBySlot": [
+        0.9,
+        0.7,
+        0.9
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          9,
+          1,
+          0
+        ],
+        [
+          2,
+          7,
+          1
+        ],
+        [
+          1,
+          0,
+          9
+        ]
+      ]
+    },
+    {
+      "sessionKey": "A",
+      "fold": "leave-one-trial-out",
+      "decoder": "TDCA",
+      "evidenceSeconds": 1.0,
+      "n": 30,
+      "correct": 29,
+      "accuracy": 0.9666666666666667,
+      "balancedAccuracy": 0.9666666666666667,
+      "perClassAccuracyBySlot": [
+        1.0,
+        0.9,
+        1.0
+      ],
+      "confusionMatrixTrueSlotByPredictedSlot": [
+        [
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          9,
+          1
+        ],
+        [
+          0,
+          0,
+          10
+        ]
+      ]
+    }
+  ],
+  "interpretation": "Diagnostic of within-session versus A-to-B1 transfer only; not used to select or report final held-out performance."
+}

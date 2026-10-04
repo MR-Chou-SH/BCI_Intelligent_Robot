@@ -1,0 +1,134 @@
+{
+  "status": "PASS",
+  "checkedAtLocalDate": "2026-10-04",
+  "rawSourcesReadOnly": true,
+  "rawSourceHashesCurrent": {
+    "A": "35d30ea8ba92f36acf04f32970cc310c1217bd890fb7b7b817de013e5f69e568",
+    "B1": "4a117b119bf631ff39d09a28d70792ad990167e6fe6c75e4b5355f851266dac2",
+    "B2": "4b6da19af61ead8bd49bc298054fa53d2c24da9a44348439af43367b847cc176",
+    "S7": "425cca80fc0cf08129f192bbc83a653391e9652d6c184e153d46c52cba2f200b"
+  },
+  "fixedHeldoutRows": 54,
+  "dynamicHeldoutRows": 59,
+  "contextTrialSeedScenarioRows": 11800,
+  "contextAppliedRows": 791,
+  "contextWrongEarlyStopRows": 28,
+  "checks": [
+    {
+      "check": "manifest contains 118 unique usable trials",
+      "passed": true
+    },
+    {
+      "check": "session usable-trial counts match the frozen cohort",
+      "passed": true
+    },
+    {
+      "check": "heldout sessions match the frozen protocol",
+      "passed": true
+    },
+    {
+      "check": "slot-to-frequency mapping is fixed at 7.2/9/12 Hz",
+      "passed": true
+    },
+    {
+      "check": "usable session/trial keys are unique",
+      "passed": true
+    },
+    {
+      "check": "every usable trial remains in its frozen session split",
+      "passed": true
+    },
+    {
+      "check": "all trial labels follow the fixed slot/frequency mapping",
+      "passed": true
+    },
+    {
+      "check": "read-only source hash unchanged for session A",
+      "passed": true
+    },
+    {
+      "check": "read-only source hash unchanged for session B1",
+      "passed": true
+    },
+    {
+      "check": "read-only source hash unchanged for session B2",
+      "passed": true
+    },
+    {
+      "check": "read-only source hash unchanged for session S7",
+      "passed": true
+    },
+    {
+      "check": "official heldout hash record matches the data manifest",
+      "passed": true
+    },
+    {
+      "check": "fixed heldout table has 54 session/decoder/window rows",
+      "passed": true
+    },
+    {
+      "check": "fixed heldout metrics use the expected trial denominator",
+      "passed": true
+    },
+    {
+      "check": "fixed heldout table contains all 1,593 trial-level predictions",
+      "passed": true
+    },
+    {
+      "check": "dynamic heldout table contains 29 B2 and 30 S7 trials",
+      "passed": true
+    },
+    {
+      "check": "dynamic stop schedule and 0.5 s nominal onset guard are consistent",
+      "passed": true
+    },
+    {
+      "check": "Context heldout table has 11,800 unique seeded trial-scenario pairs",
+      "passed": true
+    },
+    {
+      "check": "Context simulation has 100 assignment seeds per real heldout trial",
+      "passed": true
+    },
+    {
+      "check": "wrong early stops occur only on Context-applied rows",
+      "passed": true
+    },
+    {
+      "check": "all Context scenarios preserve the no-delay fallback invariant",
+      "passed": true
+    },
+    {
+      "check": "non-applied Context cases exactly preserve EEG-only output and timing",
+      "passed": true
+    },
+    {
+      "check": "applied Context decisions are authorized and strictly earlier than EEG-only stopping",
+      "passed": true
+    },
+    {
+      "check": "Context gate requires current EEG top agreement and emits that EEG top",
+      "passed": true
+    },
+    {
+      "check": "official final heldout run completed once without retry",
+      "passed": true
+    },
+    {
+      "check": "completion marker row counts match the saved result tables",
+      "passed": true
+    },
+    {
+      "check": "full pipeline freeze predates heldout outcome use",
+      "passed": true
+    },
+    {
+      "check": "all M34 SVG plots are present and closed",
+      "passed": true
+    },
+    {
+      "check": "final report is present with its evidence-boundary review",
+      "passed": true
+    }
+  ]
+}
