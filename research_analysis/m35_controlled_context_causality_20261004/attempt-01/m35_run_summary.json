@@ -1,0 +1,83 @@
+{
+  "developmentContextInducedWrongEarlyStops": 0,
+  "eegOnly": {
+    "A": {
+      "accuracy": 0.9666666666666667,
+      "correct": 29,
+      "meanEvidenceSeconds": 0.5950000000000001,
+      "medianEvidenceSeconds": 0.5,
+      "n": 30,
+      "p90EvidenceSeconds": 1.0
+    },
+    "B1": {
+      "accuracy": 0.9655172413793104,
+      "correct": 28,
+      "meanEvidenceSeconds": 0.4862068965517241,
+      "medianEvidenceSeconds": 0.4,
+      "n": 29,
+      "p90EvidenceSeconds": 0.8399999999999999
+    },
+    "B2": {
+      "accuracy": 0.896551724137931,
+      "correct": 26,
+      "meanEvidenceSeconds": 0.41206896551724137,
+      "medianEvidenceSeconds": 0.35,
+      "n": 29,
+      "p90EvidenceSeconds": 0.5999999999999996
+    },
+    "S7": {
+      "accuracy": 0.9333333333333333,
+      "correct": 28,
+      "meanEvidenceSeconds": 0.4966666666666667,
+      "medianEvidenceSeconds": 0.375,
+      "n": 30,
+      "p90EvidenceSeconds": 1.0
+    }
+  },
+  "figures": [
+    "01_mean_evidence_by_condition.svg",
+    "02_strength_vs_latency_gain.svg",
+    "03_strength_vs_accuracy.svg",
+    "04_strength_vs_wrong_early_stops.svg",
+    "05_strength_vs_fraction_le_300ms.svg",
+    "06_oracle_vs_real_m33_acceleration.svg",
+    "07_representative_trajectories.svg"
+  ],
+  "interpretation": "Controlled mechanistic/oracle replay; not real-time or prospective Context validation.",
+  "m34Reproduction": {
+    "B1": {
+      "matchedClassAndWindow": 29,
+      "n": 29,
+      "selectedScoreAtol": 1e-12,
+      "status": "PASS"
+    },
+    "B2": {
+      "matchedClassAndWindow": 29,
+      "n": 29,
+      "selectedScoreAtol": 1e-12,
+      "status": "PASS"
+    },
+    "S7": {
+      "matchedClassAndWindow": 30,
+      "n": 30,
+      "selectedScoreAtol": 1e-12,
+      "status": "PASS"
+    }
+  },
+  "nBySession": {
+    "A": 30,
+    "B1": 29,
+    "B2": 29,
+    "S7": 30
+  },
+  "posthocContextInducedWrongEarlyStops": 15,
+  "rawInputHashesMatchManifest": true,
+  "selectedPolicy": {
+    "alpha": 0.05,
+    "contextStableUpdates": 4,
+    "marginFloor": 0.1,
+    "selection": "A/B1 only: greatest congruent gain among rules with zero incongruent-induced wrong early stops and no incongruent accuracy loss"
+  },
+  "status": "PASS",
+  "unsafeDevelopmentCandidateContextInducedWrongEarlyStops": 4290
+}

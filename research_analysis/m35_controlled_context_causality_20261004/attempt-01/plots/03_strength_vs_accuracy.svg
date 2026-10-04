@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620">
+<rect width="100%" height="100%" fill="white"/>
+<text x="500.0" y="35" text-anchor="middle" font-family="Arial" font-size="21" font-weight="bold">Context strength vs accuracy</text>
+<line x1="90" y1="535.0" x2="965" y2="535.0" stroke="#ddd"/>
+<text x="81" y="539.0" text-anchor="end" font-family="Arial" font-size="12">0</text>
+<line x1="90" y1="445.0" x2="965" y2="445.0" stroke="#ddd"/>
+<text x="81" y="449.0" text-anchor="end" font-family="Arial" font-size="12">0.2</text>
+<line x1="90" y1="355.0" x2="965" y2="355.0" stroke="#ddd"/>
+<text x="81" y="359.0" text-anchor="end" font-family="Arial" font-size="12">0.4</text>
+<line x1="90" y1="265.0" x2="965" y2="265.0" stroke="#ddd"/>
+<text x="81" y="269.0" text-anchor="end" font-family="Arial" font-size="12">0.6</text>
+<line x1="90" y1="175.0" x2="965" y2="175.0" stroke="#ddd"/>
+<text x="81" y="179.0" text-anchor="end" font-family="Arial" font-size="12">0.8</text>
+<line x1="90" y1="85.0" x2="965" y2="85.0" stroke="#ddd"/>
+<text x="81" y="89.0" text-anchor="end" font-family="Arial" font-size="12">1</text>
+<line x1="90" y1="85" x2="90" y2="535" stroke="#333"/>
+<line x1="90" y1="535" x2="965" y2="535" stroke="#333"/>
+<text x="500.0" y="598" text-anchor="middle" font-family="Arial" font-size="14">q_top</text>
+<text x="20" y="310.0" transform="rotate(-90 20 310.0)" text-anchor="middle" font-family="Arial" font-size="14">Accuracy</text>
+<text x="90.0" y="555" text-anchor="middle" font-family="Arial" font-size="11">0.45</text>
+<text x="177.5" y="555" text-anchor="middle" font-family="Arial" font-size="11">0.50</text>
+<text x="265.0" y="555" text-anchor="middle" font-family="Arial" font-size="11">0.55</text>
+<text x="352.5" y="555" text-anchor="middle" font-family="Arial" font-size="11">0.60</text>
+<text x="440.0" y="555" text-anchor="middle" font-family="Arial" font-size="11">0.65</text>
+<text x="527.5" y="555" text-anchor="middle" font-family="Arial" font-size="11">0.70</text>
+<text x="615.0" y="555" text-anchor="middle" font-family="Arial" font-size="11">0.75</text>
+<text x="702.5" y="555" text-anchor="middle" font-family="Arial" font-size="11">0.80</text>
+<text x="790.0" y="555" text-anchor="middle" font-family="Arial" font-size="11">0.85</text>
+<text x="877.5" y="555" text-anchor="middle" font-family="Arial" font-size="11">0.90</text>
+<text x="965.0" y="555" text-anchor="middle" font-family="Arial" font-size="11">0.95</text>
+<path d="M 90.0 100.3 L 177.5 100.3 L 265.0 100.3 L 352.5 100.3 L 440.0 100.3 L 527.5 100.3 L 615.0 100.3 L 702.5 100.3 L 790.0 100.3 L 877.5 100.3 L 965.0 100.3" fill="none" stroke="#2463a6" stroke-width="3"/>
+<circle cx="90.0" cy="100.3" r="4" fill="#2463a6"/>
+<circle cx="177.5" cy="100.3" r="4" fill="#2463a6"/>
+<circle cx="265.0" cy="100.3" r="4" fill="#2463a6"/>
+<circle cx="352.5" cy="100.3" r="4" fill="#2463a6"/>
+<circle cx="440.0" cy="100.3" r="4" fill="#2463a6"/>
+<circle cx="527.5" cy="100.3" r="4" fill="#2463a6"/>
+<circle cx="615.0" cy="100.3" r="4" fill="#2463a6"/>
+<circle cx="702.5" cy="100.3" r="4" fill="#2463a6"/>
+<circle cx="790.0" cy="100.3" r="4" fill="#2463a6"/>
+<circle cx="877.5" cy="100.3" r="4" fill="#2463a6"/>
+<circle cx="965.0" cy="100.3" r="4" fill="#2463a6"/>
+<line x1="98" y1="100" x2="120" y2="100" stroke="#2463a6" stroke-width="3"/>
+<text x="126" y="105" font-family="Arial" font-size="12">Congruent</text>
+<path d="M 90.0 100.3 L 177.5 100.3 L 265.0 100.3 L 352.5 100.3 L 440.0 100.3 L 527.5 100.3 L 615.0 100.3 L 702.5 100.3 L 790.0 100.3 L 877.5 100.3 L 965.0 100.3" fill="none" stroke="#d05a37" stroke-width="3"/>
+<circle cx="90.0" cy="100.3" r="4" fill="#d05a37"/>
+<circle cx="177.5" cy="100.3" r="4" fill="#d05a37"/>
+<circle cx="265.0" cy="100.3" r="4" fill="#d05a37"/>
+<circle cx="352.5" cy="100.3" r="4" fill="#d05a37"/>
+<circle cx="440.0" cy="100.3" r="4" fill="#d05a37"/>
+<circle cx="527.5" cy="100.3" r="4" fill="#d05a37"/>
+<circle cx="615.0" cy="100.3" r="4" fill="#d05a37"/>
+<circle cx="702.5" cy="100.3" r="4" fill="#d05a37"/>
+<circle cx="790.0" cy="100.3" r="4" fill="#d05a37"/>
+<circle cx="877.5" cy="100.3" r="4" fill="#d05a37"/>
+<circle cx="965.0" cy="100.3" r="4" fill="#d05a37"/>
+<line x1="448" y1="100" x2="470" y2="100" stroke="#d05a37" stroke-width="3"/>
+<text x="476" y="105" font-family="Arial" font-size="12">Incongruent pooled</text>
+</svg>

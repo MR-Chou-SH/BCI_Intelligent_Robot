@@ -1,0 +1,104 @@
+{
+  "limits": [
+    "B2/S7 are M34-consumed sets and are post-hoc only.",
+    "A/B1 alone select Context policy.",
+    "Timing remains nominal software-onset/sample-anchor timing; no physical optical timing verified."
+  ],
+  "m34DynamicReproduction": {
+    "B1": {
+      "matchedClassAndWindow": 29,
+      "n": 29,
+      "selectedScoreAtol": 1e-12,
+      "status": "PASS"
+    },
+    "B2": {
+      "matchedClassAndWindow": 29,
+      "n": 29,
+      "selectedScoreAtol": 1e-12,
+      "status": "PASS"
+    },
+    "S7": {
+      "matchedClassAndWindow": 30,
+      "n": 30,
+      "selectedScoreAtol": 1e-12,
+      "status": "PASS"
+    }
+  },
+  "perSession": {
+    "A": {
+      "accuracy": 0.9666666666666667,
+      "correct": 29,
+      "meanEvidenceSeconds": 0.5950000000000001,
+      "medianEvidenceSeconds": 0.5,
+      "n": 30,
+      "p90EvidenceSeconds": 1.0
+    },
+    "B1": {
+      "accuracy": 0.9655172413793104,
+      "correct": 28,
+      "meanEvidenceSeconds": 0.4862068965517241,
+      "medianEvidenceSeconds": 0.4,
+      "n": 29,
+      "p90EvidenceSeconds": 0.8399999999999999
+    },
+    "B2": {
+      "accuracy": 0.896551724137931,
+      "correct": 26,
+      "meanEvidenceSeconds": 0.41206896551724137,
+      "medianEvidenceSeconds": 0.35,
+      "n": 29,
+      "p90EvidenceSeconds": 0.5999999999999996
+    },
+    "S7": {
+      "accuracy": 0.9333333333333333,
+      "correct": 28,
+      "meanEvidenceSeconds": 0.4966666666666667,
+      "medianEvidenceSeconds": 0.375,
+      "n": 30,
+      "p90EvidenceSeconds": 1.0
+    }
+  },
+  "stack": {
+    "S7CommonStressChannels": [
+      2,
+      4,
+      7
+    ],
+    "channels": [
+      2,
+      3,
+      4,
+      5,
+      7
+    ],
+    "classInvariant": "Every condition emits argmax raw EEG score; Context changes only earlier-stop authorization.",
+    "decoder": "FBCCA-003",
+    "dynamicPolicy": {
+      "id": "E200_M175_S2",
+      "maximumEvidenceSeconds": 1.0,
+      "minimumEvidenceSeconds": 0.2,
+      "minimumRelativeMargin": 0.175,
+      "requiredConsecutiveTopUpdates": 2
+    },
+    "evidenceScheduleSeconds": [
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.5,
+      0.6,
+      0.8,
+      1.0
+    ],
+    "filterVariant": "three-band",
+    "frequencyHzBySlot": [
+      7.2,
+      9.0,
+      12.0
+    ],
+    "guardSeconds": 0.5,
+    "harmonics": 3
+  },
+  "status": "PASS"
+}

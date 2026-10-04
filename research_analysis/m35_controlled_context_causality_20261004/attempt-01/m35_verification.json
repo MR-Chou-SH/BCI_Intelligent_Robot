@@ -1,0 +1,121 @@
+{
+  "checks": [
+    {
+      "detail": "missing=[]",
+      "name": "required_artifacts",
+      "status": "PASS"
+    },
+    {
+      "detail": "8a9e488b61bb312803e313b2d111e7d94440874631fd7b61296a484122be4479",
+      "name": "protocol_copy_hash",
+      "status": "PASS"
+    },
+    {
+      "detail": "b89d3f4f34b154c4a95e6db4433159e28cea724a3410741b11c81633fdafd49c",
+      "name": "analysis_script_hash",
+      "status": "PASS"
+    },
+    {
+      "detail": "all recorded M34 input artifact hashes match",
+      "name": "frozen_m34_artifact_hashes",
+      "status": "PASS"
+    },
+    {
+      "detail": "all four source hashes still match M34 manifest and before/after hashes",
+      "name": "raw_eeg_unchanged",
+      "status": "PASS"
+    },
+    {
+      "detail": "{\"B1\": {\"matchedClassAndWindow\": 29, \"n\": 29, \"selectedScoreAtol\": 1e-12, \"status\": \"PASS\"}, \"B2\": {\"matchedClassAndWindow\": 29, \"n\": 29, \"selectedScoreAtol\": 1e-12, \"status\": \"PASS\"}, \"S7\": {\"matchedClassAndWindow\": 30, \"n\": 30, \"selectedScoreAtol\": 1e-12, \"status\": \"PASS\"}}",
+      "name": "m34_dynamic_reproduction",
+      "status": "PASS"
+    },
+    {
+      "detail": "slot0/1/2 = 7.2/9/12 Hz",
+      "name": "slot_frequency_mapping",
+      "status": "PASS"
+    },
+    {
+      "detail": "rows=4130 expected=4130",
+      "name": "paired_condition_row_count",
+      "status": "PASS"
+    },
+    {
+      "detail": "every emitted class equals raw EEG argmax at the selected evidence point",
+      "name": "context_never_reranks",
+      "status": "PASS"
+    },
+    {
+      "detail": "all controlled priors use q_top grid of 11 strengths and split remainder equally",
+      "name": "symmetric_q_priors",
+      "status": "PASS"
+    },
+    {
+      "detail": "{'A': 1050, 'B1': 1015, 'B2': 1015, 'S7': 1050}",
+      "name": "per_trial_session_counts",
+      "status": "PASS"
+    },
+    {
+      "detail": "True",
+      "name": "neutral_exact_fallback",
+      "status": "PASS"
+    },
+    {
+      "detail": "development induced=0; all delay violations=0; selected={'alpha': 0.05, 'contextStableUpdates': 4, 'marginFloor': 0.1, 'selection': 'A/B1 only: greatest congruent gain among rules with zero incongruent-induced wrong early stops and no incongruent accuracy loss'}",
+      "name": "development_selected_gate_safety",
+      "status": "PASS"
+    },
+    {
+      "detail": "posthoc induced events=15; not used for selection",
+      "name": "posthoc_boundary",
+      "status": "PASS"
+    },
+    {
+      "detail": "saved=4305 expected=4305",
+      "name": "failure_trajectories_saved",
+      "status": "PASS"
+    },
+    {
+      "detail": "candidate rows=105; every candidate covers all q and both wrong classes",
+      "name": "development_candidate_search",
+      "status": "PASS"
+    },
+    {
+      "detail": "rows=80; only A/B1",
+      "name": "guard_grid",
+      "status": "PASS"
+    },
+    {
+      "detail": "oracle summaries=20; stored M33 sessions=B2/S7",
+      "name": "oracle_and_m33_summary",
+      "status": "PASS"
+    },
+    {
+      "detail": "pooled paired strength summaries=22",
+      "name": "paired_statistics",
+      "status": "PASS"
+    },
+    {
+      "detail": "7 SVG files parse as XML",
+      "name": "seven_renderable_figures",
+      "status": "PASS"
+    },
+    {
+      "detail": "all 15 contract questions and the validation boundary are present",
+      "name": "final_report_answers_contract",
+      "status": "PASS"
+    }
+  ],
+  "developmentInducedWrongEarlyStops": 0,
+  "posthocInducedWrongEarlyStops": 15,
+  "rawInputsUnchanged": true,
+  "report": "C:\\Users\\zsh21\\Desktop\\BCI_Intelligent_Robot\\research_analysis\\m35_controlled_context_causality_20261004\\attempt-01\\M35_FINAL_REPORT.md",
+  "rowCounts": {
+    "CONGRUENT_CONTEXT": 1298,
+    "EEG_ONLY": 118,
+    "INCONGRUENT_CONTEXT": 2596,
+    "NEUTRAL_CONTEXT": 118
+  },
+  "status": "PASS",
+  "unsafeDevelopmentCandidateFailureRows": 4290
+}
