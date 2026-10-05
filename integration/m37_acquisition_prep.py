@@ -875,7 +875,6 @@ class M37TrialCoordinator:
         self.machine.begin_trial(row["trialId"])
         self.session.events.append("TRIAL_ATTEMPT_STARTED", sessionId=self.session.session_id, trialId=row["trialId"], attemptId=attempt_id, targetSlot=row["targetSlot"], targetFrequencyHz=row["targetFrequencyHz"], formal=bool(formal))
         try:
-            self.source.wait(REST_SECONDS)
             self._transition("CUE", "CUE_ONSET", targetSlot=row["targetSlot"], targetFrequencyHz=row["targetFrequencyHz"], cueToneHz=SLOT_TONES_HZ[row["targetSlot"]], cueBeepCount=row["targetSlot"] + 1)
             if self.cue is not None:
                 self.cue.target_beep_frequency_hz = SLOT_TONES_HZ[row["targetSlot"]]
@@ -920,8 +919,9 @@ class M37TrialCoordinator:
             self.source.wait(PACKET_SAMPLES / SAMPLE_RATE_HZ, row["targetSlot"])
             anchor = self.source.ring.wait_for_anchor(5.0)
             self.session.events.append("TRIAL_SAMPLE_ANCHOR", sessionId=self.session.session_id, trialId=row["trialId"], attemptId=attempt_id, **anchor, eventSequence=event_sequence["sequence"])
-            self.source.wait(STIMULUS_SECONDS - PACKET_SAMPLES / SAMPLE_RATE_HZ, row["targetSlot"])
-            stop_ns = time.perf_counter_ns() if self.clock is time else self.clock.monotonic_ns()
+            stimulus_deadline_ns = int(onset_ns) + int(STIMULUS_SECONDS * 1_000_000_000)
+            self.source.wait(max(0.0, (stimulus_deadline_ns - self._monotonic_ns()) / 1_000_000_000), row["targetSlot"])
+            stop_ns = self._monotonic_ns()
             self._send_quest("m19_research_stimulus_stop", **identity, slotIndex=row["targetSlot"], frequencyHz=row["targetFrequencyHz"])
             if self.transport is not None:
                 stopped = self._wait_for_quest_event("m19_research_stimulus_stopped", self.stimulus_wait_seconds, identity)

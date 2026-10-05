@@ -1,12 +1,14 @@
 {
-  "completedTrialsPreservedAcrossSyntheticStopRestart": true,
-  "evidence": "integration.test_m37_acquisition_prep.test_mid_epoch_disconnect_is_invalid_without_fabricated_samples",
-  "fakeSamplesAdded": false,
-  "incompleteAttemptMarkedTechnicalInvalid": true,
-  "liveNd8DisconnectAndReopen": "NOT_TESTED",
-  "fakeAdapterImmediateFirstPacket": "PASS",
-  "fakeAdapterAppendOnlyStopRestartOffsets": "PASS",
-  "questDisconnectAndReconnect": "NOT_TESTED",
   "recordType": "m37_disconnect_recovery_validation",
-  "softwareFaultInjection": "PASS"
+  "softwareFaultInjection": "PASS",
+  "evidence": [
+    "integration.test_m37_acquisition_prep.M37AcquisitionPrepTests.test_mid_epoch_disconnect_is_invalid_without_fabricated_samples",
+    "integration.test_m37_acquisition_prep.M37AcquisitionPrepTests.test_fake_nd8_adapter_streams_through_live_source_and_persists_first_packet"
+  ],
+  "completedTrialsPreservedAcrossSyntheticStopRestart": true,
+  "fakeSamplesAdded": false,
+  "liveNd8CleanStopAndReopen": "PASS (30-trial stream closed, then separate 2-trial live stream reopened COM11)",
+  "questDisconnectAndReconnect": "NOT_TESTED (no M19-ready runtime)",
+  "physicalNd8DisconnectInjected": false,
+  "reasonPhysicalDisconnectNotInjected": "No need to interrupt a stable live stream; software fail-safe path covered by targeted synthetic injection."
 }

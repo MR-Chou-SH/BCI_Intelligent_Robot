@@ -1,10 +1,33 @@
 {
-  "activeHardwareStreamsAfterChecks": false,
-  "deviceBatteryLossObserved": "NOT_OBSERVABLE",
-  "nd8HandleOpenAtCloseout": false,
-  "nd8StreamStarted": false,
-  "physicalTriggerOperated": false,
-  "questTelemetry": "NOT_AVAILABLE; TCP probe did not connect",
   "recordType": "m37_device_battery_closeout",
-  "usbOrAdbLeftConnected": false
+  "questTelemetry": "NOT_AVAILABLE",
+  "questTestTrafficActiveAtCloseout": false,
+  "nd8StreamRuns": [
+    {
+      "path": "D:\\EEG_Study\\m37_prospective\\_dummy\\m37_live_pc_auto_20261005T154054",
+      "trials": 30,
+      "closed": true
+    },
+    {
+      "path": "D:\\EEG_Study\\m37_prospective\\_dummy\\m37_live_timingfix_20261005T160041",
+      "trials": 2,
+      "closed": true
+    },
+    {
+      "path": "D:\\EEG_Study\\m37_prospective\\_dummy\\m37_live_final24_20261005T160540",
+      "trials": 24,
+      "closed": true
+    },
+    {
+      "path": "D:\\EEG_Study\\m37_prospective\\_preflight\\attempt_20261005T160232\\nd8_probe",
+      "probeSeconds": 3,
+      "closed": true
+    }
+  ],
+  "nd8HandleOpenAtCloseout": false,
+  "activeHardwareStreamsAfterChecks": false,
+  "com11EnumeratedAfterClose": true,
+  "deviceBatteryLossObserved": "NO LOSS OBSERVED; BATTERY TELEMETRY UNAVAILABLE",
+  "usbOrAdbLeftConnected": false,
+  "physicalTriggerOperated": false
 }

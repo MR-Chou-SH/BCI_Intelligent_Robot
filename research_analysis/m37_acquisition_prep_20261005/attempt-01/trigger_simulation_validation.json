@@ -1,12 +1,16 @@
 {
-  "acceptedTriggerCount": 30,
+  "recordType": "m37_simulated_trigger_validation",
+  "status": "PASS",
+  "acceptedTriggerCount": 24,
+  "completedTrialCount": 24,
+  "duplicateOrStaleTriggerRejectedCount": 1,
   "acceptedTriggerSources": {
-    "pc_simulated_same_handler": 30
+    "pc_simulated_same_handler": 24
   },
   "allInjectedTriggersUsedSharedCoordinatorHandler": true,
-  "completedTrialCount": 30,
-  "duplicateOrStaleTriggerRejectedCount": 1,
+  "sameDownstreamAcceptTriggerHandlerAsQuest": true,
+  "cueEvents": 24,
+  "allThreeCueSlotsAndPitchCodesPresent": true,
   "physicalLaserTriggerTested": false,
-  "recordType": "m37_simulated_trigger_validation",
-  "status": "PASS"
+  "questConnectedDuringLiveDummy": false
 }

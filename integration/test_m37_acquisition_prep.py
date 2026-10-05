@@ -194,6 +194,52 @@ class M37AcquisitionPrepTests(unittest.TestCase):
                 self.assertLess(types.index("STIMULUS_ONSET"), types.index("STIMULUS_OFFSET"))
                 self.assertLess(types.index("STIMULUS_OFFSET"), types.index("TRIAL_FINALIZED"))
 
+    def test_trial_deadline_and_single_intertrial_rest(self):
+        with tempfile.TemporaryDirectory(prefix="m37-timing-contract-") as temporary:
+            root = Path(temporary) / "session"
+            clock = M37SyntheticClock()
+
+            class DelayedAnchorRing(M37PacketRingBuffer):
+                def __init__(self):
+                    super().__init__()
+                    self.source = None
+                    self.delay_once = True
+
+                def wait_for_anchor(self, timeout_seconds=1.0):
+                    if self.delay_once:
+                        self.delay_once = False
+                        self.source.wait(0.1)
+                    return super().wait_for_anchor(timeout_seconds)
+
+            rows = [
+                {"trialId": "m37-timing-001", "sessionId": "m37-dummy", "blockId": "M37", "trialIndex": 1, "targetSlot": 0, "targetFrequencyHz": 7.2, "formal": False},
+                {"trialId": "m37-timing-002", "sessionId": "m37-dummy", "blockId": "M37", "trialIndex": 2, "targetSlot": 1, "targetFrequencyHz": 9.0, "formal": False},
+            ]
+            from integration.m37_acquisition_prep import _canonical_json, _sha256_bytes
+            schedule = {"recordType": "m37_nonformal_dummy_schedule", "protocolVersion": "m37-prospective-acquisition-v1", "seed": 1, "rows": rows}
+            schedule["scheduleSha256"] = _sha256_bytes(_canonical_json(schedule).encode("utf-8"))
+            session = M37Session(root, "m37-timing", load_config(), schedule, monotonic_provider=clock.monotonic_ns)
+            ring = DelayedAnchorRing()
+            source = M37SyntheticPacketSource(ring, clock, root)
+            ring.source = source
+            coordinator = M37TrialCoordinator(session, source, clock=clock, simulated_reaction_seconds=0.0)
+            try:
+                coordinator.run_one(rows[0], simulated_trigger=True)
+                coordinator.run_one(rows[1], simulated_trigger=True)
+            finally:
+                source.close()
+                session.finalize_session("FINALIZED" if len(session.finalized_trial_ids) == 2 else "PAUSED_RESUMABLE")
+
+            events = [json.loads(line) for line in (root / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+            first_onset = next(item for item in events if item.get("eventType") == "STIMULUS_ONSET" and item.get("trialId") == rows[0]["trialId"])
+            first_offset = next(item for item in events if item.get("eventType") == "STIMULUS_OFFSET" and item.get("trialId") == rows[0]["trialId"])
+            first_complete = next(item for item in events if item.get("eventType") == "TRIAL_COMPLETE" and item.get("trialId") == rows[0]["trialId"])
+            next_cue = next(item for item in events if item.get("eventType") == "CUE_ONSET" and item.get("trialId") == rows[1]["trialId"])
+            onset_to_offset = (first_offset["monotonicNs"] - first_onset["softwareOnsetMonotonicNs"]) / 1_000_000_000
+            complete_to_next_cue = (next_cue["monotonicNs"] - first_complete["monotonicNs"]) / 1_000_000_000
+            self.assertAlmostEqual(4.0, onset_to_offset, delta=1e-9, msg="anchor wait must not extend stimulus beyond its onset-based deadline")
+            self.assertAlmostEqual(6.0, complete_to_next_cue, delta=1e-9, msg="each completed trial must have exactly one 6-second intertrial rest")
+
     def test_stop_restart_preserves_completed_trials_and_does_not_overwrite(self):
         with tempfile.TemporaryDirectory(prefix="m37-resume-") as temporary:
             root = Path(temporary) / "session"

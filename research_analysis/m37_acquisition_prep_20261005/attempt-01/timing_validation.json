@@ -1,15 +1,12 @@
 {
-  "allPrepIntervalsPass": true,
-  "allStimulusIntervalsPass": true,
-  "allStimulusOnsetsHavePostOnsetSampleAnchor": true,
-  "interTargetBeepSilenceSeconds": 0.45,
-  "physicalOpticalTimingVerified": false,
-  "prepDurationsObservedSeconds": [
-    1.5
-  ],
-  "preparationSeconds": 1.5,
-  "recordType": "m37_software_timing_validation",
-  "restSeconds": 6.0,
+  "recordType": "m37_live_timing_validation",
+  "sourceType": "live ND8, PC simulated trigger, Quest disconnected",
+  "trialCount": 24,
+  "slotCounts": {
+    "0": 8,
+    "1": 8,
+    "2": 8
+  },
   "slotFrequenciesHz": [
     7.2,
     9.0,
@@ -20,12 +17,50 @@
     880.0,
     1320.0
   ],
-  "sourceType": "synthetic accelerated rehearsal",
-  "stimulusDurationsObservedSeconds": [
-    4.0
-  ],
-  "stimulusSeconds": 4.0,
   "targetBeepSeconds": 0.22,
+  "interTargetBeepSilenceSeconds": 0.45,
   "targetGroupSeparationSeconds": 0.7,
-  "trialCount": 30
+  "preparationSecondsRequested": 1.5,
+  "preparationObservedMinMaxSeconds": [
+    1.5027022,
+    1.5191525
+  ],
+  "preparationSchedulingToleranceSeconds": 0.02,
+  "allPreparationIntervalsPass": true,
+  "stimulusSecondsRequested": 4.0,
+  "onsetToOffsetObservedMinMaxSeconds": [
+    4.0013285,
+    4.0163669
+  ],
+  "stimulusDeadlineToleranceSeconds": 0.02,
+  "allStimulusIntervalsPass": true,
+  "restSecondsRequested": 6.0,
+  "trialCompleteToNextCueObservedMinMaxSeconds": [
+    6.0118029,
+    6.046153
+  ],
+  "finalTrialRestObservedSeconds": 6.0056151,
+  "restSchedulingToleranceSeconds": 0.05,
+  "allIntertrialRestsPass": true,
+  "onsetToPacketAnchorObservedMinMaxSeconds": [
+    0.0072273,
+    0.2081722
+  ],
+  "sampleAnchorsPresentForAllTrials": true,
+  "sampleAnchorPacketLatencyReflects200msPacketization": true,
+  "deviceTimestampFirstSampleAssumed": false,
+  "hardwareExactTimingVerified": false,
+  "physicalOpticalTimingVerified": false,
+  "preFix30LiveRunObservedOnsetToOffsetSeconds": [
+    4.0246313,
+    4.2349155
+  ],
+  "preFix30LiveRunObservedTrialCompleteToNextCueSeconds": [
+    12.0112404,
+    12.0643803
+  ],
+  "timingFixRegressionCommand": "python -B -m unittest integration.test_m37_acquisition_prep.M37AcquisitionPrepTests.test_trial_deadline_and_single_intertrial_rest",
+  "timingFixRegressionResult": "PASS; failed before fix at 4.1 s and 12.0 s, passed after fix",
+  "allPrepIntervalsPass": true,
+  "allStimulusOnsetsHavePostOnsetSampleAnchor": true
 }

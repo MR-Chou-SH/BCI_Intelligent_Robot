@@ -1,27 +1,61 @@
 {
+  "recordType": "m37_preflight_summary",
+  "status": "BLOCKED",
+  "staticStatus": "PASS",
+  "staticChecks": {
+    "configuredNd8PortEnumerated": true,
+    "dataRootParentExists": true,
+    "dataRootParentWritable": true,
+    "diskSpaceSufficient": true,
+    "formalAndDummyRootsSeparate": true,
+    "noStaleSessionLock": true,
+    "python39": true,
+    "questIpRespondsToPing": true,
+    "requiredQuestPortAvailable": true,
+    "serialEnumerationSucceeded": true,
+    "sessionIdSafe": true,
+    "sessionRootUnique": true,
+    "slotFrequencyMappingFrozen": true,
+    "vendorPythonExists": true,
+    "questTcpReadyEventReceived": false,
+    "nd8PortOpenedAndStreamStarted": true
+  },
+  "questProbe": {
+    "status": "NOT_CONNECTED",
+    "readyEventReceived": false,
+    "listenerReadyObserved": true,
+    "peerConnected": false,
+    "port": 11001,
+    "error": "M37Error: Quest did not publish m19_research_ready before the bounded connection timeout"
+  },
+  "nd8Probe": {
+    "status": "PASS",
+    "comPort": "COM11",
+    "packetCount": 16,
+    "rawPacketCount": 16,
+    "channelCount": 8,
+    "sequenceContiguous": true,
+    "sampleIndexesContiguous": true,
+    "closed": true
+  },
   "blockers": [
-    "Quest did not connect and publish m19_research_ready during the bounded 20 s probe.",
-    "ND8 stream probe was not run because automatic approval rejected COM11 open/start; no ND8 handle was opened."
+    "Quest did not publish m19_research_ready during bounded runtime probe; Research APK installation/launch was not verified."
   ],
   "hardwareBoundary": {
-    "decoderEvaluated": false,
-    "eegQualityEvaluated": false,
-    "nd8PortOpened": false,
-    "nd8StreamStarted": false,
+    "questConnected": false,
+    "nd8PortOpened": true,
+    "nd8StreamStarted": true,
+    "nd8StreamClosed": true,
     "physicalLaserTriggerTested": false,
-    "questConnected": false
+    "eegQualityEvaluated": false,
+    "decoderEvaluated": false
   },
-  "note": "Software rehearsal results do not establish live Quest/ND8 readiness.",
-  "recordType": "m37_preflight_summary",
-  "staticChecks": {
-    "configuredComPortEnumerated": true,
-    "dataRootExists": true,
-    "diskFreeGb": 307.73,
-    "frozenSlotMapPass": true,
-    "nd8PortOpenedAndStreamStarted": false,
-    "questTcpReadyEventReceived": false,
-    "runningPython39": true,
-    "vendorPythonExists": true
+  "formalSchedule": {
+    "status": "PASS",
+    "sessionCount": 6,
+    "trialsPerSession": 63,
+    "seed": 37005,
+    "formalSession001Created": false
   },
-  "status": "BLOCKED"
+  "staticChecksExceptHardwareProbePass": true
 }

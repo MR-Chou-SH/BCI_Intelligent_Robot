@@ -1,17 +1,53 @@
 {
-  "allEightChannelsRecorded": true,
-  "allEpochs4500PerChannel": true,
-  "allEpochsHaveAnchor": true,
-  "expectedPostOnsetSamples": 4000,
-  "expectedPreOnsetSamples": 500,
-  "expectedSamplesPerChannel": 4500,
+  "recordType": "m37_live_epoch_shape_audit",
+  "sourceType": "live_nd8",
+  "trialCount": 24,
+  "technicallyCompleteTrials": 24,
   "expectedShape": [
     8,
     4500
   ],
+  "observedShapeCounts": {
+    "8x4500": 24
+  },
+  "expectedSamplesPerChannel": 4500,
+  "preOnsetSamples": {
+    "expected": 500,
+    "observedCounts": {
+      "500": 24
+    }
+  },
+  "postOnsetSamples": {
+    "expected": 4000,
+    "observedCounts": {
+      "4000": 24
+    }
+  },
+  "sampleRateHz": [
+    1000
+  ],
+  "channelIdsInSdkOrder": [
+    "ND8_CH_0",
+    "ND8_CH_1",
+    "ND8_CH_2",
+    "ND8_CH_3",
+    "ND8_CH_4",
+    "ND8_CH_5",
+    "ND8_CH_6",
+    "ND8_CH_7"
+  ],
+  "allEpochFilesExistAndMatchHash": true,
+  "allEightChannelsRecorded": true,
+  "allEpochs4500PerChannel": true,
+  "allEpochsHaveAnchor": true,
   "packetGapCount": 0,
-  "rawContinuousSyntheticDataCopiedToRepository": false,
-  "recordType": "m37_epoch_shape_audit",
-  "sourceType": "synthetic accelerated rehearsal",
-  "trialCount": 30
+  "continuousPacketCount": 1725,
+  "continuousRawPacketLines": 1725,
+  "rawPacketCountMatchesMetadata": true,
+  "packetSequencesContiguous": true,
+  "sampleIndexesContiguous": true,
+  "rawContinuousDataCopiedIntoGitArtifact": false,
+  "epochArraysCopiedIntoGitArtifact": false,
+  "eegQualityEvaluated": false,
+  "decoderEvaluated": false
 }
