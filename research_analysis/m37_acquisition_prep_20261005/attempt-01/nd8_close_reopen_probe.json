@@ -1,0 +1,30 @@
+{
+  "channelCountValidatedByRing": 8,
+  "closed": true,
+  "comPort": "COM11",
+  "continuityStatuses": {
+    "anomaly": 1,
+    "continuous": 14
+  },
+  "decoderEvaluated": false,
+  "eegQualityEvaluated": false,
+  "elapsedSeconds": 4.826,
+  "electrodeContactQualityEvaluated": false,
+  "error": null,
+  "packetCount": 15,
+  "packetMetadataSha256": "ff7085ee76165c488ae343829bb0cfb7964344b2267c9d8e9b8332e47ee3e12e",
+  "rawContinuousSha256": "d3e4e28bc37f52d554f1665ac9884552421d8605350c7706183efe6d939d2a02",
+  "rawPacketCount": 15,
+  "recordType": "m37_nd8_transport_probe",
+  "sampleIndexesContiguous": true,
+  "sampleRange": [
+    0,
+    3000
+  ],
+  "samplesPerPacket": [
+    200
+  ],
+  "sequenceContiguous": true,
+  "status": "PASS",
+  "streamingSecondsRequested": 3.0
+}

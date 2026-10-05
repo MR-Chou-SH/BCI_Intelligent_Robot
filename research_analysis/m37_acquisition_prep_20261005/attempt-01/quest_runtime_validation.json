@@ -1,0 +1,34 @@
+{
+  "recordType": "m37_quest_runtime_validation",
+  "status": "PASS",
+  "observedUtc": "2026-10-05T08:43:41Z",
+  "device": "Meta Quest 3",
+  "transport": {
+    "runtime": "Wi-Fi/LAN TCP",
+    "pcHost": "192.168.43.168",
+    "pcPort": 11001,
+    "readyMessageReceived": true,
+    "readyMessageType": "m19_research_ready",
+    "protocolVersion": 1,
+    "adbDeployment": "Wi-Fi ADB at 192.168.43.110:5555"
+  },
+  "application": {
+    "packageName": "com.samples.passthroughcamera.m37research",
+    "versionName": "0.1",
+    "activity": "com.unity3d.player.UnityPlayerGameActivity",
+    "standaloneLaunchConfirmed": true,
+    "apkPath": "D:\\EEG_Study\\m37_prospective\\_preflight\\quest_builds\\m37_research_20261005.apk",
+    "apkSha256": "99f5926276b2c291b684347f5ffa607411cea713c6752cfed5a9462ef29606af",
+    "interactionMode": "ResearchAcquisitionV1",
+    "scene": "Assets/BCI/ResearchBuild/M37ResearchAcquisition.unity",
+    "showcasePackageReplaced": false
+  },
+  "visualEvidence": {
+    "status": "PASS",
+    "observed": "Three white SSVEP targets, cyan gaze reticle, and the 1.5-second Trigger instruction; no desktop/robot Showcase scene",
+    "screenshotPath": "D:\\EEG_Study\\m37_prospective\\_preflight\\attempt_20261005T164257\\quest_research_ui_trigger_offer.png",
+    "screenshotSha256": "B8E41087F6C42FF18FAA522CB00E4F8E9BB936E19219C1F02B377BC991A43428"
+  },
+  "formalSession001Created": false,
+  "rawEegCopiedToRepository": false
+}

@@ -5,25 +5,42 @@
     "ip": "192.168.43.110",
     "ipRespondedToPing": true,
     "researchReadyEvent": false,
-    "status": "NOT_CONNECTED",
-    "installedPackageVerified": false,
-    "adbOnlineDeviceCount": 0,
+    "historicalResearchReadyEvent": true,
+    "status": "BLOCKED_LATEST_RETEST",
+    "installedPackageVerified": true,
+    "adbOnlineDeviceCount": 1,
     "researchPackage": "com.samples.passthroughcamera.m37research",
     "apkPath": "D:\\EEG_Study\\m37_prospective\\_preflight\\quest_builds\\m37_research_20261005.apk",
     "apkSha256": "99f5926276b2c291b684347f5ffa607411cea713c6752cfed5a9462ef29606af",
-    "apkBuildStatus": "PASS",
+    "apkBuildStatus": "HISTORICAL_PASS; latest rebuild blocked by Unity Licensing Client",
     "pcLanIp": "192.168.43.168",
     "runtimePort": 11001,
-    "observedCurrentScene": "legacy M20 desktop/robot scene (operator confirmed)",
-    "m37ResearchPackageInstalled": false,
-    "adbConnectionIssue": "ADB device list empty; current wireless-debugging port not available to PC client"
+    "observedCurrentScene": "M37 ResearchAcquisitionV1 standalone scene (ADB screenshot verified)",
+    "m37ResearchPackageInstalled": true,
+    "adbConnectionIssue": null,
+    "adbTransport": "Wi-Fi ADB 192.168.43.110:5555; deployment/diagnostics only",
+    "readyMessageProtocolVersion": 1,
+    "screenshotEvidence": "D:\\EEG_Study\\m37_prospective\\_preflight\\attempt_20261005T164257\\quest_research_ui_trigger_offer.png",
+    "latestReadyProbe": {
+      "freshLaunchUiVisible": true,
+      "tcpPeerAccepted": true,
+      "tcpPeer": "192.168.43.110",
+      "readyMessageReceived": false,
+      "rawTcpProbeReceivedApplicationBytes": false,
+      "pythonProbeStatus": "NOT_CONNECTED",
+      "questProcessStoppedAfterChecks": true
+    },
+    "latestSourceFixesNotInInstalledApk": [
+      "publish m19_research_ready on successful transport connection/reconnection",
+      "publish a same-Quest-clock m19_research_stimulus_stopped event at local stimulus stop"
+    ]
   },
   "nd8": {
     "enumerated": true,
     "comPort": "COM11",
     "liveProbeStatus": "PASS",
-    "packetCount": 16,
-    "rawPacketCount": 16,
+    "packetCount": 15,
+    "rawPacketCount": 15,
     "channelCount": 8,
     "samplesPerPacket": [
       200
@@ -31,9 +48,19 @@
     "sequenceContiguous": true,
     "sampleIndexesContiguous": true,
     "streamClosed": true,
+    "latestProbeSampleRange": [0, 3000],
     "eegQualityEvaluated": false
   },
   "vendorPythonPath": "C:\\Users\\zsh21\\.local-tools\\neurodance-sdk-venv\\Scripts\\python.exe",
   "vendorPythonVersion": "3.9",
-  "usbOrPermanentAdbRequiredForRuntime": false
+  "usbOrPermanentAdbRequiredForRuntime": false,
+    "m37PreflightStatus": "HISTORICAL_PASS; latest ready-message retest failed",
+  "questTriggerDummy": {
+    "status": "NOT_YET_PASS",
+    "triggerOfferCount": 2,
+    "acceptedTriggerCount": 0,
+    "completedTrialCount": 0,
+    "technicalInvalidAttemptCount": 2,
+    "operatorGazeActionConfirmed": false
+  }
 }

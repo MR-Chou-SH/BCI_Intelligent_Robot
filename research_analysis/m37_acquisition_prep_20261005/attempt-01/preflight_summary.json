@@ -1,61 +1,89 @@
-{
-  "recordType": "m37_preflight_summary",
-  "status": "BLOCKED",
-  "staticStatus": "PASS",
-  "staticChecks": {
-    "configuredNd8PortEnumerated": true,
-    "dataRootParentExists": true,
-    "dataRootParentWritable": true,
-    "diskSpaceSufficient": true,
-    "formalAndDummyRootsSeparate": true,
-    "noStaleSessionLock": true,
-    "python39": true,
-    "questIpRespondsToPing": true,
-    "requiredQuestPortAvailable": true,
-    "serialEnumerationSucceeded": true,
-    "sessionIdSafe": true,
-    "sessionRootUnique": true,
-    "slotFrequencyMappingFrozen": true,
-    "vendorPythonExists": true,
-    "questTcpReadyEventReceived": false,
-    "nd8PortOpenedAndStreamStarted": true
-  },
-  "questProbe": {
-    "status": "NOT_CONNECTED",
-    "readyEventReceived": false,
-    "listenerReadyObserved": true,
-    "peerConnected": false,
-    "port": 11001,
-    "error": "M37Error: Quest did not publish m19_research_ready before the bounded connection timeout"
-  },
-  "nd8Probe": {
-    "status": "PASS",
-    "comPort": "COM11",
-    "packetCount": 16,
-    "rawPacketCount": 16,
-    "channelCount": 8,
-    "sequenceContiguous": true,
-    "sampleIndexesContiguous": true,
-    "closed": true
-  },
-  "blockers": [
-    "Quest did not publish m19_research_ready during bounded runtime probe; Research APK installation/launch was not verified."
-  ],
-  "hardwareBoundary": {
-    "questConnected": false,
-    "nd8PortOpened": true,
-    "nd8StreamStarted": true,
-    "nd8StreamClosed": true,
-    "physicalLaserTriggerTested": false,
-    "eegQualityEvaluated": false,
-    "decoderEvaluated": false
-  },
-  "formalSchedule": {
-    "status": "PASS",
-    "sessionCount": 6,
-    "trialsPerSession": 63,
-    "seed": 37005,
-    "formalSession001Created": false
-  },
-  "staticChecksExceptHardwareProbePass": true
+﻿{
+    "blockers":  [
+
+                 ],
+    "checks":  {
+                   "configuredNd8PortEnumerated":  true,
+                   "dataRootParentExists":  true,
+                   "dataRootParentWritable":  true,
+                   "diskSpaceSufficient":  true,
+                   "formalAndDummyRootsSeparate":  true,
+                   "noStaleSessionLock":  true,
+                   "python39":  true,
+                   "questIpRespondsToPing":  true,
+                   "requiredQuestPortAvailable":  true,
+                   "serialEnumerationSucceeded":  true,
+                   "sessionIdSafe":  true,
+                   "sessionRootUnique":  true,
+                   "slotFrequencyMappingFrozen":  true,
+                   "vendorPythonExists":  true,
+                   "questTcpReadyEventReceived":  true,
+                   "nd8PortOpenedAndStreamStarted":  true
+               },
+    "deviceDiscovery":  {
+                            "configuredPort":  {
+                                                   "description":  "USB 涓茶璁惧 (COM11)",
+                                                   "device":  "COM11",
+                                                   "hwid":  "USB VID:PID=0000:0000 SER=000000000000",
+                                                   "pid":  0,
+                                                   "vid":  0
+                                               },
+                            "enumeratedPorts":  [
+                                                    {
+                                                        "description":  "USB 涓茶璁惧 (COM11)",
+                                                        "device":  "COM11",
+                                                        "hwid":  "USB VID:PID=0000:0000 SER=000000000000",
+                                                        "pid":  0,
+                                                        "vid":  0
+                                                    },
+                                                    {
+                                                        "description":  "钃濈墮閾炬帴涓婄殑鏍囧噯涓茶 (COM9)",
+                                                        "device":  "COM9",
+                                                        "hwid":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG\u00260046\\9\u00262D35CF3F\u00260\u0026C82478C0FB85_C00000000",
+                                                        "pid":  null,
+                                                        "vid":  null
+                                                    },
+                                                    {
+                                                        "description":  "钃濈墮閾炬帴涓婄殑鏍囧噯涓茶 (COM7)",
+                                                        "device":  "COM7",
+                                                        "hwid":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_VID\u0026000105D6_PID\u0026000A\\9\u00262D35CF3F\u00260\u0026EB7CC98BCD5D_C00000000",
+                                                        "pid":  null,
+                                                        "vid":  null
+                                                    },
+                                                    {
+                                                        "description":  "钃濈墮閾炬帴涓婄殑鏍囧噯涓茶 (COM6)",
+                                                        "device":  "COM6",
+                                                        "hwid":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG\u00260000\\9\u00262D35CF3F\u00260\u0026000000000000_0000000B",
+                                                        "pid":  null,
+                                                        "vid":  null
+                                                    },
+                                                    {
+                                                        "description":  "钃濈墮閾炬帴涓婄殑鏍囧噯涓茶 (COM10)",
+                                                        "device":  "COM10",
+                                                        "hwid":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG\u00260000\\9\u00262D35CF3F\u00260\u0026000000000000_0000000E",
+                                                        "pid":  null,
+                                                        "vid":  null
+                                                    }
+                                                ],
+                            "enumerationError":  null
+                        },
+    "diskFreeGb":  307.45,
+    "hardwareBoundary":  {
+                             "nd8PortOpened":  true,
+                             "nd8StreamStarted":  true,
+                             "physicalLaserTriggerTested":  false,
+                             "questConnected":  true
+                         },
+    "note":  "A READY preflight requires a later live stream probe and accepted Quest connection before formal trials begin.",
+    "protocolVersion":  "m37-prospective-acquisition-v1",
+    "recordType":  "m37_acquisition_preflight",
+    "requested":  {
+                      "comPort":  "COM11",
+                      "dataRoot":  "D:\\EEG_Study\\m37_prospective\\formal\\preflight_placeholder\\session_20261005T164257",
+                      "questIp":  "192.168.43.110",
+                      "questListenHost":  "0.0.0.0",
+                      "questListenPort":  11001,
+                      "vendorPython":  "C:\\Users\\zsh21\\.local-tools\\neurodance-sdk-venv\\Scripts\\python.exe"
+                  },
+    "status":  "READY FOR FORMAL ACQUISITION"
 }

@@ -1,0 +1,36 @@
+{
+  "recordType": "m37_quest_trigger_dummy_validation",
+  "status": "NOT_YET_PASS",
+  "mode": "nonformal live dummy; Quest trigger required",
+  "attempts": [
+    {
+      "sessionRoot": "D:\\EEG_Study\\m37_prospective\\_dummy\\m37_quest_trigger_interactive_20261005_02",
+      "questReadyReceived": true,
+      "triggerOfferDisplayed": true,
+      "triggerAcceptedCount": 0,
+      "completedTrialCount": 0,
+      "technicalInvalidAttemptCount": 1,
+      "failure": "Timed out waiting 120 seconds for m19_research_trigger; operator gaze action was not confirmed."
+    },
+    {
+      "sessionRoot": "D:\\EEG_Study\\m37_prospective\\_dummy\\m37_quest_trigger_interactive_20261005_04",
+      "questReadyReceived": true,
+      "triggerOfferDisplayed": true,
+      "triggerAcceptedCount": 0,
+      "completedTrialCount": 0,
+      "technicalInvalidAttemptCount": 1,
+      "failure": "Timed out waiting 120 seconds for m19_research_trigger; Quest screenshot showed the trigger band and cyan reticle, but operator gaze action was not confirmed."
+    }
+  ],
+  "triggerOfferCount": 2,
+  "triggerEventTypeExpected": "m19_research_trigger",
+  "triggerAcceptedCount": 0,
+  "completedTrialCount": 0,
+  "technicalInvalidAttemptCount": 2,
+  "operatorGazeActionConfirmed": false,
+  "rawContinuousStreamPreservedOnDDrive": true,
+  "nd8StreamClosed": true,
+  "serialPortReleased": true,
+  "formalSession001Created": false,
+  "externalLaserTtlTriggerTested": false
+}

@@ -798,6 +798,7 @@ class M37TrialCoordinator:
         self.inject_duplicate_trigger_once = bool(inject_duplicate_trigger_once)
         self.duplicate_injected = False
         self._pending_trigger_event = None
+        self._pending_quest_events = []
         self.machine = M37TrialStateMachine()
         self.active_row = None
         self.active_attempt_id = None
@@ -835,25 +836,55 @@ class M37TrialCoordinator:
         if event_type == "m19_research_trigger" and self._pending_trigger_event is not None:
             pending = self._pending_trigger_event
             self._pending_trigger_event = None
-            return {"messageType": "__accepted_trigger", **pending, "pcReceiveMonotonicNs": pending["pcReceiveMonotonicNs"]}
+            if not identity or not any(pending.get(key) != value for key, value in identity.items()):
+                return {**pending, "messageType": "__accepted_trigger", "pcReceiveMonotonicNs": pending["pcReceiveMonotonicNs"]}
+            self.session.events.append("STALE_QUEST_EVENT_REJECTED", sessionId=self.session.session_id, receivedMessageType=pending.get("messageType"), expectedMessageType=event_type, trialId=pending.get("trialId"), failClosed=True)
+
+        # A single TCP poll can drain several newline-delimited Quest events.
+        # Keep valid events that belong to a later wait instead of discarding
+        # them when, for example, stimulus-start and local stimulus-stop arrive
+        # in the same poll batch.
+        matched_pending = None
+        retained_pending = []
+        for pending in self._pending_quest_events:
+            if identity and any(pending.get(key) != value for key, value in identity.items()):
+                self.session.events.append("STALE_QUEST_EVENT_REJECTED", sessionId=self.session.session_id, receivedMessageType=pending.get("messageType"), expectedMessageType=event_type, trialId=pending.get("trialId"), failClosed=True)
+                continue
+            if matched_pending is None and pending.get("messageType") == event_type:
+                matched_pending = pending
+            else:
+                retained_pending.append(pending)
+        self._pending_quest_events = retained_pending
+        if matched_pending is not None:
+            return matched_pending
         deadline = time.monotonic() + float(timeout_seconds)
         while time.monotonic() < deadline:
+            matched_event = None
             for event in self.transport.poll_controller_events(min(0.1, max(0.0, deadline - time.monotonic()))):
                 if identity and any(event.get(key) != value for key, value in identity.items()):
                     self.session.events.append("STALE_QUEST_EVENT_REJECTED", sessionId=self.session.session_id, receivedMessageType=event.get("messageType"), expectedMessageType=event_type, trialId=event.get("trialId"), failClosed=True)
                     continue
                 if event.get("messageType") == event_type:
                     event["pcReceiveMonotonicNs"] = self._monotonic_ns()
-                    return event
-                if event.get("messageType") == "m19_research_trigger":
+                    if matched_event is None:
+                        matched_event = event
+                    else:
+                        self._pending_quest_events.append(event)
+                    continue
+                elif event.get("messageType") == "m19_research_trigger":
                     if not self.accept_trigger(event):
                         continue
                     event["pcReceiveMonotonicNs"] = self._monotonic_ns()
-                    self._pending_trigger_event = event
                     if event_type == "m19_research_trigger":
-                        self._pending_trigger_event = None
-                        return {"messageType": "__accepted_trigger", **event}
+                        if matched_event is None:
+                            matched_event = {**event, "messageType": "__accepted_trigger"}
+                    else:
+                        self._pending_trigger_event = event
                     continue
+                event["pcReceiveMonotonicNs"] = self._monotonic_ns()
+                self._pending_quest_events.append(event)
+            if matched_event is not None:
+                return matched_event
         raise M37Error("timed out waiting for Quest event {}".format(event_type))
 
     def _send_quest(self, message_type: str, **values):
@@ -905,10 +936,12 @@ class M37TrialCoordinator:
             prep_end = time.perf_counter_ns() if self.clock is time else self.clock.monotonic_ns()
             self.session.events.append("TRIAL_PREPARATION_FINISHED", sessionId=self.session.session_id, trialId=row["trialId"], attemptId=attempt_id, elapsedSeconds=(prep_end - prep_start) / 1_000_000_000, monotonicNs=prep_end)
 
+            quest_onset_monotonic_ns = None
             if self.transport is not None:
                 self._send_quest("m19_research_stimulus_start", **identity, slotIndex=row["targetSlot"], frequencyHz=row["targetFrequencyHz"], durationSeconds=STIMULUS_SECONDS, simulatedTrigger=bool(simulated_trigger))
                 started = self._wait_for_quest_event("m19_research_stimulus_started", self.stimulus_wait_seconds, identity)
                 onset_ns = started["pcReceiveMonotonicNs"]
+                quest_onset_monotonic_ns = started.get("eventMonotonicNs")
                 event_sequence = self.session.events.append("STIMULUS_ONSET", sessionId=self.session.session_id, trialId=row["trialId"], attemptId=attempt_id, targetSlot=row["targetSlot"], targetFrequencyHz=row["targetFrequencyHz"], softwareOnsetMonotonicNs=onset_ns, questEventMonotonicNs=started.get("eventMonotonicNs"), questSoftwareFrame=started.get("softwareFrame"), onsetClockBasis="PC receipt of Quest frame-driven stimulus-start acknowledgement", physicalOpticalTimingVerified=False)
             else:
                 onset_ns = self.clock.monotonic_ns() if self.clock is not time else time.perf_counter_ns()
@@ -922,11 +955,47 @@ class M37TrialCoordinator:
             stimulus_deadline_ns = int(onset_ns) + int(STIMULUS_SECONDS * 1_000_000_000)
             self.source.wait(max(0.0, (stimulus_deadline_ns - self._monotonic_ns()) / 1_000_000_000), row["targetSlot"])
             stop_ns = self._monotonic_ns()
-            self._send_quest("m19_research_stimulus_stop", **identity, slotIndex=row["targetSlot"], frequencyHz=row["targetFrequencyHz"])
+            quest_stop_monotonic_ns = None
+            software_duration_seconds = (int(stop_ns) - int(onset_ns)) / 1_000_000_000
+            software_duration_clock_basis = "PC monotonic software deadline; Quest not connected"
+            stimulus_stop_source = "pc_software_deadline"
             if self.transport is not None:
-                stopped = self._wait_for_quest_event("m19_research_stimulus_stopped", self.stimulus_wait_seconds, identity)
+                local_stop_timeout = min(0.15, max(0.01, self.stimulus_wait_seconds))
+                try:
+                    stopped = self._wait_for_quest_event("m19_research_stimulus_stopped", local_stop_timeout, identity)
+                    stimulus_stop_source = "quest_local_stop_event"
+                except M37Error:
+                    # Older installed M37 APKs already stop the stimulus with
+                    # their local realtime coroutine, but do not publish its
+                    # timestamp. Ask them to acknowledge stop for compatibility
+                    # while explicitly marking the local stop time unmeasured.
+                    self._send_quest("m19_research_stimulus_stop", **identity)
+                    stopped = self._wait_for_quest_event("m19_research_stimulus_stopped", self.stimulus_wait_seconds, identity)
+                    stimulus_stop_source = "legacy_pc_stop_ack_fallback"
                 stop_ns = stopped["pcReceiveMonotonicNs"]
-            self.session.events.append("STIMULUS_OFFSET", sessionId=self.session.session_id, trialId=row["trialId"], attemptId=attempt_id, monotonicNs=stop_ns, durationSeconds=STIMULUS_SECONDS, physicalOpticalTimingVerified=False)
+                quest_stop_monotonic_ns = stopped.get("eventMonotonicNs")
+                if quest_onset_monotonic_ns is None or quest_stop_monotonic_ns is None:
+                    raise M37Error("Quest stimulus lifecycle acknowledgements lack same-clock monotonic timestamps")
+                software_duration_seconds = (int(quest_stop_monotonic_ns) - int(quest_onset_monotonic_ns)) / 1_000_000_000
+                software_duration_clock_basis = (
+                    "Quest realtimeSinceStartup eventMonotonicNs delta"
+                    if stimulus_stop_source == "quest_local_stop_event"
+                    else "Legacy Quest stop ACK delta includes request/transport delay; local stop time unmeasured"
+                )
+            pc_receipt_duration_seconds = (int(stop_ns) - int(onset_ns)) / 1_000_000_000
+            self.session.events.append(
+                "STIMULUS_OFFSET", sessionId=self.session.session_id, trialId=row["trialId"], attemptId=attempt_id,
+                monotonicNs=stop_ns, durationSeconds=software_duration_seconds,
+                softwareDurationClockBasis=software_duration_clock_basis,
+                stimulusStopSource=stimulus_stop_source,
+                questLocalStopTimeMeasured=stimulus_stop_source == "quest_local_stop_event",
+                pcReceiptDurationSeconds=pc_receipt_duration_seconds,
+                questEventMonotonicNs=quest_stop_monotonic_ns,
+                questSoftwareFrame=None if self.transport is None else stopped.get("softwareFrame"),
+                physicalOpticalTimingVerified=False,
+            )
+            if stimulus_stop_source == "quest_local_stop_event" and abs(software_duration_seconds - STIMULUS_SECONDS) > 0.02:
+                raise M37Error("Quest software stimulus duration exceeded the 20 ms tolerance")
             self.machine.transition("FINALIZE", monotonic_ns=stop_ns)
             anchor_sample = int(anchor["sampleAnchorSampleIndex"])
             stop_sample = anchor_sample + POST_ONSET_SAMPLES
@@ -1206,13 +1275,15 @@ def _build_dummy_schedule(trials: int, seed: int) -> dict:
     return schedule
 
 
-def run_live_dummy(output_root: Path, *, trials: int = 30, seed: int = 37005, com_port: str = "COM11", host: str = "0.0.0.0", quest_port: int = DEFAULT_QUEST_PORT, quest_timeout_seconds: float = 15.0, require_quest: bool = False, resume: bool = False, audible_cue: bool = True, stop_after: int | None = None) -> dict:
+def run_live_dummy(output_root: Path, *, trials: int = 30, seed: int = 37005, com_port: str = "COM11", host: str = "0.0.0.0", quest_port: int = DEFAULT_QUEST_PORT, quest_timeout_seconds: float = 15.0, require_quest: bool = False, quest_trigger: bool = False, resume: bool = False, audible_cue: bool = True, stop_after: int | None = None) -> dict:
     """Run floating-electrode transport rehearsal; PC triggers use the shared accepted-trigger handler."""
     from integration.m8_selection_orchestration import QuestSelectionTcpServer
 
     config = load_config()
     output_root = Path(output_root)
     schedule = _build_dummy_schedule(trials, seed)
+    if quest_trigger:
+        require_quest = True
     session_id = json.loads((output_root / "manifest.json").read_text(encoding="utf-8"))["sessionId"] if resume else "m37-live-dummy-" + uuid.uuid4().hex[:10]
     session = M37Session(output_root, session_id, config, schedule, resume=resume)
     transport = QuestSelectionTcpServer(host=host, port=int(quest_port), accept_timeout_seconds=max(1.0, float(quest_timeout_seconds))).start()
@@ -1236,7 +1307,7 @@ def run_live_dummy(output_root: Path, *, trials: int = 30, seed: int = 37005, co
         pending_rows = [row for row in schedule["rows"] if row["trialId"] not in session.finalized_trial_ids]
         run_rows = pending_rows if stop_after is None else pending_rows[:max(0, int(stop_after))]
         for row in run_rows:
-            results.append(coordinator.run_one(row, simulated_trigger=True, formal=False))
+            results.append(coordinator.run_one(row, simulated_trigger=not quest_trigger, formal=False))
         all_complete = len(session.finalized_trial_ids) == len(schedule["rows"])
         if all_complete and transport is not None:
             coordinator._send_quest("m19_research_session_complete", sessionId=session.session_id)
@@ -1555,6 +1626,7 @@ def main(argv=None) -> int:
     dummy.add_argument("--quest-timeout", type=float, default=15.0)
     dummy.add_argument("--stop-after", type=int)
     dummy.add_argument("--require-quest", action="store_true")
+    dummy.add_argument("--quest-trigger", action="store_true", help="Wait for a real Quest trigger dwell; automatically requires Quest transport")
     dummy.add_argument("--silent", action="store_true")
     dummy.add_argument("--resume", action="store_true")
     formal = sub.add_parser("serve")
@@ -1600,7 +1672,7 @@ def main(argv=None) -> int:
         print(json.dumps(report, ensure_ascii=False, sort_keys=True))
         return 0 if report["status"] == "PASS" else 2
     if args.command == "live-dummy":
-        report = run_live_dummy(args.output_root, trials=args.trials, seed=args.seed, com_port=args.com, host=args.host, quest_port=args.port, quest_timeout_seconds=args.quest_timeout, require_quest=args.require_quest, resume=args.resume, audible_cue=not args.silent, stop_after=args.stop_after)
+        report = run_live_dummy(args.output_root, trials=args.trials, seed=args.seed, com_port=args.com, host=args.host, quest_port=args.port, quest_timeout_seconds=args.quest_timeout, require_quest=args.require_quest, quest_trigger=args.quest_trigger, resume=args.resume, audible_cue=not args.silent, stop_after=args.stop_after)
         print(json.dumps(report, ensure_ascii=False, sort_keys=True))
         return 0 if report["status"] == "PASS" else 1
     if args.command == "serve":

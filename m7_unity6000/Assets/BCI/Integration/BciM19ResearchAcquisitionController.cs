@@ -72,7 +72,6 @@ namespace BCIIntelligentRobot.Integration
             Debug.Log("M19_RESEARCH_UI_READY targets=YELLOW:7.2,BLUE:9,GREEN:12 " +
                 "trigger_dwell_s=1.5 page_queue=false persistent_selection=false robot_dispatch=false " +
                 "flicker_during_formal_epoch_only=true physical_refresh_verified=false", this);
-            Publish("m19_research_ready");
         }
 
         private void BuildPresentation(Camera camera)
@@ -445,8 +444,16 @@ namespace BCIIntelligentRobot.Integration
         private IEnumerator StopStimulusAfterDuration(string attemptId, float durationSeconds)
         {
             yield return new WaitForSecondsRealtime(Mathf.Max(0.1f, durationSeconds));
-            EndStimulusVisual(attemptId);
+            if (!m_formalStimulusActive || !string.Equals(m_stimulusAttemptId, attemptId, StringComparison.Ordinal))
+                yield break;
+            // End the visual and timestamp the stop locally on the Quest clock.
+            // A later PC command/ACK includes network latency and must not be
+            // treated as the software stimulus offset.
             m_stimulusStopCoroutine = null;
+            EndStimulusVisual(attemptId);
+            Publish("m19_research_stimulus_stopped", m_offer, null);
+            Debug.Log("M19_RESEARCH stimulus_stopped trial_id=" + (m_offer == null ? "" : m_offer.trialId) +
+                " attempt_id=" + attemptId + " software_frame=" + Time.frameCount, this);
         }
 
         private void StopFormalStimulus(BciSelectionTransportMessage message, bool acknowledge)

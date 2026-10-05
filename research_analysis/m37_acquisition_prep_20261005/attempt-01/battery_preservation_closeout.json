@@ -1,6 +1,6 @@
 {
   "recordType": "m37_device_battery_closeout",
-  "questTelemetry": "NOT_AVAILABLE",
+  "questTelemetry": "m19_research_ready received; battery telemetry unavailable",
   "questTestTrafficActiveAtCloseout": false,
   "nd8StreamRuns": [
     {
@@ -22,12 +22,67 @@
       "path": "D:\\EEG_Study\\m37_prospective\\_preflight\\attempt_20261005T160232\\nd8_probe",
       "probeSeconds": 3,
       "closed": true
+    },
+    {
+      "path": "D:\\EEG_Study\\m37_prospective\\_preflight\\attempt_20261005T164257\\nd8_probe",
+      "probeSeconds": 3,
+      "closed": true
+    },
+    {
+      "path": "D:\\EEG_Study\\m37_prospective\\_dummy\\m37_quest_trigger_interactive_20261005T164141",
+      "trialsFinalized": 0,
+      "questReadyReceived": false,
+      "closed": true
+    },
+    {
+      "path": "D:\\EEG_Study\\m37_prospective\\_dummy\\m37_quest_trigger_interactive_20261005_02",
+      "trialsFinalized": 0,
+      "questReadyReceived": true,
+      "closed": true
+    },
+    {
+      "path": "D:\\EEG_Study\\m37_prospective\\_dummy\\m37_quest_trigger_interactive_20261005_04",
+      "trialsFinalized": 0,
+      "questReadyReceived": true,
+      "triggerAcceptedCount": 0,
+      "technicalInvalidAttemptCount": 1,
+      "closed": true,
+      "shutdownMode": "The acquisition process tree remained stuck after the 120-second no-trigger timeout; partial files were integrity-checked, the exact M37/ND8 process tree was stopped, and COM11 was then reopened and cleanly closed by the bounded probe."
+    },
+    {
+      "path": "D:\\EEG_Study\\m37_prospective\\_preflight\\attempt_20261005T173400\\nd8_close_reopen_probe",
+      "probeSeconds": 3,
+      "packetCount": 15,
+      "continuousPackets": 14,
+      "startupAnomalyPackets": 1,
+      "sequenceContiguous": true,
+      "sampleIndexesContiguous": true,
+      "closed": true
+    },
+    {
+      "path": "D:\\EEG_Study\\m37_prospective\\_dummy\\m37_rebuild_compat_20261005T182350",
+      "requestedTrials": 3,
+      "questReadyReceived": false,
+      "trialsStarted": 0,
+      "comPort": "COM11",
+      "opened": true,
+      "closed": true,
+      "rawDataKeptOutsideRepository": true
     }
   ],
   "nd8HandleOpenAtCloseout": false,
   "activeHardwareStreamsAfterChecks": false,
+  "questResearchProcessActiveAtCloseout": false,
+  "m37TcpListener11001ActiveAtCloseout": false,
   "com11EnumeratedAfterClose": true,
   "deviceBatteryLossObserved": "NO LOSS OBSERVED; BATTERY TELEMETRY UNAVAILABLE",
-  "usbOrAdbLeftConnected": false,
-  "physicalTriggerOperated": false
+  "usbOrAdbLeftConnected": true,
+  "usbDataCableLeftConnected": false,
+  "wirelessAdbConnectedAtCloseout": true,
+  "questDwellTriggerAccepted": false,
+  "physicalTriggerOperated": false,
+  "latestQuestFreshLaunchUiVisible": true,
+  "latestQuestTcpPeerConnected": true,
+  "latestQuestReadyMessageReceived": false,
+  "latestQuestResearchProcessStopped": true
 }

@@ -1,0 +1,88 @@
+{
+  "recordType": "m37_quest_rebuild_and_ready_retest",
+  "observedLocalDate": "2026-10-05",
+  "unity": {
+    "version": "6000.0.66f2",
+    "buildMethod": "M37ResearchAcquisitionBuild.BuildQuestResearchAcquisition",
+    "attempts": [
+      {
+        "startedLocal": "2026-10-05T18:04:31",
+        "logPath": "C:\\Users\\zsh21\\AppData\\Local\\Temp\\BCI_M37_Research_20261005T180431.apk.unity.log",
+        "status": "BLOCKED_EXTERNAL_LICENSE_CLIENT",
+        "observedErrors": [
+          "LicenseClient-zsh21 refused",
+          "Unity Licensing Client initialization/reconnection failed",
+          "com.unity.editor.headless was not found"
+        ],
+        "buildEntryReached": false,
+        "apkCreated": false,
+        "buildReportCreated": false
+      },
+      {
+        "startedLocal": "2026-10-05T18:13:35",
+        "logPath": "C:\\Users\\zsh21\\AppData\\Local\\Temp\\BCI_M37_Research_20261005T181335.apk.unity.log",
+        "status": "BLOCKED_EXTERNAL_LICENSE_CLIENT",
+        "observedErrors": [
+          "LicenseClient-zsh21 refused",
+          "Unity Licensing Client initialization/reconnection failed",
+          "com.unity.editor.headless was not found"
+        ],
+        "buildEntryReached": false,
+        "apkCreated": false,
+        "buildReportCreated": false
+      }
+    ],
+    "latestSourceChangesIncludedInInstalledApk": false,
+    "manualRecovery": "Restore Unity Hub sign-in/licensing client, then rerun the dedicated M37 build entry."
+  },
+  "quest": {
+    "deviceIp": "192.168.43.110",
+    "adbTransport": "Wi-Fi ADB at 192.168.43.110:5555",
+    "packageName": "com.samples.passthroughcamera.m37research",
+    "installedApkSha256": "99f5926276b2c291b684347f5ffa607411cea713c6752cfed5a9462ef29606af",
+    "installedPackageLastUpdateLocal": "2026-10-05 16:34:29",
+    "freshLaunchUi": "Three white targets, cyan reticle, and Trigger instruction visible in Quest screencap.",
+    "freshLaunchReadyMessage": false,
+    "tcpPeerAcceptedByPc": true,
+    "tcpPeer": "192.168.43.110",
+    "rawTcpProbeReceivedApplicationBytes": false,
+    "pythonQuestReadyProbeStatus": "NOT_CONNECTED",
+    "readyOnSuccessfulConnectionFixInSource": true,
+    "fixIncludedInInstalledApk": false,
+    "processStoppedAfterChecks": true,
+    "latestHostAdbProbe": {
+      "observedLocal": "2026-10-05T18:54:21",
+      "endpoint": "192.168.43.110:5555",
+      "adbExecutable": "Unity 6000.0.66f2 bundled Android SDK platform-tools/adb.exe",
+      "devicesListEmpty": true,
+      "connectResult": "Windows socket error 10013: access to the socket was denied by the execution environment",
+      "elevatedRetryResult": "same socket error and empty device list",
+      "interpretation": "Host execution environment could not establish the ADB socket; this does not independently establish whether Quest Wi-Fi debugging is currently enabled or reachable."
+    }
+  },
+  "boundedLiveRehearsal": {
+    "outputRoot": "D:\\EEG_Study\\m37_prospective\\_dummy\\m37_rebuild_compat_20261005T182350",
+    "requestedTrials": 3,
+    "nd8ComPort": "COM11",
+    "nd8StreamStarted": true,
+    "questReadyReceived": false,
+    "trialsStarted": 0,
+    "status": "STOPPED_BEFORE_TRIAL_ON_QUEST_READY_TIMEOUT",
+    "nd8StreamClosed": true,
+    "rawDataStayedOutsideRepository": true
+  },
+  "finalDeviceState": {
+    "questResearchPackageInstalled": true,
+    "questResearchProcessActive": false,
+    "questWifiAdbStillConnected": true,
+    "nd8HandleOpen": false,
+    "pcTcp11001ListenerActive": false,
+    "formalSession001Created": false
+  },
+  "verification": {
+    "targetedPythonTests": "PASS: 3 M37 Quest TCP/trigger tests, including coalesced start/stop and legacy stop-ACK fallback.",
+    "pythonCompile": "PASS: integration/m37_acquisition_prep.py and integration/test_m37_acquisition_prep.py.",
+    "artifactAudit": "PASS: 14 required artifacts, 11 software checks, zero failures.",
+    "unityCompilation": "NOT_VERIFIED: licensing prevented Unity from reaching the build entry or C# compilation."
+  }
+}

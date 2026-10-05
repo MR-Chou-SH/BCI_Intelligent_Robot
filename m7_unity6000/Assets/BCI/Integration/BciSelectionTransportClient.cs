@@ -128,6 +128,8 @@ namespace BCIIntelligentRobot.Integration
 
         private Thread m_worker;
         private volatile bool m_stopRequested;
+        private bool m_researchOnlyMode;
+        private int m_researchReadyConnectionPending;
         private BciSsvepTargetBinding m_binding;
         private string m_serverHost;
         private int m_serverPort;
@@ -380,6 +382,7 @@ namespace BCIIntelligentRobot.Integration
             m_binding = null;
             m_serverHost = serverHost;
             m_serverPort = serverPort;
+            m_researchOnlyMode = true;
             m_worker = new Thread(NetworkLoop) { IsBackground = true, Name = "M19ResearchTransport" };
             m_worker.Start();
             Debug.Log("M19_RESEARCH transport initialized host=" + m_serverHost + " port=" + m_serverPort, this);
@@ -484,6 +487,14 @@ namespace BCIIntelligentRobot.Integration
         {
             while (m_diagnostics.TryDequeue(out string diagnostic))
                 Debug.Log(diagnostic, this);
+            if (Interlocked.Exchange(ref m_researchReadyConnectionPending, 0) != 0)
+            {
+                PublishResearchMessage(new BciSelectionTransportMessage
+                {
+                    protocolVersion = BciSelectionTransportMessage.ProtocolVersion,
+                    messageType = "m19_research_ready"
+                });
+            }
             while (m_incoming.TryDequeue(out BciSelectionTransportMessage message))
                 Process(message);
         }
@@ -732,6 +743,8 @@ namespace BCIIntelligentRobot.Integration
                     {
                         client.Connect(m_serverHost, m_serverPort);
                         client.NoDelay = true;
+                        if (m_researchOnlyMode)
+                            Interlocked.Exchange(ref m_researchReadyConnectionPending, 1);
                         using (NetworkStream stream = client.GetStream())
                         {
                             stream.ReadTimeout = 100;

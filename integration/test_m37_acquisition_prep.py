@@ -354,12 +354,15 @@ class M37AcquisitionPrepTests(unittest.TestCase):
                                 response_type = {
                                     "m19_research_offer": "m19_research_offer_ack",
                                     "m19_research_stimulus_start": "m19_research_stimulus_started",
-                                    "m19_research_stimulus_stop": "m19_research_stimulus_stopped",
                                 }.get(message.get("messageType"))
                                 if response_type:
                                     response = dict(message)
-                                    response.update({"messageType": response_type, "accepted": True, "eventMonotonicNs": 123, "softwareFrame": 456})
+                                    response.update({"messageType": response_type, "accepted": True, "eventMonotonicNs": 1_000_000_000, "softwareFrame": 456})
                                     peer.sendall((json.dumps(response, separators=(",", ":")) + "\n").encode("utf-8"))
+                                    if response_type == "m19_research_stimulus_started":
+                                        stopped = dict(message)
+                                        stopped.update({"messageType": "m19_research_stimulus_stopped", "accepted": True, "eventMonotonicNs": 5_000_000_000, "softwareFrame": 744})
+                                        peer.sendall((json.dumps(stopped, separators=(",", ":")) + "\n").encode("utf-8"))
                 except OSError as error:
                     peer_errors.append(str(error))
 
@@ -380,12 +383,175 @@ class M37AcquisitionPrepTests(unittest.TestCase):
             message_types = [item["messageType"] for item in received]
             self.assertIn("m19_research_offer", message_types)
             self.assertIn("m19_research_stimulus_start", message_types)
-            self.assertIn("m19_research_stimulus_stop", message_types)
+            self.assertNotIn("m19_research_stimulus_stop", message_types)
             offer = next(item for item in received if item["messageType"] == "m19_research_offer")
             onset = next(item for item in received if item["messageType"] == "m19_research_stimulus_start")
             self.assertEqual("M37", offer["blockId"])
             self.assertEqual(3, offer["cueBeepCount"])
             self.assertTrue(onset["simulatedTrigger"])
+            self.assertFalse(peer_errors)
+            offset = next(item for item in (json.loads(line) for line in (root / "events.jsonl").read_text(encoding="utf-8").splitlines()) if item.get("eventType") == "STIMULUS_OFFSET")
+            self.assertEqual(4.0, offset["durationSeconds"])
+            self.assertEqual("Quest realtimeSinceStartup eventMonotonicNs delta", offset["softwareDurationClockBasis"])
+            self.assertEqual("quest_local_stop_event", offset["stimulusStopSource"])
+            self.assertTrue(offset["questLocalStopTimeMeasured"])
+
+    def test_legacy_quest_without_local_stop_event_uses_unmeasured_ack_fallback(self):
+        with tempfile.TemporaryDirectory(prefix="m37-quest-legacy-stop-") as temporary:
+            root = Path(temporary) / "session"
+            clock = M37SyntheticClock()
+            rows = [{
+                "trialId": "m37-legacy-stop-001", "sessionId": "m37-legacy-stop", "blockId": "M37",
+                "trialIndex": 1, "targetSlot": 0, "targetFrequencyHz": 7.2, "formal": False,
+            }]
+            schedule = {"recordType": "m37_nonformal_dummy_schedule", "protocolVersion": "m37-prospective-acquisition-v1", "seed": 1, "rows": rows}
+            from integration.m37_acquisition_prep import _canonical_json, _sha256_bytes, load_config
+            schedule["scheduleSha256"] = _sha256_bytes(_canonical_json(schedule).encode("utf-8"))
+            session = M37Session(root, "m37-legacy-stop", load_config(), schedule, monotonic_provider=clock.monotonic_ns)
+            transport = QuestSelectionTcpServer(host="127.0.0.1", port=0, accept_timeout_seconds=5).start()
+            received = []
+            peer_errors = []
+
+            def fake_legacy_quest():
+                try:
+                    with socket.create_connection(("127.0.0.1", transport.port), timeout=3) as peer:
+                        peer.settimeout(5)
+                        peer.sendall(b'{"protocolVersion":1,"messageType":"m19_research_ready"}\n')
+                        buffer = b""
+                        while True:
+                            chunk = peer.recv(4096)
+                            if not chunk:
+                                return
+                            buffer += chunk
+                            while b"\n" in buffer:
+                                line, buffer = buffer.split(b"\n", 1)
+                                message = json.loads(line.decode("utf-8"))
+                                received.append(message)
+                                response_type = {
+                                    "m19_research_offer": "m19_research_offer_ack",
+                                    "m19_research_stimulus_start": "m19_research_stimulus_started",
+                                    "m19_research_stimulus_stop": "m19_research_stimulus_stopped",
+                                }.get(message.get("messageType"))
+                                if response_type:
+                                    response = dict(message)
+                                    response.update({
+                                        "messageType": response_type,
+                                        "accepted": True,
+                                        "eventMonotonicNs": 5_125_000_000 if response_type == "m19_research_stimulus_stopped" else 1_000_000_000,
+                                        "softwareFrame": 744,
+                                    })
+                                    peer.sendall((json.dumps(response, separators=(",", ":")) + "\n").encode("utf-8"))
+                except OSError as error:
+                    peer_errors.append(str(error))
+
+            thread = threading.Thread(target=fake_legacy_quest, daemon=True)
+            thread.start()
+            source = None
+            try:
+                from integration.m37_acquisition_prep import _wait_for_quest_ready
+                self.assertEqual("m19_research_ready", _wait_for_quest_ready(transport, 4)["messageType"])
+                source = M37SyntheticPacketSource(M37PacketRingBuffer(), clock, root)
+                coordinator = M37TrialCoordinator(session, source, transport=transport, simulated_reaction_seconds=0.0, clock=clock)
+                result = coordinator.run_one(rows[0], simulated_trigger=True)
+                session.finalize_session("FINALIZED")
+                self.assertEqual(EPOCH_SAMPLES, result["sampleCountPerChannel"])
+            finally:
+                if source is not None:
+                    source.close()
+                transport.close()
+                thread.join(timeout=3)
+
+            messages = [item["messageType"] for item in received]
+            self.assertIn("m19_research_stimulus_stop", messages)
+            self.assertFalse(peer_errors)
+            events = [json.loads(line) for line in (root / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+            offset = next(item for item in events if item.get("eventType") == "STIMULUS_OFFSET")
+            self.assertEqual("legacy_pc_stop_ack_fallback", offset["stimulusStopSource"])
+            self.assertFalse(offset["questLocalStopTimeMeasured"])
+            self.assertAlmostEqual(4.125, offset["durationSeconds"], delta=1e-9)
+
+    def test_quest_gaze_trigger_uses_shared_handler_for_nonformal_trial(self):
+        with tempfile.TemporaryDirectory(prefix="m37-quest-trigger-") as temporary:
+            root = Path(temporary) / "session"
+            clock = M37SyntheticClock()
+            rows = [{
+                "trialId": "m37-quest-trigger-001", "sessionId": "m37-quest-trigger", "blockId": "M37",
+                "trialIndex": 1, "targetSlot": 1, "targetFrequencyHz": 9.0, "formal": False,
+            }]
+            schedule = {"recordType": "m37_nonformal_dummy_schedule", "protocolVersion": "m37-prospective-acquisition-v1", "seed": 1, "rows": rows}
+            from integration.m37_acquisition_prep import _canonical_json, _sha256_bytes, load_config
+            schedule["scheduleSha256"] = _sha256_bytes(_canonical_json(schedule).encode("utf-8"))
+            session = M37Session(root, "m37-quest-trigger", load_config(), schedule, monotonic_provider=clock.monotonic_ns)
+            transport = QuestSelectionTcpServer(host="127.0.0.1", port=0, accept_timeout_seconds=5).start()
+            received = []
+            peer_errors = []
+
+            def fake_quest():
+                try:
+                    with socket.create_connection(("127.0.0.1", transport.port), timeout=3) as peer:
+                        peer.settimeout(5)
+                        peer.sendall(b'{"protocolVersion":1,"messageType":"m19_research_ready"}\n')
+                        buffer = b""
+                        while True:
+                            chunk = peer.recv(4096)
+                            if not chunk:
+                                return
+                            buffer += chunk
+                            while b"\n" in buffer:
+                                line, buffer = buffer.split(b"\n", 1)
+                                message = json.loads(line.decode("utf-8"))
+                                received.append(message)
+                                message_type = message.get("messageType")
+                                response_type = {
+                                    "m19_research_offer": "m19_research_offer_ack",
+                                    "m19_research_stimulus_start": "m19_research_stimulus_started",
+                                }.get(message_type)
+                                if response_type:
+                                    response = dict(message)
+                                    response.update({"messageType": response_type, "accepted": True, "eventMonotonicNs": 1_000_000_000, "softwareFrame": 456})
+                                    peer.sendall((json.dumps(response, separators=(",", ":")) + "\n").encode("utf-8"))
+                                    if response_type == "m19_research_stimulus_started":
+                                        stopped = dict(message)
+                                        stopped.update({"messageType": "m19_research_stimulus_stopped", "accepted": True, "eventMonotonicNs": 5_000_000_000, "softwareFrame": 744})
+                                        peer.sendall((json.dumps(stopped, separators=(",", ":")) + "\n").encode("utf-8"))
+                                if message_type == "m19_research_offer":
+                                    trigger = dict(message)
+                                    trigger.update({"messageType": "m19_research_trigger", "eventMonotonicNs": 789, "softwareFrame": 999})
+                                    peer.sendall((json.dumps(trigger, separators=(",", ":")) + "\n").encode("utf-8"))
+                except OSError as error:
+                    peer_errors.append(str(error))
+
+            thread = threading.Thread(target=fake_quest, daemon=True)
+            thread.start()
+            source = None
+            try:
+                from integration.m37_acquisition_prep import _wait_for_quest_ready
+                self.assertEqual("m19_research_ready", _wait_for_quest_ready(transport, 4)["messageType"])
+                source = M37SyntheticPacketSource(M37PacketRingBuffer(), clock, root)
+                coordinator = M37TrialCoordinator(session, source, transport=transport, simulated_reaction_seconds=0.0, clock=clock)
+                try:
+                    result = coordinator.run_one(rows[0], simulated_trigger=False, formal=False)
+                except Exception as error:
+                    self.fail("{}; state={}; accepted={}; rejected={}; received={}; peer_errors={}".format(
+                        error, coordinator.machine.state, coordinator.accepted_triggers,
+                        coordinator.rejected_triggers, [item.get("messageType") for item in received], peer_errors))
+                session.finalize_session("FINALIZED")
+                self.assertEqual(EPOCH_SAMPLES, result["sampleCountPerChannel"])
+                self.assertEqual(1, coordinator.accepted_triggers)
+                self.assertEqual(0, coordinator.rejected_triggers)
+            finally:
+                if source is not None:
+                    source.close()
+                transport.close()
+                thread.join(timeout=3)
+
+            events = [json.loads(line) for line in (root / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+            accepted = [item for item in events if item.get("eventType") == "TRIGGER_ACCEPTED"]
+            self.assertEqual(1, len(accepted))
+            self.assertFalse(accepted[0]["simulated"])
+            self.assertEqual("quest", accepted[0]["triggerSource"])
+            onset = next(item for item in received if item.get("messageType") == "m19_research_stimulus_start")
+            self.assertFalse(onset["simulatedTrigger"])
             self.assertFalse(peer_errors)
 
 
