@@ -18,7 +18,7 @@
 | Research中文手册 | VERIFIED，源码层 | U01–U39共39项固定界面字段（含1项PC专用），动态错误另述；5份运行源码SHA与既有Research APK构建报告匹配 |
 | 新Demo PC | VERIFIED | 完整苹果和原汉堡连续回放、逐body LERP/SLERP、来源拒收、面板/坐姿/倍速检查通过；不是Quest新包真机验收 |
 | 新Demo APK | VERIFIED，构建/资源层 | Unity短路径导出+离线Gradle，签名和包身份通过；从实际APK的UnityFS解包核验完整苹果/汉堡/catalog/provenance，以及level0选择的新catalog |
-| 远程分支与克隆 | 发布后补记 | 本报告首次提交时尚未推送；须以远程实际HEAD和新克隆验收为准，不以本机文件存在冒充发布成功 |
+| 远程分支与克隆 | VERIFIED | 非强制推送后回读GitHub实际HEAD，独立重新clone并通过Research、模型、参考数据、两条100帧真实前缀验收；详见第5节 |
 
 PC独立部署实测Python3.12.14、MuJoCo3.12.0、NumPy2.5.3、h5py3.16.0；复用已安装解释器，**未声称另一台电脑全新下载依赖/GPU或Quest通过**。本轮临时服务均有限运行并在检查后关闭，不替用户保持生产服务。
 
@@ -58,3 +58,31 @@ PC独立部署实测Python3.12.14、MuJoCo3.12.0、NumPy2.5.3、h5py3.16.0；复
 - VLA模型、通用规划器、批量专家策略、自动成功标签和完整训练数据生产系统。
 
 下一步由接手者按开发入口开始自己的原子任务；本交接结束后不自行启动上述研发。
+
+## 5. GitHub发布与真实远程克隆补记
+
+分支：`feature/kitchen-v3-vla-planner-handoff`。已验收源码提交：`64fae693e24965f7da392a890327c68dd98333d2`。GitHub回读分支HEAD与它一致；main仍为`61f949f6462a48961377d3a1e8623c4178a3e968`，未合并或强推。此后补记提交仅修改本文档；最终HEAD以远程分支为准。
+
+从GitHub新克隆（非本机拷贝/本地Git链接）完成以下验收，解释器复用原机已安装环境，未依赖原工作树、Quest或旧Junction：
+
+| 克隆中执行的入口 | 结果 |
+| --- | --- |
+| `research_deploy_probe --inventory --compile-model` | VERIFIED：模型source/compiled/scene/control身份均与封存身份一致；Git属性成功保护CRLF身份；依赖/44网格完整 |
+| `platform_research_handoff_example --launch`，指定系统PS5.1 | VERIFIED：PLATFORM_READY、87次RPC、0→1→0→新seed、17对象查询/41body World、完整外形区域/支撑/间距检查、20步有限动作、反馈及封存记录一致 |
+| 重置失败保护 | VERIFIED：非法种子不改当前局，过期token拒绝，重复请求幂等，运动忙时reset不破坏状态；相同0初态hash一致、episode_id不同 |
+| `unittest integration.kitchen.tests.test_reference_trajectories` | VERIFIED：4条契约通过，包括生成器快照/轻量数据SHA、16维目标、时钟、contact与身份边界 |
+| `reference_trajectories apple --max-frames 100` | PARTIAL：真实2000子步、状态最大误差0、证据封存；不是新完整流程PASS，也不经公开API |
+| `reference_trajectories burger --max-frames 100` | PARTIAL：独立PS5.1 fixed服务、41次成功写RPC/2000步，正常有限退出；不是新完整流程PASS |
+| 临时服务清理 | VERIFIED：只关闭本轮自建进程，Research与汉堡测试端口均不可再连接，未停止其它项目服务 |
+
+克隆内证据位置相对源码根，原始日志单独保留，不新提交Git：
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `experiments/kitchen_platform_v3/remote_clone_smoke_01/client/report.json` | `772ae0fc7c95b91d882c7b019d967b777fdbd4a27dfec6a75a3ddff8f604bddb` |
+| `experiments/kitchen_platform_v3/remote_apple_prefix_01/result.json` | `3115e39371fafb08b85e956fb2cdb2313a027e35dea09b73437d4d1dcead5c13` |
+| `experiments/kitchen_platform_v3/burger_reference_smoke_01/wrapper_result.json` | `68ef4ed22008eb636c2a230fbeebff9764b873fc548bc7678f2ac041db92f8a2` |
+
+实际暂存内容公开检查：94个文件约5.9MB；未发现新增个人Windows目录、内网地址、密钥/token值或大型原始记录。必要许可保留；历史已公开基线未改写。4段Python示例通过语法检查，10段PowerShell示例通过系统5.1解析，文档相对链接可解析。封存控制源的既有CRLF/尾空行与Unity生成meta空白保留，未为格式检查改变科研身份。公开内容不包括本机私有状态/完整Unity回放资源，边界见第3节。
+
+本轮交接源码和关键Demo资源另有195文件/约53.6MB的本机新检查点，逐文件复制后SHA一致。旧APK哈希复核未变；正式Goal仍PAUSED。新Demo待用户Quest验收；不将这些PC结果升级成新头显或随机任务泛化PASS。
