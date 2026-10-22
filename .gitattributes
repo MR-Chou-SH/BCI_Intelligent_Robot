@@ -1,0 +1,9 @@
+# Kitchen identities hash exact source bytes; never apply checkout-dependent CRLF.
+/robot_arm/kitchen/** -text
+/integration/kitchen/** -text
+/reference/kitchen_v3_trajectories/** -text
+/m7_unity6000/Assets/BCI/Kitchen/*.cs -text
+/m7_unity6000/Assets/Editor/Kitchen*.cs -text
+/m7_unity6000/Assets/Resources/KitchenWorldPanel.shader -text
+# The approved source MJCF was compiled from CRLF bytes on Windows.
+/robot_arm/assets/fr3_umi_merged.xml text eol=crlf

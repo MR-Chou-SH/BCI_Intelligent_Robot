@@ -1,0 +1,303 @@
+{
+  "schema": 1,
+  "layout": "kitchen_v3_norice_candidate_013",
+  "seed": 0,
+  "initialization_profile": "fixed",
+  "scene_hash": "f52f3483a7d4863ead908a98aa2aae726f13b5f67e6468a1ed5323c5f3771e27",
+  "control_hash": "b6722bb912fddedf853d54925fda092b8ea2833cbcaeb904040ecde5965335d2",
+  "compiled_model_hash": "1b6b0706d6e622937aa4512274b80f51fef261877e06492813d199fdf61f484f",
+  "physics_hz": 500,
+  "control_hz": 25,
+  "frame_count": 6294,
+  "physics_ticks": 125880,
+  "duration_s": 251.76000000000002,
+  "target_derivation": "accepted_target16 from FIRST post-step in each original 20-tick frame; never measured qpos or previous requested_reference16",
+  "source_record": {
+    "filename": "physics.jsonl",
+    "bytes": 1909656268,
+    "sha256": "4e7ccecda30014113c59df98b2bdab70507345c0f2e5dd79ed6ae4513dfe228c",
+    "final_chain_sha256": "e90bd7e556aa54bb41ff3b88bc20e796342d83a27d5ac40a727d8d4d0a9a783b"
+  },
+  "source_report_sha256": "84c7cfc9cd3d3c24083ff81107fe6a7529099e47ee6dad3c6e8e9ee6c3c01bc6",
+  "source_audit_sha256": "c5568141a4a04876ec8a356f631b2534d3fb6e936634ddbdb54296614e03713a",
+  "water_audit_sha256": "f01c970f8f1c39a46c9af3ae6969b2ca8adccc922e49f1dde286fb236bbcf078",
+  "controls_sha256": "a724fad57714e0e3b3213b4b5632cf10872d282f03e15443853831ff6f4f3baf",
+  "historical_status": "APPLE_FULL_CYCLE_MUJOCO_PASS",
+  "historical_checks": {
+    "first_bilateral_grasp_50ms": true,
+    "lift_30mm_hold_1s": true,
+    "basket_released_stable_2s": true,
+    "faucet_bilateral_contact_50ms": true,
+    "actual_faucet_on": true,
+    "actual_faucet_on_and_wash_state_3s": true,
+    "actual_faucet_off": true,
+    "second_bilateral_grasp_50ms": true,
+    "second_lift_30mm_hold_1s": true,
+    "tray_released_stable_2s": true,
+    "no_safety_stop": true
+  },
+  "final_scope": "APPLE_RELEASED_STABLE_ON_TRAY",
+  "public_api_full_cycle": "NOT_VERIFIED",
+  "extracted_full_reexecution": "NOT_TESTED",
+  "landmarks": [
+    {
+      "phase": "initial_settled",
+      "tick": 500,
+      "time_s": 1.0000000000000007,
+      "tcp_m": [
+        -0.5817268438515386,
+        -0.46061568793498,
+        1.2592791703028408
+      ]
+    },
+    {
+      "phase": "first_grasp",
+      "tick": 7160,
+      "time_s": 14.320000000001452,
+      "tcp_m": [
+        -0.8099403192466912,
+        -0.34978295481379096,
+        0.8297972299941436
+      ]
+    },
+    {
+      "phase": "first_held_1s",
+      "tick": 11680,
+      "time_s": 23.35999999999793,
+      "tcp_m": [
+        -0.8096887738070809,
+        -0.34983829499001956,
+        1.01422496364589
+      ]
+    },
+    {
+      "phase": "basket_lowered",
+      "tick": 31300,
+      "time_s": 62.60000000003054,
+      "tcp_m": [
+        -0.7793593016924962,
+        0.059952611496032794,
+        0.6993458240997572
+      ]
+    },
+    {
+      "phase": "basket_load_balance",
+      "tick": 31980
+    },
+    {
+      "phase": "basket_load_balance",
+      "tick": 32120
+    },
+    {
+      "phase": "basket_load_balance",
+      "tick": 32200
+    },
+    {
+      "phase": "basket_weight_balanced_before_open",
+      "tick": 32200,
+      "time_s": 64.40000000003131,
+      "tcp_m": [
+        -0.7792510929755037,
+        0.059978830383199996,
+        0.6982121094163556
+      ]
+    },
+    {
+      "phase": "basket_supported_before_open",
+      "tick": 32280,
+      "time_s": 64.56000000003094,
+      "tcp_m": [
+        -0.7792607887912658,
+        0.05997936018275956,
+        0.6982134409775222
+      ]
+    },
+    {
+      "phase": "basket_opened",
+      "tick": 33480,
+      "time_s": 66.96000000002535,
+      "tcp_m": [
+        -0.7792753394039158,
+        0.05998803761120556,
+        0.6982098047830668
+      ]
+    },
+    {
+      "phase": "basket_withdrawn",
+      "tick": 46980,
+      "time_s": 93.95999999996242,
+      "tcp_m": [
+        -0.7791542646075946,
+        0.05989676719583969,
+        1.0595626130626836
+      ]
+    },
+    {
+      "phase": "basket_stable",
+      "tick": 47980,
+      "time_s": 95.95999999995776,
+      "tcp_m": [
+        -0.7791599366235324,
+        0.05985559466511166,
+        1.0597791064992594
+      ]
+    },
+    {
+      "phase": "faucet_grasp",
+      "tick": 53080,
+      "time_s": 106.15999999993399,
+      "tcp_m": [
+        -0.8748502428101934,
+        0.22501299234282762,
+        0.9000126901681038
+      ]
+    },
+    {
+      "phase": "faucet_on",
+      "tick": 55060,
+      "time_s": 110.11999999992476,
+      "tcp_m": [
+        -0.8223781261243188,
+        0.24644074525455456,
+        0.8999505360015144
+      ]
+    },
+    {
+      "phase": "apple_wash_state_complete",
+      "tick": 56660,
+      "time_s": 113.3199999999173,
+      "tcp_m": [
+        -0.8220160896402867,
+        0.2467922574078269,
+        0.8998816176769534
+      ]
+    },
+    {
+      "phase": "faucet_off_released",
+      "tick": 63880,
+      "time_s": 127.75999999988365,
+      "tcp_m": [
+        -0.778984653705018,
+        0.05985466260601876,
+        1.059589657765883
+      ]
+    },
+    {
+      "phase": "second_grasp",
+      "tick": 74400,
+      "time_s": 148.7999999999824,
+      "tcp_m": [
+        -0.7978740856606943,
+        0.061023099954085155,
+        0.6977663913011742
+      ]
+    },
+    {
+      "phase": "second_held_1s",
+      "tick": 84020,
+      "time_s": 168.04000000007426,
+      "tcp_m": [
+        -0.7975606843005004,
+        0.06087651807082737,
+        1.052214565356933
+      ]
+    },
+    {
+      "phase": "tray_lowered",
+      "tick": 116720,
+      "time_s": 233.44000000038653,
+      "tcp_m": [
+        0.005884892149810413,
+        -0.39996606807271634,
+        0.847296571025787
+      ]
+    },
+    {
+      "phase": "tray_load_balance",
+      "tick": 117360
+    },
+    {
+      "phase": "tray_load_balance",
+      "tick": 117440
+    },
+    {
+      "phase": "tray_weight_balanced_before_open",
+      "tick": 117440,
+      "time_s": 234.8800000003934,
+      "tcp_m": [
+        0.00592808707638537,
+        -0.3999317369790308,
+        0.8463598259434121
+      ]
+    },
+    {
+      "phase": "tray_supported_before_open",
+      "tick": 117520,
+      "time_s": 235.04000000039417,
+      "tcp_m": [
+        0.005926487055413324,
+        -0.3999266236155069,
+        0.8463498467845207
+      ]
+    },
+    {
+      "phase": "tray_opened",
+      "tick": 118720,
+      "time_s": 237.44000000040563,
+      "tcp_m": [
+        0.005910949940045249,
+        -0.3998894803163892,
+        0.8462733940825063
+      ]
+    },
+    {
+      "phase": "tray_withdrawn",
+      "tick": 124880,
+      "time_s": 249.76000000046446,
+      "tcp_m": [
+        0.005986295172743647,
+        -0.3997001296384258,
+        1.037385398057742
+      ]
+    },
+    {
+      "phase": "tray_stable",
+      "tick": 125880,
+      "time_s": 251.760000000474,
+      "tcp_m": [
+        0.005827985091058509,
+        -0.39984248154278507,
+        1.0377113969857243
+      ]
+    }
+  ],
+  "water_clearance": {
+    "water_contract": {
+      "outlet_center_m": [
+        -0.93,
+        0.09999999999999995,
+        1.05
+      ],
+      "bottom_z_m": 0.648,
+      "direction_world": [
+        0,
+        0,
+        -1
+      ],
+      "nozzle_radius_m": 0.014,
+      "extra_radial_margin_m": 0.015,
+      "acceptance_radius_m": 0.028999999999999998,
+      "robot_collision_geoms": 28,
+      "all_robot_bodies_not_tcp_only": true,
+      "approximation": "Gravity-down potential water column at modeled terminal spout; no explicit nozzle or fluid physics exists",
+      "diagnostic_only_floor_replacement": true,
+      "simulation_model_unchanged": true
+    },
+    "checked_native_samples": 16900,
+    "minimum_native_clearance_m": 0.057147179651397956,
+    "minimum_water_on_clearance_m": 0.10358407244540968,
+    "native_intrusion_samples": 0,
+    "unresolved_native_intervals": 0
+  },
+  "reusable_scope": "one exact fixed scene; not certified for random reset scenes"
+}

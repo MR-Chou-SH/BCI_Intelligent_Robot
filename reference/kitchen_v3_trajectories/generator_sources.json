@@ -1,0 +1,94 @@
+{
+  "schema": 1,
+  "scope": "read-only historical source readers; use portable reference runner instead of old CLI",
+  "sources": [
+    {
+      "filename": "platform_apple_cycle.py",
+      "origin": "sealed_apple14_source_snapshot",
+      "original_sha256": "acc79cbfe7f46ed3de5f3a29be69dd57ac7afbf6d8dc66afc1604cb6d466e163",
+      "published_sha256": "acc79cbfe7f46ed3de5f3a29be69dd57ac7afbf6d8dc66afc1604cb6d466e163",
+      "personal_path_redacted": false,
+      "executable_entrypoint": false
+    },
+    {
+      "filename": "platform_apple_side_maintenance.py",
+      "origin": "sealed_apple14_source_snapshot",
+      "original_sha256": "d8b6763f0f79e219ec1fa034d5384e481dfe76369983f35f924c56db83fc014b",
+      "published_sha256": "d8b6763f0f79e219ec1fa034d5384e481dfe76369983f35f924c56db83fc014b",
+      "personal_path_redacted": false,
+      "executable_entrypoint": false
+    },
+    {
+      "filename": "platform_apple_side_maintenance_diagnostics.py",
+      "origin": "sealed_apple14_source_snapshot",
+      "original_sha256": "7a8eac2fb635bd1e78d512ab1b222f92d56b7b305b904f07ae3f8e1e24ed88b5",
+      "published_sha256": "7a8eac2fb635bd1e78d512ab1b222f92d56b7b305b904f07ae3f8e1e24ed88b5",
+      "personal_path_redacted": false,
+      "executable_entrypoint": false
+    },
+    {
+      "filename": "platform_faucet_clearance_maintenance.py",
+      "origin": "sealed_apple14_source_snapshot",
+      "original_sha256": "329d23bfc4d05543901b75db97f0f099d89814a72941f0bb8d772fd7c053277f",
+      "published_sha256": "329d23bfc4d05543901b75db97f0f099d89814a72941f0bb8d772fd7c053277f",
+      "personal_path_redacted": false,
+      "executable_entrypoint": false
+    },
+    {
+      "filename": "platform_microwave_cycle.py",
+      "origin": "current_original_generator_source_historical_entry_not_reexecuted",
+      "original_sha256": "11f172b3a5015d731b8b628e90979e8b6b40545ba1d5fc9227ed239252e84011",
+      "published_sha256": "11f172b3a5015d731b8b628e90979e8b6b40545ba1d5fc9227ed239252e84011",
+      "personal_path_redacted": false,
+      "executable_entrypoint": false
+    },
+    {
+      "filename": "platform_fullops_witness.py",
+      "origin": "current_original_generator_source_historical_entry_not_reexecuted",
+      "original_sha256": "9bce048d344951be8a8fa7b42fae8dae29eeca2f75ca1f33dcfee7a8d869c7ac",
+      "published_sha256": "9bce048d344951be8a8fa7b42fae8dae29eeca2f75ca1f33dcfee7a8d869c7ac",
+      "personal_path_redacted": false,
+      "executable_entrypoint": false
+    },
+    {
+      "filename": "platform_microwave_dynamics.py",
+      "origin": "current_original_generator_source_historical_entry_not_reexecuted",
+      "original_sha256": "b280d3a8d587a4ab5f0872cde41299fc593663b23f63b7ad964c8b7734d5a568",
+      "published_sha256": "b280d3a8d587a4ab5f0872cde41299fc593663b23f63b7ad964c8b7734d5a568",
+      "personal_path_redacted": false,
+      "executable_entrypoint": false
+    },
+    {
+      "filename": "platform_public_microwave_cycle.py",
+      "origin": "current_original_generator_source_historical_entry_not_reexecuted",
+      "original_sha256": "1d7425ee6392b310a46882a2f475d9bff206dc3d39c9daa5189f832b7aefdb50",
+      "published_sha256": "1d7425ee6392b310a46882a2f475d9bff206dc3d39c9daa5189f832b7aefdb50",
+      "personal_path_redacted": false,
+      "executable_entrypoint": false
+    },
+    {
+      "filename": "platform_public_physics_witness.py",
+      "origin": "current_original_generator_source_historical_entry_not_reexecuted",
+      "original_sha256": "ab453589ad6ce72e962d7f1f2b4a7a2da4315e3d0da731bc29034b4cd480b30b",
+      "published_sha256": "cafd1d0fc3e290f348a39a4e532fce4bd995d80815ee963ee7d6647b0e79991f",
+      "personal_path_redacted": true,
+      "executable_entrypoint": false
+    },
+    {
+      "filename": "platform_public_door_witness.py",
+      "origin": "current_original_generator_source_historical_entry_not_reexecuted",
+      "original_sha256": "024c2a306e512e2eb9424a3c272e13133dc217d7def95dafe67ce79274c6b484",
+      "published_sha256": "024c2a306e512e2eb9424a3c272e13133dc217d7def95dafe67ce79274c6b484",
+      "personal_path_redacted": false,
+      "executable_entrypoint": false
+    },
+    {
+      "filename": "platform_public_support_transition_witness.py",
+      "origin": "current_original_generator_source_historical_entry_not_reexecuted",
+      "original_sha256": "cb4310d2bc340a806deb0cfb5a24e5748c37bba455376f5d57d46b430d821c00",
+      "published_sha256": "cb4310d2bc340a806deb0cfb5a24e5748c37bba455376f5d57d46b430d821c00",
+      "personal_path_redacted": false,
+      "executable_entrypoint": false
+    }
+  ]
+}

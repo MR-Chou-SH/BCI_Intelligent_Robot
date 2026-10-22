@@ -1,0 +1,23 @@
+{
+  "schema": "kitchen_fixed_reference_v1",
+  "files": {
+    "apple_controls_25hz.jsonl": {
+      "bytes": 4007513,
+      "sha256": "a724fad57714e0e3b3213b4b5632cf10872d282f03e15443853831ff6f4f3baf"
+    },
+    "apple_metadata.json": {
+      "bytes": 8092,
+      "sha256": "6ac300622315c0fe52e55ab335996123a14527e2162dae204d58e53620e9812a"
+    },
+    "burger_metadata.json": {
+      "bytes": 27979,
+      "sha256": "9bc952feecb2af7dc362d84402ddfe31523ba1a175d2c7573c87cf18c20b8cd3"
+    },
+    "burger_public_calls.jsonl": {
+      "bytes": 808261,
+      "sha256": "6c346b26c9c1a9f734d92994fc7666d68a34d25b64437d463125959bfa6cde42"
+    }
+  },
+  "physical_evidence_is_external": true,
+  "extraction_tool_sha256": "bc2d0b20b7d3c787257293fefe3f5189859d899fab4f6ed6557500d657807bbf"
+}

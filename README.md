@@ -1,5 +1,16 @@
 # BCI Intelligent Robot
 
+## Kitchen V3 科研交接入口
+
+**负责 VLA / 轨迹规划的同学请先读 [中文开发交接指南](docs/kitchen_platform_v3_20261020/VLA_PLANNER_HANDOFF_CN.md)。** 无需 Quest 即可在 Windows PowerShell 5.1 启动 MuJoCo、随机 reset、调用 Planner API，并读取两条真实固定场景参考控制轨迹。
+
+- [Planner API 中文接口说明](docs/kitchen_platform_v3_20261020/PLANNER_API_GUIDE_CN.md)
+- [两条参考轨迹及验证边界](reference/kitchen_v3_trajectories/README.md)
+- [Quest Research 中文用户手册（39 项界面字段）](docs/kitchen_platform_v3_20261020/RESEARCH_USER_GUIDE_CN.md)
+- [本次发布验收结果](docs/kitchen_platform_v3_20261020/HANDOFF_RELEASE_VERIFICATION_CN.md)
+
+本分支使用候选 013 / API 1.2.1；候选尚未擅自晋升为正式布局。苹果新版避水为内部动力学 PASS，汉堡有公开 API 完整流程证据且终点仅为炉外持物；均不代表随机场景泛化成功。原 Goal 保持 PAUSED。本分支不启动 VLA 训练或通用规划器研发，下面保留原项目背景。
+
 研究 Context-aware BCI Shared Autonomy：EEG 提供用户的低带宽 intent evidence，任务 context 逐步支持更高的机器人自主性。
 
 ## Project Goal
@@ -16,13 +27,13 @@ Passthrough、Quest Camera、YOLO、StableTarget 和现实场景 SSVEP binding �
 
 ## Current Stage
 
-M1–M8 工程能力已完成，历史 warnings 和 evidence boundaries 保留。下一阶段是 **M9 — Virtual Manipulation Baseline**；详细当前状态见 [PROJECT_STATUS.md](C:/Users/zsh21/Desktop/BCI_Intelligent_Robot/docs/status/PROJECT_STATUS.md)，研究路线见 [M9–M15 roadmap](C:/Users/zsh21/Desktop/BCI_Intelligent_Robot/docs/roadmap/context-aware-bci-shared-autonomy.md)。
+以下是原项目历史背景，不覆盖上方 Kitchen V3 交接范围。M1–M8 工程能力已完成，历史 warnings 和 evidence boundaries 保留。该历史路线下一阶段是 **M9 — Virtual Manipulation Baseline**；详细状态见 [PROJECT_STATUS.md](docs/status/PROJECT_STATUS.md)，研究路线见 [M9–M15 roadmap](docs/roadmap/context-aware-bci-shared-autonomy.md)。
 
 M9 的 logical block ID 示例为 `block_red_01`、`block_green_01`、`block_blue_01`。MuJoCo 低层仿真优先复用 `feature/add-robotArm-simulation`；本项目承担 BCI selection、task/command interface、integration、execution status/feedback 和端到端实验。M9 不做 VLM、LLM、Context AI、RL 或 Dynamic Stopping。
 
 `m7_unity6000/` 是 Unity 6000.0.66f2 工程；`vr_stimulus/` 是 Unity 6000.5.8f1 的 M1–M6 legacy 工程和可复用代码来源。
 
-M9 当前复用 FR3 + UMI + MuJoCo 快照 `a42a0876350f6c94747ce93fa640807b14b18bfd`：`robot_arm/` 保存运行所需的原始规划器、预编译模型和被引用网格，`integration/m9_mujoco_execution.py` 实现 logical ID 到场景对象的绑定及 headless 调用。运行环境要求和场景映射说明见 [robot_arm/README.md](C:/Users/zsh21/Desktop/BCI_Intelligent_Robot/robot_arm/README.md)。真实 headless smoke 已在隔离的 CPython 3.12.14 + MuJoCo 3.12.0 环境中返回 `place_ok`；默认 CPython 3.9 verifier 环境保持未安装 MuJoCo。
+M9 当前复用 FR3 + UMI + MuJoCo 快照 `a42a0876350f6c94747ce93fa640807b14b18bfd`：`robot_arm/` 保存运行所需的原始规划器、预编译模型和被引用网格，`integration/m9_mujoco_execution.py` 实现 logical ID 到场景对象的绑定及 headless 调用。运行环境要求和场景映射说明见 [robot_arm/README.md](robot_arm/README.md)。真实 headless smoke 已在隔离的 CPython 3.12.14 + MuJoCo 3.12.0 环境中返回 `place_ok`；默认 CPython 3.9 verifier 环境保持未安装 MuJoCo。
 
 ## Main Directories
 

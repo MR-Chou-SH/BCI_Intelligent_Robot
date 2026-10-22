@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "layouts": {
+    "canonical": {
+      "layout_id": "canonical",
+      "microwave_quat_wxyz": [1.0, 0.0, 0.0, 0.0],
+      "body_positions": {}
+    },
+    "wheelchair_detail_v1": {
+      "layout_id": "wheelchair_detail_v1",
+      "microwave_quat_wxyz": [1.0, 0.0, 0.0, 0.0],
+      "body_positions": {},
+      "visual_features": ["wheelchair_details_v1"]
+    },
+    "microwave_front_food_row_v1": {
+      "layout_id": "microwave_front_food_row_v1",
+      "microwave_quat_wxyz": [0.7071067811865476, 0.0, 0.0, 0.7071067811865476],
+      "body_positions": {
+        "burger_container": [0.42, -0.10, 0.81],
+        "burger": [0.42, -0.10, 0.85],
+        "hotdog_container": [0.42, -0.24, 0.81],
+        "hotdog": [0.42, -0.24, 0.85],
+        "rice_container": [0.42, -0.38, 0.81]
+      }
+    }
+  }
+}

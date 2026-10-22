@@ -1,0 +1,1011 @@
+{
+  "schema": 1,
+  "layout": "kitchen_v3_norice_candidate_013",
+  "seed": 0,
+  "initialization_profile": "fixed",
+  "scene_hash": "f52f3483a7d4863ead908a98aa2aae726f13b5f67e6468a1ed5323c5f3771e27",
+  "control_hash": "b6722bb912fddedf853d54925fda092b8ea2833cbcaeb904040ecde5965335d2",
+  "initialization_hash": "79c2a5fac9be77f32002de5e4dc5cd5dd07acf54e1272a79993f6c9da3a89ac0",
+  "source_control_hash": "2ff69af80d5c6fc0724382dcd478ffa2e0699a227153c46d263a368c5b246155",
+  "source_record_sha256": "f4b117e30e3f0464a9be84d133458867f2a6c6b8945a99fd3500c7eec051a94b",
+  "source_record_ticks": 64160,
+  "source_duration_s": 128.32,
+  "public_actual_ticks": 64360,
+  "public_duration_s": 128.72,
+  "source_report_sha256": "a6a2cb97b6b3909895490ca523c8fa32054d77cd509e21fd74192f52053b1a5e",
+  "rpc_sha256": "eb037b897853f57e130f6e67514cbfd2fd5e6387a4ef04197a5b9130f0b68d5f",
+  "public_calls_sha256": "6c346b26c9c1a9f734d92994fc7666d68a34d25b64437d463125959bfa6cde42",
+  "raw_records_manifest_sha256": "e9fc0f2b8fc444fdb5dfb1c829303ad3396dcb0c309388169b199514607af88c",
+  "raw_inventory_type": "dict",
+  "public_call_count": 1329,
+  "source_plan_sha256": "ac6f587cf976865a17926056c8d4e751ec8244b7ed8e9c4c68bff4f502fed3b1",
+  "historical_audit": {
+    "status": "PUBLIC_FULL_MICROWAVE_CYCLE_HELD_OUTSIDE_PHYSICS_PASS",
+    "same_public_run_full_raw_audit": "SAME_PUBLIC_RUN_FULL_PHYSICAL_WINDOWS_PASS",
+    "physical_checks": {
+      "initially_closed": true,
+      "physical_button_force_and_start": true,
+      "explicit_5s_heat_completed": true
+    },
+    "physical_windows": {
+      "food": {
+        "pass_all": true,
+        "start_tick": 1000,
+        "end_tick": 64360,
+        "samples": 63360,
+        "first_bad_ticks": [],
+        "duration_s": 126.72
+      },
+      "initial_load": {
+        "pass_all": true,
+        "start_tick": 15160,
+        "end_tick": 15660,
+        "samples": 500,
+        "first_bad_ticks": [],
+        "duration_s": 1.0
+      },
+      "retrieval_load": {
+        "pass_all": true,
+        "start_tick": 61400,
+        "end_tick": 61900,
+        "samples": 500,
+        "first_bad_ticks": [],
+        "duration_s": 1.0
+      },
+      "cavity_released_2s": {
+        "pass_all": true,
+        "start_tick": 23260,
+        "end_tick": 24260,
+        "samples": 1000,
+        "first_bad_ticks": [],
+        "duration_s": 2.0
+      },
+      "final_outside_held_1s": {
+        "pass_all": true,
+        "start_tick": 63860,
+        "end_tick": 64360,
+        "samples": 500,
+        "first_bad_ticks": [],
+        "duration_s": 1.0
+      },
+      "opening_acquired": {
+        "pass_all": true,
+        "start_tick": 3475,
+        "end_tick": 3500,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "opening_retained": {
+        "pass_all": true,
+        "start_tick": 3500,
+        "end_tick": 8280,
+        "samples": 4780,
+        "first_bad_ticks": [],
+        "duration_s": 9.56
+      },
+      "meal_acquired": {
+        "pass_all": true,
+        "start_tick": 14395,
+        "end_tick": 14420,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "meal_retained": {
+        "pass_all": true,
+        "start_tick": 14420,
+        "end_tick": 19060,
+        "samples": 4640,
+        "first_bad_ticks": [],
+        "duration_s": 9.28
+      },
+      "closing_acquired": {
+        "pass_all": true,
+        "start_tick": 26715,
+        "end_tick": 26740,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "closing_retained": {
+        "pass_all": true,
+        "start_tick": 26740,
+        "end_tick": 32840,
+        "samples": 6100,
+        "first_bad_ticks": [],
+        "duration_s": 12.200000000000001
+      },
+      "reopening_acquired": {
+        "pass_all": true,
+        "start_tick": 49175,
+        "end_tick": 49200,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "reopening_retained": {
+        "pass_all": true,
+        "start_tick": 49200,
+        "end_tick": 53980,
+        "samples": 4780,
+        "first_bad_ticks": [],
+        "duration_s": 9.56
+      },
+      "retrieval_acquired": {
+        "pass_all": true,
+        "start_tick": 61015,
+        "end_tick": 61040,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "retrieval_retained": {
+        "pass_all": true,
+        "start_tick": 61040,
+        "end_tick": 64360,
+        "samples": 3320,
+        "first_bad_ticks": [],
+        "duration_s": 6.640000000000001
+      },
+      "opening_released": {
+        "pass_all": true,
+        "start_tick": 9155,
+        "end_tick": 9180,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "meal_released": {
+        "pass_all": true,
+        "start_tick": 19935,
+        "end_tick": 19960,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "closing_released": {
+        "pass_all": true,
+        "start_tick": 33715,
+        "end_tick": 33740,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "reopening_released": {
+        "pass_all": true,
+        "start_tick": 54855,
+        "end_tick": 54880,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "button_released": {
+        "pass_all": true,
+        "start_tick": 40155,
+        "end_tick": 40180,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "opened": {
+        "pass_all": true,
+        "start_tick": 8255,
+        "end_tick": 8280,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "closed": {
+        "pass_all": true,
+        "start_tick": 32815,
+        "end_tick": 32840,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      },
+      "reopened": {
+        "pass_all": true,
+        "start_tick": 53955,
+        "end_tick": 53980,
+        "samples": 25,
+        "first_bad_ticks": [],
+        "duration_s": 0.05
+      }
+    },
+    "source_frames": 3208,
+    "source_ticks": 64160,
+    "extra_actual_frames": 10,
+    "extra_actual_ticks": 200,
+    "actual_ticks": 64360,
+    "actual_simulated_seconds": 128.72,
+    "settling_by_anchor": [
+      {
+        "source_tick": 35500,
+        "extra_ticks": 100
+      },
+      {
+        "source_tick": 35600,
+        "extra_ticks": 0
+      },
+      {
+        "source_tick": 35700,
+        "extra_ticks": 0
+      },
+      {
+        "source_tick": 35800,
+        "extra_ticks": 0
+      },
+      {
+        "source_tick": 40400,
+        "extra_ticks": 100
+      },
+      {
+        "source_tick": 40500,
+        "extra_ticks": 0
+      },
+      {
+        "source_tick": 40600,
+        "extra_ticks": 0
+      },
+      {
+        "source_tick": 40700,
+        "extra_ticks": 0
+      }
+    ],
+    "control_hash": "b6722bb912fddedf853d54925fda092b8ea2833cbcaeb904040ecde5965335d2",
+    "source_plan_hash": "6335ce4b2b9126c32abb9610243e618b56b31165d3228366f4df0611df9d236e"
+  },
+  "final_scope": "HELD_OUTSIDE_NOT_TABLE_RELEASE_OR_TRAY_DELIVERY",
+  "extracted_full_reexecution": "NOT_TESTED",
+  "control_hz": 25,
+  "physics_hz": 500,
+  "landmarks": {
+    "settled": 1000,
+    "pregrasp": 2120,
+    "approach": 2600,
+    "door_74": 8040,
+    "door_open_home": 11020,
+    "meal_pregrasp": 12940,
+    "meal_grasp": 13520,
+    "qualified_burger_lift": 15660,
+    "meal_place": 19060,
+    "meal_exit_home": 23260,
+    "closing_above": 25260,
+    "closing_grasp": 25840,
+    "closing_0": 32600,
+    "closed_home": 35500,
+    "button_pre": 38840,
+    "button_press": 39260,
+    "physical_heat_started": 39980,
+    "button_retreat": 40400,
+    "heated_home": 43740,
+    "reopen_pre": 47620,
+    "reopen_grasp": 48100,
+    "reopening_74": 53540,
+    "reopened_home": 56520,
+    "retrieve_lip": 59220,
+    "retrieve_grasp": 59940,
+    "retrieve_lift": 61100,
+    "retrieved_outside": 64160,
+    "door_acquired": 3500,
+    "door_release": 8280,
+    "door_end": 9180,
+    "meal_acquired": 14420,
+    "meal_end": 19960,
+    "cavity_stable_end": 24260,
+    "closing_acquired": 26740,
+    "closing_release": 32840,
+    "closing_end": 33740,
+    "reopen_acquired": 49000,
+    "reopen_release": 53780,
+    "reopen_end": 54680,
+    "retrieve_acquired": 60840,
+    "retrieve_load": 61700,
+    "button_end": 40080
+  },
+  "phases": [
+    {
+      "start_tick": 0,
+      "end_tick": 2480,
+      "name": "transit",
+      "phase": "transit",
+      "target": null
+    },
+    {
+      "start_tick": 2480,
+      "end_tick": 3500,
+      "name": "opening",
+      "phase": "acquire",
+      "target": "microwave_door_handle",
+      "local_origin_tick": 2480,
+      "measured_max_displacement_m": 0.026070349751887205,
+      "end_contact": false
+    },
+    {
+      "start_tick": 3500,
+      "end_tick": 8280,
+      "name": "opening",
+      "phase": "device",
+      "target": "microwave_door_handle",
+      "local_origin_tick": 3500,
+      "measured_max_displacement_m": 0.31272660458693413,
+      "end_contact": false
+    },
+    {
+      "start_tick": 8280,
+      "end_tick": 9180,
+      "name": "opening",
+      "phase": "release",
+      "target": "microwave_door_handle",
+      "local_origin_tick": 8280,
+      "measured_max_displacement_m": 0.00027739984321662527,
+      "end_contact": true
+    },
+    {
+      "start_tick": 9180,
+      "end_tick": 13420,
+      "name": "transit",
+      "phase": "transit",
+      "target": null
+    },
+    {
+      "start_tick": 13420,
+      "end_tick": 14420,
+      "name": "meal",
+      "phase": "acquire",
+      "target": "burger_container",
+      "local_origin_tick": 13420,
+      "measured_max_displacement_m": 0.028227601049071925,
+      "end_contact": false
+    },
+    {
+      "start_tick": 14420,
+      "end_tick": 19060,
+      "name": "meal",
+      "phase": "carry",
+      "target": "burger_container",
+      "local_origin_tick": 14420,
+      "measured_max_displacement_m": 0.6140110062523421,
+      "end_contact": false
+    },
+    {
+      "start_tick": 19060,
+      "end_tick": 19960,
+      "name": "meal",
+      "phase": "release",
+      "target": "burger_container",
+      "local_origin_tick": 19060,
+      "measured_max_displacement_m": 0.0037098441870040953,
+      "end_contact": true
+    },
+    {
+      "start_tick": 19960,
+      "end_tick": 25700,
+      "name": "transit",
+      "phase": "transit",
+      "target": null
+    },
+    {
+      "start_tick": 25700,
+      "end_tick": 26740,
+      "name": "closing",
+      "phase": "acquire",
+      "target": "microwave_door_handle",
+      "local_origin_tick": 25700,
+      "measured_max_displacement_m": 0.027373713102940827,
+      "end_contact": false
+    },
+    {
+      "start_tick": 26740,
+      "end_tick": 32840,
+      "name": "closing",
+      "phase": "device",
+      "target": "microwave_door_handle",
+      "local_origin_tick": 26740,
+      "measured_max_displacement_m": 0.3106289396268003,
+      "end_contact": false
+    },
+    {
+      "start_tick": 32840,
+      "end_tick": 33740,
+      "name": "closing",
+      "phase": "release",
+      "target": "microwave_door_handle",
+      "local_origin_tick": 32840,
+      "measured_max_displacement_m": 0.0002838852080645653,
+      "end_contact": true
+    },
+    {
+      "start_tick": 33740,
+      "end_tick": 39120,
+      "name": "transit",
+      "phase": "transit",
+      "target": null
+    },
+    {
+      "start_tick": 39120,
+      "end_tick": 39980,
+      "name": "button",
+      "phase": "acquire",
+      "target": "microwave_start_geom",
+      "local_origin_tick": 39120,
+      "measured_max_displacement_m": 0.025342773883989013,
+      "end_contact": false
+    },
+    {
+      "start_tick": 39980,
+      "end_tick": 40080,
+      "name": "button",
+      "phase": "release",
+      "target": "microwave_start_geom",
+      "local_origin_tick": 39120,
+      "measured_max_displacement_m": 0.02534315495119756,
+      "end_contact": true
+    },
+    {
+      "start_tick": 40080,
+      "end_tick": 47980,
+      "name": "transit",
+      "phase": "transit",
+      "target": null
+    },
+    {
+      "start_tick": 47980,
+      "end_tick": 49000,
+      "name": "reopening",
+      "phase": "acquire",
+      "target": "microwave_door_handle",
+      "local_origin_tick": 47980,
+      "measured_max_displacement_m": 0.026502766169002785,
+      "end_contact": false
+    },
+    {
+      "start_tick": 49000,
+      "end_tick": 53780,
+      "name": "reopening",
+      "phase": "device",
+      "target": "microwave_door_handle",
+      "local_origin_tick": 49000,
+      "measured_max_displacement_m": 0.31286711010267304,
+      "end_contact": false
+    },
+    {
+      "start_tick": 53780,
+      "end_tick": 54680,
+      "name": "reopening",
+      "phase": "release",
+      "target": "microwave_door_handle",
+      "local_origin_tick": 53780,
+      "measured_max_displacement_m": 0.0002685886287496049,
+      "end_contact": true
+    },
+    {
+      "start_tick": 54680,
+      "end_tick": 59820,
+      "name": "transit",
+      "phase": "transit",
+      "target": null
+    },
+    {
+      "start_tick": 59820,
+      "end_tick": 60840,
+      "name": "retrieval",
+      "phase": "acquire",
+      "target": "burger_container",
+      "local_origin_tick": 59820,
+      "measured_max_displacement_m": 0.02941976746329947,
+      "end_contact": false
+    },
+    {
+      "start_tick": 60840,
+      "end_tick": 64160,
+      "name": "retrieval",
+      "phase": "carry",
+      "target": "burger_container",
+      "local_origin_tick": 60840,
+      "measured_max_displacement_m": 0.36304165211416206,
+      "end_contact": false
+    }
+  ],
+  "execution_clock": {
+    "schema": 2,
+    "semantics": "SOURCE_SAMPLES_AND_FRAME_ENTRIES_DIFFER_AT_EACH_INSERTION",
+    "source_sample_rule": "t + sum(H[a] for a < t)",
+    "source_frame_entry_rule": "t + sum(H[a] for a <= t)",
+    "gates": [
+      {
+        "source_tick": 35500,
+        "extra_ticks": 100,
+        "hold_reference": [
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.0,
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.0
+        ]
+      },
+      {
+        "source_tick": 35600,
+        "extra_ticks": 0,
+        "hold_reference": [
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.0,
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.01
+        ]
+      },
+      {
+        "source_tick": 35700,
+        "extra_ticks": 0,
+        "hold_reference": [
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.0,
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.020000000000000004
+        ]
+      },
+      {
+        "source_tick": 35800,
+        "extra_ticks": 0,
+        "hold_reference": [
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.0,
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.030000000000000013
+        ]
+      },
+      {
+        "source_tick": 40400,
+        "extra_ticks": 100,
+        "hold_reference": [
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.0,
+          0.3016565139436686,
+          0.9509948870543388,
+          -0.6324564968637838,
+          -1.236120399555783,
+          1.3977036607570485,
+          1.3557479393715788,
+          2.455290324001784,
+          0.036722000000000005
+        ]
+      },
+      {
+        "source_tick": 40500,
+        "extra_ticks": 0,
+        "hold_reference": [
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.0,
+          0.3016565139436686,
+          0.9509948870543388,
+          -0.6324564968637838,
+          -1.236120399555783,
+          1.3977036607570485,
+          1.3557479393715788,
+          2.455290324001784,
+          0.026721999999999996
+        ]
+      },
+      {
+        "source_tick": 40600,
+        "extra_ticks": 0,
+        "hold_reference": [
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.0,
+          0.3016565139436686,
+          0.9509948870543388,
+          -0.6324564968637838,
+          -1.236120399555783,
+          1.3977036607570485,
+          1.3557479393715788,
+          2.455290324001784,
+          0.016721999999999987
+        ]
+      },
+      {
+        "source_tick": 40700,
+        "extra_ticks": 0,
+        "hold_reference": [
+          0.0,
+          -0.25,
+          0.0,
+          -1.85,
+          0.0,
+          1.75,
+          -0.7853981633974483,
+          0.0,
+          0.3016565139436686,
+          0.9509948870543388,
+          -0.6324564968637838,
+          -1.236120399555783,
+          1.3977036607570485,
+          1.3557479393715788,
+          2.455290324001784,
+          0.006721999999999987
+        ]
+      }
+    ],
+    "maximum_extra_ticks": 4000,
+    "inserted_steps_are_source_frames": false,
+    "source_frame_count": 3208,
+    "extra_actual_ticks": 200,
+    "extra_actual_seconds": 0.4,
+    "source_end_tick": 64160,
+    "execution_end_tick": 64360,
+    "mapped_marks": {
+      "settled": 1000,
+      "pregrasp": 2120,
+      "approach": 2600,
+      "door_74": 8040,
+      "door_open_home": 11020,
+      "meal_pregrasp": 12940,
+      "meal_grasp": 13520,
+      "qualified_burger_lift": 15660,
+      "meal_place": 19060,
+      "meal_exit_home": 23260,
+      "closing_above": 25260,
+      "closing_grasp": 25840,
+      "closing_0": 32600,
+      "closed_home": 35500,
+      "button_pre": 38940,
+      "button_press": 39360,
+      "physical_heat_started": 40080,
+      "button_retreat": 40500,
+      "heated_home": 43940,
+      "reopen_pre": 47820,
+      "reopen_grasp": 48300,
+      "reopening_74": 53740,
+      "reopened_home": 56720,
+      "retrieve_lip": 59420,
+      "retrieve_grasp": 60140,
+      "retrieve_lift": 61300,
+      "retrieved_outside": 64360,
+      "door_acquired": 3500,
+      "door_release": 8280,
+      "door_end": 9180,
+      "meal_acquired": 14420,
+      "meal_end": 19960,
+      "cavity_stable_end": 24260,
+      "closing_acquired": 26740,
+      "closing_release": 32840,
+      "closing_end": 33740,
+      "reopen_acquired": 49200,
+      "reopen_release": 53980,
+      "reopen_end": 54880,
+      "retrieve_acquired": 61040,
+      "retrieve_load": 61900,
+      "button_end": 40180
+    },
+    "mapped_phases": [
+      {
+        "start_tick": 0,
+        "end_tick": 2480,
+        "name": "transit",
+        "phase": "transit",
+        "target": null,
+        "source_start_tick": 0,
+        "source_end_tick": 2480
+      },
+      {
+        "start_tick": 2480,
+        "end_tick": 3500,
+        "name": "opening",
+        "phase": "acquire",
+        "target": "microwave_door_handle",
+        "local_origin_tick": 2480,
+        "measured_max_displacement_m": 0.026070349751887205,
+        "end_contact": false,
+        "source_start_tick": 2480,
+        "source_end_tick": 3500,
+        "source_local_origin_tick": 2480
+      },
+      {
+        "start_tick": 3500,
+        "end_tick": 8280,
+        "name": "opening",
+        "phase": "device",
+        "target": "microwave_door_handle",
+        "local_origin_tick": 3500,
+        "measured_max_displacement_m": 0.31272660458693413,
+        "end_contact": false,
+        "source_start_tick": 3500,
+        "source_end_tick": 8280,
+        "source_local_origin_tick": 3500
+      },
+      {
+        "start_tick": 8280,
+        "end_tick": 9180,
+        "name": "opening",
+        "phase": "release",
+        "target": "microwave_door_handle",
+        "local_origin_tick": 8280,
+        "measured_max_displacement_m": 0.00027739984321662527,
+        "end_contact": true,
+        "source_start_tick": 8280,
+        "source_end_tick": 9180,
+        "source_local_origin_tick": 8280
+      },
+      {
+        "start_tick": 9180,
+        "end_tick": 13420,
+        "name": "transit",
+        "phase": "transit",
+        "target": null,
+        "source_start_tick": 9180,
+        "source_end_tick": 13420
+      },
+      {
+        "start_tick": 13420,
+        "end_tick": 14420,
+        "name": "meal",
+        "phase": "acquire",
+        "target": "burger_container",
+        "local_origin_tick": 13420,
+        "measured_max_displacement_m": 0.028227601049071925,
+        "end_contact": false,
+        "source_start_tick": 13420,
+        "source_end_tick": 14420,
+        "source_local_origin_tick": 13420
+      },
+      {
+        "start_tick": 14420,
+        "end_tick": 19060,
+        "name": "meal",
+        "phase": "carry",
+        "target": "burger_container",
+        "local_origin_tick": 14420,
+        "measured_max_displacement_m": 0.6140110062523421,
+        "end_contact": false,
+        "source_start_tick": 14420,
+        "source_end_tick": 19060,
+        "source_local_origin_tick": 14420
+      },
+      {
+        "start_tick": 19060,
+        "end_tick": 19960,
+        "name": "meal",
+        "phase": "release",
+        "target": "burger_container",
+        "local_origin_tick": 19060,
+        "measured_max_displacement_m": 0.0037098441870040953,
+        "end_contact": true,
+        "source_start_tick": 19060,
+        "source_end_tick": 19960,
+        "source_local_origin_tick": 19060
+      },
+      {
+        "start_tick": 19960,
+        "end_tick": 25700,
+        "name": "transit",
+        "phase": "transit",
+        "target": null,
+        "source_start_tick": 19960,
+        "source_end_tick": 25700
+      },
+      {
+        "start_tick": 25700,
+        "end_tick": 26740,
+        "name": "closing",
+        "phase": "acquire",
+        "target": "microwave_door_handle",
+        "local_origin_tick": 25700,
+        "measured_max_displacement_m": 0.027373713102940827,
+        "end_contact": false,
+        "source_start_tick": 25700,
+        "source_end_tick": 26740,
+        "source_local_origin_tick": 25700
+      },
+      {
+        "start_tick": 26740,
+        "end_tick": 32840,
+        "name": "closing",
+        "phase": "device",
+        "target": "microwave_door_handle",
+        "local_origin_tick": 26740,
+        "measured_max_displacement_m": 0.3106289396268003,
+        "end_contact": false,
+        "source_start_tick": 26740,
+        "source_end_tick": 32840,
+        "source_local_origin_tick": 26740
+      },
+      {
+        "start_tick": 32840,
+        "end_tick": 33740,
+        "name": "closing",
+        "phase": "release",
+        "target": "microwave_door_handle",
+        "local_origin_tick": 32840,
+        "measured_max_displacement_m": 0.0002838852080645653,
+        "end_contact": true,
+        "source_start_tick": 32840,
+        "source_end_tick": 33740,
+        "source_local_origin_tick": 32840
+      },
+      {
+        "start_tick": 33740,
+        "end_tick": 39220,
+        "name": "transit",
+        "phase": "transit",
+        "target": null,
+        "source_start_tick": 33740,
+        "source_end_tick": 39120
+      },
+      {
+        "start_tick": 39220,
+        "end_tick": 40080,
+        "name": "button",
+        "phase": "acquire",
+        "target": "microwave_start_geom",
+        "local_origin_tick": 39220,
+        "measured_max_displacement_m": 0.025342773883989013,
+        "end_contact": false,
+        "source_start_tick": 39120,
+        "source_end_tick": 39980,
+        "source_local_origin_tick": 39120
+      },
+      {
+        "start_tick": 40080,
+        "end_tick": 40180,
+        "name": "button",
+        "phase": "release",
+        "target": "microwave_start_geom",
+        "local_origin_tick": 39220,
+        "measured_max_displacement_m": 0.02534315495119756,
+        "end_contact": true,
+        "source_start_tick": 39980,
+        "source_end_tick": 40080,
+        "source_local_origin_tick": 39120
+      },
+      {
+        "start_tick": 40180,
+        "end_tick": 48180,
+        "name": "transit",
+        "phase": "transit",
+        "target": null,
+        "source_start_tick": 40080,
+        "source_end_tick": 47980
+      },
+      {
+        "start_tick": 48180,
+        "end_tick": 49200,
+        "name": "reopening",
+        "phase": "acquire",
+        "target": "microwave_door_handle",
+        "local_origin_tick": 48180,
+        "measured_max_displacement_m": 0.026502766169002785,
+        "end_contact": false,
+        "source_start_tick": 47980,
+        "source_end_tick": 49000,
+        "source_local_origin_tick": 47980
+      },
+      {
+        "start_tick": 49200,
+        "end_tick": 53980,
+        "name": "reopening",
+        "phase": "device",
+        "target": "microwave_door_handle",
+        "local_origin_tick": 49200,
+        "measured_max_displacement_m": 0.31286711010267304,
+        "end_contact": false,
+        "source_start_tick": 49000,
+        "source_end_tick": 53780,
+        "source_local_origin_tick": 49000
+      },
+      {
+        "start_tick": 53980,
+        "end_tick": 54880,
+        "name": "reopening",
+        "phase": "release",
+        "target": "microwave_door_handle",
+        "local_origin_tick": 53980,
+        "measured_max_displacement_m": 0.0002685886287496049,
+        "end_contact": true,
+        "source_start_tick": 53780,
+        "source_end_tick": 54680,
+        "source_local_origin_tick": 53780
+      },
+      {
+        "start_tick": 54880,
+        "end_tick": 60020,
+        "name": "transit",
+        "phase": "transit",
+        "target": null,
+        "source_start_tick": 54680,
+        "source_end_tick": 59820
+      },
+      {
+        "start_tick": 60020,
+        "end_tick": 61040,
+        "name": "retrieval",
+        "phase": "acquire",
+        "target": "burger_container",
+        "local_origin_tick": 60020,
+        "measured_max_displacement_m": 0.02941976746329947,
+        "end_contact": false,
+        "source_start_tick": 59820,
+        "source_end_tick": 60840,
+        "source_local_origin_tick": 59820
+      },
+      {
+        "start_tick": 61040,
+        "end_tick": 64360,
+        "name": "retrieval",
+        "phase": "carry",
+        "target": "burger_container",
+        "local_origin_tick": 61040,
+        "measured_max_displacement_m": 0.36304165211416206,
+        "end_contact": false,
+        "source_start_tick": 60840,
+        "source_end_tick": 64160,
+        "source_local_origin_tick": 60840
+      }
+    ]
+  },
+  "reusable_scope": "actual successful RPC argument sequence; fresh tokens/owner required; fixed scene only"
+}

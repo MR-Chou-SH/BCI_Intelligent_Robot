@@ -1,0 +1,275 @@
+{
+  "version": "V1.1",
+  "authorization": "User supplied complete catalogue in this thread on 2026-10-19; no invented task IDs",
+  "atomic": [
+    {
+      "id": "L01",
+      "instruction": "左臂抓取指定蔬果",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "L02",
+      "instruction": "左臂将蔬果放入果篮",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "L03",
+      "instruction": "左臂打开水龙头",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "L04",
+      "instruction": "左臂关闭水龙头",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "L05",
+      "instruction": "左臂从果篮取出蔬果",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "L06",
+      "instruction": "左臂将蔬果放到木质托盘",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "R01",
+      "instruction": "右臂打开微波炉门",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "R02",
+      "instruction": "右臂抓取指定主食",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "R03",
+      "instruction": "右臂将主食放入微波炉",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "R04",
+      "instruction": "右臂关闭微波炉门",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "R05",
+      "instruction": "右臂按下启动按钮",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "R06",
+      "instruction": "右臂从微波炉取出主食",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "R07",
+      "instruction": "右臂将主食放到木质托盘",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "R08",
+      "instruction": "右臂从桌面临时位置抓取主食",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "R09",
+      "instruction": "右臂将主食放到桌面临时安全位置",
+      "status": "NOT_IMPLEMENTED"
+    },
+    {
+      "id": "B01",
+      "instruction": "左右机械臂共同抓取木托盘、抬升、保持基本水平搬运并放置到用户小桌板上",
+      "status": "NOT_IMPLEMENTED"
+    }
+  ],
+  "composite": [
+    {
+      "id": "C01",
+      "instruction": "左臂将指定蔬果放入果篮",
+      "chain": [
+        "L01",
+        "L02"
+      ],
+      "stage": "I",
+      "primary_acceptance": true,
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "C02",
+      "instruction": "右臂将指定主食放入微波炉",
+      "chain": [
+        "R01",
+        "R02",
+        "R03",
+        "R04"
+      ],
+      "stage": "I",
+      "primary_acceptance": true,
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "C03",
+      "instruction": "双臂独立操作：左臂放水果，右臂放主食",
+      "chain": [
+        "parallel(C01,C02)"
+      ],
+      "stage": "I",
+      "primary_acceptance": true,
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "C04",
+      "instruction": "清洗指定蔬果并放到木托盘",
+      "chain": [
+        "L01",
+        "L02",
+        "L03",
+        "清洗完成",
+        "L04",
+        "L05",
+        "L06"
+      ],
+      "stage": "II",
+      "primary_acceptance": true,
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "C05",
+      "instruction": "将主食加热并放到木托盘",
+      "chain": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "加热完成",
+        "R01",
+        "R06",
+        "R07",
+        "R04"
+      ],
+      "stage": "II",
+      "primary_acceptance": true,
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "C06",
+      "instruction": "将准备好的水果递送给用户（无需清洗）",
+      "chain": [
+        "L01",
+        "L06",
+        "B01"
+      ],
+      "stage": "II",
+      "primary_acceptance": false,
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "C07",
+      "instruction": "将准备好的主食递送给用户（无需加热）",
+      "chain": [
+        "R02",
+        "R07",
+        "B01"
+      ],
+      "stage": "II",
+      "primary_acceptance": false,
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "C08",
+      "instruction": "清洗水果并递送给用户",
+      "chain": [
+        "C04",
+        "B01"
+      ],
+      "stage": "III",
+      "primary_acceptance": false,
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "C09",
+      "instruction": "加热主食并递送给用户",
+      "chain": [
+        "C05",
+        "B01"
+      ],
+      "stage": "III",
+      "primary_acceptance": false,
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "C10",
+      "instruction": "双臂准备完整餐食并递送",
+      "chain": [
+        "parallel(C04,C05)",
+        "B01"
+      ],
+      "stage": "III",
+      "primary_acceptance": true,
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "C11",
+      "instruction": "微波炉已打开，完成主食加热和递送",
+      "chain": [
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "加热完成",
+        "R01",
+        "R06",
+        "R07",
+        "R04",
+        "B01"
+      ],
+      "stage": "III",
+      "primary_acceptance": false,
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "id": "C12",
+      "instruction": "微波炉被占用，先移走原有主食，再加热新主食并递送",
+      "chain": [
+        "R01",
+        "R06",
+        "R09",
+        "R02",
+        "R03",
+        "R04",
+        "R05",
+        "加热完成",
+        "R01",
+        "R06",
+        "R07",
+        "R04",
+        "B01"
+      ],
+      "stage": "III",
+      "primary_acceptance": true,
+      "status": "NOT_VERIFIED"
+    }
+  ],
+  "primary_acceptance": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C10",
+    "C12"
+  ],
+  "events": [
+    "清洗完成",
+    "加热完成"
+  ],
+  "semantics": {
+    "parallel": "Independent arm chains may overlap; join before B01",
+    "C11": "Initial microwave door open",
+    "C12": "Initially occupied microwave; old meal to legal temporary safe location before new meal heating; preserve old/new identities",
+    "R08": "Retained even though not explicitly used by C12",
+    "evidence": "programmatic_test, pc_human_teleop, quest_human_teleop are distinct"
+  }
+}

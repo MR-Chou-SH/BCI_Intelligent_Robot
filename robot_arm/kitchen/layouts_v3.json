@@ -1,0 +1,636 @@
+{
+  "schema": 1,
+  "layouts": {
+    "kitchen_v3_norice_candidate_013": {
+      "layout_id": "kitchen_v3_norice_candidate_013", "profile": "kitchen_platform_v3",
+      "scene_version": "3.3.5-candidate.13", "approval": "AWAITING_USER_REVIEW", "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_012", "contact_model": "rigid_support_and_standoff_v4",
+      "apple_primitive": "equal_shape_sphere_v1", "button_mount": "recessed_sidewall_pocket_v1",
+      "meal_carrier": "raised_burger_carry_bar_v3", "burger_support": "flat_bun_v1", "umi_coupling": "symmetric_parallel_jaw_v1", "removed_objects": ["rice", "rice_container"],
+      "counter_bounds_xy": [-1.12, 1.24, -0.59, 0.64], "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {"position": [-0.34,0.0,0.8], "yaw_rad": -2.05, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]},
+        "right": {"position": [0.30,0.22,0.8], "yaw_rad": -1.0, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]}
+      },
+      "body_positions": {
+        "sink": [-0.78,0.06,0.8], "basket": [-0.78,0.06,0.66], "faucet": [-0.93,0.30,0.8], "microwave": [0.94,0.08,0.8],
+        "wood_tray": [0.0,-0.4,0.808], "apple": [-0.81,-0.35,0.835], "pear": [-0.65,-0.35,0.845],
+        "banana": [-0.88,-0.16,0.824], "tomato": [-0.43,-0.35,0.83],
+        "burger_container": [0.5,-0.43,0.808], "burger": [0.5,-0.43,0.8441],
+        "hotdog_container": [0.82,-0.43,0.808], "hotdog": [0.82,-0.43,0.838]
+      },
+      "microwave_yaw_rad": 0.7853981633974483, "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [0.0,-0.8,0.745], "delivery_table_half_size": [0.36,0.205,0.015], "delivery_tray_center": [0.0,-0.785,0.768],
+      "visual_features": ["wheelchair_details_v1"],
+      "physical_approximations": [
+        "012 retained;6mm deep36mm high notch in sidewall front lip provides a real button mounting pocket; all remaining wall pieces collide, original5mm spring stroke retained",
+        "APPLE35mm sphere,150g and spherical inertia retained; burger rigid flat bun and thin-walled carrier retained",
+        "Two named internal1:1 parallel-jaw couplings; exact imported CAD transmission NOT_CERTIFIED; no object attachment",
+        "FR3/UMI structure and all control/contact limits retained; wash/heating state proxies; Unity view-only"
+      ],
+      "change_note": "Real button clearance correction after011 contact preflight rejects own sidewall proximity; no safety threshold relaxation or inherited task PASS"
+    },
+    "kitchen_v3_norice_candidate_012": {
+      "layout_id": "kitchen_v3_norice_candidate_012", "profile": "kitchen_platform_v3",
+      "scene_version": "3.3.4-candidate.12", "approval": "AWAITING_USER_REVIEW", "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_011", "contact_model": "rigid_support_and_standoff_v4",
+      "apple_primitive": "equal_shape_sphere_v1",
+      "meal_carrier": "raised_burger_carry_bar_v3", "burger_support": "flat_bun_v1", "umi_coupling": "symmetric_parallel_jaw_v1", "removed_objects": ["rice", "rice_container"],
+      "counter_bounds_xy": [-1.12, 1.24, -0.59, 0.64], "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {"position": [-0.34,0.0,0.8], "yaw_rad": -2.05, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]},
+        "right": {"position": [0.30,0.22,0.8], "yaw_rad": -1.0, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]}
+      },
+      "body_positions": {
+        "sink": [-0.78,0.06,0.8], "basket": [-0.78,0.06,0.66], "faucet": [-0.93,0.30,0.8], "microwave": [0.94,0.08,0.8],
+        "wood_tray": [0.0,-0.4,0.808], "apple": [-0.81,-0.35,0.835], "pear": [-0.65,-0.35,0.845],
+        "banana": [-0.88,-0.16,0.824], "tomato": [-0.43,-0.35,0.83],
+        "burger_container": [0.5,-0.43,0.808], "burger": [0.5,-0.43,0.8441],
+        "hotdog_container": [0.82,-0.43,0.808], "hotdog": [0.82,-0.43,0.838]
+      },
+      "microwave_yaw_rad": 0.7853981633974483, "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [0.0,-0.8,0.745], "delivery_table_half_size": [0.36,0.205,0.015], "delivery_tray_center": [0.0,-0.785,0.768],
+      "visual_features": ["wheelchair_details_v1"],
+      "physical_approximations": [
+        "011 geometry retained; apple changes equal-axis35mm ellipsoid to equal-shape35mm sphere, no flat support or contact coefficient change; mass150g and spherical inertia retained",
+        "Burger rigid flat bun and thin-walled oven-safe carrier proxies retained; carrier140g, burger200g",
+        "Two named internal1:1 parallel-jaw couplings; exact imported CAD transmission NOT_CERTIFIED; no object attachment",
+        "Original FR3/UMI structure, mass, joint/motor/contact limits retained; wash/heating state proxies; Unity view-only"
+      ],
+      "change_note": "Native equal-shape collision primitive hypothesis after separated apple normal-moment audit; no PASS transferred from011, no canonical promotion"
+    },
+    "kitchen_v3_norice_candidate_011": {
+      "layout_id": "kitchen_v3_norice_candidate_011", "profile": "kitchen_platform_v3",
+      "scene_version": "3.3.3-candidate.11", "approval": "AWAITING_USER_REVIEW", "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_010", "contact_model": "rigid_support_and_standoff_v4",
+      "meal_carrier": "raised_burger_carry_bar_v3", "burger_support": "flat_bun_v1", "umi_coupling": "symmetric_parallel_jaw_v1", "removed_objects": ["rice", "rice_container"],
+      "counter_bounds_xy": [-1.12, 1.24, -0.59, 0.64], "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {"position": [-0.34,0.0,0.8], "yaw_rad": -2.05, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]},
+        "right": {"position": [0.30,0.22,0.8], "yaw_rad": -1.0, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]}
+      },
+      "body_positions": {
+        "sink": [-0.78,0.06,0.8], "basket": [-0.78,0.06,0.66], "faucet": [-0.93,0.30,0.8], "microwave": [0.94,0.08,0.8],
+        "wood_tray": [0.0,-0.4,0.808], "apple": [-0.81,-0.35,0.835], "pear": [-0.65,-0.35,0.845],
+        "banana": [-0.88,-0.16,0.824], "tomato": [-0.43,-0.35,0.83],
+        "burger_container": [0.5,-0.43,0.808], "burger": [0.5,-0.43,0.8441],
+        "hotdog_container": [0.82,-0.43,0.808], "hotdog": [0.82,-0.43,0.838]
+      },
+      "microwave_yaw_rad": 0.7853981633974483, "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [0.0,-0.8,0.745], "delivery_table_half_size": [0.36,0.205,0.015], "delivery_tray_center": [0.0,-0.785,0.768],
+      "visual_features": ["wheelchair_details_v1"],
+      "physical_approximations": [
+        "010 flat-bottom burger retained with0.1mm initial support gap to avoid mesh arithmetic overlap; normal gravity settles it, no runtime pose writes",
+        "Thin-walled oven-safe carry bars:50mm faces slanted30deg, connected posts, total140g container; burger94x88x56mm envelope and200g mass",
+        "Two named internal 1:1 jaw joint couplings; exact imported CAD transmission NOT_CERTIFIED, no object attachment",
+        "FR3/UMI mass/friction/joint/motor/contact limits unchanged; wash/heating are state proxies; Unity is view-only"
+      ],
+      "change_note": "Initial0.1mm food support gap, no collision tolerance relaxation;010 numerical geometry failure retained; no canonical promotion"
+    },
+    "kitchen_v3_norice_candidate_010": {
+      "layout_id": "kitchen_v3_norice_candidate_010", "profile": "kitchen_platform_v3",
+      "scene_version": "3.3.2-candidate.10", "approval": "AWAITING_USER_REVIEW", "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_009", "contact_model": "rigid_support_and_standoff_v4",
+      "meal_carrier": "raised_burger_carry_bar_v3", "burger_support": "flat_bun_v1", "umi_coupling": "symmetric_parallel_jaw_v1", "removed_objects": ["rice", "rice_container"],
+      "counter_bounds_xy": [-1.12, 1.24, -0.59, 0.64], "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {"position": [-0.34,0.0,0.8], "yaw_rad": -2.05, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]},
+        "right": {"position": [0.30,0.22,0.8], "yaw_rad": -1.0, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]}
+      },
+      "body_positions": {
+        "sink": [-0.78,0.06,0.8], "basket": [-0.78,0.06,0.66], "faucet": [-0.93,0.30,0.8], "microwave": [0.94,0.08,0.8],
+        "wood_tray": [0.0,-0.4,0.808], "apple": [-0.81,-0.35,0.835], "pear": [-0.65,-0.35,0.845],
+        "banana": [-0.88,-0.16,0.824], "tomato": [-0.43,-0.35,0.83],
+        "burger_container": [0.5,-0.43,0.808], "burger": [0.5,-0.43,0.844],
+        "hotdog_container": [0.82,-0.43,0.808], "hotdog": [0.82,-0.43,0.838]
+      },
+      "microwave_yaw_rad": 0.7853981633974483, "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [0.0,-0.8,0.745], "delivery_table_half_size": [0.36,0.205,0.015], "delivery_tray_center": [0.0,-0.785,0.768],
+      "visual_features": ["wheelchair_details_v1"],
+      "physical_approximations": [
+        "009 carrier and kitchen retained; burger has a real finite flat lower bun surface rather than ellipsoid rocker, same94x88x56mm envelope and200g mass",
+        "Thin-walled oven-safe carry bars have50mm faces slanted30deg, connected posts, total140g container; explicit rigid proxies",
+        "Two named internal 1:1 jaw joint couplings; exact imported CAD transmission NOT_CERTIFIED, no object attachment",
+        "FR3/UMI meshes, mass, friction, joint/motor/contact limits unchanged; wash/heating are state proxies; Unity is view-only"
+      ],
+      "change_note": "Food support correction after009 carrier hold3.04s/118mm succeeded but ellipsoid burger kept rocking after release; no canonical promotion"
+    },
+    "kitchen_v3_norice_candidate_009": {
+      "layout_id": "kitchen_v3_norice_candidate_009", "profile": "kitchen_platform_v3",
+      "scene_version": "3.3.1-candidate.9", "approval": "AWAITING_USER_REVIEW", "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_008", "contact_model": "rigid_support_and_standoff_v4",
+      "meal_carrier": "raised_burger_carry_bar_v3", "umi_coupling": "symmetric_parallel_jaw_v1", "removed_objects": ["rice", "rice_container"],
+      "counter_bounds_xy": [-1.12, 1.24, -0.59, 0.64], "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {"position": [-0.34,0.0,0.8], "yaw_rad": -2.05, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]},
+        "right": {"position": [0.30,0.22,0.8], "yaw_rad": -1.0, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]}
+      },
+      "body_positions": {
+        "sink": [-0.78,0.06,0.8], "basket": [-0.78,0.06,0.66], "faucet": [-0.93,0.30,0.8], "microwave": [0.94,0.08,0.8],
+        "wood_tray": [0.0,-0.4,0.808], "apple": [-0.81,-0.35,0.835], "pear": [-0.65,-0.35,0.845],
+        "banana": [-0.88,-0.16,0.824], "tomato": [-0.43,-0.35,0.83],
+        "burger_container": [0.5,-0.43,0.808], "burger": [0.5,-0.43,0.844],
+        "hotdog_container": [0.82,-0.43,0.808], "hotdog": [0.82,-0.43,0.838]
+      },
+      "microwave_yaw_rad": 0.7853981633974483, "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [0.0,-0.8,0.745], "delivery_table_half_size": [0.36,0.205,0.015], "delivery_tray_center": [0.0,-0.785,0.768],
+      "visual_features": ["wheelchair_details_v1"],
+      "physical_approximations": [
+        "008 kitchen retained; thin-walled oven-safe carry bars use rigid box proxies, 50mm face length and 30deg slanted grip faces; connected posts and total140g container retained",
+        "Two named internal joint couplings approximate 1:1 parallel-jaw transmission; exact imported CAD transmission NOT_CERTIFIED, no object attachment",
+        "FR3/UMI meshes, mass, friction, joint/motor/contact limits unchanged from008; no adhesion or friction boost",
+        "Wash and heating are state proxies; Unity is view-only"
+      ],
+      "change_note": "Finite face-contact hypothesis after008 edge pinch slips at11.3mm lift; preserve all prior outcomes, no canonical promotion"
+    },
+    "kitchen_v3_norice_candidate_008": {
+      "layout_id": "kitchen_v3_norice_candidate_008", "profile": "kitchen_platform_v3",
+      "scene_version": "3.3.0-candidate.8", "approval": "AWAITING_USER_REVIEW", "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_007", "contact_model": "rigid_support_and_standoff_v4",
+      "meal_carrier": "raised_burger_carry_bar_v2", "umi_coupling": "symmetric_parallel_jaw_v1", "removed_objects": ["rice", "rice_container"],
+      "counter_bounds_xy": [-1.12, 1.24, -0.59, 0.64], "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {"position": [-0.34,0.0,0.8], "yaw_rad": -2.05, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]},
+        "right": {"position": [0.30,0.22,0.8], "yaw_rad": -1.0, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]}
+      },
+      "body_positions": {
+        "sink": [-0.78,0.06,0.8], "basket": [-0.78,0.06,0.66], "faucet": [-0.93,0.30,0.8], "microwave": [0.94,0.08,0.8],
+        "wood_tray": [0.0,-0.4,0.808], "apple": [-0.81,-0.35,0.835], "pear": [-0.65,-0.35,0.845],
+        "banana": [-0.88,-0.16,0.824], "tomato": [-0.43,-0.35,0.83],
+        "burger_container": [0.5,-0.43,0.808], "burger": [0.5,-0.43,0.844],
+        "hotdog_container": [0.82,-0.43,0.808], "hotdog": [0.82,-0.43,0.838]
+      },
+      "microwave_yaw_rad": 0.7853981633974483, "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [0.0,-0.8,0.745], "delivery_table_half_size": [0.36,0.205,0.015], "delivery_tray_center": [0.0,-0.785,0.768],
+      "visual_features": ["wheelchair_details_v1"],
+      "physical_approximations": [
+        "Candidate007 kitchen geometry and connected raised burger carrier retained",
+        "Two static named joint equalities approximate internal 1:1 synchronized parallel-jaw transmission, not object attachment; imported CAD exact transmission not certified",
+        "FR3 structure, UMI meshes/masses/inertias, joint limits, friction, motor and contact-force caps retained; finger differential DOF intentionally constrained",
+        "Wash and heating are state proxies; Unity is view-only"
+      ],
+      "change_note": "Evidence-driven internal jaw synchronization hypothesis after007 differential slide failure; all historical failures preserved; no canonical promotion"
+    },
+    "kitchen_v3_norice_candidate_007": {
+      "layout_id": "kitchen_v3_norice_candidate_007", "profile": "kitchen_platform_v3",
+      "scene_version": "3.2.1-candidate.7", "approval": "AWAITING_USER_REVIEW", "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_006", "contact_model": "rigid_support_and_standoff_v4",
+      "meal_carrier": "raised_burger_carry_bar_v2", "removed_objects": ["rice", "rice_container"],
+      "counter_bounds_xy": [-1.12, 1.24, -0.59, 0.64], "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {"position": [-0.34,0.0,0.8], "yaw_rad": -2.05, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]},
+        "right": {"position": [0.30,0.22,0.8], "yaw_rad": -1.0, "home_q": [0.0,-0.25,0.0,-1.85,0.0,1.75,-0.7853981633974483]}
+      },
+      "body_positions": {
+        "sink": [-0.78,0.06,0.8], "basket": [-0.78,0.06,0.66], "faucet": [-0.93,0.30,0.8], "microwave": [0.94,0.08,0.8],
+        "wood_tray": [0.0,-0.4,0.808], "apple": [-0.81,-0.35,0.835], "pear": [-0.65,-0.35,0.845],
+        "banana": [-0.88,-0.16,0.824], "tomato": [-0.43,-0.35,0.83],
+        "burger_container": [0.5,-0.43,0.808], "burger": [0.5,-0.43,0.844],
+        "hotdog_container": [0.82,-0.43,0.808], "hotdog": [0.82,-0.43,0.838]
+      },
+      "microwave_yaw_rad": 0.7853981633974483, "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [0.0,-0.8,0.745], "delivery_table_half_size": [0.36,0.205,0.015], "delivery_tray_center": [0.0,-0.785,0.768],
+      "visual_features": ["wheelchair_details_v1"],
+      "physical_approximations": [
+        "Candidate005 food support and door standoff retained; rigid oven-safe carrier has raised55mm bars",
+        "Each real support post joins plate atx63mm to bar atx73mm; original0.14kg mass retained",
+        "FR3/UMI geometry, friction, contact dimensions and force limits unchanged",
+        "Wash and heating are state proxies; Unity is view-only"
+      ],
+      "change_note": "Physical connection correction to006; fixed apple/burger. All earlier failures preserved; no canonical promotion"
+    },
+    "kitchen_v3_norice_candidate_006": {
+      "layout_id": "kitchen_v3_norice_candidate_006",
+      "profile": "kitchen_platform_v3",
+      "scene_version": "3.2.0-candidate.6",
+      "approval": "AWAITING_USER_REVIEW",
+      "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_005",
+      "contact_model": "rigid_support_and_standoff_v4",
+      "meal_carrier": "raised_burger_carry_bar_v1",
+      "removed_objects": ["rice", "rice_container"],
+      "counter_bounds_xy": [-1.12, 1.24, -0.59, 0.64],
+      "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {"position": [-0.34, 0.0, 0.8], "yaw_rad": -2.05, "home_q": [0.0, -0.25, 0.0, -1.85, 0.0, 1.75, -0.7853981633974483]},
+        "right": {"position": [0.30, 0.22, 0.8], "yaw_rad": -1.0, "home_q": [0.0, -0.25, 0.0, -1.85, 0.0, 1.75, -0.7853981633974483]}
+      },
+      "body_positions": {
+        "sink": [-0.78, 0.06, 0.8], "basket": [-0.78, 0.06, 0.66],
+        "faucet": [-0.93, 0.30, 0.8], "microwave": [0.94, 0.08, 0.8],
+        "wood_tray": [0.0, -0.4, 0.808],
+        "apple": [-0.81, -0.35, 0.835], "pear": [-0.65, -0.35, 0.845],
+        "banana": [-0.88, -0.16, 0.824], "tomato": [-0.43, -0.35, 0.83],
+        "burger_container": [0.5, -0.43, 0.808], "burger": [0.5, -0.43, 0.844],
+        "hotdog_container": [0.82, -0.43, 0.808], "hotdog": [0.82, -0.43, 0.838]
+      },
+      "microwave_yaw_rad": 0.7853981633974483,
+      "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [0.0, -0.8, 0.745],
+      "delivery_table_half_size": [0.36, 0.205, 0.015],
+      "delivery_tray_center": [0.0, -0.785, 0.768],
+      "visual_features": ["wheelchair_details_v1"],
+      "physical_approximations": [
+        "Candidate005 rigid food support hulls and stand-off door handle retained",
+        "Rigid oven-safe carrier with two raised 55mm bars and explicit support posts; total mass unchanged at 0.14kg",
+        "FR3 and UMI geometry, friction, contact dimensions and force limits unchanged",
+        "Wash and heating are state proxies, not fluid or thermal simulation; Unity is view-only"
+      ],
+      "change_note": "Fixed apple/burger full-operations hypothesis: raised carrier permits front access and vertical pinch without changing robot physics; not validated or canonical"
+    },
+    "kitchen_v3_norice_candidate_005": {
+      "layout_id": "kitchen_v3_norice_candidate_005",
+      "profile": "kitchen_platform_v3",
+      "scene_version": "3.1.2-candidate.5",
+      "approval": "AWAITING_USER_REVIEW",
+      "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_004",
+      "contact_model": "rigid_support_and_standoff_v4",
+      "removed_objects": [
+        "rice",
+        "rice_container"
+      ],
+      "counter_bounds_xy": [
+        -1.12,
+        1.24,
+        -0.59,
+        0.64
+      ],
+      "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {
+          "position": [
+            -0.34,
+            0.0,
+            0.8
+          ],
+          "yaw_rad": -2.05,
+          "home_q": [
+            0.0,
+            -0.25,
+            0.0,
+            -1.85,
+            0.0,
+            1.75,
+            -0.7853981633974483
+          ]
+        },
+        "right": {
+          "position": [
+            0.3,
+            0.22,
+            0.8
+          ],
+          "yaw_rad": -1.0,
+          "home_q": [
+            0.0,
+            -0.25,
+            0.0,
+            -1.85,
+            0.0,
+            1.75,
+            -0.7853981633974483
+          ]
+        }
+      },
+      "body_positions": {
+        "sink": [
+          -0.78,
+          0.06,
+          0.8
+        ],
+        "basket": [
+          -0.78,
+          0.06,
+          0.66
+        ],
+        "faucet": [
+          -0.93,
+          0.3,
+          0.8
+        ],
+        "microwave": [
+          0.94,
+          0.08,
+          0.8
+        ],
+        "wood_tray": [
+          0.0,
+          -0.4,
+          0.808
+        ],
+        "apple": [
+          -0.81,
+          -0.35,
+          0.835
+        ],
+        "pear": [
+          -0.65,
+          -0.35,
+          0.845
+        ],
+        "banana": [
+          -0.88,
+          -0.16,
+          0.824
+        ],
+        "tomato": [
+          -0.43,
+          -0.35,
+          0.83
+        ],
+        "burger_container": [
+          0.5,
+          -0.43,
+          0.808
+        ],
+        "burger": [
+          0.5,
+          -0.43,
+          0.844
+        ],
+        "hotdog_container": [
+          0.82,
+          -0.43,
+          0.808
+        ],
+        "hotdog": [
+          0.82,
+          -0.43,
+          0.838
+        ]
+      },
+      "microwave_yaw_rad": 0.7853981633974483,
+      "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [
+        0.0,
+        -0.8,
+        0.745
+      ],
+      "delivery_table_half_size": [
+        0.36,
+        0.205,
+        0.015
+      ],
+      "delivery_tray_center": [
+        0.0,
+        -0.785,
+        0.768
+      ],
+      "visual_features": [
+        "wheelchair_details_v1"
+      ],
+      "physical_approximations": [
+        "Rigid pear with finite calyx support and hotdog bun hull; original dimensions and masses retained",
+        "Stand-off microwave handle with physical mounting posts",
+        "Wash and heating are state proxies, not fluid or thermal simulation",
+        "Unity is view-only"
+      ],
+      "change_note": "Final bounded cavity-clearance candidate; move hotdog clear of burger transport, inherited failures remain unchanged"
+    },
+    "kitchen_v3_norice_candidate_001": {
+      "layout_id": "kitchen_v3_norice_candidate_001",
+      "profile": "kitchen_platform_v3",
+      "scene_version": "3.0.0-candidate.1",
+      "approval": "AWAITING_USER_REVIEW",
+      "canonical_promoted": false,
+      "source_candidate": "layout_v3_local_8",
+      "removed_objects": ["rice", "rice_container"],
+      "counter_bounds_xy": [-1.12, 1.24, -0.59, 0.64],
+      "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {"position": [-0.34, 0.0, 0.8], "yaw_rad": -2.05, "home_q": [0.0, -0.25, 0.0, -1.85, 0.0, 1.75, -0.7853981633974483]},
+        "right": {"position": [0.34, 0.0, 0.8], "yaw_rad": -1.091592653589793, "home_q": [0.0, -0.25, 0.0, -1.85, 0.0, 1.75, -0.7853981633974483]}
+      },
+      "body_positions": {
+        "sink": [-0.78, 0.06, 0.8], "basket": [-0.78, 0.06, 0.66],
+        "faucet": [-0.93, 0.30, 0.8], "microwave": [1.0, 0.24, 0.8],
+        "wood_tray": [0.0, -0.4, 0.808],
+        "apple": [-0.81, -0.35, 0.835], "pear": [-0.65, -0.35, 0.845],
+        "banana": [-0.88, -0.16, 0.824], "tomato": [-0.43, -0.35, 0.83],
+        "burger_container": [0.5, -0.43, 0.808], "burger": [0.5, -0.43, 0.844],
+        "hotdog_container": [0.72, -0.43, 0.808], "hotdog": [0.72, -0.43, 0.838]
+      },
+      "microwave_yaw_rad": 0.0,
+      "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [0.0, -0.8, 0.745],
+      "delivery_table_half_size": [0.36, 0.205, 0.015],
+      "delivery_tray_center": [0.0, -0.785, 0.768],
+      "visual_features": ["wheelchair_details_v1"],
+      "physical_approximations": ["Rigid food and containers", "Device wash and heating timers are state proxies, not fluid or thermal physics", "Collision proxies are explicit; Unity is view-only"]
+    },
+    "kitchen_v3_norice_candidate_004": {
+      "layout_id": "kitchen_v3_norice_candidate_004",
+      "profile": "kitchen_platform_v3",
+      "scene_version": "3.1.1-candidate.4",
+      "approval": "AWAITING_USER_REVIEW",
+      "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_003",
+      "contact_model": "rigid_support_and_standoff_v4",
+      "removed_objects": [
+        "rice",
+        "rice_container"
+      ],
+      "counter_bounds_xy": [
+        -1.12,
+        1.24,
+        -0.59,
+        0.64
+      ],
+      "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {
+          "position": [
+            -0.34,
+            0.0,
+            0.8
+          ],
+          "yaw_rad": -2.05,
+          "home_q": [
+            0.0,
+            -0.25,
+            0.0,
+            -1.85,
+            0.0,
+            1.75,
+            -0.7853981633974483
+          ]
+        },
+        "right": {
+          "position": [
+            0.3,
+            0.22,
+            0.8
+          ],
+          "yaw_rad": -1.0,
+          "home_q": [
+            0.0,
+            -0.25,
+            0.0,
+            -1.85,
+            0.0,
+            1.75,
+            -0.7853981633974483
+          ]
+        }
+      },
+      "body_positions": {
+        "sink": [
+          -0.78,
+          0.06,
+          0.8
+        ],
+        "basket": [
+          -0.78,
+          0.06,
+          0.66
+        ],
+        "faucet": [
+          -0.93,
+          0.3,
+          0.8
+        ],
+        "microwave": [
+          0.94,
+          0.08,
+          0.8
+        ],
+        "wood_tray": [
+          0.0,
+          -0.4,
+          0.808
+        ],
+        "apple": [
+          -0.81,
+          -0.35,
+          0.835
+        ],
+        "pear": [
+          -0.65,
+          -0.35,
+          0.845
+        ],
+        "banana": [
+          -0.88,
+          -0.16,
+          0.824
+        ],
+        "tomato": [
+          -0.43,
+          -0.35,
+          0.83
+        ],
+        "burger_container": [
+          0.5,
+          -0.43,
+          0.808
+        ],
+        "burger": [
+          0.5,
+          -0.43,
+          0.844
+        ],
+        "hotdog_container": [
+          0.76,
+          -0.3,
+          0.808
+        ],
+        "hotdog": [
+          0.76,
+          -0.3,
+          0.838
+        ]
+      },
+      "microwave_yaw_rad": 0.7853981633974483,
+      "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [
+        0.0,
+        -0.8,
+        0.745
+      ],
+      "delivery_table_half_size": [
+        0.36,
+        0.205,
+        0.015
+      ],
+      "delivery_tray_center": [
+        0.0,
+        -0.785,
+        0.768
+      ],
+      "visual_features": [
+        "wheelchair_details_v1"
+      ],
+      "physical_approximations": [
+        "Rigid pear with finite calyx support and hotdog bun hull; original dimensions and masses retained",
+        "Stand-off microwave handle with physical mounting posts",
+        "Wash and heating are state proxies, not fluid or thermal simulation",
+        "Unity is view-only"
+      ],
+      "change_note": "Stagger hotdog to clear measured burger-lift geometry; failure budgets inherited, not reset"
+    },
+    "kitchen_v3_norice_candidate_003": {
+      "layout_id": "kitchen_v3_norice_candidate_003",
+      "profile": "kitchen_platform_v3",
+      "scene_version": "3.1.0-candidate.3",
+      "approval": "AWAITING_USER_REVIEW",
+      "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_002",
+      "contact_model": "rigid_support_and_standoff_v4",
+      "removed_objects": ["rice", "rice_container"],
+      "counter_bounds_xy": [-1.12, 1.24, -0.59, 0.64],
+      "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {"position": [-0.34, 0.0, 0.8], "yaw_rad": -2.05, "home_q": [0.0, -0.25, 0.0, -1.85, 0.0, 1.75, -0.7853981633974483]},
+        "right": {"position": [0.30, 0.22, 0.8], "yaw_rad": -1.0, "home_q": [0.0, -0.25, 0.0, -1.85, 0.0, 1.75, -0.7853981633974483]}
+      },
+      "body_positions": {
+        "sink": [-0.78, 0.06, 0.8], "basket": [-0.78, 0.06, 0.66],
+        "faucet": [-0.93, 0.30, 0.8], "microwave": [0.94, 0.08, 0.8],
+        "wood_tray": [0.0, -0.4, 0.808],
+        "apple": [-0.81, -0.35, 0.835], "pear": [-0.65, -0.35, 0.845],
+        "banana": [-0.88, -0.16, 0.824], "tomato": [-0.43, -0.35, 0.83],
+        "burger_container": [0.5, -0.43, 0.808], "burger": [0.5, -0.43, 0.844],
+        "hotdog_container": [0.72, -0.43, 0.808], "hotdog": [0.72, -0.43, 0.838]
+      },
+      "microwave_yaw_rad": 0.7853981633974483,
+      "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [0.0, -0.8, 0.745],
+      "delivery_table_half_size": [0.36, 0.205, 0.015],
+      "delivery_tray_center": [0.0, -0.785, 0.768],
+      "visual_features": ["wheelchair_details_v1"],
+      "physical_approximations": ["Rigid pear with finite calyx support and hotdog bun hull; original dimensions and masses retained", "Stand-off microwave handle with physical mounting posts", "Wash and heating are state proxies, not fluid or thermal simulation", "Unity is view-only"]
+    },
+    "kitchen_v3_norice_candidate_002": {
+      "layout_id": "kitchen_v3_norice_candidate_002",
+      "profile": "kitchen_platform_v3",
+      "scene_version": "3.0.0-candidate.2",
+      "approval": "AWAITING_USER_REVIEW",
+      "canonical_promoted": false,
+      "source_candidate": "kitchen_v3_norice_candidate_001",
+      "removed_objects": ["rice", "rice_container"],
+      "counter_bounds_xy": [-1.12, 1.24, -0.59, 0.64],
+      "counter_top_m": 0.8,
+      "base_poses": {
+        "left": {"position": [-0.34, 0.0, 0.8], "yaw_rad": -2.05, "home_q": [0.0, -0.25, 0.0, -1.85, 0.0, 1.75, -0.7853981633974483]},
+        "right": {"position": [0.34, 0.0, 0.8], "yaw_rad": -1.091592653589793, "home_q": [0.0, -0.25, 0.0, -1.85, 0.0, 1.75, -0.7853981633974483]}
+      },
+      "body_positions": {
+        "sink": [-0.78, 0.06, 0.8], "basket": [-0.78, 0.06, 0.66],
+        "faucet": [-0.93, 0.30, 0.8], "microwave": [0.94, 0.14, 0.8],
+        "wood_tray": [0.0, -0.4, 0.808],
+        "apple": [-0.81, -0.35, 0.835], "pear": [-0.65, -0.35, 0.845],
+        "banana": [-0.88, -0.16, 0.824], "tomato": [-0.43, -0.35, 0.83],
+        "burger_container": [0.5, -0.43, 0.808], "burger": [0.5, -0.43, 0.844],
+        "hotdog_container": [0.72, -0.43, 0.808], "hotdog": [0.72, -0.43, 0.838]
+      },
+      "microwave_yaw_rad": 0.7853981633974483,
+      "door_variant": "mirrored_left_hinge",
+      "delivery_table_center": [0.0, -0.8, 0.745],
+      "delivery_table_half_size": [0.36, 0.205, 0.015],
+      "delivery_tray_center": [0.0, -0.785, 0.768],
+      "visual_features": ["wheelchair_details_v1"],
+      "physical_approximations": ["Rigid food and containers", "Device wash and heating timers are state proxies, not fluid or thermal physics", "Collision proxies are explicit; Unity is view-only"]
+    }
+  }
+}
