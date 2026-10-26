@@ -21,15 +21,26 @@ from .layouts import layout_manifest
 from .registry import FRUITS, digest, geometry_bounds, object_bounds
 
 SCHEMA = "kitchen_research_initialization_v1"
-ALGORITHM_VERSION = "full_geometry_support_static_ik_v1"
+ALGORITHM_VERSION = "local_xy80mm_yaw5deg_meal_grasp_clearance_v3"
+LOCAL_XY_HALF_RANGE_M = .08
+LOCAL_YAW_HALF_RANGE_RAD = np.pi / 36
 MAX_ATTEMPTS_PER_GROUP = 64
 OBSTACLE_CLEARANCE_M = .005
 GROUP_CLEARANCE_M = .012
+MEAL_GRASP_CLEARANCE_M = .060
 SUPPORT_GAP_M = .0002
 PENETRATION_TOLERANCE_M = 1e-6
 GROUPS = (("burger_container", "burger"), ("hotdog_container", "hotdog"),
           ("banana",), ("apple",), ("pear",), ("tomato",))
 RANDOMIZED = tuple(name for group in GROUPS for name in group)
+
+
+def _meal_access_pair(first, second):
+    meals = {"burger", "hotdog"}
+    a, b = first.removesuffix("_container"), second.removesuffix("_container")
+    return ((a in meals and b in meals and a != b) or
+            (a in meals and second == "wood_tray") or
+            (b in meals and first == "wood_tray"))
 
 
 class ResearchInitializationError(RuntimeError):
@@ -133,13 +144,18 @@ def _group_check(scene, data, group, region, supports, obstacles, previous):
         for h in obstacles:
             distance = _distance(scene, data, g, h)
             threshold = -PENETRATION_TOLERANCE_M if h in support_ids else OBSTACLE_CLEARANCE_M
+            if _meal_access_pair(root, m.body(int(m.geom_bodyid[h])).name):
+                threshold = MEAL_GRASP_CLEARANCE_M
             if distance < threshold:
                 return None, "OBSTACLE_OR_SUPPORT_COLLISION"
             if h not in support_ids and distance < min_obstacle:
                 min_obstacle, closest_obstacle = distance, [m.geom(g).name, m.geom(h).name]
         for h in previous:
             distance = _distance(scene, data, g, h)
-            if distance < GROUP_CLEARANCE_M:
+            threshold = (MEAL_GRASP_CLEARANCE_M
+                         if _meal_access_pair(root, m.body(int(m.geom_bodyid[h])).name)
+                         else GROUP_CLEARANCE_M)
+            if distance < threshold:
                 return None, "INTER_GROUP_CLEARANCE"
             if distance < min_group:
                 min_group, closest_group = distance, [m.geom(g).name, m.geom(h).name]
@@ -211,6 +227,34 @@ def _approach_check(scene, data, root, checker):
             "pinch_or_physical_grasp_verified": False}
 
 
+def audit_object_separation(scene, *, data=None):
+    """All free-object pairs, including the fixed-position tray and carriers.
+
+    Only food/own-carrier pairs may touch; penetration is never intentional.
+    This uses signed collision-geometry distances, not body-center distances.
+    """
+    data = scene.data if data is None else data
+    group_by_name = {name: index for index, group in enumerate(GROUPS) for name in group}
+    names = sorted(scene.objects)
+    pairs, errors = [], []
+    for i, name in enumerate(names):
+        for other in names[i + 1:]:
+            same_group = name in group_by_name and group_by_name.get(name) == group_by_name.get(other)
+            distance = min(_distance(scene, data, a, b)
+                           for a in _geoms(scene, name) for b in _geoms(scene, other))
+            required = (-PENETRATION_TOLERANCE_M if same_group else
+                        MEAL_GRASP_CLEARANCE_M if _meal_access_pair(name, other) else
+                        GROUP_CLEARANCE_M if name in group_by_name and other in group_by_name else OBSTACLE_CLEARANCE_M)
+            row = {"objects": [name, other], "signed_distance_m": distance,
+                   "minimum_distance_m": required, "food_carrier_support_pair": same_group,
+                   "pass": distance >= required}
+            pairs.append(row)
+            if not row["pass"]:
+                errors.append(row)
+    return {"pass": not errors, "pairs": pairs, "errors": errors,
+            "method": "minimum signed MuJoCo collision-geom distance for every movable-object pair"}
+
+
 def audit_research_initial_state(scene, *, data=None):
     """Read-only full-shape/support audit, also reusable after a settling witness."""
     data = scene.data if data is None else data
@@ -228,10 +272,14 @@ def audit_research_initial_state(scene, *, data=None):
         if error:
             errors.append({"group": list(group), "code": error})
         previous.extend(g for name in group for g in _geoms(scene, name))
+    separation = audit_object_separation(scene, data=data)
+    errors.extend({"code": "OBJECT_PAIR_SEPARATION", **row} for row in separation["errors"])
     return {"pass": not errors, "errors": errors, "groups": rows, "regions_xy_m": regions,
+            "object_separation": separation,
             "support_method": "full-shape AABB coverage by actual slab union + signed geom distance",
             "obstacle_clearance_m": OBSTACLE_CLEARANCE_M,
             "group_clearance_m": GROUP_CLEARANCE_M, "support_gap_tolerance_m": SUPPORT_GAP_M,
+            "meal_grasp_clearance_m": MEAL_GRASP_CLEARANCE_M,
             "penetration_tolerance_m": PENETRATION_TOLERANCE_M}
 
 
@@ -277,7 +325,7 @@ def initialize_research_scene(scene, seed):
         root_adr = addresses[root][0]
         root_ref = reference[root_adr:root_adr+3]
         for attempt in range(1, MAX_ATTEMPTS_PER_GROUP+1):
-            yaw = float(rng.uniform(-np.pi/9, np.pi/9))
+            yaw = float(rng.uniform(-LOCAL_YAW_HALF_RANGE_RAD, LOCAL_YAW_HALF_RANGE_RAD))
             c, s = np.cos(yaw), np.sin(yaw)
             rotation = np.array([[c, -s, 0.], [s, c, 0.], [0., 0., 1.]])
             yaw_quat = np.array([np.cos(yaw/2), 0., 0., np.sin(yaw/2)])
@@ -288,8 +336,10 @@ def initialize_research_scene(scene, seed):
             mujoco.mj_kinematics(m, scratch)
             boxes = [object_bounds(scene, n, data=scratch) for n in group]
             lo, hi = np.min([a for a, _ in boxes], axis=0), np.max([b for _, b in boxes], axis=0)
-            low = np.asarray(region[0])+(root_ref[:2]-lo[:2])
-            high = np.asarray(region[1])-(hi[:2]-root_ref[:2])
+            low = np.maximum(np.asarray(region[0])+(root_ref[:2]-lo[:2]),
+                             root_ref[:2]-LOCAL_XY_HALF_RANGE_M)
+            high = np.minimum(np.asarray(region[1])-(hi[:2]-root_ref[:2]),
+                              root_ref[:2]+LOCAL_XY_HALF_RANGE_M)
             if np.any(high <= low):
                 raise ResearchInitializationError("REGION_CANNOT_FIT_FULL_FOOTPRINT", {"seed": seed, "group": root})
             xy = rng.uniform(low, high)
@@ -355,7 +405,12 @@ def initialize_research_scene(scene, seed):
                 "preserved_objects": sorted(set(scene.objects)-set(RANDOMIZED)),
                 "sampling": {"generator": "independent numpy.random.Generator(PCG64)",
                              "max_attempts_per_group": MAX_ATTEMPTS_PER_GROUP,
-                             "attempts": attempts, "yaw_range_rad": [-np.pi/9, np.pi/9]},
+                             "attempts": attempts,
+                             "xy_half_range_m": LOCAL_XY_HALF_RANGE_M,
+                             "reference": "base model qpos0 group root; preserve left fruit/right meal layout",
+                             "group_reference_xy_m": {group[0]: reference[addresses[group[0]][0]:addresses[group[0]][0]+2].tolist()
+                                                       for group in GROUPS},
+                             "yaw_range_rad": [-LOCAL_YAW_HALF_RANGE_RAD, LOCAL_YAW_HALF_RANGE_RAD]},
                 "geometry": audit, "basic_operability": approaches,
                 "dynamic_settling": {"occurred": False, "steps": 0, "duration_s": 0.},
                 "evidence_scope": "reset geometry + finite seven-joint static approach endpoints only",

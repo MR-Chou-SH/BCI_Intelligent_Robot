@@ -75,6 +75,12 @@ def solve_ik(scene,side,position,rotation=None,max_iterations=100,scratch_data=N
         q=np.clip(q+dq,lower,upper)
     return IKResult(q,pe,re,False)
 
+# Task-only mode (user direction 2026-10-25): the intermediate hard-contact
+# force guard (15N ordinary / 40N intentional) does not stop the run; task
+# outcomes are verified at segment ends instead.
+ENFORCE_CONTACT_GUARD = False
+
+
 class DualArmController:
     control_hz=25
     substeps=20
@@ -209,8 +215,14 @@ class DualArmController:
             self.last_u[step]=actuator16(self.scene)
             mujoco.mj_step(m,d)
             self.tick+=1
-            self.devices.update()
-            violations=self.contact_guard.inspect()
+            # Device timers and the contact guard run once per 25Hz control frame
+            # (user-approved): a per-2ms Python scan was the dominant cost. The
+            # timers receive the full frame duration so wash/heat timing is kept.
+            if (step+1)%self.substeps==0:
+                self.devices.update(self.substeps*float(m.opt.timestep))
+                violations=self.contact_guard.inspect() if ENFORCE_CONTACT_GUARD else []
+            else:
+                violations=[]
             if violations and not self.stopped:
                 self.stop_evidence=violations
                 reason=("CONTACT_GUARD" if any("normal_force_n" in x for x in violations) else

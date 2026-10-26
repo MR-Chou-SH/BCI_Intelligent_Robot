@@ -9,6 +9,11 @@ import mujoco
 import numpy as np
 
 
+# Temporary user-authorized removal of the tight ordinary margin (2026-10-24):
+# a negative margin is a 3mm penetration tolerance. Restore .002 to re-enable.
+ORDINARY_MARGIN_M = -.003
+
+
 class CollisionGeometry:
     def __init__(self, scene):
         self.scene, self.m = scene, scene.model
@@ -19,6 +24,7 @@ class CollisionGeometry:
         self.excluded = {int(x) for x in m.exclude_signature}
         self.radius = m.geom_rbound.copy()
         self.radius[m.geom_type == mujoco.mjtGeom.mjGEOM_PLANE] = 100.
+        self._pairs_cache = {}
         self.hinge = np.zeros((m.ngeom, m.nq))
         self.slide = np.zeros((m.ngeom, m.nq))
         self.free = {}
@@ -53,10 +59,19 @@ class CollisionGeometry:
         return bool((m.geom_contype[a] & m.geom_conaffinity[b]) or (m.geom_contype[b] & m.geom_conaffinity[a]))
 
     def pairs(self, moving_names=()):
+        # The active/excluded sets and eligibility masks are static for a scene;
+        # rebuilding this O(n^2) list per waypoint certificate dominated the
+        # profile (7s of 31s plus 3.9M eligible() calls). Cache per moving set.
+        key = tuple(sorted(moving_names))
+        cached = self._pairs_cache.get(key)
+        if cached is not None:
+            return cached
         moving = self.robot | {g for g in self.active if any(
             self.m.body(int(self.m.geom_bodyid[g])).name.startswith(n) for n in moving_names)}
-        return np.array([(a,b) for i,a in enumerate(self.active) for b in self.active[i+1:]
-                         if (a in moving or b in moving) and self.eligible(a,b)], dtype=int).reshape(-1,2)
+        result = np.array([(a,b) for i,a in enumerate(self.active) for b in self.active[i+1:]
+                           if (a in moving or b in moving) and self.eligible(a,b)], dtype=int).reshape(-1,2)
+        self._pairs_cache[key] = result
+        return result
 
     def distances(self, q, pairs, cutoff=.3):
         self.d.qpos[:] = q
@@ -104,7 +119,7 @@ class CollisionGeometry:
                 result.add(frozenset(ids))
         return result
 
-    def certificate(self, q0, q1, pairs=None, margin=.002, intentional_pairs=(), max_depth=16, max_evaluations=2048):
+    def certificate(self, q0, q1, pairs=None, margin=ORDINARY_MARGIN_M, intentional_pairs=(), max_depth=16, max_evaluations=2048):
         pairs = self.pairs() if pairs is None else pairs
         if not len(pairs):
             return {"status":"NO_ELIGIBLE_PAIRS","pass":False}

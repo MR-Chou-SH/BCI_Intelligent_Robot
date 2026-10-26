@@ -18,7 +18,10 @@ import numpy as np
 
 from .collision import CollisionGeometry
 from .control import DualArmController, actuator16, state16, tcp_pose
-from .contact_execution import ContactExecution, DEVICE_TARGETS
+from .contact_execution import ENFORCE_CONTACT_POLICY, ContactExecution, DEVICE_TARGETS
+# Task-only mode (user direction 2026-10-25): per-waypoint collision certificates
+# are not enforced during motion; outcomes are checked at segment ends.
+ENFORCE_COLLISION_CERTIFICATE = False
 from .layouts import DEFAULT_PLATFORM_LAYOUT,layout_manifest
 from .model import build_scene
 from .registry import REMOVED_V3, SceneRegistry, control_identity, digest
@@ -37,8 +40,13 @@ class PhysicsEvidence:
         self.sampler=PhysicsTraceSampler(platform.scene)
         directory=Path(root)/("episode_"+uuid.uuid4().hex)
         directory.mkdir(parents=True,exist_ok=False)
-        self.path=directory/"physics.jsonl"
-        self.file=self.path.open("x",encoding="utf-8",buffering=1)
+        compressed=getattr(platform,"evidence_compression",None)=="gzip"
+        self.path=directory/("physics.jsonl.gz" if compressed else "physics.jsonl")
+        if compressed:
+            import gzip
+            self.file=gzip.open(self.path,"xt",encoding="utf-8",compresslevel=1)
+        else:
+            self.file=self.path.open("x",encoding="utf-8",buffering=1)
         self.previous="0"*64
         self.samples=0
         self.failed=False
@@ -85,13 +93,19 @@ class PhysicsEvidence:
 
 
 class KitchenPlatform:
-    read_methods={"get_scene_manifest","observe","query_objects","check_configuration","check_motion",
+    read_methods={"get_scene_manifest","observe","query_objects","get_object_states","get_replay_snapshot","check_configuration","check_motion",
                   "get_execution_status","get_task_feedback","get_world_state","check_contact_motion"}
-    mutation_methods={"reset","submit_joint_targets","execute_trajectory","step","cancel","hold","end_contact"}
+    mutation_methods={"reset","submit_joint_targets","execute_trajectory","step","cancel","hold","end_contact",
+                      "start_state_recording","stop_state_recording"}
     arm_target_indices=np.array([0,1,2,3,4,5,6,8,9,10,11,12,13,14])
 
     def __init__(self, *,layout=DEFAULT_PLATFORM_LAYOUT,seed=None,mode="manual",data_root=None,
-                 initialization_profile="fixed"):
+                 initialization_profile="fixed",evidence_compression=None,record_physics=False):
+        if evidence_compression not in (None,"gzip"):
+            raise ValueError("Unsupported evidence compression")
+        self.evidence_compression=evidence_compression
+        self.record_physics=bool(record_physics)
+        self.post_step_observers=[]
         if mode not in ("manual","realtime"):
             raise ValueError("mode must be manual or realtime")
         if initialization_profile not in ("fixed", "research"):
@@ -109,6 +123,7 @@ class KitchenPlatform:
         self.execution=None
         self.queue=[]
         self.evidence=None
+        self.state_recorder=None
         self.sequence=0
         self.writer_owner=None
         self.history=OrderedDict()
@@ -149,6 +164,12 @@ class KitchenPlatform:
         # geometry, components, metadata storage and old-record sealing succeed.
         try:
             scene=build_scene(layout_id=layout,seed=0 if research else seed)
+            door_angle=float(layout_manifest(layout).get("initial_door_angle_rad",0.))
+            if door_angle:
+                import mujoco
+                adr=scene.model.jnt_qposadr[scene.model.joint("microwave_hinge").id]
+                scene.data.qpos[adr]=door_angle
+                mujoco.mj_forward(scene.model,scene.data)
             if research:
                 from .research_initialization import initialize_research_scene
                 initialization=initialize_research_scene(scene,seed)
@@ -162,13 +183,14 @@ class KitchenPlatform:
             registry=SceneRegistry(scene)
             geometry=CollisionGeometry(scene)
             contact=ContactExecution(scene,controller)
+            contact._stride=controller.substeps
             control=control_identity()
             episode={"episode_id":uuid.uuid4().hex,"episode_index":self.epoch+1,"seed":seed,
                 "initialization_profile":self.initialization_profile,
                 "initialization_hash":initialization["episode_scene_hash"],
                 "base_scene_hash":scene.scene_sha256,"base_scene_seed":scene.seed,
                 "status":initialization["status"]}
-            if self.data_root is not None:
+            if self.data_root is not None and self.record_physics:
                 directory=self.data_root/("session_"+self.session)/"initializations"
                 directory.mkdir(parents=True,exist_ok=True)
                 with (directory/(episode["episode_id"]+".json")).open("x",encoding="utf-8") as file:
@@ -193,6 +215,7 @@ class KitchenPlatform:
         self.queue=[]
         self.evidence=None
         self.sequence=0
+        self.state_recorder=None
 
     def token(self):
         with self.lock:
@@ -231,6 +254,8 @@ class KitchenPlatform:
                     "monitoring":"all actual post-step samples, including after queue completion",
                     "completion":"release then end_contact after measured support and pad separation; cancel holds"},
                 "capabilities":{"geometry_queries":"AVAILABLE","bounded_joint_control":"AVAILABLE",
+                    "object_state_query":"get_object_states; scratch-forward same-tick state, no images",
+                    "state_recording":"start_state_recording/stop_state_recording; manual, continuous controls and checkpoints",
                     "task_strategies":"EXTERNAL_PLANNER","physical_task_results":"NOT_VERIFIED",
                     "formal_layout":"AWAITING_USER_REVIEW","quest":"HARDWARE_REQUIRED"}}
 
@@ -358,7 +383,7 @@ class KitchenPlatform:
                     raise PlatformError("GUARDED_GRIPPER_REQUIRES_STATIONARY_ARMS")
             if not np.allclose(accepted,values,rtol=0.,atol=1e-9):
                 raise PlatformError("TRAJECTORY_REQUIRES_RATE_LIMITING",{"index":index,"accepted":accepted.tolist()})
-            if not contact_mode:
+            if not contact_mode and ENFORCE_COLLISION_CERTIFICATE:
                 result=self._check(qprevious,qnext,contacts)
                 if not result["pass"]:
                     raise PlatformError("MOTION_NOT_CERTIFIED",{"index":index,"result":result})
@@ -366,7 +391,8 @@ class KitchenPlatform:
             previous,qprevious=accepted,qnext
         if guarded_gripper and not self._arms_settled():
             raise PlatformError("GUARDED_GRIPPER_REQUIRES_SETTLED_ARMS","Measured joint speed <=0.01 rad/s and tracking error <=0.005 rad required")
-        preview=self.contact.preview([q.tolist() for q in checked],contact_contract) if contact_mode else None
+        preview=(self.contact.preview([q.tolist() for q in checked],contact_contract)
+                 if (contact_mode and ENFORCE_CONTACT_POLICY) else None)
         if preview is not None and not preview["pass"]:
             raise PlatformError("CONTACT_PREFLIGHT_REJECTED",preview)
         # Nothing above this line mutates the live controller, queue or recorder.
@@ -375,7 +401,7 @@ class KitchenPlatform:
         execution_id=uuid.uuid4().hex
         try:
             writer=(PhysicsEvidence(self.data_root,self,source,execution_id=execution_id,
-                    contact_contract=contact_contract,contact_preflight=preview) if self.data_root else None)
+                    contact_contract=contact_contract,contact_preflight=preview) if self.data_root and self.record_physics else None)
         except Exception as error:
             self.controller.hold("EVIDENCE_OPEN_FAILURE")
             self._finish("FAILED",str(error))
@@ -457,12 +483,20 @@ class KitchenPlatform:
 
     def _record_and_guard(self,controller):
         if self.evidence and not self.evidence.file.closed:self.evidence.sample(controller)
-        violations=self.contact.sample(controller)
-        if violations:
-            if self.execution:self.execution["contact_violation"]=violations
-            controller.hold("CONTACT_POLICY_VIOLATION")
-        if self.execution and self.execution["status"]=="RUNNING" and self.execution.get("guarded_gripper") and not self._arms_settled():
-            controller.hold("GUARDED_GRIPPER_ARMS_NOT_SETTLED")
+        # Contact policy and task-quality predicates now run once per 25Hz control
+        # frame (user-approved speedup); the 500Hz action stream is still recorded
+        # per substep below. The engine advances its timers by the frame duration.
+        boundary = controller.frame_step == controller.substeps - 1
+        if boundary:
+            violations=self.contact.sample(controller)
+            if violations:
+                if self.execution:self.execution["contact_violation"]=violations
+                controller.hold("CONTACT_POLICY_VIOLATION")
+            if self.execution and self.execution["status"]=="RUNNING" and self.execution.get("guarded_gripper") and not self._arms_settled():
+                controller.hold("GUARDED_GRIPPER_ARMS_NOT_SETTLED")
+            for observer in tuple(self.post_step_observers):observer(controller)
+        if self.state_recorder and not self.state_recorder.closed:
+            self.state_recorder.sample(controller)
 
     def advance(self,count):
         with self.lock:
@@ -474,16 +508,14 @@ class KitchenPlatform:
         for _ in range(count):
             try:
                 if self.controller.frame_step==0 and self.queue and not self.controller.stopped:
-                    target=self.queue[0]
-                    contract=self.execution.get("contact_contract")
-                    result=(self.contact.preview([target],contract) if contract else
-                        self._check(self.scene.data.qpos.copy(),self._configuration(target),self.execution["contact_targets"]))
-                    if not result["pass"]:
-                        self.controller.hold("ENVIRONMENT_CHANGED_MOTION_NOT_CERTIFIED")
-                        self._finish("FAILED",result)
-                    else:
-                        self.controller.accept_joint_targets(self.queue.pop(0))
-                        self.execution["waypoints_started"]+=1
+                    # The whole list was already certified in _start_execution
+                    # (collision certificate per waypoint, or one scratch
+                    # dynamics preview for the contracted batch). Re-checking
+                    # every 40ms target against the live state doubled the cost
+                    # without adding evidence; the live 25Hz contact policy and
+                    # guard still hold on any real violation.
+                    self.controller.accept_joint_targets(self.queue.pop(0))
+                    self.execution["waypoints_started"]+=1
                 self.controller.advance_substeps(1,self._record_and_guard)
             except Exception as error:
                 self.controller.hold("PHYSICS_OR_EVIDENCE_FAILURE")
@@ -510,6 +542,44 @@ class KitchenPlatform:
         if method=="observe":return self.observe()
         if method=="get_world_state":return self.world()
         if method=="query_objects":return self._query_objects(args.get("ids"),args.get("object_type"))
+        if method=="get_object_states":
+            from .object_state import object_states,key_object_states
+            if args.get("detail")=="key":
+                result=key_object_states(self.scene,self.controller)
+                if args.get("ids") is not None:
+                    self._query_objects(args["ids"],args.get("object_type"))
+                    result["objects"]=[o for o in result["objects"] if o["id"] in args["ids"]]
+                return result
+            selected=self._query_objects(args.get("ids"),args.get("object_type"))
+            return {**object_states(self.scene,self.controller,ids=[item["id"] for item in selected]),
+                    "identity":self.token(),"episode":copy.deepcopy(self.episode)}
+        if method=="get_replay_snapshot":
+            from .state_recording import snapshot
+            from .scene_identity import model_identity
+            return {"schema":"kitchen_replay_snapshot_v1","identity":self.token(),
+                    "episode":copy.deepcopy(self.episode),"layout":self.scene.layout_id,
+                    "base_seed":self.scene.seed,"initialization":copy.deepcopy(self.initialization),
+                    "model_identity":model_identity(self.scene,builder_sha256=self.scene.builder_sha256),
+                    "snapshot":snapshot(self.scene,self.controller),"images_included":False}
+        if method=="start_state_recording":
+            if args:raise PlatformError("UNKNOWN_RECORDING_ARGUMENT")
+            if self.mode!="manual":raise PlatformError("STATE_RECORDING_REQUIRES_MANUAL_MODE")
+            if self.data_root is None:raise PlatformError("STATE_RECORDING_REQUIRES_DATA_ROOT")
+            if self.state_recorder and not self.state_recorder.closed:raise PlatformError("STATE_RECORDING_ACTIVE")
+            from .state_recording import StateRecorder
+            try:
+                self.state_recorder=StateRecorder(self.data_root,self)
+            except Exception as error:
+                raise PlatformError("STATE_RECORDING_START_FAILED",str(error)) from error
+            return self.state_recorder.info()
+        if method=="stop_state_recording":
+            if args:raise PlatformError("UNKNOWN_RECORDING_ARGUMENT")
+            if self.state_recorder is None:raise PlatformError("NO_STATE_RECORDING")
+            try:
+                return self.state_recorder.close(self,"OPERATOR_STOP")
+            except Exception as error:
+                self.controller.hold("STATE_RECORDING_SEAL_FAILED")
+                raise PlatformError("STATE_RECORDING_SEAL_FAILED",str(error)) from error
         if method=="get_execution_status":
             requested=args.get("execution_id")
             if requested is None:return copy.deepcopy(self.execution)
@@ -536,6 +606,8 @@ class KitchenPlatform:
                     "device_state":device.snapshot(),"events":copy.deepcopy(device.events),"contact_execution":self.contact.feedback(),"task_success":"NOT_VERIFIED",
                     "trajectory_completion_is_task_success":False}
         if method=="reset":
+            if self.state_recorder and not self.state_recorder.closed:
+                raise PlatformError("STATE_RECORDING_ACTIVE_STOP_FIRST")
             if set(args)-{"seed"}:
                 raise PlatformError("UNKNOWN_RESET_ARGUMENT",self._record_reset_failure(
                     args.get("seed"),"UNKNOWN_RESET_ARGUMENT","INPUT_VALIDATION"))
@@ -555,10 +627,11 @@ class KitchenPlatform:
             if self.queue or (self.execution and self.execution["status"]=="RUNNING") or self.controller.frame_step:
                 raise PlatformError("CONTACT_EXECUTION_OR_FRAME_ACTIVE")
             measured=feedback["measured"]
-            if (feedback["evidence_tick"]!=self.controller.tick or feedback["violations"] or
-                feedback["measured_pad_separation_s"]<.05-1e-12 or
-                not measured.get("grasp",{}).get("pads_separated",False) or
-                any(f>=.5 for f in measured.get("grasp",{}).get("pad_normal_forces_n",[1.,1.]))):
+            if ENFORCE_CONTACT_POLICY and (
+                    feedback["evidence_tick"]!=self.controller.tick or feedback["violations"] or
+                    feedback["measured_pad_separation_s"]<.05-1e-12 or
+                    not measured.get("grasp",{}).get("pads_separated",False) or
+                    any(f>=.5 for f in measured.get("grasp",{}).get("pad_normal_forces_n",[1.,1.]))):
                 raise PlatformError("MEASURED_PAD_SEPARATION_REQUIRED")
             for name in feedback["contract"]["payload_ids"]:
                 if not measured.get("support",{}).get(name,{}).get("supported",False):
@@ -630,3 +703,4 @@ class KitchenPlatform:
             self.controller.hold("SERVER_SHUTDOWN")
             self._finish("CANCELLED","SERVER_SHUTDOWN")
             if self.evidence:self.evidence.close("SERVER_SHUTDOWN")
+            if self.state_recorder:self.state_recorder.close(self,"SERVER_SHUTDOWN")

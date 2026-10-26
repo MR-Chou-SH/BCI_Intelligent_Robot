@@ -1,5 +1,9 @@
 # Planner API 中文接口说明
 
+2026-10-26：`get_object_states({"ids":["burger_container","hotdog_container"]})` 的小盘条目新增 `handle_frames`，返回编译后把手的世界位置、3×3 世界旋转矩阵和盒体半尺寸（m）。从该帧生成接近点可直接适应小范围初始位姿随机化及把手倾角调整。主食的简单几何规划、测试与证据边界见 [本轮开发日志](../development_log/2026-10-26-kitchen-measured-meal-geometry.md)。候选 013 默认门角为 100°，任务需要关门初态时须显式准备，不能把门已经打开当作开门专家轨迹。
+
+2026-10-24扩展：本开发分支API为**1.3.0**，新增`get_object_states`、`get_replay_snapshot`、`start_state_recording`、`stop_state_recording`。无VR、无图像录制与MP4/viewer用法见[状态采集与重放](STATE_RECORD_REPLAY_CN.md)。下文1.2.1为原接口说明，原方法保留；Linux支撑几何类型比较修复保留原允许类型和力学阈值。
+
 日期：2026-10-23。以 `robot_arm/kitchen/platform.py`、`control.py`、`contact_execution.py`、`integration/kitchen/platform_server.py`、`planner_client.py` 为权威。API 1.2.1，候选 013，接口与物理门禁本轮未修改。先按 [开发入口](VLA_PLANNER_HANDOFF_CN.md) 安装和启动。
 
 ## 1. 这是不是规划器

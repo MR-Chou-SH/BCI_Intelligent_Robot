@@ -42,9 +42,15 @@ class ReferenceContract(unittest.TestCase):
         self.assertEqual(phases, {"acquire", "carry", "device", "release"})
         self.assertEqual(calls[-1]["method"], "hold")
 
-    def test_current_control_sources_are_exact_historical_identity(self):
+    def test_local_randomization_has_new_identity_without_relabeling_references(self):
         from robot_arm.kitchen.registry import control_identity
-        self.assertEqual(control_identity()["control_hash"], ref.CONTROL)
+        from robot_arm.kitchen import research_initialization
+        identity = control_identity()
+        self.assertNotEqual(identity["control_hash"], ref.CONTROL)
+        self.assertEqual(identity["configuration"]["sources"]["research_initialization.py"],
+                         ref.sha(research_initialization.__file__))
+        for name in ("apple", "burger"):
+            self.assertEqual(ref.load(ref.ASSETS / (name + "_metadata.json"))["control_hash"], ref.CONTROL)
 
 
 if __name__ == "__main__":

@@ -75,7 +75,8 @@ class WorldHandler(socketserver.BaseRequestHandler):
 
 def serve(args):
     platform=KitchenPlatform(layout=args.layout,seed=args.seed,mode=args.mode,data_root=args.data_root,
-        initialization_profile=args.initialization_profile)
+        initialization_profile=args.initialization_profile,record_physics=getattr(args,"diagnostics",False),
+        evidence_compression="gzip" if getattr(args,"diagnostics",False) else None)
     stopping=threading.Event()
     planner=world=None
     workers=[]

@@ -82,8 +82,9 @@ def parse_seed(value):
 
 
 class Rpc:
-    def __init__(self, client, output):
+    def __init__(self, client, output, *, diagnostics=True):
         self.client, self.output, self.count = client, output, 0
+        self.diagnostics=diagnostics
 
     def request(self, method, args=None, mutating=False, **kwargs):
         if mutating:
@@ -92,6 +93,7 @@ class Rpc:
         started = time.monotonic()
         reply = self.client.call(method, args, mutating=mutating, **kwargs)
         self.count += 1
+        if not self.diagnostics:return reply
         with (self.output / "rpc.jsonl").open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(dict(sequence=self.count, method=method, args=args or {},
                 mutating=mutating, request_id=kwargs.get("request_id"), token=sent_token,
@@ -173,7 +175,9 @@ def read_record(path, output, state, execution):
     before = path.stat()
     check(before.st_size <= 32*1024*1024, "Record exceeds finite example bound")
     previous, metadata, end, last, count = "0"*64, None, None, None, 0
-    with path.open("rb") as stream:
+    import gzip
+    opener=gzip.open if path.suffix==".gz" else open
+    with opener(path,"rb") as stream:
         for raw in stream:
             check(len(raw) <= 16*1024*1024 and raw.endswith(b"\n"), "Incomplete physics record")
             envelope = json.loads(raw)
@@ -205,7 +209,7 @@ def read_record(path, output, state, execution):
     check(end["reason"] == "WAYPOINTS_CONSUMED_NOT_TASK_SUCCESS", "Unexpected execution termination")
     after = path.stat()
     check((before.st_size, before.st_mtime_ns) == (after.st_size, after.st_mtime_ns), "Record changed during audit")
-    destination = output / "records" / (path.parent.name+".jsonl")
+    destination = output / "records" / (path.parent.name+(".jsonl.gz" if path.suffix==".gz" else ".jsonl"))
     destination.parent.mkdir(exist_ok=True)
     check(not destination.exists(), "Refusing to overwrite copied evidence")
     shutil.copyfile(path, destination)
@@ -389,6 +393,8 @@ def main(argv=None):
     parser.add_argument("--audit-geometry", action="store_true", help="Local same-model read-only audit of network qpos")
     parser.add_argument("--read-records", action="store_true", help="Read local server records and copy verified chains")
     parser.add_argument("--launch", action="store_true", help="Start/stop the checkout's actual PS launcher")
+    parser.add_argument("--launcher", choices=("native", "powershell"),
+                        default="powershell" if sys.platform == "win32" else "native")
     parser.add_argument("--data-root", type=Path, help="New lexical experiments/kitchen_platform_v3/... path for --launch")
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--powershell", default=shutil.which("pwsh") or shutil.which("powershell"))
@@ -398,8 +404,9 @@ def main(argv=None):
         parser.error("Require 1..8 resets and 0..1000 settle substeps in complete 20-tick frames")
     if not 1 <= args.timeout <= 180 or args.port is not None and not 0 <= args.port <= 65535:
         parser.error("Require timeout 1..180 s and port 0..65535")
-    if args.launch and (not args.data_root or not args.ready_file or not args.powershell):
-        parser.error("--launch requires --data-root, --ready-file and an available PowerShell")
+    if args.launch and (not args.data_root or not args.ready_file or
+                        args.launcher == "powershell" and not args.powershell):
+        parser.error("--launch requires --data-root, --ready-file; powershell launcher requires PowerShell")
     output = args.output.absolute()
     output.mkdir(parents=True, exist_ok=False)
     started = datetime.now(timezone.utc).isoformat()
@@ -411,6 +418,7 @@ def main(argv=None):
         "preflight then tiny joint action/20 real steps/feedback", "sealed physical chain readback", "owned process cleanup"],
         shared_sources={str(p.relative_to(ROOT)): sha(p) for p in [ROOT/"scripts/start_kitchen_platform.ps1",
             ROOT/"integration/kitchen/platform_server.py", ROOT/"integration/kitchen/planner_client.py",
+            ROOT/"integration/kitchen/launch.py",
             ROOT/"robot_arm/kitchen/platform.py", ROOT/"robot_arm/kitchen/research_initialization.py",
             ROOT/"robot_arm/kitchen/model.py", ROOT/"robot_arm/kitchen/control.py", ROOT/".codex/ACTIVE_GOAL.json"]
             if p.exists()})
@@ -431,6 +439,15 @@ def main(argv=None):
                 "-RunSeconds", "180", "-PythonExe", args.python]
             if args.initial_seed is not None:
                 command.extend(["-Seed", str(args.initial_seed)])
+            if args.launcher == "native":
+                command = [args.python, "-B", "-m", "integration.kitchen.launch",
+                    "--initialization-profile", "research", "--mode", "manual",
+                    "--data-root", str(args.data_root.absolute()), "--ready-file", str(args.ready_file.absolute()),
+                    "--planner-port", str(args.port or 0), "--world-port", "0",
+                    "--bind-host", args.host or "127.0.0.1", "--run-seconds", "180"]
+                if args.read_records:command.append("--diagnostics")
+                if args.initial_seed is not None:
+                    command.extend(["--seed", str(args.initial_seed)])
             result["launcher_command"] = command
             stdout, stderr = (output/"stdout.log").open("x"), (output/"stderr.log").open("x")
             process = subprocess.Popen(command, cwd=ROOT, stdout=stdout, stderr=stderr, creationflags=CREATION_FLAGS)

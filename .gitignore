@@ -111,6 +111,8 @@ m7_unity6000/Assets/Resources/buildInfo.txt.meta
 
 experiments/**/raw/
 experiments/**/cache/
+# Linux kitchen acceptance runs contain large raw physics/RPC records.
+experiments/kitchen_platform_v3/linux_acceptance_*/
 integration/synchronization/runtime_logs/
 
 # EEG recording/data exports (keep raw acquisition data outside Git)
@@ -128,3 +130,22 @@ integration/synchronization/runtime_logs/
 # Keep templates/readmes
 !experiments/**/README.md
 !experiments/**/.gitkeep
+
+# Compact generated kitchen datasets and temporary acceptance outputs
+experiments/kitchen_platform_v3/expert_data/
+experiments/kitchen_platform_v3/compact_smoke_*/
+experiments/kitchen_platform_v3/cleanup_summary.json
+
+# Kitchen review/collection artifacts; retain source and documentation
+experiments/kitchen_platform_v3/collections/
+experiments/kitchen_platform_v3/simple_geometry_*/
+experiments/kitchen_platform_v3/handle60_*/
+experiments/kitchen_platform_v3/review_*/
+experiments/kitchen_platform_v3/R1_*/
+experiments/kitchen_platform_v3/R3_*/
+experiments/kitchen_platform_v3/B1_*/
+experiments/kitchen_platform_v3/checkpoints/
+experiments/kitchen_platform_v3/render_*.png
+experiments/kitchen_platform_v3/*_acceptance_*.json
+experiments/kitchen_platform_v3/*_assessment_*.json
+experiments/kitchen_platform_v3/workspace_inventory.json

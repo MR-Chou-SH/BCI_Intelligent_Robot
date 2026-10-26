@@ -1,0 +1,46 @@
+[
+  {
+    "result": "lift_ok",
+    "up": 0.2763960482359914,
+    "moved": 0.003679372768002135,
+    "contacts": 8,
+    "grabbed": true,
+    "lift_ik_ok": true,
+    "in_box": false,
+    "obj": "obj_0",
+    "idx": 0
+  },
+  {
+    "result": "lift_ok",
+    "up": 0.2762337929158809,
+    "moved": 0.004922207570951459,
+    "contacts": 8,
+    "grabbed": true,
+    "lift_ik_ok": true,
+    "in_box": false,
+    "obj": "obj_1",
+    "idx": 1
+  },
+  {
+    "result": "lift_ok",
+    "up": 0.27307438040935716,
+    "moved": 0.00200217607853293,
+    "contacts": 6,
+    "grabbed": true,
+    "lift_ik_ok": true,
+    "in_box": false,
+    "obj": "obj_2",
+    "idx": 2
+  },
+  {
+    "result": "lift_ok",
+    "up": 0.2755272447720194,
+    "moved": 0.002688801216821763,
+    "contacts": 8,
+    "grabbed": true,
+    "lift_ik_ok": true,
+    "in_box": false,
+    "obj": "obj_3",
+    "idx": 3
+  }
+]

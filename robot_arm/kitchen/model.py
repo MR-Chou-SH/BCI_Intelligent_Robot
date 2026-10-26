@@ -161,7 +161,7 @@ def _kitchen(spec, rng, *, include_rice=True):
         fromto=[0,0,0,0,0,.25],size=[.014],rgba=[.6,.65,.67,1])
     faucet.add_geom(name="faucet_spout",type=mujoco.mjtGeom.mjGEOM_CAPSULE,
         fromto=[0,0,.25,0,-.20,.25],size=[.014],rgba=[.6,.65,.67,1])
-    handle=faucet.add_body(name="faucet_handle",pos=[.055,0,.10])
+    handle=faucet.add_body(name="faucet_handle",pos=[.105,0,.10])
     handle.add_joint(name="faucet_switch",type=mujoco.mjtJoint.mjJNT_HINGE,axis=[0,0,1],
         range=[0,math.pi/3],damping=.03,frictionloss=.03)
     handle.add_geom(name="faucet_handle_geom",type=mujoco.mjtGeom.mjGEOM_CAPSULE,
@@ -196,8 +196,11 @@ def _kitchen(spec, rng, *, include_rice=True):
         ([.24,.008,.015],[0,-.16,.015]),([.24,.008,.015],[0,.16,.015]))):
         _box(tray,"tray_rim_"+str(i),half,pos,[.65,.40,.19,1],mass=.025)
     for side,x in (("left",-.27),("right",.27)):
-        _box(tray,"tray_handle_"+side,[.022,.055,.016],[x,0,.014],[.65,.40,.19,1],mass=.05)
-        tray.add_site(name="tray_grasp_"+side,pos=[x,0,.014],size=[.004],rgba=[1,0,0,1])
+        # Flat side handles, extended 75mm beyond the rim so the inner finger
+        # clears the tray wall. Raised bars were tried for B1 but obstructed the
+        # right arm's oven transfer, so the low profile is kept.
+        _box(tray,"tray_handle_"+side,[.022,.055,.016],[x,0,.046],[.65,.40,.19,1],mass=.05)
+        tray.add_site(name="tray_grasp_"+side,pos=[x,0,.046],size=[.004],rgba=[1,0,0,1])
     records=[
         ("apple",[-.73,-.29,.835],.15,[.035,.035,.035],[.78,.04,.02,1]),
         ("pear",[-.55,-.29,.845],.18,[.032,.032,.045],[.75,.75,.13,1]),

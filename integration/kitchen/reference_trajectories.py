@@ -199,7 +199,14 @@ def apple_prefix(args):
 
     meta = load(args.assets/"apple_metadata.json")
     scene = build_scene(layout_id=LAYOUT, seed=0)
-    if scene.scene_sha256 != SCENE or control_identity()["control_hash"] != CONTROL:
+    # User direction 2026-10-24: reuse the recorded trajectory instead of
+    # re-solving. The exact-identity equality is recorded, not enforced, when
+    # --allow-current-identity is given; the state-divergence budget below still
+    # decides whether the replay actually tracks this model.
+    identity = dict(recorded_scene=SCENE, current_scene=scene.scene_sha256,
+                    recorded_control=CONTROL, current_control=control_identity()["control_hash"],
+                    exact_match=(scene.scene_sha256 == SCENE and control_identity()["control_hash"] == CONTROL))
+    if not identity["exact_match"] and not args.allow_current_identity:
         raise ValueError("EXACT_FIXED_SCENE_AND_CONTROL_REQUIRED")
     controller = DualArmController(scene)
 
@@ -233,6 +240,7 @@ def apple_prefix(args):
                 frames += 1
         return dict(status="INTERNAL_FIXED_APPLE_PREFIX_PASS", executed_frames=frames,
             sim_tick=controller.tick, max_state16_error=max_error, evidence_file=str(evidence.path),
+            identity=identity,
             full_cycle=frames == meta["frame_count"], full_task_success="NOT_REAUDITED",
             public_api="NOT_USED", task_success="NOT_INFERRED_FROM_PREFIX")
     finally:
@@ -250,9 +258,13 @@ def burger_prefix(args):
     with PlannerClient(args.host, args.port, timeout=120.) as client:
         observed = require(client.call("observe"))
         ep = observed["episode"]
-        if (observed["scene_hash"] != SCENE or observed["control_hash"] != CONTROL or
-                ep["initialization_profile"] != "fixed" or ep["seed"] != 0 or observed["sim_tick"] != 0):
+        identity = dict(recorded_scene=SCENE, current_scene=observed["scene_hash"],
+                        recorded_control=CONTROL, current_control=observed["control_hash"],
+                        exact_match=(observed["scene_hash"] == SCENE and observed["control_hash"] == CONTROL))
+        if not identity["exact_match"] and not args.allow_current_identity:
             raise ValueError("FRESH_FIXED_013_SEED0_CURRENT_CONTROL_REQUIRED_NOT_RESEARCH_RANDOM")
+        if ep["initialization_profile"] != "fixed" or ep["seed"] != 0 or observed["sim_tick"] != 0:
+            raise ValueError("FRESH_FIXED_013_SEED0_REQUIRED")
         started, frames, executed = time.monotonic(), 0, 0
         with (args.output/"rpc.jsonl").open("x", encoding="utf-8") as journal, \
                 (args.assets/"burger_public_calls.jsonl").open(encoding="utf-8") as stream:
@@ -273,7 +285,7 @@ def burger_prefix(args):
                         frames += len(row["args"]["waypoints"])
                     executed += 1
                 final = require(client.call("observe"))
-                return dict(status="PUBLIC_FIXED_BURGER_PREFIX_PASS", executed_frames=frames,
+                return dict(status="PUBLIC_FIXED_BURGER_PREFIX_PASS", identity=identity, executed_frames=frames,
                     executed_calls=executed, sim_tick=final["sim_tick"],
                     historical_full_status=meta["historical_audit"]["status"],
                     full_new_reexecution="NOT_TESTED" if frames < 3218 else "EXECUTED_NOT_REAUDITED",
@@ -289,6 +301,8 @@ def main():
     parser.add_argument("--output", type=Path)
     parser.add_argument("--max-frames", type=int, default=100)
     parser.add_argument("--wall-seconds", type=float, default=120.)
+    parser.add_argument("--allow-current-identity", action="store_true",
+        help="record scene/control identity differences instead of refusing to replay")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=11031)
     for name in ("apple-record", "apple-report", "apple-audit", "water-audit", "burger-run"):

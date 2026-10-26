@@ -1,0 +1,5 @@
+obj,idx,result,contacts,up,moved,grabbed,lift_ik_ok,in_box
+obj_0,0,lift_ok,8,0.2764,0.0037,True,True,False
+obj_1,1,lift_ok,8,0.2762,0.0049,True,True,False
+obj_2,2,lift_ok,6,0.2731,0.002,True,True,False
+obj_3,3,lift_ok,8,0.2755,0.0027,True,True,False

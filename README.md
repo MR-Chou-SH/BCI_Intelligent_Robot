@@ -2,6 +2,18 @@
 
 ## Kitchen V3 科研交接入口
 
+全任务各两条轨迹与 MP4：使用 [批量采集脚本说明](docs/kitchen_platform_v3_20261020/DATASET_COLLECTION_CN.md)，目标为 64 用例 × 2 条，支持失败重试和断点续跑。
+
+左侧连续轨迹、局部让位及全任务回 home 检查见[运动连续性记录](docs/development_log/2026-10-26-kitchen-motion-continuity.md)，内含正常速度 MP4 的位置与前后量化对比。
+
+最新水果轨迹已改为斜向接近与曲线携带，采用整段关节插值；[曲线路径记录](docs/development_log/2026-10-27-curved-fruit-trajectories.md)提供25fps正常速度视频、实际TCP运动核对和验证边界。
+
+**无VR时请从[物体状态查询、无图像录制与MuJoCo MP4／viewer重放](docs/kitchen_platform_v3_20261020/STATE_RECORD_REPLAY_CN.md)开始。** 可直接运行PC录制／重放示例；当前Planner API为1.3.0，原接口保留。
+
+默认采集只保存压缩的关键状态与动作（HDF5），不保存完整RPC和物理诊断；已有精简数据位于 `experiments/kitchen_platform_v3/expert_data/`。本轮约32GB冗余调试数据已清理。
+
+当前 Linux 与任务采集开发请读 [Linux环境、局部随机化与任务分段](docs/kitchen_platform_v3_20261020/LINUX_TASK_COLLECTION_CN.md)。两张新任务表的20＋44个用例及批量脚本见 [Expert V2采集说明](docs/kitchen_platform_v3_20261020/EXPERT_V2_COLLECTION_CN.md)。新分支 `feature/kitchen-linux-task-collection` 保持左水果／右主食布局；全部流程已接入，逐任务物理验收仍在进行，失败尝试不计入专家数据。
+
 **负责 VLA / 轨迹规划的同学请先读 [中文开发交接指南](docs/kitchen_platform_v3_20261020/VLA_PLANNER_HANDOFF_CN.md)。** 无需 Quest 即可在 Windows PowerShell 5.1 启动 MuJoCo、随机 reset、调用 Planner API，并读取两条真实固定场景参考控制轨迹。
 
 - [Planner API 中文接口说明](docs/kitchen_platform_v3_20261020/PLANNER_API_GUIDE_CN.md)
@@ -9,7 +21,7 @@
 - [Quest Research 中文用户手册（39 项界面字段）](docs/kitchen_platform_v3_20261020/RESEARCH_USER_GUIDE_CN.md)
 - [本次发布验收结果](docs/kitchen_platform_v3_20261020/HANDOFF_RELEASE_VERIFICATION_CN.md)
 
-本分支使用候选 013 / API 1.2.1；候选尚未擅自晋升为正式布局。苹果新版避水为内部动力学 PASS，汉堡有公开 API 完整流程证据且终点仅为炉外持物；均不代表随机场景泛化成功。原 Goal 保持 PAUSED。本分支不启动 VLA 训练或通用规划器研发，下面保留原项目背景。
+本分支使用候选 013 / API 1.3.0；候选尚未擅自晋升为正式布局。苹果新版避水为历史内部动力学 PASS，汉堡有历史公开 API 完整流程证据且终点仅为炉外持物；均不代表本轮Linux新身份或随机场景泛化成功。原 Goal 保持 PAUSED。本轮推进无图像状态采集与重放，尚未启动 VLA 训练，下面保留原项目背景。
 
 研究 Context-aware BCI Shared Autonomy：EEG 提供用户的低带宽 intent evidence，任务 context 逐步支持更高的机器人自主性。
 

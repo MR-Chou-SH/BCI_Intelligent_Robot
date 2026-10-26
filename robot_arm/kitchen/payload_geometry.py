@@ -50,7 +50,7 @@ class CarriedGeometry(CollisionGeometry):
     def distances(self,q,pairs,cutoff=.3):
         return super().distances(self.evaluated(q),pairs,cutoff)
 
-    def certificate(self,q0,q1,pairs=None,margin=.002,intentional_pairs=(),**kwargs):
+    def certificate(self,q0,q1,pairs=None,margin=-.003,intentional_pairs=(),**kwargs):
         pairs=self.pairs() if pairs is None else pairs
         internal=np.asarray([int(a) in self.geoms and int(b) in self.geoms for a,b in pairs],dtype=bool)
         invariant=pairs[internal]

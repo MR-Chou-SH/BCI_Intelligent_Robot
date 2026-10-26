@@ -53,7 +53,10 @@ class ContactGuard:
                 (g2 in self.bases and g1 not in self.robot)):continue
             intentional=((g1 in self.pads and g2 in self.manipulable|self.device_contacts) or
                          (g2 in self.pads and g1 in self.manipulable|self.device_contacts))
-            limit=40. if intentional else 5.
+            # User direction: 5N for any non-intentional contact was over-
+            # constraining a deliberate grasp next to the basket/sink; 15N still
+            # stops a real collision while allowing a pad to press a fixture.
+            limit=40. if intentional else 15.
             force=np.zeros(6);mujoco.mj_contactForce(m,d,i,force)
             if not np.isfinite(force).all() or force[0]>limit:
                 result.append({"geom1":m.geom(g1).name,"geom2":m.geom(g2).name,

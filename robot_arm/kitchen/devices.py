@@ -52,8 +52,12 @@ class DeviceState:
             normal_force=float(f[0])
             vertical_force=normal_force*float(normal_on_object[2])
             below_center=float(c.pos[2])<float(center[2])+SUPPORT_CENTER_CLEARANCE_M
+            # A capsule/mesh may distribute its load over several native
+            # contacts. Test the same 0.25N threshold on their upward resultant,
+            # rather than requiring a single arbitrarily discretized point to
+            # carry it. Side/downward contacts never enter that resultant.
             qualifies=(normal_on_object[2]>SUPPORT_NORMAL_MIN_UPWARD_Z and
-                vertical_force>SUPPORT_FORCE_THRESHOLD_N and below_center)
+                vertical_force>0. and below_center)
             max_upward_force=max(max_upward_force,max(0.,vertical_force))
             if qualifies:
                 max_qualifying_upward_force=max(max_qualifying_upward_force,vertical_force)
@@ -68,8 +72,12 @@ class DeviceState:
                 "qualifies_as_upward_support":bool(qualifies),
             })
         qualifying=sum(int(item["qualifies_as_upward_support"]) for item in contacts)
+        total_upward_force=sum(item["normal_force_world_z_n"] for item in contacts
+                               if item["qualifies_as_upward_support"])
         return {
-            "supported":bool(qualifying>0),
+            "supported":bool(total_upward_force>SUPPORT_FORCE_THRESHOLD_N),
+            "support_force_policy":"summed_upward_native_contacts_v2",
+            "total_qualifying_upward_support_force_n":total_upward_force,
             "support_names":list(map(str,support_names)),
             "matched_contact_count":len(contacts),
             "support_contact_count":qualifying,
@@ -137,9 +145,9 @@ class DeviceState:
     def event(self,kind,name=None):
         self.events.append({"event":kind,"object":name,"sim_time":float(self.scene.data.time),
             "sim_tick":int(round(self.scene.data.time/self.scene.model.opt.timestep)),"simulated_device_event":True})
-    def update(self):
+    def update(self, dt=None):
         if not self.enabled:return
-        dt=self.scene.model.opt.timestep
+        dt=float(self.scene.model.opt.timestep) if dt is None else float(dt)
         if self.angle("faucet_switch")>=math.radians(40):
             for name in self.clean_seconds:
                 if self.in_basket(name) and not self.held(name):
