@@ -8,6 +8,52 @@ from integration.kitchen.planning.speed import speed_factor
 
 
 class MotionSpeedTests(unittest.TestCase):
+    def test_route_clock_is_independent_of_ik_knot_density(self):
+        from integration.kitchen.planning.speed import polyline_clock
+        # The same route must not acquire extra pauses from more IK samples.
+        coarse=polyline_clock([[0.,0.],[1.,0.]],[100.])
+        dense=polyline_clock([[i/100,0.] for i in range(101)],[1.]*100)
+        np.testing.assert_allclose(dense,coarse,atol=1e-14)
+        middle=np.diff(dense,axis=0)[20:-20,0]
+        self.assertLess(np.ptp(middle),1e-12)
+        self.assertGreater(middle.min(),0.)
+
+    def test_route_clock_stays_on_edges_and_preserves_other_dof(self):
+        from integration.kitchen.planning.speed import polyline_clock
+        path=polyline_clock([[0,0,3],[0,0,3],[1,0,3],[1,1,3]],[0,100,100])
+        self.assertTrue(np.all((np.abs(path[:,1])<1e-12)|(np.abs(path[:,0]-1)<1e-12)))
+        np.testing.assert_allclose(path[:,2],3.)
+        np.testing.assert_allclose(path[-1],[1,1,3])
+        self.assertLessEqual(np.max(np.abs(np.diff(path,axis=0))),.0101)
+
+    def test_release_wait_checks_food_as_well_as_container_and_has_no_minimum_dwell(self):
+        expert=KitchenExpert.__new__(KitchenExpert);waits=[]
+        contract={'payload_ids':['burger_container','burger']}
+        expert.feedback=lambda:{'contact_execution':{'measured_pad_separation_s':.08,'measured':{
+            'grasp':{'pads_separated':True,'pad_normal_forces_n':[0.,0.]},
+            'support':{n:{'supported':True} for n in contract['payload_ids']}}}}
+        expert.obj=lambda n:{'linear_velocity_world_m_s':[0.,0.,0.],
+            'angular_velocity_world_rad_s':[.1 if n=='burger' and not waits else 0.,0.,0.]}
+        expert.wait=lambda s:waits.append(s)
+        expert.wait_released_payload(contract)
+        self.assertEqual(waits,[.08])
+        expert.wait_released_payload(contract)
+        self.assertEqual(waits,[.08])
+
+    def test_banana_keeps_standard_timing_and_restores_profile_even_on_failure(self):
+        expert=KitchenExpert.__new__(KitchenExpert);expert.motion_profile='faster'
+        seen=[]
+        def run(fruit,**kwargs):
+            seen.append((fruit,expert.motion_profile))
+            if kwargs['wash']:raise RuntimeError('placement failed')
+        expert._fruit=run
+        expert.fruit('banana')
+        self.assertEqual(expert.motion_profile,'faster')
+        with self.assertRaisesRegex(RuntimeError,'placement failed'):expert.fruit('banana',wash=True)
+        self.assertEqual(expert.motion_profile,'faster')
+        expert.fruit('apple')
+        self.assertEqual(seen,[('banana','standard'),('banana','standard'),('apple','faster')])
+
     def test_contact_operations_keep_original_rates(self):
         for phase in ('acquire','release','device'):
             self.assertEqual(speed_factor('faster',{'phase':phase}),1.)

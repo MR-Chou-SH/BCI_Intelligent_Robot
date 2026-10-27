@@ -32,7 +32,8 @@ class TaskExecution:
             self.fruit(fruit,wash=name=="L2",slot=-.11 if meal else 0.)
             self.settle_quality(quality,fruit+":tray")
         elif name=="R1":
-            self.meal(meal,"oven");self.close_door()
+            exit_pose=self.meal(meal,"oven",defer_oven_exit=True)
+            self.close_door(approach_via=exit_pose)
         elif name=="R2":
             self.meal(meal,in_oven=True);self.close_door()
             self.settle_quality(quality,meal+"_container:tray")

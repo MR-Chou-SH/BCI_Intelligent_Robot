@@ -17,6 +17,21 @@ bash scripts/collect_kitchen_dataset.sh \
 - `--profile research`：保持左水果、右主食，小范围位姿随机化，沿用初始不重叠检查。
 - `--base-seed 0 --max-attempts 3`：样本 seed 为 0、1，失败依次使用 2/4 或 3/5；重试有上限。
 - `--case-timeout 1800`：每次专家执行的协作式预算，沿用现有 API 时间检查。
+- `--motion-profile standard`：默认轨迹时序。可选 `faster` 提高空载/携带段速度，并减少右臂中间路点的停顿；香蕉左臂技能保留原时序。接触操作和清洗/加热等待不加速，控制器限速与成功门槛不变。此参数与场景随机化的 `--profile` 相互独立。
+
+尝试提速采集时使用新目录：
+
+```bash
+bash scripts/collect_kitchen_dataset.sh \
+  --output experiments/kitchen_platform_v3/collections/all_tasks_delivery_fast_20261027 \
+  --motion-profile faster --samples-per-case 2 --jobs 2
+```
+
+提速档属于代表任务验证，尚未覆盖全部100实例；失败仍按原规则排除并有限重试。时序档写入计划和每条报告，续跑必须保留原参数。对照实验见[提速记录](../development_log/2026-10-27-kitchen-motion-speed.md)。
+
+后续主食旋转及入炉关门衔接已进一步优化，见[右臂连续运动记录](../development_log/2026-10-27-kitchen-right-motion-flow.md)。已有 `all_tasks_delivery_fast_20261027` 数据不随源码更新；使用新目录 `all_tasks_right_flow_20261027` 才能采集这次修改后的轨迹。
+
+最新入炉路径与退出到关门接近已合并，见[段间衔接记录](../development_log/2026-10-27-kitchen-segment-handoffs.md)。要采集这一版，请改用新目录 `all_tasks_segment_flow_20261027`；旧视频仍展示对应旧批次的运动。
 
 可用 `--case-ids kitchen_expert_v3:L1:apple` 或 `--suite atomic` 缩小范围。`--plan-only` 只写计划；之后同参数加 `--resume` 开始执行。
 

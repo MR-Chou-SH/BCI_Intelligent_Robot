@@ -243,6 +243,10 @@ class ExpertMotion:
             targets,_,_=self.smooth_targets(side,path,speed=speed,contract=contract)
             self.execute_smooth(side,targets,contract,speed=speed)
             return
+        if getattr(self,'motion_profile','standard')=='faster':
+            targets=self.timed_right_targets(path,contract,speed=speed)
+            self.execute_smooth(side,targets,contract,speed=speed)
+            return
         contract = self.contract if contract is None else contract
         offset = 0 if side == "left" else 8
         current = self.platform.controller.reference.copy()
@@ -270,6 +274,40 @@ class ExpertMotion:
         self.joints(side,path[-1],contract,speed=speed)
         self.events.append({"stage":"motion_stream","side":side,"tick":self.platform.controller.tick,
                             "start_tick":started,"waypoints":len(path),"frames":frames})
+
+
+    def timed_right_targets(self,path,contract=None,*,speed=.008):
+        """Pre-time the complete right route, preserving certified joint edges."""
+        from .speed import polyline_clock,speed_factor
+        initial=self.platform.controller.reference.copy()
+        points=np.vstack([initial[8:15],path]);view=self.view();arm=view.arms['right']
+        active=contract if contract is not None else self.contract
+        factor=speed_factor(self.motion_profile,active)
+        joint_rate=self.motion_speed(speed,active)
+        linear_step=min(.10,.075*factor)/25
+        angular_step=(.35 if (active or {}).get('phase')=='carry' else .6)*factor/25
+        positions=[];rotations=[]
+        for q in points:
+            view.data.qpos[list(arm.qpos)]=q;mujoco.mj_kinematics(view.model,view.data)
+            p,r=tcp_pose(view.data,arm);positions.append(p.copy());rotations.append(r.copy())
+        costs=[]
+        for i in range(len(points)-1):
+            angle=math.acos(float(np.clip((np.trace(rotations[i].T@rotations[i+1])-1)/2,-1,1)))
+            costs.append(max(float(np.max(np.abs(points[i+1]-points[i])))/joint_rate,
+                             float(np.linalg.norm(positions[i+1]-positions[i]))/linear_step,angle/angular_step))
+        frames=None
+        for _ in range(12):
+            values=polyline_clock(points,costs,frames)
+            if len(values)>6000:raise ExpertFailure('RIGHT_ROUTE_FRAME_LIMIT')
+            current=initial.copy();targets=[]
+            for q in values:
+                proposed=current.copy();proposed[8:15]=q
+                accepted=self.platform.controller.prepare_joint_targets(proposed,reference=current)
+                if not np.allclose(accepted,proposed,atol=1e-9,rtol=0.):break
+                current=accepted;targets.append(current.copy())
+            else:return targets
+            frames=math.ceil(len(values)*1.12)
+        raise ExpertFailure('RIGHT_ROUTE_RATE_LIMIT')
 
 
     def smooth_targets(self,side,path,*,speed,contract=None):
@@ -489,9 +527,30 @@ class ExpertMotion:
         self.joints(side, self.home[side])
 
 
-    def free_pose(self, side, position, rotation, *, continuous=True, home_fallback=False):
+    def free_pose(self, side, position, rotation, *, continuous=True, home_fallback=False, via=()):
         """Direct Cartesian route or two raised doglegs, with sampled clearance."""
         from .meal_geometry import MealGrasp,approach_path
+        if via:
+            # Plan every leg on detached data, then apply one route clock. No
+            # live movement or intermediate settling at the oven-exit pose.
+            scratch=self.view();path=[];arm=scratch.arms[side]
+            try:
+                for point,tool in [*via,(position,rotation)]:
+                    goal=MealGrasp('free_via',np.asarray(point),np.asarray(tool),
+                                   np.asarray(point),np.empty(7),0.)
+                    leg=approach_path(scratch,goal,side);path.extend(leg)
+                    scratch.data.qpos[list(arm.qpos)]=leg[-1]
+                    mujoco.mj_forward(scratch.model,scratch.data)
+            except ValueError as error:
+                # Clear the oven before a possible home-route fallback; never
+                # attempt a direct home motion from inside the cavity.
+                self.mark('route_via_fallback',side=side,reason=str(error))
+                for point,tool in via:self.line(side,point,tool)
+                return self.free_pose(side,position,rotation,continuous=continuous,home_fallback=home_fallback)
+            self.mark('free_via_started',side=side,via_points=len(via))
+            self.stream_joints(side,path,speed=.008)
+            self.mark('free_via_complete',side=side)
+            return
         goal = MealGrasp("free_pose",np.asarray(position),np.asarray(rotation),
                          np.asarray(position),np.empty(7),0.)
         try: path = approach_path(self.view(),goal,side)

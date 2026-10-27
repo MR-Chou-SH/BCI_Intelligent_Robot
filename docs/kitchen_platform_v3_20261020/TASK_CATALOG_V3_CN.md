@@ -54,6 +54,8 @@ bash scripts/collect_kitchen_dataset.sh \
 
 中断后原命令加 `--resume`。先查看计划可加 `--plan-only`，之后同参数加 `--resume` 执行。只采新送餐组合可通过 `--case-ids` 选择具体实例，但完整100实例使用上述默认all。
 
+需要尝试轨迹提速时加 `--motion-profile faster` 并使用新的批次目录；默认仍为 `standard`。提速档与实测对照见[采集参数](DATASET_COLLECTION_CN.md)和[提速记录](../development_log/2026-10-27-kitchen-motion-speed.md)。
+
 每条成功数据位于 `attempts/<case_id>/sample_XX/attempt_XX_seedN/trajectory.h5`，同目录为 `report.json`；失败只留小报告。批次完成后生成manifest/summary，运行中先看各report；未来是否重用旧数据需要显式身份与成功校验，不会自动把旧样本计入新批。
 
 旧批次64条的实测平均墙钟时间：L1约12s，L2约39s，R5约48s，完整主食加热装盘约230s，空盘B1约30s（含独立重放的单次worker耗时）。据各类数量累加约8–9 worker小时，两个进程理想约4–4.5小时；考虑带餐衔接和调度，建议预留 **4–6小时**，重试或其他CPU负载会延长。不是全部200条的实测承诺。

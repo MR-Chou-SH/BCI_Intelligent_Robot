@@ -149,6 +149,6 @@ experiments/kitchen_platform_v3/render_*.png
 experiments/kitchen_platform_v3/*_acceptance_*.json
 experiments/kitchen_platform_v3/*_assessment_*.json
 experiments/kitchen_platform_v3/workspace_inventory.json
-
+experiments/
 # MuJoCo generated warnings (not source/data)
 MUJOCO_LOG.TXT

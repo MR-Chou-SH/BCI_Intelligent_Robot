@@ -2,6 +2,8 @@
 
 当前任务：20 个原子实例、80 个组合实例。批量入口：`bash scripts/collect_kitchen_dataset.sh --output experiments/kitchen_platform_v3/collections/<新批次>`。默认各两条，仅记录轨迹，不启动渲染。
 
+默认使用 `--motion-profile standard`；选择 `faster` 可尝试缩短实际运动时长，香蕉左臂技能保留原时序。具体命令和验收范围见下方采集步骤。
+
 | 目录 | 职责 |
 | --- | --- |
 | `tasks/` | `catalog.py` 定义任务矩阵；`execution.py` 根据实测状态选择技能、串联组合任务和准备初态 |
