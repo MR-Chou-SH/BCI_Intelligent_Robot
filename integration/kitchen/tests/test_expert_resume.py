@@ -12,7 +12,7 @@ class ExpertResumeTests(unittest.TestCase):
         from unittest.mock import patch
         from integration.kitchen.data.collect_experts import one_case,source_identity
         from integration.kitchen.tasks.catalog import cases
-        case=next(c for c in cases() if c["case_id"]=="kitchen_expert_v2:L1:apple")
+        case=next(c for c in cases() if c["case_id"]=="kitchen_expert_v3:L1:apple")
         with tempfile.TemporaryDirectory() as temp:
             directory=Path(temp)/"failed"
             # /tmp is a small tmpfs in this environment; the 10GiB data reserve
@@ -38,7 +38,7 @@ class ExpertResumeTests(unittest.TestCase):
             initial=root/"initial.json"
             initial.write_text('{"initial":true}')
             report=root/"report.json"
-            case={"case_id":"kitchen_expert_v2:L1:apple"}
+            case={"case_id":"kitchen_expert_v3:L1:apple"}
             content={"case":case,"seed":0,"status":"FAILED_ATTEMPT",
                      "initial_sha256":hashlib.sha256(initial.read_bytes()).hexdigest()}
             report.write_text(json.dumps(content))

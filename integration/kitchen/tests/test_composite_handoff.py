@@ -43,7 +43,7 @@ class CompositeHandoffTests(unittest.TestCase):
             self.assertLess(calls.index(('clear', 'left')), calls.index(('heat', case['meal'])))
 
     def test_single_skill_cases_do_not_get_an_extra_homing_motion(self):
-        for task in ('L1', 'L2', 'C01', 'C02', 'C03'):
+        for task in ('L1', 'L2', 'R5'):
             expert, quality, calls = self.expert()
             case = next(c for c in cases() if c['task'] == task)
             expert.run_case(case, quality)

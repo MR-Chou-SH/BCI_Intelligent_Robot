@@ -9,6 +9,7 @@ from integration.kitchen.planning.common import ExpertFailure
 class TaskExecution:
     def prepare(self, case):
         task,meal=case["task"],case["meal"]
+        if task=="D03":task="R2"
         self.mark("initial_settle")
         self.wait(1.)
         if task in ("R1","R2","R4") or task=="R3" and case["initial_occupancy"]!="empty":
@@ -67,15 +68,15 @@ class TaskExecution:
 
 
     def run_case(self, case, quality):
-        from integration.kitchen.tasks.catalog import ATOMIC,COMPOSITE
+        from integration.kitchen.tasks.catalog import ATOMIC,chain
         task=case["task"]
         if task in ATOMIC:self.skill(task,case,quality)
         else:
-            chain = COMPOSITE[task][1]
-            for index, skill in enumerate(chain):
+            skills = chain(case)
+            for index, skill in enumerate(skills):
                 if skill=="heat_meal_state_dependent":self.heat_meal(case,quality)
                 else:self.skill(skill,case,quality)
-                if skill in ("L1", "L2") and index + 1 < len(chain):
+                if skill in ("L1", "L2") and index + 1 < len(skills):
                     # Releasing fruit leaves the long left gripper above the
                     # tray, inside the right forearm's placement corridor.
                     # Leave that corridor before planning the next skill.

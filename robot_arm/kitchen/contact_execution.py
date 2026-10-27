@@ -99,8 +99,8 @@ def validate_contract(value):
     if value["arm"] not in ("left", "right", "both"):
         raise ValueError("INVALID_CONTACT_ARM")
     if value["arm"] == "both" and (value.get("target") != "wood_tray" or
-            value.get("payload_ids") != ["wood_tray"] or value.get("phase") == "device"):
-        raise ValueError("DUAL_CONTACT_REQUIRES_EMPTY_TRAY_PAYLOAD")
+            not isinstance(value.get("payload_ids"),list) or "wood_tray" not in value["payload_ids"] or value.get("phase") == "device"):
+        raise ValueError("DUAL_CONTACT_REQUIRES_TRAY_PAYLOAD")
     if not isinstance(value["target"], str) or not value["target"]:
         raise ValueError("INVALID_CONTACT_TARGET")
     if not isinstance(value["phase"], str) or value["phase"] not in LOCAL_PHASES | HELD_PHASES:

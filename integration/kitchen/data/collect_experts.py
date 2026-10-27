@@ -1,4 +1,4 @@
-"""64-case expert acquisition, per-case legal preparation and fail-closed QC.
+"""100-case expert acquisition, per-case legal preparation and fail-closed QC.
 
 plan writes only the case matrix. run executes real MuJoCo via the same public
 request dispatcher, captures initial state/controls, verifies replay and keeps
@@ -69,11 +69,12 @@ def one_case(job):
     from integration.kitchen.runtime.client import LocalPlannerClient
     from integration.kitchen.validation.quality import ExpertQuality
     from .replay import verify
-    case,seed,output,profile,wall_seconds,identity,diagnostics=job
+    case,seed,output,profile,wall_seconds,identity,diagnostics,*options=job
+    motion_profile=options[0] if options else "standard"
     directory=Path(output);directory.mkdir(parents=True,exist_ok=False)
     report={'case':case,'seed':seed,'status':'FAILED_ATTEMPT','task_success':False,
             'images_included':False,'source_identity_sha256':identity_sha256(identity),
-            'initialization_profile':profile}
+            'initialization_profile':profile,'motion_profile':motion_profile}
     platform=client=expert=quality=None;recording=None;started=time.monotonic()
     try:
         if shutil.disk_usage(directory).free<10*1024**3:raise RuntimeError('DATA_DISK_RESERVE_10GIB')
@@ -81,7 +82,7 @@ def one_case(job):
         platform=KitchenPlatform(layout='kitchen_v3_norice_candidate_013',seed=seed,
             initialization_profile=profile,data_root=directory/'data',evidence_compression='gzip',record_physics=diagnostics)
         client=LocalPlannerClient(platform,directory/'rpc.jsonl.gz' if diagnostics else None)
-        expert=KitchenExpert(platform,client,wall_seconds=wall_seconds,write_checkpoints=False)
+        expert=KitchenExpert(platform,client,wall_seconds=wall_seconds,write_checkpoints=False,motion_profile=motion_profile)
         quality=ExpertQuality(platform)
         expert.prepare(case)
         recording=expert.call('start_state_recording',mutating=True)
@@ -133,6 +134,7 @@ def main(argv=None):
     parser.add_argument("--profile",choices=("fixed","research"),default="research")
     parser.add_argument("--case-timeout",type=float,default=1200.)
     parser.add_argument("--jobs",type=int,default=1)
+    parser.add_argument("--motion-profile",choices=("standard","faster"),default="standard")
     parser.add_argument("--resume",action="store_true")
     parser.add_argument("--diagnostics",action="store_true",help="Opt in to large physics and RPC debug logs")
     args=parser.parse_args(argv)
@@ -154,7 +156,7 @@ def main(argv=None):
     identity=source_identity()
     plan={"schema":"kitchen_expert_batch_v2","catalogue":catalogue(),"selected_cases":selected,
           "seeds":args.seeds,"profile":args.profile,"source_identity":identity,
-          "case_timeout":args.case_timeout,"jobs":args.jobs,"images_included":False,"diagnostics":args.diagnostics}
+          "case_timeout":args.case_timeout,"jobs":args.jobs,"images_included":False,"diagnostics":args.diagnostics,"motion_profile":args.motion_profile}
     if args.resume:
         old=json.loads((output/"plan.json").read_text())
         if old!=plan:parser.error("Resume requires identical plan/sources; choose a fresh output after code changes")
@@ -162,7 +164,7 @@ def main(argv=None):
         output.mkdir(parents=True,exist_ok=False)
         save(output/"plan.json",plan)
     if args.action=="plan":
-        print(json.dumps({"status":"PLAN_WRITTEN","atomic_instances":20,"composite_instances":44,"selected_cases":len(selected),"plan":str(output/"plan.json")}))
+        print(json.dumps({"status":"PLAN_WRITTEN","atomic_instances":20,"composite_instances":80,"selected_cases":len(selected),"plan":str(output/"plan.json")}))
         return 0
     previous=[]
     journal=output/"index.jsonl"
@@ -178,7 +180,7 @@ def main(argv=None):
             slug=case["case_id"].replace(":","_")
             directory=output/f"{slug}_seed{seed}"
             if directory.exists():parser.error("Unindexed partial case exists; preserve it and use a fresh run")
-            jobs.append((case,seed,str(directory),args.profile,args.case_timeout,identity,args.diagnostics))
+            jobs.append((case,seed,str(directory),args.profile,args.case_timeout,identity,args.diagnostics,args.motion_profile))
     results=list(previous)
     with ProcessPoolExecutor(max_workers=args.jobs,mp_context=multiprocessing.get_context("spawn")) as pool:
         pending={pool.submit(one_case,job):job for job in jobs}

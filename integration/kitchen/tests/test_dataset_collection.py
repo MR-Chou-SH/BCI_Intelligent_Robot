@@ -20,7 +20,7 @@ class DatasetTests(unittest.TestCase):
     def test_full_matrix_and_disjoint_retry_seeds(self):
         plan = self.plan()
         plan['cases'] = cases()
-        self.assertEqual(len(list(dataset.slots(plan))), 128)
+        self.assertEqual(len(list(dataset.slots(plan))), 200)
         seeds = [dataset.attempt_seed(plan, s, a) for s in range(2) for a in range(3)]
         self.assertEqual(len(set(seeds)), 6)
 

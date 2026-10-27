@@ -27,34 +27,34 @@ def validate_skill(quality,skill,case):
 def validate_final(quality,case):
     task=case['task'];dev=quality.platform.controller.devices
     if case.get('fruit'):quality.tray_object(case['fruit'])
-    if case.get('meal') and (task in ('R2','R5') or task.startswith('C')):
+    if case.get('meal') and (task in ('R2','R5') or task.startswith(('C','D'))):
         quality.tray_object(case['meal']+'_container')
-    if task in ('C04','C07','C08') and case['meal']+'_container' not in dev.heated:
+    if task in ('C04','C07','C08','D05','D08','D09') and case['meal']+'_container' not in dev.heated:
         raise ValueError('COMPOSITE_HEATED_MEAL_MARKER_LOST')
+    if task.startswith('D'):
+        quality.require('tray:delivered',2.)
+        if quality.tray_tilt_peak>math.radians(10):raise ValueError('TRAY_TILT_LIMIT')
     if quality.failures:raise ValueError('CONTROLLER_STOPPED')
 
 
 def validate_segments(case,segments):
     """Reject missing/foreign skill labels instead of trusting a saved PASS."""
-    from integration.kitchen.tasks.catalog import ATOMIC,COMPOSITE
-    names=[s['skill'] for s in segments];task=case['task']
-    if task in ATOMIC:expected=[task]
-    else:
-        expected=list(COMPOSITE[task][1])
-        if 'heat_meal_state_dependent' in expected:
-            prefix=expected[:-1]
-            if names[:len(prefix)]!=prefix:raise ValueError('COMPOSITE_PREFIX_MISMATCH')
-            heat=names[len(prefix):]
-            # A legal state-dependent heating chain can skip satisfied stages.
-            allowed=[['R1','R4','R2'],['R3','R1','R4','R2'],['R4','R2'],['R3','R2'],['R2']]
-            if heat not in allowed:raise ValueError('INCOMPLETE_HEATING_CHAIN')
-            return
-    if names!=expected:raise ValueError('TASK_SKILL_CHAIN_MISMATCH')
+    from integration.kitchen.tasks.catalog import chain
+    names=[s['skill'] for s in segments];expected=list(chain(case))
+    marker='heat_meal_state_dependent'
+    if marker in expected:
+        index=expected.index(marker);prefix,suffix=expected[:index],expected[index+1:]
+        if names[:len(prefix)]!=prefix or (suffix and names[-len(suffix):]!=suffix):
+            raise ValueError('COMPOSITE_PREFIX_OR_SUFFIX_MISMATCH')
+        heat=names[len(prefix):len(names)-len(suffix) if suffix else None]
+        allowed=[['R1','R4','R2'],['R3','R1','R4','R2'],['R4','R2'],['R3','R2'],['R2'],['R1','R3','R2'],['R3','R1','R3','R2']]
+        if heat not in allowed:raise ValueError('INCOMPLETE_HEATING_CHAIN')
+    elif names!=expected:raise ValueError('TASK_SKILL_CHAIN_MISMATCH')
 
 
 def validate_initial(controller,case):
     """Check atomic-task prerequisites from the restored simulator, not labels."""
-    dev=controller.devices;task=case['task'];angle=dev.angle('microwave_hinge')
+    dev=controller.devices;task='R2' if case['task']=='D03' else case['task'];angle=dev.angle('microwave_hinge')
     meal=case.get('meal');ready=bool(meal and dev.meal_ready(meal+'_container'))
     if task in ('R1','R2') and angle<math.radians(70):raise ValueError('INITIAL_DOOR_NOT_OPEN')
     if task=='R1' and ready:raise ValueError('INITIAL_MEAL_ALREADY_IN_OVEN')
@@ -69,8 +69,8 @@ def validate_initial(controller,case):
 
 
 def validate_timeline(case,segments,start,end):
-    from integration.kitchen.tasks.catalog import cases
-    if case not in cases():raise ValueError('UNKNOWN_TASK_DEFINITION')
+    from integration.kitchen.tasks.catalog import known_cases
+    if case not in known_cases(case['namespace']):raise ValueError('UNKNOWN_TASK_DEFINITION')
     validate_segments(case,segments)
     previous=start
     for segment in segments:

@@ -1,6 +1,6 @@
 # Kitchen 模块边界
 
-当前任务：20 个原子实例、44 个组合实例。批量入口：`bash scripts/collect_kitchen_dataset.sh --output experiments/kitchen_platform_v3/collections/<新批次>`。默认各两条，仅记录轨迹，不启动渲染。
+当前任务：20 个原子实例、80 个组合实例。批量入口：`bash scripts/collect_kitchen_dataset.sh --output experiments/kitchen_platform_v3/collections/<新批次>`。默认各两条，仅记录轨迹，不启动渲染。
 
 | 目录 | 职责 |
 | --- | --- |
@@ -16,7 +16,7 @@
 
 数据流：`tasks → planning → runtime → robot_arm/kitchen`；仿真以 25Hz 提供关键状态给 `validation` 和记录器；`data/replay.py` 从初态和动作独立重算物理，再调用同一套成功判定。
 
-根目录的 `launch.py`、`platform_server.py`、`planner_client.py` 是现有公开服务接口。`task_catalog.py`、`task_annotation.py`、`collection.py` 是原 V1 API 的任务定义/分段兼容能力，不与用户两张新任务表的 V2 目录合并。仅转发模块的旧文件已经删除；调用方应直接导入上述目录。
+根目录的 `launch.py`、`platform_server.py`、`planner_client.py` 是现有公开服务接口。`task_catalog.py`、`task_annotation.py`、`collection.py` 是原 V1 API 的任务定义/分段兼容能力，不与去重并扩展送餐的 V3 目录合并。仅转发模块的旧文件已经删除；调用方应直接导入上述目录。
 
 ```bash
 .venv/bin/python -B -m integration.kitchen.data.collect_experts plan --output experiments/kitchen_platform_v3/collections/<计划名>

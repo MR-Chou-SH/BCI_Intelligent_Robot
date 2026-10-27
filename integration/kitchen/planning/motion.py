@@ -19,6 +19,11 @@ from robot_arm.kitchen.limits import joint_control_limits
 from integration.kitchen.planning.common import ExpertFailure, ENABLE_ELBOW_DOOR_CHECK
 
 class ExpertMotion:
+    def motion_speed(self,speed,contract=None):
+        from .speed import speed_factor
+        active=contract if contract is not None else getattr(self,'contract',None)
+        return speed*speed_factor(getattr(self,'motion_profile','standard'),active)
+
     def call(self, method, args=None, *, mutating=False):
         if time.monotonic() > self.deadline:
             raise ExpertFailure("EXPERT_WALL_BUDGET_EXCEEDED")
@@ -81,6 +86,7 @@ class ExpertMotion:
 
     def joints(self, side, goal, contract=None, *, max_frames=600, speed=.008):
         contract = self.contract if contract is None else contract
+        speed=self.motion_speed(speed,contract)
         offset = 0 if side == "left" else 8
         arm = self.scene.arms[side]
         goal = np.asarray(goal)
@@ -234,7 +240,7 @@ class ExpertMotion:
         if not path:return
         contract = self.contract if contract is None else contract
         if side=="left":
-            targets,_,_=self.smooth_targets(side,path,speed=speed)
+            targets,_,_=self.smooth_targets(side,path,speed=speed,contract=contract)
             self.execute_smooth(side,targets,contract,speed=speed)
             return
         contract = self.contract if contract is None else contract
@@ -251,7 +257,7 @@ class ExpertMotion:
                 if peak<1e-8:break
                 # One acceleration/deceleration envelope for the whole route,
                 # rather than restarting at every Cartesian sample.
-                step=min(speed,.001+.0005*frames,max(.001,math.sqrt(.001*(peak+suffix[i+1]))))
+                step=min(self.motion_speed(speed,contract),.001+.0005*frames,max(.001,math.sqrt(.001*(peak+suffix[i+1]))))
                 proposed=current.copy()
                 proposed[offset:offset+7]+=difference*min(1.,step/peak)
                 accepted=self.platform.controller.prepare_joint_targets(proposed,reference=current)
@@ -266,26 +272,39 @@ class ExpertMotion:
                             "start_tick":started,"waypoints":len(path),"frames":frames})
 
 
-    def smooth_targets(self,side,path,*,speed):
+    def smooth_targets(self,side,path,*,speed,contract=None):
         from .curved_motion import joint_spline
-        offset=0 if side=="left" else 8
+        requested=self.motion_speed(speed,contract)
+        optimize=requested>speed+1e-12
+        offset=0 if side=='left' else 8
         initial=self.platform.controller.reference.copy()
         points=[initial[offset:offset+7].copy(),*path]
-        frames=None
-        for _ in range(8):
-            values,parameters,knots=joint_spline(points,speed,frames)
-            if len(values)>6000:raise ValueError("SMOOTH_ROUTE_FRAME_LIMIT")
-            targets=[];current=initial.copy();good=True
+        def sample(frames):
+            values,parameters,knots=joint_spline(points,requested,frames)
+            if len(values)>6000:raise ValueError('SMOOTH_ROUTE_FRAME_LIMIT')
+            targets=[];current=initial.copy()
             for value in values:
                 proposed=current.copy();proposed[offset:offset+7]=value
                 accepted=self.platform.controller.prepare_joint_targets(proposed,reference=current)
-                if not np.allclose(accepted,proposed,atol=1e-9,rtol=0.):good=False;break
-                # Send the controller's exact bounded value: interpolation at
-                # a joint limit can otherwise leave a -1e-16 roundoff outside.
+                if not np.allclose(accepted,proposed,atol=1e-9,rtol=0.):return None,len(values)
                 targets.append(accepted);current=accepted
-            if good:return targets,parameters,knots
-            frames=int(math.ceil(len(values)*1.4))
-        raise ValueError("SMOOTH_ROUTE_RATE_LIMIT")
+            return (targets,parameters,knots),len(values)
+        frames=None;too_short=0
+        for _ in range(12 if optimize else 8):
+            result,count=sample(frames)
+            if result is not None:
+                if not optimize or not too_short:return result
+                # A coarse 40% stretch can make a requested faster path slower.
+                # Refine only the clock; keep geometry, endpoint and limits.
+                longest=count;best=result
+                while longest-too_short>max(2,math.ceil(longest*.01)):
+                    trial=(longest+too_short)//2;candidate,_=sample(trial)
+                    if candidate is None:too_short=trial
+                    else:longest=trial;best=candidate
+                return best
+            too_short=count
+            frames=int(math.ceil(count*(1.2 if optimize else 1.4)))
+        raise ValueError('SMOOTH_ROUTE_RATE_LIMIT')
 
 
     def execute_smooth(self,side,targets,contract=None,*,speed=.008,acquire=None,split=None):
@@ -363,7 +382,9 @@ class ExpertMotion:
         end = np.asarray(position)
         count = max(1, int(np.ceil(np.linalg.norm(end - start) / spacing)))
         phase=(contract or self.contract or {}).get("phase")
-        if side=="left" and np.linalg.norm(end-start)>.035 and phase!="acquire":
+        continuous=(side=='left' and phase!='acquire') or (
+            getattr(self,'motion_profile','standard')=='faster' and phase in (None,'carry'))
+        if continuous and np.linalg.norm(end-start)>.035:
             poses=[(start+(end-start)*i/count,rotation) for i in range(1,count+1)]
             if self.continuous_poses(side,poses,contract,speed=speed):return
         for i in range(1, count + 1):

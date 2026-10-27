@@ -1,15 +1,15 @@
 # 全任务自动采集（无图像）
 
-入口 `scripts/collect_kitchen_dataset.sh`。20 个原子实例 + 44 个组合实例，默认每个采集 **2 条合格轨迹，共 128 条**。组合任务不自动追加 B1 送盘。默认不渲染图片或视频，不依赖 ffmpeg / EGL / VR。
+入口 `scripts/collect_kitchen_dataset.sh`。20 个原子实例 + 80 个组合实例，默认每个采集 **2 条合格轨迹，共 200 条**。C04–C08以装盘结束，D01–D09显式包含B1送餐；C01–C03已去重删除。完整表见[TASK_CATALOG_V3_CN.md](TASK_CATALOG_V3_CN.md)。默认不渲染图片或视频，不依赖 ffmpeg / EGL / VR。
 
 从仓库根目录执行：
 
 ```bash
 bash scripts/collect_kitchen_dataset.sh \
-  --output experiments/kitchen_platform_v3/collections/all_tasks_policy_20261027
+  --output experiments/kitchen_platform_v3/collections/all_tasks_delivery_v3_20261027
 ```
 
-中断后原命令加 `--resume`。代码、模型或计划参数变化后使用新目录；不要手改原计划绕过指纹。全量 128 条尚未实采完成，以每批 `summary.json` 为准。
+中断后原命令加 `--resume`。代码、模型或计划参数变化后使用新目录；不要手改原计划绕过指纹。全量 200 条尚未实采完成，以每批 `summary.json` 为准。
 
 默认参数：
 
@@ -18,7 +18,7 @@ bash scripts/collect_kitchen_dataset.sh \
 - `--base-seed 0 --max-attempts 3`：样本 seed 为 0、1，失败依次使用 2/4 或 3/5；重试有上限。
 - `--case-timeout 1800`：每次专家执行的协作式预算，沿用现有 API 时间检查。
 
-可用 `--case-ids kitchen_expert_v2:L1:apple` 或 `--suite atomic` 缩小范围。`--plan-only` 只写计划；之后同参数加 `--resume` 开始执行。
+可用 `--case-ids kitchen_expert_v3:L1:apple` 或 `--suite atomic` 缩小范围。`--plan-only` 只写计划；之后同参数加 `--resume` 开始执行。
 
 ## 输出
 
@@ -37,4 +37,4 @@ bash scripts/collect_kitchen_dataset.sh \
 
 需要排错时，显式使用 `scripts/collect_kitchen_experts.sh run --diagnostics ...`，额外诊断不要用于常规数据集。可选视频/查看器通过 `integration.kitchen.data.replay video/viewer` 单独调用。[格式说明](DATASET_FORMAT_CN.md) · [模块结构](../../integration/kitchen/README.md)
 
-2026-10-27 管线验证：新格式覆盖苹果直装盘、香蕉清洗、汉堡加热、梨清洗配热狗加热；另完成苹果两条采集及续跑验证。代表性验收不等于全部 64 用例在当前身份下验收。
+2026-10-27 管线验证：新格式覆盖苹果直装盘、香蕉清洗、汉堡加热、梨清洗配热狗加热；另完成苹果两条采集及续跑验证。该段记录先前V2管线验证；不等于全部100个V3用例在当前身份下验收。

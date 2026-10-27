@@ -98,7 +98,7 @@ def collect(output, plan):
             for case, sample, seed, directory in pending:
                 directory.parent.mkdir(parents=True, exist_ok=True)
                 save(directory.with_suffix('.job.json'), {'case_id': case['case_id'], 'sample': sample, 'seed': seed})
-                job = (case, seed, str(directory), plan['profile'], plan['case_timeout'], plan['identity'], False)
+                job = (case, seed, str(directory), plan['profile'], plan['case_timeout'], plan['identity'], False,plan.get('motion_profile','standard'))
                 futures[pool.submit(one_case, job)] = (case, seed, directory)
             for future in as_completed(futures):
                 case, seed, directory = futures[future]
@@ -123,6 +123,7 @@ def main(argv=None):
     parser.add_argument('--jobs', type=int, default=2)
     parser.add_argument('--case-timeout', type=float, default=1800.)
     parser.add_argument('--profile', choices=('research', 'fixed'), default='research')
+    parser.add_argument('--motion-profile',choices=('standard','faster'),default='standard')
     parser.add_argument('--resume', action='store_true')
     parser.add_argument('--plan-only', action='store_true')
     args = parser.parse_args(argv)
@@ -138,7 +139,7 @@ def main(argv=None):
     plan = {'schema': 'kitchen_qualified_dataset_v1', 'cases': selected, 'identity': source_identity(),
             'runner_sha256': digest(__file__), 'samples_per_case': args.samples_per_case,
             'max_attempts': args.max_attempts, 'base_seed': args.base_seed, 'jobs': args.jobs,
-            'case_timeout': args.case_timeout, 'profile': args.profile, 'format':'kitchen_state_actions_v3'}
+            'case_timeout': args.case_timeout, 'profile': args.profile, 'format':'kitchen_state_actions_v3','motion_profile':args.motion_profile}
     output = args.output
     output.mkdir(parents=True, exist_ok=True)
     with (output / '.runner.lock').open('a') as lock:

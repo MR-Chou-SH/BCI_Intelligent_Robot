@@ -2,7 +2,9 @@
 
 ## Kitchen V3 科研交接入口
 
-全任务各两条无图像轨迹：使用 [批量采集脚本说明](docs/kitchen_platform_v3_20261020/DATASET_COLLECTION_CN.md)，目标为 64 用例 × 2 条，支持失败重试和断点续跑。
+去重且包含送餐的[任务总表](docs/kitchen_platform_v3_20261020/TASK_CATALOG_V3_CN.md)：20个原子实例＋80个组合实例，默认各两条，共200条。旧128条批次保留原位置，新批次使用新目录。
+
+全任务各两条无图像轨迹：使用 [批量采集脚本说明](docs/kitchen_platform_v3_20261020/DATASET_COLLECTION_CN.md)，目标为 100 用例 × 2 条，支持失败重试和断点续跑。
 
 左侧连续轨迹、局部让位及全任务回 home 检查见[运动连续性记录](docs/development_log/2026-10-26-kitchen-motion-continuity.md)，内含正常速度 MP4 的位置与前后量化对比。
 

@@ -71,7 +71,7 @@ class StateReplayTests(unittest.TestCase):
 
     def test_replay_recomputes_failure_instead_of_trusting_task_label(self):
         from integration.kitchen.tasks.catalog import cases
-        case=next(c for c in cases() if c['case_id']=='kitchen_expert_v2:L1:apple')
+        case=next(c for c in cases() if c['case_id']=='kitchen_expert_v3:L1:apple')
         with tempfile.TemporaryDirectory() as temp:
             platform=KitchenPlatform(layout="kitchen_v3_norice_candidate_013",seed=0,data_root=Path(temp))
             try:

@@ -23,7 +23,10 @@ from .motion import ExpertMotion
 from integration.kitchen.tasks.execution import TaskExecution
 
 class KitchenExpert(TaskExecution,ExpertMotion):
-    def __init__(self, platform, client, *, wall_seconds=1200, write_checkpoints=False):
+    def __init__(self, platform, client, *, wall_seconds=1200, write_checkpoints=False, motion_profile="standard"):
+        from .speed import PROFILES
+        if motion_profile not in PROFILES:raise ValueError("Unknown motion profile")
+        self.motion_profile=motion_profile
         self.write_checkpoints = write_checkpoints
         self.platform, self.scene, self.client = platform, platform.scene, client
         self.deadline = time.monotonic() + wall_seconds
@@ -694,18 +697,21 @@ class KitchenExpert(TaskExecution,ExpertMotion):
 
 
     def dual_grip(self, value, contract, force=True):
+        # Food shifts the load to one hand; retain a friction margin above
+        # the 4N empty-tray setting without changing the contact gates.
+        minimum_force=8. if len(contract['payload_ids'])>1 else 4.
         current = self.platform.controller.reference.copy()
         for _ in range(220 if (value>0 and force) else 65):
             current = current.copy()
             measured=self.feedback()["contact_execution"]["measured"].get("grasp",{}).get("by_arm",{}) if (value>0 and force) else {}
             for offset,side in ((7,"left"),(15,"right")):
-                if value>0 and force and min(measured.get(side,{}).get("pad_normal_forces_n",[0.,0.]))>=4.:continue
+                if value>0 and force and min(measured.get(side,{}).get("pad_normal_forces_n",[0.,0.]))>=minimum_force:continue
                 delta=.00025 if (value>0 and force) else .001
                 current[offset] += float(np.clip(value-current[offset],-delta,delta))
             self.execute([current],contract)
             if value>0 and force:
                 grasp=self.feedback()["contact_execution"]["measured"].get("grasp",{})
-                if min(grasp.get("pad_normal_forces_n",[0.,0.,0.,0.]))>=4.:
+                if min(grasp.get("pad_normal_forces_n",[0.,0.,0.,0.]))>=minimum_force:
                     self.wait(.16)
                     return
         if value>0 and force:raise ExpertFailure("FOUR_PAD_GRIP_FORCE_NOT_REACHED")
@@ -784,8 +790,18 @@ class KitchenExpert(TaskExecution,ExpertMotion):
             state=self.call("step",{"n_substeps":20},mutating=True)
             if state["stopped"]:
                 raise ExpertFailure("PRECLOSE_STOP: "+str(state["stop_reason"]))
-        base={"arm":"both","target":"wood_tray","payload_ids":["wood_tray"],
-              "supports":{"wood_tray":["v3_counter_left","v3_counter_right","v3_counter_front","v3_counter_back","user_table"]}}
+        payload=['wood_tray']
+        supports={'wood_tray':['v3_counter_left','v3_counter_right','v3_counter_front','v3_counter_back','user_table']}
+        dev=self.platform.controller.devices
+        for fruit in ('apple','pear','banana','tomato'):
+            if dev.supports(fruit,['tray_bottom']):
+                payload.append(fruit);supports[fruit]=['tray_bottom']
+        for meal in ('burger','hotdog'):
+            carrier=meal+'_container'
+            if dev.supports(carrier,['tray_bottom']):
+                payload.extend([carrier,meal]);supports[carrier]=['tray_bottom']
+                supports[meal]=[meal+'_plate']
+        base={'arm':'both','target':'wood_tray','payload_ids':payload,'supports':supports}
         acquire={**base,"phase":"acquire"}
         self.dual_line({s:p-axis[s]*.000 for s,p in grips.items()},contract=acquire)
         self.dual_grip(.05,acquire)
