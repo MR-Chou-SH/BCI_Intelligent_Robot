@@ -1,7 +1,7 @@
 """Bounded PC-only API recording demo; small dual-arm motion, NOT a kitchen task.
 
 Launches its own loopback service, records initial/object state and trajectories,
-verifies raw-control re-simulation, then closes only its own service. No images.
+verifies recorded-action re-simulation, then closes only its own service. No images.
 """
 from __future__ import annotations
 
@@ -14,10 +14,10 @@ import subprocess
 import sys
 import time
 
-from .launch import ROOT, run_path
-from .planner_client import PlannerClient
-from .platform_research_handoff_example import Rpc
-from .replay import verify
+from integration.kitchen.launch import ROOT, run_path
+from integration.kitchen.planner_client import PlannerClient
+from integration.kitchen.platform_research_handoff_example import Rpc
+from integration.kitchen.data.replay import verify
 
 
 def save(path, value):
@@ -39,7 +39,7 @@ def run(output, seed=0, frames=200, reference=None, diagnostics=False):
     if reference:
         if reference != "burger" or seed != 0:
             raise ValueError("Only a new, bounded burger reference test in fixed seed0 is supported")
-        from .reference_trajectories import ASSETS, inspect
+        from integration.kitchen.planning.reference_trajectories import ASSETS, inspect
         report["source_reference"] = inspect(ASSETS)
         report["scope"] = "new_linux_public_reference_execution_record_replay_not_inherited_task_pass"
         report["source_reference_asset"] = "burger_public_calls.jsonl"

@@ -15,8 +15,8 @@ from pathlib import Path
 import shutil
 import time
 
-from .expert_catalog import catalogue,cases
-from .launch import ROOT,run_path
+from integration.kitchen.tasks.catalog import catalogue,cases
+from integration.kitchen.launch import ROOT,run_path
 
 
 def save(path,value):
@@ -24,8 +24,8 @@ def save(path,value):
 
 
 def source_identity():
-    names=("integration/kitchen/expert.py","integration/kitchen/curved_motion.py","integration/kitchen/meal_geometry.py","integration/kitchen/expert_catalog.py",
-           "integration/kitchen/expert_quality.py","integration/kitchen/collect_experts.py")
+    names=sorted(str(p.relative_to(ROOT)) for package in ('planning','tasks','validation','data','runtime')
+                 for p in (ROOT/'integration/kitchen'/package).glob('*.py'))
     from robot_arm.kitchen.registry import control_identity
     return {"control":control_identity(),"expert_sources":{n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in names}}
 
@@ -52,102 +52,74 @@ def validate_previous(rows, output, selected, seeds):
         if report.get("initial_sha256") and hashlib.sha256(initial.read_bytes()).hexdigest()!=report["initial_sha256"]:
             raise ValueError("Resume initial state hash mismatch")
         if row["status"]=="QUALIFIED_EXPERT":
-            from .replay import inspect_trajectory
+            from integration.kitchen.data.replay import inspect_trajectory
             audit=inspect_trajectory(report["trajectory"])
             if audit["sha256"]!=report["verification"]["sha256"] or not report["task_success"]:
                 raise ValueError("Resume qualified trajectory mismatch")
 
 
-def _render_failure(platform, directory):
-    """Render the failure state (three cameras) for human review."""
-    import mujoco, subprocess
-    paths = {}
-    for camera in ("v3_oblique", "v3_front", "v3_top"):
-        renderer = mujoco.Renderer(platform.scene.model, 720, 1280)
-        renderer.update_scene(platform.scene.data, camera=camera)
-        image = renderer.render()
-        path = directory / ("failure_" + camera + ".png")
-        subprocess.run(["ffmpeg", "-nostdin", "-y", "-loglevel", "error", "-f", "rawvideo",
-                        "-pixel_format", "rgb24", "-video_size", "1280x720", "-i", "pipe:0",
-                        "-frames:v", "1", str(path)], input=image.tobytes(), check=True)
-        renderer.close()
-        paths[camera] = str(path)
-    return paths
+def identity_sha256(identity):
+    return hashlib.sha256(json.dumps(identity,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 
 
 def one_case(job):
+    """One episode: native execution -> seal -> independent replay/success."""
     from robot_arm.kitchen.platform import KitchenPlatform
-    from .expert import KitchenExpert,LocalPlannerClient
-    from .expert_quality import ExpertQuality
-    from .replay import verify,inspect_trajectory
+    from integration.kitchen.planning.expert import KitchenExpert
+    from integration.kitchen.runtime.client import LocalPlannerClient
+    from integration.kitchen.validation.quality import ExpertQuality
+    from .replay import verify
     case,seed,output,profile,wall_seconds,identity,diagnostics=job
-    directory=Path(output)
-    directory.mkdir(parents=True,exist_ok=False)
-    report={"case":case,"seed":seed,"status":"FAILED_ATTEMPT","task_success":False,
-            "images_included":False,"source_identity":identity,
-            "started_utc":datetime.now(timezone.utc).isoformat(),"initialization_profile":profile}
-    platform=expert=client=quality=None
-    started=time.monotonic()
-    recording=None
+    directory=Path(output);directory.mkdir(parents=True,exist_ok=False)
+    report={'case':case,'seed':seed,'status':'FAILED_ATTEMPT','task_success':False,
+            'images_included':False,'source_identity_sha256':identity_sha256(identity),
+            'initialization_profile':profile}
+    platform=client=expert=quality=None;recording=None;started=time.monotonic()
     try:
-        if shutil.disk_usage(directory).free<10*1024**3:raise RuntimeError("DATA_DISK_RESERVE_10GIB")
-        if source_identity()!=identity:raise RuntimeError("SOURCE_CHANGED_SINCE_BATCH_PLAN")
-        platform=KitchenPlatform(layout="kitchen_v3_norice_candidate_013",seed=seed,
-                                 initialization_profile=profile,data_root=directory/"data",
-                                 evidence_compression="gzip",record_physics=diagnostics)
-        client=LocalPlannerClient(platform,directory/"rpc.jsonl.gz" if diagnostics else None)
+        if shutil.disk_usage(directory).free<10*1024**3:raise RuntimeError('DATA_DISK_RESERVE_10GIB')
+        if source_identity()!=identity:raise RuntimeError('SOURCE_CHANGED_SINCE_BATCH_PLAN')
+        platform=KitchenPlatform(layout='kitchen_v3_norice_candidate_013',seed=seed,
+            initialization_profile=profile,data_root=directory/'data',evidence_compression='gzip',record_physics=diagnostics)
+        client=LocalPlannerClient(platform,directory/'rpc.jsonl.gz' if diagnostics else None)
         expert=KitchenExpert(platform,client,wall_seconds=wall_seconds,write_checkpoints=False)
         quality=ExpertQuality(platform)
-        # Preparation has its own trace. Task trajectory starts only after the
-        # requested initial condition actually exists and hands are released.
         expert.prepare(case)
-        preparation_end=platform.controller.tick
-        report["preparation_end_tick"]=preparation_end
-        recording=expert.call("start_state_recording",mutating=True)
-        report["trajectory"]=recording["path"]
+        recording=expert.call('start_state_recording',mutating=True)
         expert.run_case(case,quality)
-        report["end_tick"]=platform.controller.tick
-        report["qualified_skills"]=[row for row in expert.events if row["stage"]=="skill_qualified"]
-        if quality.failures:raise RuntimeError("QUALITY_CONTROLLER_STOP")
-        expert.call("hold",mutating=True)
-        report["recording"]=expert.call("stop_state_recording",mutating=True)
-        report["verification"]=verify(recording["path"])
-        if report["verification"]["status"]!="CONTROL_RESIMULATION_PASS":raise RuntimeError("EXPERT_REPLAY_DIVERGED")
-        report.update(status="QUALIFIED_EXPERT",task_success=True)
-    except Exception as error:
-        report["error"]=repr(error)
-        if platform:
-            try: report["failure_images"]=_render_failure(platform,directory)
-            except Exception as render_error: report["failure_render_error"]=repr(render_error)
+        if quality.failures:raise RuntimeError('QUALITY_CONTROLLER_STOP')
+        platform.state_recorder.annotate(case,expert.events)
+        expert.call('hold',mutating=True)
+        expert.call('stop_state_recording',mutating=True)
+        verification=verify(recording['path'])
+        report['verification']={k:verification[k] for k in ('status','sha256','task_success','maximum_qpos_error','maximum_qvel_error')}
+        if verification['status']!='CONTROL_RESIMULATION_PASS':raise RuntimeError('EXPERT_REPLAY_DIVERGED')
+        if verification['task_success'] is not True:raise RuntimeError('REPLAY_TASK_FAILED: '+repr(verification['task_errors']))
+        report.update(status='QUALIFIED_EXPERT',task_success=True)
+    except Exception as error:report['error']=repr(error)
     finally:
         if platform:
             try:
-                if client:client.call("hold",mutating=True)
                 if recording and platform.state_recorder and not platform.state_recorder.closed:
-                    report["recording"]=client.call("stop_state_recording",mutating=True)
-                if quality:report["quality"]=quality.report()
-                if expert:report["events"]=[e for e in expert.events if diagnostics or e["stage"] in
-                    ("skill_started","skill_qualified","preparation_complete","meal_geometric_grasp",
-                     "pick_lift","pick_qualified","door_push","door_push_complete",
-                     "motion_stream","route_home_fallback","composite_left_clearance","left_corridor_cleared",
-                     "fruit_curve_started","fruit_curve_complete","fruit_curve_unavailable",
-                     "fruit_legacy_approach","fruit_legacy_place","fruit_clearance_lift","basket_regrasp_clearance")]
+                    platform.state_recorder.annotate(case,expert.events if expert else [])
                 platform.close()
-            except Exception as error:report.update(status="FAILED_ATTEMPT",task_success=False,seal_error=repr(error))
-        report["wall_seconds"]=time.monotonic()-started
-        report["finished_utc"]=datetime.now(timezone.utc).isoformat()
-        if report["status"]!="QUALIFIED_EXPERT" and not diagnostics:
-            # Keep the compact trajectory + failure images for human review
-            # (user direction 2026-10-26); previously the failed data was dropped.
-            report["data_retained"]=(directory/"data").exists()
-        binding={key:report.get(key) for key in ("case","source_identity","trajectory","recording","initial_sha256","quality","status")}
-        report["binding_sha256"]=hashlib.sha256(json.dumps(binding,sort_keys=True,ensure_ascii=False,allow_nan=False,separators=(",",":")).encode()).hexdigest()
-        save(directory/"report.json",report)
-    return {"case_id":case["case_id"],"seed":seed,"status":report["status"],
-            "task_success":report["task_success"],"error":report.get("error"),
-            "report":str(directory/"report.json"),
-            "report_sha256":hashlib.sha256((directory/"report.json").read_bytes()).hexdigest(),
-            "wall_seconds":report["wall_seconds"]}
+            except Exception as error:report.update(status='FAILED_ATTEMPT',task_success=False,error=repr(error))
+        if diagnostics and quality:
+            report['diagnostics']={'quality':quality.report(),'events':expert.events if expert else []}
+        if report['status']=='QUALIFIED_EXPERT':
+            destination=directory/'trajectory.h5'
+            Path(recording['path']).replace(destination)
+            report['trajectory']=str(destination)
+            if not diagnostics:shutil.rmtree(directory/'data')
+        elif not diagnostics:
+            # Only this newly-created failed attempt; never historical/user data.
+            shutil.rmtree(directory/'data',ignore_errors=True)
+        report['data_retained']=bool(report.get('trajectory') or diagnostics and (directory/'data').exists())
+        report['wall_seconds']=time.monotonic()-started
+        save(directory/'report.json',report)
+    return {'case_id':case['case_id'],'seed':seed,'status':report['status'],'task_success':report['task_success'],
+            'error':report.get('error'),'report':str(directory/'report.json'),
+            'report_sha256':hashlib.sha256((directory/'report.json').read_bytes()).hexdigest(),
+            'wall_seconds':report['wall_seconds']}
 
 
 def main(argv=None):

@@ -1,4 +1,4 @@
-"""Collect N qualified examples per concrete task, then render review videos.
+"""Collect N qualified, replayable state/action examples per concrete task. No rendering.
 
 Attempt directories are immutable. Missing reports after an interruption consume
 an attempt; sealed reports are recovered without repeating simulation.
@@ -8,34 +8,16 @@ from __future__ import annotations
 import argparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import fcntl
-import hashlib
 import json
 import multiprocessing
-import os
 from pathlib import Path
-import shutil
 
-from .collect_experts import one_case, save, source_identity, validate_previous
-from .expert_catalog import cases
-from .launch import run_path
-
-
-def digest(path):
-    hasher = hashlib.sha256()
-    with Path(path).open('rb') as stream:
-        for block in iter(lambda: stream.read(1024 * 1024), b''):
-            hasher.update(block)
-    return hasher.hexdigest()
+from .collect_experts import one_case, save, source_identity, validate_previous,identity_sha256
+from integration.kitchen.tasks.catalog import cases
+from integration.kitchen.launch import run_path
 
 
-def read(path):
-    return json.loads(Path(path).read_text(encoding='utf-8'))
-
-
-def replace_json(path, value):
-    temporary = path.with_suffix('.tmp')
-    temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + '\n', encoding='utf-8')
-    temporary.replace(path)
+from .files import digest,read,replace_json
 
 
 def slots(plan):
@@ -71,7 +53,7 @@ def recover_attempt(directory, case, seed, output, identity):
             raise ValueError('Attempt report path mismatch')
         validate_previous([row], output, [case], [seed])
         report = read(report_path)
-        if report['source_identity'] != identity:
+        if report.get('source_identity') != identity and report.get('source_identity_sha256')!=identity_sha256(identity):
             raise ValueError('Attempt source identity mismatch')
         if row['status'] == 'QUALIFIED_EXPERT':
             trajectory = run_path(report['trajectory'])
@@ -129,47 +111,6 @@ def collect(output, plan):
         # Failed attempts leave their sample slot unfilled. Next round changes seed.
 
 
-def render(output, plan, qualified):
-    from .replay import video
-    rows = []
-    for row in qualified:
-        row = dict(row)
-        report = read(row['report'])
-        trajectory = Path(report['trajectory'])
-        parent = output / 'videos' / row['case_id'].replace(':', '_') / f"sample_{row['sample']:02d}"
-        parent.mkdir(parents=True, exist_ok=True)
-        receipt = parent / 'qualified_video.json'
-        if receipt.exists():
-            record = read(receipt)
-            if record['trajectory_sha256'] != report['verification']['sha256']:
-                raise ValueError('Video source hash mismatch')
-            for name, expected in record['files'].items():
-                path = run_path(name)
-                if not path.is_relative_to(parent) or digest(path) != expected:
-                    raise ValueError('Video artifact hash/path mismatch')
-            row['video'] = record['video']
-        else:
-            number = 1
-            while (parent / f'render_{number:03d}').exists():
-                number += 1
-            destination = parent / f'render_{number:03d}' / 'trajectory.mp4'
-            destination.parent.mkdir()
-            try:
-                result = video(trajectory, destination, **plan['video'], max_seconds=3600.)
-                if result['source_duration_s'] >= 3600:
-                    raise RuntimeError('Video duration cap reached; refusing truncated review')
-                record = {'video': str(destination), 'trajectory_sha256': result['trajectory_sha256'],
-                          'files': {str(p): digest(p) for p in (destination, destination.with_suffix('.video.json'))}}
-                save(receipt, record)
-                row['video'] = str(destination)
-            except Exception as error:
-                row['video_error'] = repr(error)
-        row['trajectory'] = str(trajectory)
-        rows.append(row)
-        print(json.dumps({'case_id': row['case_id'], 'sample': row['sample'],
-                          'video': row.get('video'), 'error': row.get('video_error')}, ensure_ascii=False), flush=True)
-    return rows
-
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
@@ -182,20 +123,13 @@ def main(argv=None):
     parser.add_argument('--jobs', type=int, default=2)
     parser.add_argument('--case-timeout', type=float, default=1800.)
     parser.add_argument('--profile', choices=('research', 'fixed'), default='research')
-    parser.add_argument('--camera', default='v3_front')
-    parser.add_argument('--fps', type=int, default=15)
-    parser.add_argument('--width', type=int, default=960)
-    parser.add_argument('--height', type=int, default=540)
-    parser.add_argument('--speed', type=float, default=4.)
     parser.add_argument('--resume', action='store_true')
     parser.add_argument('--plan-only', action='store_true')
     args = parser.parse_args(argv)
     if not (1 <= args.samples_per_case <= 20 and 1 <= args.max_attempts <= 10 and 1 <= args.jobs <= 4
             and 30 <= args.case_timeout <= 3600 and 0 <= args.base_seed
-            and args.base_seed + args.samples_per_case * args.max_attempts <= 2**32
-            and 1 <= args.fps <= 60 and .25 <= args.speed <= 8
-            and args.width > 0 and args.height > 0 and args.width % 2 == args.height % 2 == 0):
-        parser.error('Invalid collection bounds or video settings; see --help')
+            and args.base_seed + args.samples_per_case * args.max_attempts <= 2**32):
+        parser.error('Invalid collection bounds; see --help')
     selected = cases(args.suite)
     if args.case_ids:
         if set(args.case_ids) - {c['case_id'] for c in selected}:
@@ -204,8 +138,7 @@ def main(argv=None):
     plan = {'schema': 'kitchen_qualified_dataset_v1', 'cases': selected, 'identity': source_identity(),
             'runner_sha256': digest(__file__), 'samples_per_case': args.samples_per_case,
             'max_attempts': args.max_attempts, 'base_seed': args.base_seed, 'jobs': args.jobs,
-            'case_timeout': args.case_timeout, 'profile': args.profile,
-            'video': {k: getattr(args, k) for k in ('camera', 'width', 'height', 'fps', 'speed')}}
+            'case_timeout': args.case_timeout, 'profile': args.profile, 'format':'kitchen_state_actions_v3'}
     output = args.output
     output.mkdir(parents=True, exist_ok=True)
     with (output / '.runner.lock').open('a') as lock:
@@ -228,14 +161,10 @@ def main(argv=None):
         print(json.dumps({'cases': len(selected), 'target': target, 'output': str(output)}), flush=True)
         if args.plan_only:
             return 0
-        if shutil.which('ffmpeg') is None:
-            parser.error('ffmpeg unavailable')
-        os.environ.setdefault('MUJOCO_GL', 'egl')
         qualified, missing = collect(output, plan)
-        rows = render(output, plan, qualified)
-        summary = {'target': target, 'qualified': len(qualified), 'videos': sum(bool(r.get('video')) for r in rows),
-                   'missing': missing, 'video_failures': [r for r in rows if not r.get('video')]}
-        summary['complete'] = summary['qualified'] == summary['videos'] == target
+        rows=[{**r,'trajectory':read(r['report'])['trajectory']} for r in qualified]
+        summary={'target':target,'qualified':len(qualified),'missing':missing,'complete':len(qualified)==target,
+                 'format':'kitchen_state_actions_v3','images_included':False}
         replace_json(output / 'manifest.json', rows)
         replace_json(output / 'summary.json', summary)
         print(json.dumps(summary, ensure_ascii=False), flush=True)
@@ -244,3 +173,4 @@ def main(argv=None):
 
 if __name__ == '__main__':
     raise SystemExit(main())
+

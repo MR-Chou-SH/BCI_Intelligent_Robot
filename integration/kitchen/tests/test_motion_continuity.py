@@ -3,7 +3,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 import numpy as np
 
-from integration.kitchen.expert import KitchenExpert
+from integration.kitchen.planning.expert import KitchenExpert
 
 
 class MotionContinuityTests(unittest.TestCase):
@@ -48,7 +48,7 @@ class MotionContinuityTests(unittest.TestCase):
         expert.view=lambda:view;expert.stream_joints=Mock()
         good=SimpleNamespace(success=True,q=np.ones(7)*.1)
         bad=SimpleNamespace(success=False)
-        with patch('integration.kitchen.expert.solve_ik',side_effect=[good,bad,bad]):
+        with patch('integration.kitchen.planning.motion.solve_ik',side_effect=[good,bad,bad]):
             result=expert.continuous_poses('left',[(np.zeros(3),np.eye(3))]*2)
         self.assertFalse(result)
         expert.stream_joints.assert_not_called()
@@ -57,10 +57,10 @@ class MotionContinuityTests(unittest.TestCase):
         expert=KitchenExpert.__new__(KitchenExpert)
         expert.view=Mock();expert.mark=Mock();expert.return_home=Mock();expert.stream_joints=Mock()
         path=[np.zeros(7)]
-        with patch('integration.kitchen.meal_geometry.approach_path',return_value=path):
+        with patch('integration.kitchen.planning.meal_geometry.approach_path',return_value=path):
             expert.free_pose('right',np.zeros(3),np.eye(3),home_fallback=True)
         expert.return_home.assert_not_called()
-        with patch('integration.kitchen.meal_geometry.approach_path',side_effect=[ValueError('blocked'),path]):
+        with patch('integration.kitchen.planning.meal_geometry.approach_path',side_effect=[ValueError('blocked'),path]):
             expert.free_pose('right',np.zeros(3),np.eye(3),home_fallback=True)
         expert.return_home.assert_called_once_with('right')
         self.assertIn('blocked',expert.mark.call_args.kwargs['reason'])

@@ -4,30 +4,32 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from integration.kitchen.collect_experts import validate_previous
+from integration.kitchen.data.collect_experts import validate_previous
 
 
 class ExpertResumeTests(unittest.TestCase):
-    def test_failed_attempt_retains_compact_debug_data_under_current_policy(self):
+    def test_failed_attempt_keeps_only_small_report_without_rendering(self):
         from unittest.mock import patch
-        from integration.kitchen.collect_experts import one_case,source_identity
-        from integration.kitchen.expert_catalog import cases
+        from integration.kitchen.data.collect_experts import one_case,source_identity
+        from integration.kitchen.tasks.catalog import cases
         case=next(c for c in cases() if c["case_id"]=="kitchen_expert_v2:L1:apple")
         with tempfile.TemporaryDirectory() as temp:
             directory=Path(temp)/"failed"
             # /tmp is a small tmpfs in this environment; the 10GiB data reserve
             # is a collection-run concern, not what this failure-path test checks.
             free=type("Usage",(),{"free":20*1024**3})()
-            with patch("integration.kitchen.collect_experts.shutil.disk_usage",return_value=free), \
-                 patch("integration.kitchen.expert.KitchenExpert.run_case",side_effect=RuntimeError("test planner failure")), \
-                 patch("integration.kitchen.collect_experts._render_failure",return_value={}):
+            with patch("integration.kitchen.data.collect_experts.shutil.disk_usage",return_value=free), \
+                 patch("integration.kitchen.planning.expert.KitchenExpert.run_case",side_effect=RuntimeError("test planner failure")):
                 result=one_case((case,0,str(directory),"fixed",30,source_identity(),False))
             self.assertEqual(result["status"],"FAILED_ATTEMPT")
-            self.assertTrue((directory/"data").exists())
+            self.assertFalse((directory/"data").exists())
             self.assertTrue((directory/"report.json").exists())
             report=json.loads((directory/"report.json").read_text())
             self.assertIn("test planner failure",report["error"])
-            self.assertTrue(report["data_retained"])
+            self.assertFalse(report["data_retained"])
+            self.assertFalse(list(directory.rglob("*.png")))
+            self.assertNotIn("events",report)
+            self.assertNotIn("quality",report)
             self.assertFalse(report["images_included"])
 
     def test_resume_checks_report_and_initial_state_integrity(self):

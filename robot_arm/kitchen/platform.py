@@ -516,6 +516,8 @@ class KitchenPlatform:
                     # guard still hold on any real violation.
                     self.controller.accept_joint_targets(self.queue.pop(0))
                     self.execution["waypoints_started"]+=1
+                if self.state_recorder and not self.state_recorder.closed:
+                    self.state_recorder.before_step(self.controller)
                 self.controller.advance_substeps(1,self._record_and_guard)
             except Exception as error:
                 self.controller.hold("PHYSICS_OR_EVIDENCE_FAILURE")

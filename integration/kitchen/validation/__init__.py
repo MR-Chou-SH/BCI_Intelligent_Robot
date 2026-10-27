@@ -1,0 +1,1 @@
+"""Kitchen validation components."""

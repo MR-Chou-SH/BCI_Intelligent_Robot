@@ -12,7 +12,7 @@ import json
 import os
 from pathlib import Path
 
-from .replay import video
+from integration.kitchen.data.replay import video
 
 
 def cases(run: Path):

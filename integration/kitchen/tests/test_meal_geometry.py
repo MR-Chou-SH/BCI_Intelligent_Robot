@@ -5,7 +5,7 @@ import unittest
 import mujoco
 import numpy as np
 
-from integration.kitchen.meal_geometry import grasp_candidates, plan_grasp, MealGrasp, approach_path
+from integration.kitchen.planning.meal_geometry import grasp_candidates, plan_grasp, MealGrasp, approach_path
 from robot_arm.kitchen.platform import KitchenPlatform
 from robot_arm.kitchen.object_state import object_states
 from robot_arm.kitchen.research_initialization import audit_object_separation
@@ -13,7 +13,8 @@ from robot_arm.kitchen.research_initialization import audit_object_separation
 
 class MealGeometryTests(unittest.TestCase):
     def test_closed_empty_jaw_self_contact_does_not_block_arm_only_route(self):
-        from integration.kitchen.expert import KitchenExpert, LocalPlannerClient
+        from integration.kitchen.planning.expert import KitchenExpert
+        from integration.kitchen.runtime.client import LocalPlannerClient
         from robot_arm.kitchen.control import tcp_pose
         p = KitchenPlatform(layout="kitchen_v3_norice_candidate_013", seed=0)
         try:

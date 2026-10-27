@@ -11,7 +11,7 @@ import mujoco
 import numpy as np
 
 from integration.kitchen.tests.test_collection import LocalClient
-from integration.kitchen.replay import inspect_trajectory, verify, read_compact
+from integration.kitchen.data.replay import inspect_trajectory, verify, read_compact
 from robot_arm.kitchen.platform import KitchenPlatform
 from robot_arm.kitchen.research_initialization import audit_object_separation, _free_address
 
@@ -35,6 +35,70 @@ class StateReplayTests(unittest.TestCase):
                     np.testing.assert_allclose(data["states/object_pose"][-1,index],
                         [*obj["position_world_m"],*obj["quaternion_world_wxyz"]],atol=1e-12)
             finally:platform.close()
+
+    def test_policy_actions_and_midframe_hold_replay_with_initial_device_state(self):
+        with tempfile.TemporaryDirectory() as temp:
+            platform=KitchenPlatform(layout="kitchen_v3_norice_candidate_013",seed=0,data_root=Path(temp))
+            try:
+                client=LocalClient(platform)
+                platform.controller.devices.clean_seconds['apple']=1.25
+                platform.controller.devices.cleaned.add('apple')
+                info=client.call('start_state_recording',mutating=True)['result']
+                target=platform.controller.reference.copy();target[7]=platform.controller.reference[7]+.001234567890123456
+                self.assertTrue(client.call('submit_joint_targets',{'joint_targets':target.tolist(),'guarded_gripper':True},mutating=True)['ok'])
+                client.call('step',{'n_substeps':7},mutating=True)
+                client.call('hold',mutating=True)
+                client.call('step',{'n_substeps':53},mutating=True)
+                client.call('stop_state_recording',mutating=True)
+                data=read_compact(info['path'])
+                self.assertEqual(data['devices']['clean_seconds']['apple'],1.25)
+                self.assertEqual(data['devices']['cleaned'],['apple'])
+                self.assertIn(7,data['actions/tick'])
+                self.assertEqual(data['actions/interpolation_reset'][1],1)
+                self.assertEqual(data['replay/gripper_target'][0,0],target[7])
+                self.assertAlmostEqual(data['actions/gripper_opening'][0,0],1.-target[7]/.05)
+                with h5py.File(info['path']) as file:
+                    self.assertNotIn('actions/ctrl',file)
+                    self.assertNotIn('events',file)
+                    self.assertEqual(set(file['actions']),{'tick','joint_pos','gripper_opening','interpolation_reset'})
+                report=verify(info['path'])
+                self.assertEqual(report['status'],'CONTROL_RESIMULATION_PASS')
+                self.assertEqual(report['maximum_qpos_error'],0.)
+                self.assertTrue(report['device_flags_match'])
+                with h5py.File(info['path'],'r+') as file:file['actions/gripper_opening'][0,0]+=.01
+                with self.assertRaisesRegex(ValueError,'mapping mismatch'):read_compact(info['path'])
+            finally:platform.close()
+
+    def test_replay_recomputes_failure_instead_of_trusting_task_label(self):
+        from integration.kitchen.tasks.catalog import cases
+        case=next(c for c in cases() if c['case_id']=='kitchen_expert_v2:L1:apple')
+        with tempfile.TemporaryDirectory() as temp:
+            platform=KitchenPlatform(layout="kitchen_v3_norice_candidate_013",seed=0,data_root=Path(temp))
+            try:
+                client=LocalClient(platform)
+                info=client.call('start_state_recording',mutating=True)['result']
+                client.call('step',{'n_substeps':1000},mutating=True)
+                platform.state_recorder.annotate(case,[{'stage':'skill_started','skill':'L1','tick':0},
+                    {'stage':'skill_qualified','skill':'L1','tick':1000}])
+                client.call('stop_state_recording',mutating=True)
+                report=verify(info['path'])
+                self.assertEqual(report['status'],'CONTROL_RESIMULATION_PASS')
+                self.assertFalse(report['task_success'])
+                self.assertTrue(report['task_errors'])
+                with h5py.File(info['path'],'r+') as file:
+                    file.attrs['segments_json']=json.dumps([{'skill':'L1','start_tick':0,'end_tick':1020}])
+                with self.assertRaisesRegex(ValueError,'INVALID_SKILL_TIMELINE'):verify(info['path'])
+            finally:platform.close()
+
+    def test_verify_cli_returns_failure_when_physics_passes_but_task_fails(self):
+        from unittest.mock import patch
+        from integration.kitchen.data.replay import main
+        with patch('sys.argv',['replay','verify','unused.h5']), \
+             patch('integration.kitchen.data.replay.verify',return_value={
+                 'status':'CONTROL_RESIMULATION_PASS','task_success':False}), \
+             patch('builtins.print'):
+            with self.assertRaises(SystemExit) as error:main()
+            self.assertEqual(error.exception.code,1)
 
     def test_portable_support_types_keep_bounded_nonrobot_gate(self):
         platform = KitchenPlatform(layout="kitchen_v3_norice_candidate_013", seed=0)
@@ -113,7 +177,8 @@ class StateReplayTests(unittest.TestCase):
                 data=read_compact(info["path"])
                 np.testing.assert_array_equal(data["initial/integration_state"], initial["snapshot"]["integration_state"])
                 self.assertEqual(data["metadata"]["control_identity"]["control_hash"],data["metadata"]["identity"]["control_hash"])
-                self.assertEqual(data["actions/ctrl"].shape,(67,16))
+                self.assertEqual(data["actions/joint_pos"].shape,(4,14))
+                self.assertEqual(data["actions/gripper_opening"].shape,(4,2))
                 self.assertEqual(data["states/tick"].tolist(),[20,40,60,80,87])
                 self.assertFalse(list(Path(temp).rglob("physics.*")))
                 self.assertFalse(list(Path(temp).rglob("sources")))
@@ -124,7 +189,7 @@ class StateReplayTests(unittest.TestCase):
                 altered = Path(temp) / "changed_controls.h5"
                 shutil.copyfile(info["path"],altered)
                 with h5py.File(altered,"r+") as stream:
-                    stream["actions/ctrl"][0,0]+=.1
+                    stream["actions/joint_pos"][0,0]+=.1
                 self.assertEqual(inspect_trajectory(altered)["status"], "SEALED_STATE_TRAJECTORY_PASS")
                 self.assertEqual(verify(altered)["status"], "CONTROL_RESIMULATION_DIVERGED")
                 with h5py.File(altered,"r+") as stream:

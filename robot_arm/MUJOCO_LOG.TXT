@@ -1,5 +1,0 @@
-WARNING Fri Aug 28 14:31:40 2026: Attach conflict when attaching 'umi_gripper' to 'fr3', policy is 'warning'
-noslip_iterations: parent has 0 (default), child has 2, keeping parent value
-impratio: parent has 1 (default), child has 10, keeping parent value
-cone: parent has 0 (default), child has 1, keeping parent value
-

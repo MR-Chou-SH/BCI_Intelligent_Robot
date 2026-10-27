@@ -2,7 +2,7 @@
 
 ## Kitchen V3 科研交接入口
 
-全任务各两条轨迹与 MP4：使用 [批量采集脚本说明](docs/kitchen_platform_v3_20261020/DATASET_COLLECTION_CN.md)，目标为 64 用例 × 2 条，支持失败重试和断点续跑。
+全任务各两条无图像轨迹：使用 [批量采集脚本说明](docs/kitchen_platform_v3_20261020/DATASET_COLLECTION_CN.md)，目标为 64 用例 × 2 条，支持失败重试和断点续跑。
 
 左侧连续轨迹、局部让位及全任务回 home 检查见[运动连续性记录](docs/development_log/2026-10-26-kitchen-motion-continuity.md)，内含正常速度 MP4 的位置与前后量化对比。
 
@@ -10,7 +10,7 @@
 
 **无VR时请从[物体状态查询、无图像录制与MuJoCo MP4／viewer重放](docs/kitchen_platform_v3_20261020/STATE_RECORD_REPLAY_CN.md)开始。** 可直接运行PC录制／重放示例；当前Planner API为1.3.0，原接口保留。
 
-默认采集只保存压缩的关键状态与动作（HDF5），不保存完整RPC和物理诊断；已有精简数据位于 `experiments/kitchen_platform_v3/expert_data/`。本轮约32GB冗余调试数据已清理。
+当前默认 V3：一次初态、25Hz 双臂目标关节位置和夹爪开度、关键状态；通过动作重放与独立成功判定后入库。不自动渲染，不记录逐步检查详情。见[模块结构](integration/kitchen/README.md)与[字段/单位](docs/kitchen_platform_v3_20261020/DATASET_FORMAT_CN.md)。2026-10-27 另清理约1.66GB失败仿真中间文件，历史成功数据保留原位。
 
 当前 Linux 与任务采集开发请读 [Linux环境、局部随机化与任务分段](docs/kitchen_platform_v3_20261020/LINUX_TASK_COLLECTION_CN.md)。两张新任务表的20＋44个用例及批量脚本见 [Expert V2采集说明](docs/kitchen_platform_v3_20261020/EXPERT_V2_COLLECTION_CN.md)。新分支 `feature/kitchen-linux-task-collection` 保持左水果／右主食布局；全部流程已接入，逐任务物理验收仍在进行，失败尝试不计入专家数据。
 

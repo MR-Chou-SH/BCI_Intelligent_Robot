@@ -238,7 +238,7 @@ class TaskCollection:
         trajectory = self.call("stop_state_recording", mutating=True)
         feedback = self.call("get_task_feedback")
         records, errors = [], []
-        from .replay import inspect_trajectory
+        from .data.replay import inspect_trajectory
         try:state_audit=inspect_trajectory(trajectory["path"])
         except (OSError,ValueError,KeyError) as error:
             state_audit=None;errors.append({"error":str(error)})

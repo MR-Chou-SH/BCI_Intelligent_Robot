@@ -1,5 +1,9 @@
 # 两张任务表的专家轨迹采集（Expert V2）
 
+## 2026-10-27 数据与模块整理
+
+当前默认采用 V3：25Hz `joint_pos`（左7＋右7，rad）和夹爪目标开度（左/右，0关1开）、一次完整初态与关键状态。采集不再自动生成视频、失败截图或逐步检查记录。模块转发入口已删除；规划、任务、验证、采集分别位于新目录。启动全任务每例两条见[自动采集指南](DATASET_COLLECTION_CN.md)，字段见[格式说明](DATASET_FORMAT_CN.md)。以下历轮验收结果保留各自时间与身份。
+
 ## 2026-10-27 曲线路径修订
 
 水果接近改为斜向Bezier曲线，抓取前25mm协议交接不额外停稳；携带放置与关水后的再接近使用实际几何规划。整段C1关节插值用于真实仿真执行，视频按记录状态以25fps正常速度重放。47项测试通过，增量回归最新22个case/seed通过（含全部左侧16实例/seed），均无传统水果路线回退。详见[曲线路径及验证记录](../development_log/2026-10-27-curved-fruit-trajectories.md)。正式采集使用新目录，完整128条尚未重采。
@@ -49,7 +53,7 @@ MUJOCO_GL=egl scripts/collect_kitchen_experts.sh run \
 
 合计20种原子实例、44种组合实例。`＋`目前按顺序执行。C01–C08不自动追加B1。加热链按实际炉门、承托和加热状态选择R3→R1→R4→R2，不把计划目标当成已完成状态。
 
-每个用例重新构建场景。特殊初态通过真实动作准备，准备过程单独留痕；进入任务前调用状态接口保存完整初态，然后开始任务轨迹录制。不瞬移主食、焊接物体或直接设置炉门状态。微波炉加热与清洗仅指仿真设备事件。
+每个用例重新构建场景。特殊初态通过真实动作准备，准备过程不进入训练轨迹；进入任务前调用状态接口保存完整初态，然后开始任务轨迹录制。不瞬移主食、焊接物体或直接设置炉门状态。微波炉加热与清洗仅指仿真设备事件。
 
 ## 当前验证状态（2026-10-25）
 
@@ -61,9 +65,9 @@ MUJOCO_GL=egl scripts/collect_kitchen_experts.sh run \
 
 已获用户授权的当前检查参数：普通接触力 15N、指垫有意接触 40N，普通穿透容差 3mm，指垫 3mm，支撑柔顺 1.5mm，抓持丢失宽限 100ms。整条相对位姿门禁临时关闭，不能据此宣称夹持姿态稳定。梨的指垫近接交接／已分离释放允许 0.40m/s；香蕉在双侧抓持或已承托的 carry 阶段允许 6rad/s。其他载荷／设备仍为 0.30m/s、4rad/s，释放自转豁免沿用此前用户指示；最终装盘仍要求实际支撑与连续稳定。
 
-食物在自有盘面上有最多 2mm、100ms 的短暂离面容差，投影中心必须仍在盘内；不会伪造原生支撑，最终必须恢复实际接触。在线任务／接触检查为 25Hz，scratch 动力学预检逐 2ms 采样；积分和实际动作记录仍为 500Hz。
+食物在自有盘面上有最多 2mm、100ms 的短暂离面容差，投影中心必须仍在盘内；不会伪造原生支撑，最终必须恢复实际接触。在线任务／接触检查为 25Hz，scratch 动力学预检逐 2ms 采样；积分为500Hz，当前V3目标动作记录为25Hz。
 
-默认失败仅保留报告；成功保留一次初态、25Hz 关键状态及压缩实际动作，无图像、完整 RPC 或逐步大日志。需要诊断过程时采集前显式启用 `--diagnostics`。
+默认失败仅保留报告；成功保留一次初态、25Hz 关键状态及压缩目标关节位置/夹爪开度动作，无图像、完整 RPC 或逐步大日志。需要诊断过程时采集前显式启用 `--diagnostics`。
 
 ## 启动
 
@@ -99,24 +103,24 @@ bash scripts/collect_kitchen_experts.sh run \
 
 每个用例默认只保存：
 
-- `data/state_trajectory_*/trajectory.h5`：一次完整初态、压缩关键状态／动作数组。
+- `trajectory.h5`：一次完整初态、压缩关键状态／动作数组。
 - `report.json`：任务标签、结果、关键任务边界与重放结果。
 
 默认关闭500Hz物理诊断、完整RPC回复和逐局源码副本，不另存重复的完整初态JSON。确需诊断时显式加`--diagnostics`。具体字段见[精简记录格式](STATE_RECORD_REPLAY_CN.md)。
 
 `plan.json`列出完整目录与本次选择；`index.jsonl`逐局追加结果；`summary_*.json`列出合格与失败。新索引还绑定报告SHA，续采会检查报告、已合格轨迹的完整性。
 
-只有实际抓持／松爪支撑等接触门禁、25Hz在线任务判据、逐2ms的scratch接触预检和初态＋实际控制重仿真全部通过，才标记`QUALIFIED_EXPERT`。装盘需当前连续2秒稳定承托、无手指接触且完整物体包络位于托盘内部；组合结束还检查前面子目标未被后续动作破坏。B1还检查四指垫实际夹持、双手滑移、托盘倾角和用户桌板承托。任一失败保留`FAILED_ATTEMPT`，批次未达全部配额时返回非零退出码。
+只有实际抓持／松爪支撑等接触门禁、25Hz在线任务判据、逐2ms的scratch接触预检和初态＋目标动作重仿真全部通过，才标记`QUALIFIED_EXPERT`。装盘需当前连续2秒稳定承托、无手指接触且完整物体包络位于托盘内部；组合结束还检查前面子目标未被后续动作破坏。B1还检查四指垫实际夹持、双手滑移、托盘倾角和用户桌板承托。任一失败保留`FAILED_ATTEMPT`，批次未达全部配额时返回非零退出码。
 
 ## MuJoCo查看
 
 从合格报告复制`trajectory`路径，执行：
 
 ```bash
-.venv/bin/python -B -m integration.kitchen.replay inspect <trajectory.h5>
-.venv/bin/python -B -m integration.kitchen.replay verify <trajectory.h5>
-.venv/bin/python -B -m integration.kitchen.replay viewer <trajectory.h5>
-MUJOCO_GL=egl .venv/bin/python -B -m integration.kitchen.replay video \
+.venv/bin/python -B -m integration.kitchen.data.replay inspect <trajectory.h5>
+.venv/bin/python -B -m integration.kitchen.data.replay verify <trajectory.h5>
+.venv/bin/python -B -m integration.kitchen.data.replay viewer <trajectory.h5>
+MUJOCO_GL=egl .venv/bin/python -B -m integration.kitchen.data.replay video \
   <trajectory.h5> --output /tmp/kitchen_expert_review.mp4 --speed 4
 ```
 

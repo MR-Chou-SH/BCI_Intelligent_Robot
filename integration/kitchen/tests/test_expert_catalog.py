@@ -3,14 +3,16 @@ from collections import Counter
 from unittest.mock import patch
 import math
 import numpy as np
-from integration.kitchen.expert_catalog import catalogue,cases,NAMESPACE
+from integration.kitchen.tasks.catalog import catalogue,cases,NAMESPACE
 from robot_arm.kitchen.platform import KitchenPlatform
 import robot_arm.kitchen.contact_execution as contact_execution
 
 
 class ExpertContracts(unittest.TestCase):
     def test_button_fragment_retains_stationary_gripper_preparation(self):
-        from integration.kitchen.expert import KitchenExpert,LocalPlannerClient,reference_calls_between
+        from integration.kitchen.planning.expert import KitchenExpert
+        from integration.kitchen.runtime.client import LocalPlannerClient
+        from integration.kitchen.planning.common import reference_calls_between
         p=KitchenPlatform(layout="kitchen_v3_norice_candidate_013",seed=0)
         try:
             expert=KitchenExpert(p,LocalPlannerClient(p))
@@ -24,7 +26,7 @@ class ExpertContracts(unittest.TestCase):
         finally:p.close()
 
     def test_reference_pick_window_clips_batch_and_excludes_later_release(self):
-        from integration.kitchen.expert import reference_calls_between
+        from integration.kitchen.planning.common import reference_calls_between
         calls=reference_calls_between(10980,15660)
         self.assertEqual(calls[-1]["method"],"step")
         self.assertEqual(calls[-1]["args"]["n_substeps"],40)

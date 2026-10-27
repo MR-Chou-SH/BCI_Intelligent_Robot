@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 import time
 
-ROOT = Path(__file__).resolve().parents[2]
+from integration.kitchen.launch import ROOT
 ASSETS = ROOT / "reference/kitchen_v3_trajectories"
 LAYOUT = "kitchen_v3_norice_candidate_013"
 SCENE = "f52f3483a7d4863ead908a98aa2aae726f13b5f67e6468a1ed5323c5f3771e27"

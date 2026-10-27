@@ -6,8 +6,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from integration.kitchen import collect_dataset as dataset
-from integration.kitchen.expert_catalog import cases
+from integration.kitchen.data import collect_dataset as dataset
+from integration.kitchen.tools.render_dataset import render
+from integration.kitchen.tasks.catalog import cases
 
 
 class DatasetTests(unittest.TestCase):
@@ -89,16 +90,16 @@ class DatasetTests(unittest.TestCase):
                 destination.write_bytes(b'mp4')
                 destination.with_suffix('.video.json').write_text('{}')
                 return {'source_duration_s': 20, 'trajectory_sha256': 'source'}
-            with patch('integration.kitchen.replay.video', side_effect=video) as renderer, \
-                    patch.object(dataset, 'run_path', side_effect=Path):
-                first = dataset.render(output, plan, rows)
-                second = dataset.render(output, plan, rows)
+            with patch('integration.kitchen.data.replay.video', side_effect=video) as renderer, \
+                    patch('integration.kitchen.tools.render_dataset.run_path',side_effect=Path):
+                first = render(output, plan, rows)
+                second = render(output, plan, rows)
                 self.assertEqual(renderer.call_count, 2)
                 self.assertNotEqual(first[0]['video'], first[1]['video'])
                 self.assertEqual(first, second)
                 Path(first[0]['video']).write_bytes(b'changed')
                 with self.assertRaisesRegex(ValueError, 'hash/path mismatch'):
-                    dataset.render(output, plan, rows)
+                    render(output, plan, rows)
 
 
 if __name__ == '__main__':

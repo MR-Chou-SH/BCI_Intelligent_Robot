@@ -33,7 +33,7 @@ py -3.12 -m venv .venv
 $Python=Join-Path (Get-Location).Path '.venv\Scripts\python.exe'
 & $Python -m pip install -r robot_arm\requirements-kitchen-research.txt
 & $Python -B -m integration.kitchen.research_deploy_probe --inventory --compile-model
-& $Python -B -m integration.kitchen.reference_trajectories inspect
+& $Python -B -m integration.kitchen.planning.reference_trajectories inspect
 ```
 
 Python版本请用 `& $Python --version` 确认，不要在原开发者 D 盘目录寻找虚拟环境。依赖安装需网络；模型资产已随仓库提供，运行不从网络下载机器人。MJCF 引用的44份网格与模型、FR3 Apache-2.0 / UMI MIT许可须一起保留。`robot_arm/kitchen` 和 `integration/kitchen` 是核心，不使用旧 M9 自动策略代替厨房接口。
@@ -90,7 +90,7 @@ $Tag='handoff_'+[guid]::NewGuid().ToString('N')
 | `apple_metadata.json` | 物理来源哈希、11项判据、阶段、避水合同和原始控制身份 |
 | `burger_public_calls.jsonl` | run04成功写RPC的method/args和时钟，已去token/个人路径；含实际contact契约和有限等待，不是仅关节表 |
 | `burger_metadata.json` | 源2ff/目标b672身份、物理窗口、阶段、200步等待时钟映射、终点范围 |
-| `integration/kitchen/reference_trajectories.py` | inspect、不依赖个人路径的有限前缀运行器、显式外部原始文件的提取器 |
+| `integration/kitchen/planning/reference_trajectories.py` | inspect、不依赖个人路径的有限前缀运行器、显式外部原始文件的提取器 |
 | `reference/kitchen_v3_trajectories/historical_source/` | 实际动作生成/控制思路及来源SHA；仅阅读，不执行其依赖旧Goal/旧目录的CLI；新交接入口不依赖历史D路径 |
 
 **先用inspect，再按参考README运行100帧前缀。** 两条都只适用fixed/seed0，不可直接对Research随机局发送。苹果完整新加载器复演和汉堡整段新提取RPC复演本轮NOT TESTED；历史PASS与新代码有限前缀PASS分开记录。真正复现全流程后，还须逐步重新审计原判据，不能只看脚本退出码。

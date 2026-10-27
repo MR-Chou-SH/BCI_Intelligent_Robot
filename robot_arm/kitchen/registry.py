@@ -38,7 +38,7 @@ def control_identity():
             "food_support_bounce_policy":{"maximum_gap_m":FOOD_BOUNCE_GAP_M,
                 "maximum_loss_s":FOOD_BOUNCE_GRACE_S,"scope":"food_center_above_own_plate"},
             "sources":{name:hashlib.sha256((root/name).read_bytes()).hexdigest()
-                       for name in ("control.py","safety.py","limits.py","collision.py","devices.py","platform.py","registry.py","contact_execution.py","mechanics.py","research_initialization.py","object_state.py","state_recording.py")}}
+                       for name in ("control.py","safety.py","limits.py","collision.py","devices.py","platform.py","registry.py","contact_execution.py","mechanics.py","research_initialization.py","object_state.py","state_recording.py","action_codec.py")}}
     return {"control_hash":digest(config),"configuration":config}
 
 

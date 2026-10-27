@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from integration.kitchen.curved_motion import bezier_positions,joint_spline,placement_tcp_goal
+from integration.kitchen.planning.curved_motion import bezier_positions,joint_spline,placement_tcp_goal
 
 
 class CurvedMotionTests(unittest.TestCase):

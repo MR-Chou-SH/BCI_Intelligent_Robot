@@ -13,8 +13,9 @@ import subprocess
 import mujoco
 
 from robot_arm.kitchen.platform import KitchenPlatform
-from integration.kitchen.checkpoint import load
-from integration.kitchen.expert import KitchenExpert, LocalPlannerClient
+from integration.kitchen.tools.checkpoint import load
+from integration.kitchen.planning.expert import KitchenExpert
+from integration.kitchen.runtime.client import LocalPlannerClient
 
 
 def main():

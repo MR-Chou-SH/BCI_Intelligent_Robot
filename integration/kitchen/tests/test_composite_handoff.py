@@ -3,8 +3,9 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import Mock
 
-from integration.kitchen.expert import KitchenExpert, ExpertFailure
-from integration.kitchen.expert_catalog import cases
+from integration.kitchen.planning.expert import KitchenExpert
+from integration.kitchen.planning.common import ExpertFailure
+from integration.kitchen.tasks.catalog import cases
 
 
 class CompositeHandoffTests(unittest.TestCase):
@@ -19,6 +20,8 @@ class CompositeHandoffTests(unittest.TestCase):
         expert.platform = SimpleNamespace(controller=SimpleNamespace(devices=SimpleNamespace(
             heated={'burger_container', 'hotdog_container'})))
         quality = Mock()
+        quality.failures = []
+        quality.platform = expert.platform
         quality.tray_object.side_effect = lambda name: calls.append(('quality', name))
         return expert, quality, calls
 

@@ -6,7 +6,7 @@ from unittest.mock import patch
 import mujoco
 
 from robot_arm.kitchen.platform import KitchenPlatform
-from integration.kitchen.expert import LocalPlannerClient
+from integration.kitchen.runtime.client import LocalPlannerClient
 from integration.kitchen.collection import audit_record
 
 

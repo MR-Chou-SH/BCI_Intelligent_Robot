@@ -3,7 +3,7 @@ import argparse
 import json
 from pathlib import Path
 
-from .planner_client import PlannerClient
+from integration.kitchen.planner_client import PlannerClient
 
 
 def main():

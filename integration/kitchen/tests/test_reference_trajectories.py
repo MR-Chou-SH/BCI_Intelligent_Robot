@@ -2,7 +2,7 @@
 import json
 import unittest
 
-from integration.kitchen import reference_trajectories as ref
+from integration.kitchen.planning import reference_trajectories as ref
 
 
 class ReferenceContract(unittest.TestCase):
