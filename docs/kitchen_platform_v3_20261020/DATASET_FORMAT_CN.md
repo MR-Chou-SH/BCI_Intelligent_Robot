@@ -1,6 +1,12 @@
 # Kitchen 轨迹格式 V3
 
-默认 `kitchen_state_actions_v3`，一个成功样本为 `trajectory.h5` 和简短 `report.json`。不包含图像、逐步检查解释、RPC、完整物理日志、源码副本或失败截图。成功检查仍然执行，但不把检查过程写入训练数据。
+后续训练采用派生LeRobot格式，H5仍为原始真值。16维FR3/UMI状态/动作、粗细指令、25Hz对齐和未来Unity图像的约定见[LeRobot与π0.5接口](LEROBOT_PI05_CN.md)。
+
+默认 `kitchen_state_actions_v3`，一个成功样本为 `trajectory.h5`、简短 `report.json`，以及英文粗/细任务标注 `annotations.json`。不包含图像、逐步检查解释、RPC、完整物理日志、源码副本或失败截图。成功检查仍然执行，但不把检查过程写入训练数据。
+
+标注schema为 `kitchen_language_annotations_v1`。细标注的 `[start_step,end_step)` 使用动作数组的0起始行号，连续覆盖全部N行动作；不是500Hz tick或状态数组索引。H合并为完整加热装盘阶段，提示词与原子任务共享模板；见[完整语言设计](TASK_CATALOG_V3_CN.md)。HDF5仅额外保存少量语义阶段起点，供精确映射与标注校验，不按每一步重复保存提示词。报告及manifest提供标注路径和SHA256，续跑同时校验哈希与轨迹对应关系。旧报告无此字段时仍可读取。
+
+后续Unity图像应按 `actions/tick` 关联动作行，不能直接把渲染视频帧号或关键状态行号作为训练step。
 
 ## 动作
 

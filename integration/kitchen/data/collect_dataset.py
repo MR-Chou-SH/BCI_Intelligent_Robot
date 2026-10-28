@@ -163,7 +163,11 @@ def main(argv=None):
         if args.plan_only:
             return 0
         qualified, missing = collect(output, plan)
-        rows=[{**r,'trajectory':read(r['report'])['trajectory']} for r in qualified]
+        rows=[]
+        for r in qualified:
+            report=read(r['report'])
+            annotation={k:report[k] for k in ('annotations','annotations_sha256') if k in report}
+            rows.append({**r,'trajectory':report['trajectory'],**annotation})
         summary={'target':target,'qualified':len(qualified),'missing':missing,'complete':len(qualified)==target,
                  'format':'kitchen_state_actions_v3','images_included':False}
         replace_json(output / 'manifest.json', rows)

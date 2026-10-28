@@ -32,7 +32,8 @@ def read_compact(path):
                         'actions/interpolation_reset','states/gripper_width_m','replay/gripper_target']
                 result.update(controller=json.loads(file.attrs['controller_json']),devices=json.loads(file.attrs['devices_json']),
                     task=json.loads(file.attrs['task_json']) if 'task_json' in file.attrs else None,
-                    segments=json.loads(file.attrs.get('segments_json','[]')))
+                    segments=json.loads(file.attrs.get('segments_json','[]')),
+                    language_stages=json.loads(file.attrs.get('language_stages_json','[]')))
             for name in names:result[name]=file[name][:]
     except (OSError,KeyError) as error:raise ValueError('Damaged or incomplete state/action file') from error
     start,end=result['start_tick'],result['end_tick'];metadata=result['metadata'];tick=result['states/tick']
@@ -110,14 +111,13 @@ def verify(path,tolerance=1e-8):
             validate_timeline(task,segments,data['start_tick'],data['end_tick'])
             validate_initial(controller,task)
             quality=ExpertQuality(SimpleNamespace(scene=scene,controller=controller,post_step_observers=[]))
+    ending={s['end_tick']:s for s in segments};starting={s['start_tick']:s for s in segments}
     def transitions(tick):
         if quality:
-            for segment in segments:
-                if segment['end_tick']==tick:
-                    try:validate_skill(quality,segment['skill'],task)
-                    except (ValueError,RuntimeError) as error:errors.append(str(error))
-            for segment in segments:
-                if segment['start_tick']==tick:quality.start(segment['skill'])
+            if tick in ending:
+                try:validate_skill(quality,ending[tick]['skill'],task)
+                except (ValueError,RuntimeError) as error:errors.append(str(error))
+            if tick in starting:quality.start(starting[tick]['skill'])
     def compare(index):
         nonlocal flags_match
         if controller:
@@ -126,7 +126,9 @@ def verify(path,tolerance=1e-8):
         return float(np.max(np.abs(scene.data.qpos-data['states/qpos'][index]))),float(np.max(np.abs(scene.data.qvel-data['states/qvel'][index])))
     position,velocity=compare(0);checkpoint=0;action=0;transitions(data['start_tick'])
     indices=[i for side in ('left','right') for i in (*scene.arms[side].actuators,scene.arms[side].gripper_actuator)]
-    for tick in range(data['start_tick'],data['end_tick']):
+    event_ticks=sorted(set(ending)|set(starting)|{data['end_tick']});event_index=0
+    tick=data['start_tick']
+    while tick<data['end_tick']:
         if legacy:
             scene.data.ctrl[indices]=data['actions/ctrl'][tick-data['start_tick']];mujoco.mj_step(scene.model,scene.data)
         else:
@@ -137,11 +139,18 @@ def verify(path,tolerance=1e-8):
                     controller.reference=command.copy();controller.previous=command.copy()
                 elif controller.frame_step==0:controller.previous=controller.reference.copy()
                 controller.accepted=command;action+=1
-            controller.advance_substeps(1)
+            # Keep every 500Hz physics/control step, but dispatch Python once
+            # per action/checkpoint/event boundary rather than per substep.
+            while event_ticks[event_index]<=tick:event_index+=1
+            next_tick=min(tick+controller.substeps-controller.frame_step,data['end_tick'],event_ticks[event_index])
+            if action<len(data['actions/tick']):next_tick=min(next_tick,int(data['actions/tick'][action]))
+            if checkpoint+1<len(data['states/tick']):next_tick=min(next_tick,int(data['states/tick'][checkpoint+1]))
+            controller.advance_substeps(next_tick-tick)
             if quality and controller.frame_step==0:quality.sample(controller)
-        if checkpoint+1<len(data['states/tick']) and tick+1==data['states/tick'][checkpoint+1]:
+        tick=tick+1 if legacy else next_tick
+        if checkpoint+1<len(data['states/tick']) and tick==data['states/tick'][checkpoint+1]:
             checkpoint+=1;p,v=compare(checkpoint);position=max(position,p);velocity=max(velocity,v)
-        transitions(tick+1)
+        transitions(tick)
     if quality:
         try:validate_final(quality,task)
         except (ValueError,RuntimeError) as error:errors.append(str(error))

@@ -6,11 +6,11 @@
 
 | 目录 | 职责 |
 | --- | --- |
-| `tasks/` | `catalog.py` 定义任务矩阵；`execution.py` 根据实测状态选择技能、串联组合任务和准备初态 |
+| `tasks/` | `catalog.py` 定义任务矩阵；`language.py` 定义共享英文提示词；`execution.py` 根据实测状态选择技能、串联组合任务和准备初态 |
 | `planning/` | `expert.py` 的抓取、放置、设备操作；`motion.py` 的运动执行与平滑；`meal_geometry.py`、`curved_motion.py` 的局部几何路径；只读参考轨迹适配 |
 | `validation/` | `quality.py` 计算稳定支撑等物理条件；`success.py` 统一在线执行与重放的任务成功标准 |
 | `runtime/` | 本地 API 客户端，沿用仿真服务的身份、写权限及动作校验 |
-| `data/` | 批量采集、续跑、索引和独立动作重放；不导入视频工具 |
+| `data/` | 批量采集、续跑、索引、英文粗/细标注和独立动作重放；不导入视频工具 |
 | `tools/` | 可选 viewer/视频、状态查询示例及开发 checkpoint；不属于自动采集流程 |
 | `tests/` | 接口、几何、任务组合、记录与重放回归 |
 
@@ -28,3 +28,5 @@
 ```
 
 [采集步骤](../../docs/kitchen_platform_v3_20261020/DATASET_COLLECTION_CN.md) · [数据格式](../../docs/kitchen_platform_v3_20261020/DATASET_FORMAT_CN.md)
+
+H5到LeRobot的数值映射与导出入口为 `data/lerobot_export.py`，图像目前只规划；[π0.5接口与环境边界](../../docs/kitchen_platform_v3_20261020/LEROBOT_PI05_CN.md)。

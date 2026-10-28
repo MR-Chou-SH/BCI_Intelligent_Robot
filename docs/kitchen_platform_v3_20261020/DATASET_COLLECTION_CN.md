@@ -2,11 +2,16 @@
 
 入口 `scripts/collect_kitchen_dataset.sh`。20 个原子实例 + 80 个组合实例，默认每个采集 **2 条合格轨迹，共 200 条**。C04–C08以装盘结束，D01–D09显式包含B1送餐；C01–C03已去重删除。完整表见[TASK_CATALOG_V3_CN.md](TASK_CATALOG_V3_CN.md)。默认不渲染图片或视频，不依赖 ffmpeg / EGL / VR。
 
+2026-10-28新增英文粗/细标注，并修改龙头把手几何和香蕉组合放盘。当前批次请使用新目录，例如 `--output experiments/kitchen_platform_v3/collections/all_tasks_vla_faucet32_20261028 --motion-profile faster`。计划身份现在也绑定模型生成代码、布局配置和主MJCF；修改这些内容后不能继续向原批次混入新模型数据。旧轨迹保留，动力学重放需要匹配原模型版本；旧文件语言标注导出不需要重建模型。
+
+同日后续采集效率/连续抓取优化后，请使用下面的新批次命令，避免混入此前源码身份。墙钟与仿真时长、分项计时见[实测记录](../development_log/2026-10-28-kitchen-efficiency-lerobot.md)。
+
 从仓库根目录执行：
 
 ```bash
 bash scripts/collect_kitchen_dataset.sh \
-  --output experiments/kitchen_platform_v3/collections/all_tasks_delivery_v3_20261027
+  --output experiments/kitchen_platform_v3/collections/all_tasks_efficient_vla_20261028 \
+  --motion-profile faster --samples-per-case 2 --jobs 2
 ```
 
 中断后原命令加 `--resume`。代码、模型或计划参数变化后使用新目录；不要手改原计划绕过指纹。全量 200 条尚未实采完成，以每批 `summary.json` 为准。
@@ -42,11 +47,14 @@ bash scripts/collect_kitchen_dataset.sh \
 | `plan.json` | 用例、参数、源码/控制指纹 |
 | `attempts/<用例>/sample_01/attempt_01_seed0/trajectory.h5` | 一次初态、25Hz joint_pos / 夹爪开度、关键状态 |
 | 同目录 `report.json` | 任务、seed、成功/失败、文件哈希和简短重放结果 |
+| 同目录 `annotations.json` | 英文完整指令、目标ID、按动作行号划分的细阶段及轨迹哈希 |
 | 相邻 `.job.json` / `.result.json` | 中断恢复所需的小型调度凭据 |
 | `manifest.json` | 已合格样本和轨迹路径 |
 | `summary.json` | 目标、合格数量和缺失项 |
 
 合格要求：在线任务质量通过，且独立动作重仿真通过，且重算后的任务成功。检查仍执行；默认不保存逐步检查详情、事件全集、失败截图、开发 checkpoint 或 RPC/物理诊断。新失败尝试仅保留小报告；合格尝试保留 HDF5 和报告。
+
+报告的 `wall_seconds` 是本次采集含准备和重放的实际耗时；`simulated_seconds` 是录制段仿真时长。`timing_seconds`进一步区分执行和重放等开销；两个execution子项不与execution重复相加。采集手动步进不使用sleep或实时限速。派生LeRobot转换单独运行，见[格式与π0.5接口](LEROBOT_PI05_CN.md)。
 
 续跑验证报告和轨迹哈希，跳过合格样本。未封存尝试保留并消耗一次尝试，再换 seed；达到上限后列入缺失项。同批目录有文件锁，禁止两个调度器并发使用。所有目标齐全返回 0，否则返回 1。
 

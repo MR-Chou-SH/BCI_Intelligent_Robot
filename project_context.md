@@ -4,6 +4,8 @@
 
 当前 Kitchen 开发保持已有 FR3/UMI/MuJoCo 模型与控制器；`robot_arm/kitchen/` 负责仿真、状态查询和低层控制，`integration/kitchen/{tasks,planning,validation,runtime,data,tools}/` 分别负责任务、规划、成功判定、API 客户端、无图像采集/重放与可选查看工具。V3 数据使用关节位置和夹爪开度目标、一次初态与关键状态。此次整理不改变下述研究方向、硬件或里程碑边界。入口见 [Kitchen 模块说明](integration/kitchen/README.md)。
 
+后续Kitchen VLA训练以H5为原始真值，派生LeRobot25Hz、16维双臂关节/夹爪数据，参考本地DexJoCo/OpenPI流程；Unity图像与π0.5实际训练尚未接入。[数据接口与边界](docs/kitchen_platform_v3_20261020/LEROBOT_PI05_CN.md)。
+
 ## 1. 项目概述
 
 本项目当前研究主线为 Context-aware BCI Shared Autonomy，近期使用完全可控的虚拟 sequential manipulation benchmark。系统结合：

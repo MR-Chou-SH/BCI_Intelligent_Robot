@@ -12,6 +12,13 @@ def rz(angle):
     return np.array([[c, -s, 0.], [s, c, 0.], [0., 0., 1.]])
 
 
+def banana_tray_rotations(body_rotation,tray_frame):
+    """Align the long X axis with tray Y, retaining the fruit's up/down face."""
+    up=1. if body_rotation[:,2]@tray_frame[:,2]>=0 else -1.
+    return [tray_frame@rz(angle)@np.diag([1.,up,up])
+            for angle in (-up*math.pi/2,up*math.pi/2)]
+
+
 def reference_calls_between(start,end):
     """Closed control-frame window, including a clipped last RPC batch."""
     if start%20 or end%20 or end<=start:raise ValueError("REFERENCE_CONTROL_FRAME_WINDOW")

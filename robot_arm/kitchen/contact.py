@@ -4,12 +4,18 @@ import mujoco
 
 def object_geom_ids(scene,object_name):
     body=scene.objects[object_name]
+    # Body ancestry is fixed for a compiled scene. Return an independent set
+    # to preserve the public mutable-set interface, not a shared cache entry.
+    if getattr(scene,'_geom_cache_model',None) is not scene.model:
+        scene._geom_cache_model=scene.model;scene._object_geom_cache={}
+    if body in scene._object_geom_cache:return set(scene._object_geom_cache[body])
     result=set()
     for g in range(scene.model.ngeom):
         current=int(scene.model.geom_bodyid[g])
         while current:
             if current==body:result.add(g);break
             current=int(scene.model.body_parentid[current])
+    scene._object_geom_cache[body]=frozenset(result)
     return result
 
 def contact_evidence(scene,side,object_name):

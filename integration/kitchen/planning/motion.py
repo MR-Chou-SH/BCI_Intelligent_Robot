@@ -27,7 +27,10 @@ class ExpertMotion:
     def call(self, method, args=None, *, mutating=False):
         if time.monotonic() > self.deadline:
             raise ExpertFailure("EXPERT_WALL_BUDGET_EXCEEDED")
+        started=time.perf_counter()
         reply = self.client.call(method, args, mutating=mutating)
+        if not hasattr(self,'api_wall_seconds'):self.api_wall_seconds={}
+        self.api_wall_seconds[method]=self.api_wall_seconds.get(method,0.)+time.perf_counter()-started
         if not reply.get("ok"):
             raise ExpertFailure(f"{self.stage}: {method}: {reply.get('error')}")
         return reply["result"]
@@ -68,7 +71,7 @@ class ExpertMotion:
         if contract is not None:
             args["contact_contract"] = contract
         self.call("execute_trajectory", args, mutating=True)
-        state = self.call("step", {"n_substeps": len(targets) * 20}, mutating=True)
+        state = self.call("step", {"n_substeps": len(targets) * 20,'detail':'execution'}, mutating=True)
         if state["stopped"] or state["execution"]["status"] == "FAILED":
             raise ExpertFailure(f"{self.stage}: PHYSICS_STOP: {state['stop_reason']}: {state['execution'].get('reason')}: guard={self.platform.controller.stop_evidence}")
         self.contract = copy.deepcopy(contract)
@@ -276,16 +279,18 @@ class ExpertMotion:
                             "start_tick":started,"waypoints":len(path),"frames":frames})
 
 
-    def timed_right_targets(self,path,contract=None,*,speed=.008):
+    def timed_right_targets(self,path,contract=None,*,speed=.008,switch_after=None):
         """Pre-time the complete right route, preserving certified joint edges."""
         from .speed import polyline_clock,speed_factor
         initial=self.platform.controller.reference.copy()
         points=np.vstack([initial[8:15],path]);view=self.view();arm=view.arms['right']
         active=contract if contract is not None else self.contract
         factor=speed_factor(self.motion_profile,active)
-        joint_rate=self.motion_speed(speed,active)
-        linear_step=min(.10,.075*factor)/25
-        angular_step=(.35 if (active or {}).get('phase')=='carry' else .6)*factor/25
+        phase=(active or {}).get('phase');protected=phase in ('acquire','release','device')
+        nominal=speed if protected else max(speed,.012 if phase=='carry' else .016)
+        joint_rate=self.motion_speed(nominal,active)
+        linear_step=(.075 if protected else min(.115,.09*factor))/25
+        angular_step=(.6 if protected else .45 if phase=='carry' else .75)*factor/25
         positions=[];rotations=[]
         for q in points:
             view.data.qpos[list(arm.qpos)]=q;mujoco.mj_kinematics(view.model,view.data)
@@ -293,11 +298,19 @@ class ExpertMotion:
         costs=[]
         for i in range(len(points)-1):
             angle=math.acos(float(np.clip((np.trace(rotations[i].T@rotations[i+1])-1)/2,-1,1)))
-            costs.append(max(float(np.max(np.abs(points[i+1]-points[i])))/joint_rate,
-                             float(np.linalg.norm(positions[i+1]-positions[i]))/linear_step,angle/angular_step))
+            jr,lr,ar=joint_rate,linear_step,angular_step
+            if switch_after is not None:
+                distance=float(np.linalg.norm(positions[i]-positions[-1]))
+                blend=float(np.clip((distance-.025)/.06,0.,1.))
+                if i>switch_after:blend=0.
+                jr=min(jr,.006+(jr-.006)*blend)
+                lr=min(lr,(.035+(.115-.035)*blend)/25)
+                ar=min(ar,(.35+(.75-.35)*blend)/25)
+            costs.append(max(float(np.max(np.abs(points[i+1]-points[i])))/jr,
+                             float(np.linalg.norm(positions[i+1]-positions[i]))/lr,angle/ar))
         frames=None
         for _ in range(12):
-            values=polyline_clock(points,costs,frames)
+            values,clock,knots=polyline_clock(points,costs,frames,with_clock=True)
             if len(values)>6000:raise ExpertFailure('RIGHT_ROUTE_FRAME_LIMIT')
             current=initial.copy();targets=[]
             for q in values:
@@ -305,9 +318,44 @@ class ExpertMotion:
                 accepted=self.platform.controller.prepare_joint_targets(proposed,reference=current)
                 if not np.allclose(accepted,proposed,atol=1e-9,rtol=0.):break
                 current=accepted;targets.append(current.copy())
-            else:return targets
+            else:
+                if switch_after is not None:
+                    return targets,int(np.searchsorted(clock,knots[switch_after+1],side='left'))
+                return targets
             frames=math.ceil(len(values)*1.12)
         raise ExpertFailure('RIGHT_ROUTE_RATE_LIMIT')
+
+
+    def meal_grasp_route(self,approach,point,rotation,acquire):
+        """One preplanned approach/contact clock; switch contract without stopping."""
+        view=self.view();arm=view.arms['right'];view.data.qpos[list(arm.qpos)]=approach[-1]
+        mujoco.mj_forward(view.model,view.data)
+        start=tcp_pose(view.data,arm)[0];boundary=np.asarray(point)-rotation[:,2]*.025
+        poses=[];split_node=None
+        for end in (boundary,np.asarray(point)):
+            count=max(1,math.ceil(np.linalg.norm(end-start)/.02))
+            poses.extend(start+(end-start)*t for t in np.linspace(0,1,count+1)[1:])
+            if split_node is None:split_node=len(approach)+len(poses)-1
+            start=end
+        path=[np.asarray(q).copy() for q in approach]
+        geometry=self.platform.geometry;pairs=geometry.pairs()
+        for position in poses:
+            result=solve_ik(view,'right',position,rotation,max_iterations=500,
+                            position_tolerance=.0002,rotation_tolerance=.003)
+            if not result.success:
+                result=solve_ik(view,'right',position,rotation,max_iterations=700,
+                                position_tolerance=.0015,rotation_tolerance=.003)
+            if not result.success:return False
+            previous=view.data.qpos.copy();candidate=previous.copy();candidate[list(arm.qpos)]=result.q
+            count=max(1,math.ceil(np.max(np.abs(candidate-previous))/.035))
+            if any(np.min(geometry.distances(previous+(candidate-previous)*t,pairs))<.001
+                   for t in np.linspace(0,1,count+1)):return False
+            view.data.qpos[:]=candidate;path.append(result.q.copy())
+        targets,split=self.timed_right_targets(path,self.contract,speed=.012,switch_after=split_node)
+        self.mark('meal_grasp_route_started',target=acquire['target'],frames=len(targets),contact_start_frame=split)
+        self.execute_smooth('right',targets,self.contract,speed=.012,acquire=acquire,split=split)
+        self.mark('meal_grasp_route_complete',target=acquire['target'])
+        return True
 
 
     def smooth_targets(self,side,path,*,speed,contract=None):
@@ -347,8 +395,9 @@ class ExpertMotion:
 
     def execute_smooth(self,side,targets,contract=None,*,speed=.008,acquire=None,split=None):
         started=self.platform.controller.tick
-        for first in range(0,len(targets),8):
-            last=min(first+8,len(targets))
+        batch=25 if getattr(self,'motion_profile','standard')=='faster' else 8
+        for first in range(0,len(targets),batch):
+            last=min(first+batch,len(targets))
             if split is not None and first<split<last:
                 self.execute(targets[first:split],contract)
                 self.execute(targets[split:last],acquire)
@@ -433,7 +482,7 @@ class ExpertMotion:
             self.point(side, start + (end - start) * i / count, rotation, contract, speed=step, transit=transit)
 
 
-    def grip(self, side, value, contract):
+    def grip(self, side, value, contract, *, minimum_force=None):
         offset = 7 if side == "left" else 15
         current = self.platform.controller.reference.copy()
         if value > current[offset] + .00001:
@@ -441,7 +490,9 @@ class ExpertMotion:
             # squeeze every object to one geometry-independent closed width.
             for _ in range(200):
                 current=current.copy()
-                current[offset] += float(np.clip(value-current[offset],-.0004,.0004))
+                step=.0008 if (getattr(self,'motion_profile','standard')=='faster'
+                    and contract['target'].endswith('_container')) else .0004
+                current[offset] += float(np.clip(value-current[offset],-step,step))
                 self.execute([current],contract)
                 grasp=self.feedback()["contact_execution"]["measured"].get("grasp",{})
                 target_force={"hotdog_container":8.,"tomato":8.,"pear":4.,"banana":4.,
@@ -449,6 +500,7 @@ class ExpertMotion:
                     contract["target"],6. if contract["target"].endswith("_container") else 2.)
                 if contract["target"]=="pear" and "pear" in self.platform.controller.devices.cleaned:
                     target_force=8.
+                if minimum_force is not None:target_force=max(target_force,minimum_force)
                 enough=min(grasp.get("pad_normal_forces_n",[0.,0.])) >= target_force
                 # The raised burger bar needs the full bounded tendon command
                 # used by the reference, rather than stopping at first 6N contact.

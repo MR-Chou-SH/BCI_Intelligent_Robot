@@ -31,7 +31,8 @@ class CompositeHandoffTests(unittest.TestCase):
                 expert, quality, calls = self.expert()
                 case = next(c for c in cases() if c['task'] == task)
                 expert.run_case(case, quality)
-                self.assertEqual(calls[:6], [('skill', 'L1' if task == 'C05' else 'L2'),
+                motion=[c for c in calls if c!=('stage','language_stage_started')]
+                self.assertEqual(motion[:6], [('skill', 'L1' if task == 'C05' else 'L2'),
                     ('stage', 'composite_left_clearance'), ('clear', 'left'),
                     ('settle', case['fruit'] + ':tray'), ('quality', case['fruit']), ('skill', 'R5')])
 

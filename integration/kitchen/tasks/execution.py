@@ -71,10 +71,13 @@ class TaskExecution:
     def run_case(self, case, quality):
         from integration.kitchen.tasks.catalog import ATOMIC,chain
         task=case["task"]
-        if task in ATOMIC:self.skill(task,case,quality)
+        if task in ATOMIC:
+            self.mark('language_stage_started',skill=task)
+            self.skill(task,case,quality)
         else:
             skills = chain(case)
             for index, skill in enumerate(skills):
+                self.mark('language_stage_started',skill=skill)
                 if skill=="heat_meal_state_dependent":self.heat_meal(case,quality)
                 else:self.skill(skill,case,quality)
                 if skill in ("L1", "L2") and index + 1 < len(skills):

@@ -498,13 +498,14 @@ class KitchenPlatform:
         if self.state_recorder and not self.state_recorder.closed:
             self.state_recorder.sample(controller)
 
-    def advance(self,count):
+    def advance(self,count,*,detail='full'):
         with self.lock:
-            return self._advance_locked(count)
+            return self._advance_locked(count,detail=detail)
 
-    def _advance_locked(self,count):
+    def _advance_locked(self,count,*,detail='full'):
         if type(count) is not int or not 1<=count<=5000:
             raise PlatformError("INVALID_STEP_COUNT","1..5000 exact physics substeps")
+        if detail not in ('full','execution'):raise PlatformError('INVALID_STEP_DETAIL')
         for _ in range(count):
             try:
                 if self.controller.frame_step==0 and self.queue and not self.controller.stopped:
@@ -527,6 +528,11 @@ class KitchenPlatform:
                 self._finish("FAILED",self.controller.stop_reason)
             elif self.execution and self.execution["status"]=="RUNNING" and not self.queue and not self.controller.frame_step:
                 self._finish("COMPLETED","WAYPOINTS_CONSUMED_NOT_TASK_SUCCESS")
+        if detail=='execution':
+            execution=None if self.execution is None else {k:self.execution.get(k) for k in
+                ('id','status','reason','start_tick','end_tick','waypoints_total','waypoints_started')}
+            return {**self.token(),'sim_time_s':float(self.scene.data.time),
+                    'stopped':self.controller.stopped,'stop_reason':self.controller.stop_reason,'execution':execution}
         return self.observe()
 
     def _query_objects(self,ids=None,object_type=None):
@@ -653,7 +659,7 @@ class KitchenPlatform:
             return self.observe()
         if method=="step":
             if self.mode!="manual":raise PlatformError("REALTIME_CLOCK_OWNS_STEP")
-            return self.advance(args.get("n_substeps",20))
+            return self.advance(args.get("n_substeps",20),detail=args.get('detail','full'))
         if method=="submit_joint_targets":
             values=self.controller.prepare_joint_targets(args["joint_targets"])
             result=self._start_execution([values.tolist()],args.get("source","external_planner"),args.get("contact_targets",()),args.get("guarded_gripper",False),args.get("contact_contract"))

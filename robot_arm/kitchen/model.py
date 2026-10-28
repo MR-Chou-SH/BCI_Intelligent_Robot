@@ -165,7 +165,8 @@ def _kitchen(spec, rng, *, include_rice=True):
     handle.add_joint(name="faucet_switch",type=mujoco.mjtJoint.mjJNT_HINGE,axis=[0,0,1],
         range=[0,math.pi/3],damping=.03,frictionloss=.03)
     handle.add_geom(name="faucet_handle_geom",type=mujoco.mjtGeom.mjGEOM_CAPSULE,
-        fromto=[0,0,0,0,-.085,0],size=[.012],mass=.06,rgba=[.6,.65,.67,1])
+        fromto=[0,0,0,0,-.085,0],size=[.016],mass=.06,rgba=[.6,.65,.67,1],
+        friction=[1.6,.02,.002])
     micro=wb.add_body(name="microwave",pos=[.64,.14,.80])
     for name,half,pos in (
         ("bottom",[.20,.18,.012],[0,0,.012]),("top",[.20,.18,.012],[0,0,.328]),

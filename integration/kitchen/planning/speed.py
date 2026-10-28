@@ -2,7 +2,7 @@
 PROFILES=('standard','faster')
 
 
-def polyline_clock(points, costs, frames=None):
+def polyline_clock(points, costs, frames=None, *, with_clock=False):
     """One clock across IK knots; interpolate only on the original joint edges.
 
     Costs are segment durations in control frames, combining joint, linear and
@@ -11,8 +11,9 @@ def polyline_clock(points, costs, frames=None):
     import math
     import numpy as np
     points=np.asarray(points,dtype=float);costs=np.asarray(costs,dtype=float)
+    original_knots=np.r_[0.,np.cumsum(costs)]
     keep=costs>1e-10
-    if not np.any(keep):return points[-1:]
+    if not np.any(keep):return (points[-1:],np.zeros(1),original_knots) if with_clock else points[-1:]
     points=np.vstack([points[0],points[1:][keep]])
     knots=np.r_[0.,np.cumsum(costs[keep])]
     alpha=.12;vmax=1/(1-alpha)
@@ -24,7 +25,7 @@ def polyline_clock(points, costs, frames=None):
     index=np.clip(np.searchsorted(knots,s,side='right')-1,0,len(knots)-2)
     u=(s-knots[index])/(knots[index+1]-knots[index])
     values=points[index]+u[:,None]*(points[index+1]-points[index]);values[-1]=points[-1]
-    return values
+    return (values,s,original_knots) if with_clock else values
 
 
 def speed_factor(profile,contract=None):

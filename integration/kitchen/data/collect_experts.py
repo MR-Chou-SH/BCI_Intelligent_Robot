@@ -27,7 +27,10 @@ def source_identity():
     names=sorted(str(p.relative_to(ROOT)) for package in ('planning','tasks','validation','data','runtime')
                  for p in (ROOT/'integration/kitchen'/package).glob('*.py'))
     from robot_arm.kitchen.registry import control_identity
-    return {"control":control_identity(),"expert_sources":{n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in names}}
+    models=['robot_arm/kitchen/'+n for n in ('model.py','layouts.py','layout_v3.py','layouts_v3.json')]
+    models.append('robot_arm/assets/fr3_umi_merged.xml')
+    return {"control":control_identity(),"expert_sources":{n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in names},
+            "model_sources":{n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in models}}
 
 
 def validate_previous(rows, output, selected, seeds):
@@ -56,6 +59,11 @@ def validate_previous(rows, output, selected, seeds):
             audit=inspect_trajectory(report["trajectory"])
             if audit["sha256"]!=report["verification"]["sha256"] or not report["task_success"]:
                 raise ValueError("Resume qualified trajectory mismatch")
+            if report.get('annotations'):
+                from .annotations import validate_sidecar
+                annotation=Path(report['annotations']).resolve()
+                if annotation.parent!=report_path.parent:raise ValueError('Annotation outside attempt')
+                validate_sidecar(report['trajectory'],annotation,report['annotations_sha256'])
 
 
 def identity_sha256(identity):
@@ -76,6 +84,10 @@ def one_case(job):
             'images_included':False,'source_identity_sha256':identity_sha256(identity),
             'initialization_profile':profile,'motion_profile':motion_profile}
     platform=client=expert=quality=None;recording=None;started=time.monotonic()
+    timing={};phase_started=time.perf_counter()
+    def phase(name):
+        nonlocal phase_started
+        now=time.perf_counter();timing[name]=now-phase_started;phase_started=now
     try:
         if shutil.disk_usage(directory).free<10*1024**3:raise RuntimeError('DATA_DISK_RESERVE_10GIB')
         if source_identity()!=identity:raise RuntimeError('SOURCE_CHANGED_SINCE_BATCH_PLAN')
@@ -84,17 +96,31 @@ def one_case(job):
         client=LocalPlannerClient(platform,directory/'rpc.jsonl.gz' if diagnostics else None)
         expert=KitchenExpert(platform,client,wall_seconds=wall_seconds,write_checkpoints=False,motion_profile=motion_profile)
         quality=ExpertQuality(platform)
+        phase('setup')
         expert.prepare(case)
+        phase('preparation')
         recording=expert.call('start_state_recording',mutating=True)
+        phase('recording_start')
+        api_before=expert.api_wall_seconds.copy()
         expert.run_case(case,quality)
+        phase('execution')
+        api_elapsed={k:v-api_before.get(k,0.) for k,v in expert.api_wall_seconds.items()}
+        timing['execution_step_api']=api_elapsed.get('step',0.)
+        timing['execution_outside_api']=max(0.,timing['execution']-sum(api_elapsed.values()))
         if quality.failures:raise RuntimeError('QUALITY_CONTROLLER_STOP')
         platform.state_recorder.annotate(case,expert.events)
         expert.call('hold',mutating=True)
         expert.call('stop_state_recording',mutating=True)
+        phase('seal')
         verification=verify(recording['path'])
+        phase('replay')
+        report['simulated_seconds']=verification['duration_s']
         report['verification']={k:verification[k] for k in ('status','sha256','task_success','maximum_qpos_error','maximum_qvel_error')}
         if verification['status']!='CONTROL_RESIMULATION_PASS':raise RuntimeError('EXPERT_REPLAY_DIVERGED')
         if verification['task_success'] is not True:raise RuntimeError('REPLAY_TASK_FAILED: '+repr(verification['task_errors']))
+        from .annotations import build_annotations
+        annotations=build_annotations(recording['path'])
+        phase('annotation')
         report.update(status='QUALIFIED_EXPERT',task_success=True)
     except Exception as error:report['error']=repr(error)
     finally:
@@ -110,12 +136,17 @@ def one_case(job):
             destination=directory/'trajectory.h5'
             Path(recording['path']).replace(destination)
             report['trajectory']=str(destination)
+            annotation_path=directory/'annotations.json'
+            save(annotation_path,annotations)
+            report['annotations']=str(annotation_path)
+            report['annotations_sha256']=hashlib.sha256(annotation_path.read_bytes()).hexdigest()
             if not diagnostics:shutil.rmtree(directory/'data')
         elif not diagnostics:
             # Only this newly-created failed attempt; never historical/user data.
             shutil.rmtree(directory/'data',ignore_errors=True)
         report['data_retained']=bool(report.get('trajectory') or diagnostics and (directory/'data').exists())
         report['wall_seconds']=time.monotonic()-started
+        report['timing_seconds']=timing
         save(directory/'report.json',report)
     return {'case_id':case['case_id'],'seed':seed,'status':report['status'],'task_success':report['task_success'],
             'error':report.get('error'),'report':str(directory/'report.json'),

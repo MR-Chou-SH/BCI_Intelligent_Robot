@@ -8,6 +8,19 @@ from integration.kitchen.data.collect_experts import validate_previous
 
 
 class ExpertResumeTests(unittest.TestCase):
+    def test_batch_identity_detects_model_geometry_changes(self):
+        from unittest.mock import patch
+        from integration.kitchen.data.collect_experts import source_identity,ROOT
+        before=source_identity();model=ROOT/'robot_arm/kitchen/model.py'
+        original=Path.read_bytes
+        def changed(path):
+            content=original(path)
+            return content+b'\n# geometry changed\n' if path==model else content
+        with patch.object(Path,'read_bytes',changed):after=source_identity()
+        self.assertNotEqual(before['model_sources'],after['model_sources'])
+        self.assertEqual(before['expert_sources'],after['expert_sources'])
+        self.assertEqual(before['control'],after['control'])
+
     def test_failed_attempt_keeps_only_small_report_without_rendering(self):
         from unittest.mock import patch
         from integration.kitchen.data.collect_experts import one_case,source_identity

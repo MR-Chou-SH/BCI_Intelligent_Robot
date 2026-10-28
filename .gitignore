@@ -152,3 +152,5 @@ experiments/kitchen_platform_v3/workspace_inventory.json
 experiments/
 # MuJoCo generated warnings (not source/data)
 MUJOCO_LOG.TXT
+
+.cache/

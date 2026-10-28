@@ -34,7 +34,44 @@ H表示状态驱动的加热装盘流程：需要时R3开门→R1装炉关门→
 | 送餐组合 | D09 | 清洗水果与加热主食装盘并送餐 | L2→H→B1 | 同上 | 8 |
 | 合计 | 22类 | 8类原子+14类组合 | | | 100 |
 
-## 成功与记录
+## 英文VLA提示词与两层标注（2026-10-28设计）
+
+语言固定为英语，区分 serving tray（最终大餐盘）、food carrier（主食下面的小盘）和 microwave。`{fruit}`、`{food}` 是目标槽位：在线由EEG选择结果绑定对象ID；当前离线专家采集由case中的fruit/meal绑定，不能声称采集时实际使用了脑电。banana等对象ID保持机器可读；英文显示使用apple、pear、banana、tomato、hamburger、hot dog。提示词不包含速度、轨迹实现、检查状态或随机种子。
+
+| 技能 | 标准英文提示词 |
+| --- | --- |
+| L1 | Place the {fruit} directly on the serving tray. |
+| L2 | Wash the {fruit} and place it on the serving tray. |
+| R1 | Put the {food} in the microwave and close the door. |
+| R2 | Take the {food} out of the microwave, place it on the serving tray, and close the door. |
+| R3 | Open the microwave door. |
+| R4 | Heat the {food} in the microwave, wait until it is ready, and open the door. |
+| R5 | Place the {food} directly on the serving tray. |
+| B1 | Deliver the serving tray to the user with both arms. |
+| H（组合内的完整主食阶段） | Heat the {food} and place it on the serving tray. |
+
+原子任务的粗、细提示词相同，整条数据只有一个细区间。组合任务按上表既有技能链生成粗提示词，使用Then/Finally表达先后；H的R3/R1/R4/R2操作合成一个“加热并装盘”细阶段，沿用C04的整体提示词，不拆成与用户目标不一致的按钮/开门片段。H内部真实原子操作仍保留原有HDF5 skill timeline供成功检验，阶段语义不会取代物理检验。
+
+例如D09 banana/hotdog：粗提示词为 `Wash the banana and place it on the serving tray. Then, heat the hot dog and place it on the serving tray. Finally, deliver the serving tray to the user with both arms.`；细阶段分别使用L2、H、B1的标准提示词。D06对应L1、R5、B1；D03对应R2、B1。语义阶段覆盖100个case，保持既有去重任务编号不变。
+
+每条成功轨迹旁保存 `annotations.json`，schema为 `kitchen_language_annotations_v1`。包含case_id、language、targets（fruit/food对象ID）、coarse_instruction、num_steps、step_indexing，以及fine_segments（skill、instruction、start_step、end_step）。同时绑定trajectory SHA256；报告与manifest引用标注文件及哈希。没有图像和逐步检查记录。
+
+**step是 `actions/joint_pos` / `actions/gripper_opening` 的0起始行号，区间为 `[start_step,end_step)`，end_step不包含在该段内。** 不能拿500Hz物理tick或关键状态数组行号充当训练step。边界从实际执行阶段时间和actions/tick映射计算，最后一段end_step等于动作行数N。阶段连续覆盖 `[0,N)`，不得重叠或留空；水果放盘后的局部撤手属于水果阶段，最后必要的稳定等待属于最后阶段。原子与组合采用同一映射规则。
+
+新采集保存语义阶段的实际起点，H包含条件性开关门等真实执行时间。旧文件如有完整原子技能时间线，可以由实际技能链重建标注并写入新输出目录，保留原始HDF5、报告及索引不变；不通过手写step或视频目测推定边界。未完成或失败轨迹不生成训练标注，标注本身也不能替代任务成功与独立动作重放。
+
+导出现有合格轨迹的标注示例：
+
+```bash
+.venv/bin/python -B -m integration.kitchen.data.annotations \
+  /绝对路径/trajectory.h5 --output /新目录/annotations.json
+```
+
+新采集自动生成标注；旧文件导出需要同目录原合格报告及匹配轨迹哈希。历史文件的边界按已有原子时间线重建；若历史数据曾在原子时间线之外执行条件操作，其精确语义起点不能凭空恢复，应使用新采集的语义起点。已有D09 banana/hotdog示例位于 `experiments/kitchen_platform_v3/language_examples_20261028/D09_banana_hotdog.json`。
+
+## 物理成功与数据
+
+2026-10-28物理调整：龙头把手胶囊半径12→16mm（直径24→32mm），滑动/扭转/滚动摩擦为1.6/0.02/0.002，保持60g质量和设备ID。香蕉与主食组合时，在受控抓持下把香蕉长轴转向餐盘局部Y轴；槽位沿餐盘局部X轴分配，避免用世界坐标固定偏移。若抓起后仍轻擦邻物，先小幅抬起清场；转向使用至少8N指垫目标力，物理接触上限不变。香蕉在清洗篮内可能翻面，因此保留当前正反面，只对齐长轴，不强迫手腕翻转180度。释放已分离后不再追加会越出工作空间的抬高动作。新的成功轨迹仍须通过相同支撑、完整包络、无接触释放和送餐保留食物检验。
 
 装盘任务检查指定食物稳定承托、完整包络在餐盘内、手指分离；L2还要求清洗标记，H还要求加热标记。送餐组合同时要求餐盘在用户桌面稳定支撑、四指垫完成实际抓取、倾角不超过10度，以及所有指定食物仍在盘内、主食仍由自己的小盘承托。不能以“餐盘送达但食物掉落”计成功。
 

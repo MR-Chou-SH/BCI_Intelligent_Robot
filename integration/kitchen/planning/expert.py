@@ -18,7 +18,7 @@ from robot_arm.kitchen.contact import object_geom_ids
 from robot_arm.kitchen.limits import joint_control_limits
 from integration.kitchen.planning.reference_trajectories import ASSETS, inspect
 
-from integration.kitchen.planning.common import DOWN, rz, ExpertFailure, reference_calls_between
+from integration.kitchen.planning.common import DOWN, rz, ExpertFailure, reference_calls_between,banana_tray_rotations
 from .motion import ExpertMotion
 from integration.kitchen.tasks.execution import TaskExecution
 
@@ -46,6 +46,7 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         view = self.view()
         body = self.scene.objects[name]
         center = view.data.xpos[body].copy()
+        if in_oven:oven_r=view.data.xmat[self.scene.model.body('microwave').id].reshape(3,3).copy()
         if name.endswith("_container"):
             from .meal_geometry import plan_grasp
             try:
@@ -97,10 +98,13 @@ class KitchenExpert(TaskExecution,ExpertMotion):
                         break
             except ExpertFailure as error:
                 if "GRASP_CENTRING_IK_FAILED" not in str(error):raise
-        if not curved:
+        merged=False
+        if name.endswith('_container') and self.motion_profile=='faster':
+            merged=self.meal_grasp_route(approach,point,rotation,acquire)
+            if not merged:self.mark('meal_grasp_route_fallback',target=name)
+        if not curved and not merged:
             if side=="left":self.mark("fruit_legacy_approach",target=name,reason="CHECKED_CURVE_CANDIDATES_EXHAUSTED")
             if in_oven:
-                oven_r = view.data.xmat[self.scene.model.body("microwave").id].reshape(3, 3)
                 pre = point - rotation[:,2]*.20
             else:
                 # Both carriers now have a raised outboard bar; keep the burger's
@@ -153,7 +157,7 @@ class KitchenExpert(TaskExecution,ExpertMotion):
             if name=="banana":
                 point=self.balanced_grasp_point(side,name,point,rotation)
         acquire = self.free_contract(side, name, "acquire")
-        if not curved:self.line(side, point, rotation, acquire, spacing=.006)
+        if not curved and not merged:self.line(side, point, rotation, acquire, spacing=.006)
         value = .05 if name.endswith("_container") else .04 if name in ("banana", "tomato") else .025
         if name=="pear" and "pear" in self.platform.controller.devices.cleaned:value=.04
         self.grip(side, value, acquire)
@@ -187,6 +191,10 @@ class KitchenExpert(TaskExecution,ExpertMotion):
     def place(self, label, *, slot=0., defer_oven_exit=False):
         side, name = self.held
         self.mark("place_approach", target=name, support=label)
+        if label=='tray' and name=='banana' and slot:
+            # Composite meals occupy the other half of the tray. Turn the
+            # banana's long local X axis along tray Y before planning placement.
+            self.align_banana_for_tray()
         view = self.view()
         arm = self.scene.arms[side]
         tcp, rotation = tcp_pose(view.data, arm)
@@ -197,7 +205,10 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         lo, hi = object_bounds(view, name)
         support_lo, support_hi = geometry_bounds(self.scene.model, view.data, geom)
         center = view.data.geom_xpos[geom].copy()
-        center[:2] += np.array([slot, 0])
+        if label=='tray':
+            tray_frame=view.data.xmat[self.scene.objects['wood_tray']].reshape(3,3)
+            center+=tray_frame[:,0]*slot
+        else:center[:2]+=np.array([slot,0])
         if label=="basket" and name=="banana":
             # The curved fruit can roll towards the faucet/rear wall after
             # opening. Reserve room for the full finger-holder closure sweep
@@ -352,7 +363,7 @@ class KitchenExpert(TaskExecution,ExpertMotion):
             self.mark('oven_hand_withdrawal',distance_m=distance)
             exit_pose=(here-desired_body[:,0]*distance,rotation.copy())
             if not defer_oven_exit:self.line(side,*exit_pose)
-        elif name.endswith("_container"):
+        elif name.endswith("_container") or (name=='banana' and slot):
             # Already clear along the measured approach axis. No arbitrary
             # upward detour into a joint limit after a successful release.
             pass
@@ -436,16 +447,16 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         mujoco.mju_mat2Quat(a, old_body.ravel())
         mujoco.mju_mat2Quat(b, np.asarray(desired_body).ravel())
         if a @ b < 0: b *= -1
-        geometry = CarriedGeometry(view, view.data.qpos, side,
-                                   (name, name.removesuffix("_container")))
+        payload=(name,name.removesuffix('_container')) if name.endswith('_container') else (name,)
+        geometry = CarriedGeometry(view, view.data.qpos, side,payload)
         pairs = np.asarray([p for p in geometry.pairs(tuple(geometry.frames))
                             if not all(int(g) in geometry.geoms for g in p)], dtype=int)
         pads = set(arm.pad_geoms)
         thresholds = np.array([-.003 if any(int(g) in pads for g in p)
                                and any(int(g) in geometry.geoms for g in p) else .001
                                for p in pairs])
-        for delta in ([0., 0., 0.], [0., 0., .06], [-.06, 0., .06],
-                      [0., -.06, .06], [-.12, 0., .06], [-.06, -.06, .10]):
+        for delta in ([0.,0.,0.],[0.,0.,.06],[-.06,0.,.06],
+                      [0.,-.06,.06],[-.12,0.,.06],[-.06,-.06,.10]):
             anchor = root + delta
             scratch = self.view()
             poses = [(tcp + np.asarray(delta)*t, tool) for t in np.linspace(0, 1, 9)[1:]]
@@ -484,6 +495,42 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         if np.linalg.norm(anchor-root) > .001:
             self.line(side, tcp+(anchor-root), rotation, ramp=True, speed=.004)
         self._turn_payload_to(side, name, desired_body)
+
+
+    def align_banana_for_tray(self):
+        """Choose a reachable, geometry-checked turn; never rotate live objects."""
+        from robot_arm.kitchen.payload_geometry import CarriedGeometry
+        # The initial lift may leave the banana's curved tip grazing a nearby
+        # apple. Clear that existing contact before testing rotation paths;
+        # otherwise every candidate fails at its identical start configuration.
+        for attempt in range(4):
+            view=self.view();geometry=CarriedGeometry(view,view.data.qpos,'left',('banana',))
+            hand={g for g in geometry.robot if view.model.body(int(view.model.geom_bodyid[g])).name.startswith('left_umi')}
+            pairs=np.asarray([p for p in geometry.pairs(('banana',))
+                if any(int(g) in geometry.geoms for g in p) and
+                   not all(int(g) in geometry.geoms for g in p) and
+                   not any(int(g) in hand for g in p)],dtype=int).reshape(-1,2)
+            minimum=float(np.min(geometry.distances(view.data.qpos,pairs))) if len(pairs) else 1.
+            if minimum>=.001:break
+            if attempt==3:raise ExpertFailure('BANANA_TURN_INITIAL_CLEARANCE_NOT_REACHED')
+            here,tool=tcp_pose(view.data,view.arms['left'])
+            self.mark('banana_turn_clearance_lift',minimum_distance_m=minimum,distance_m=.025)
+            self.line('left',here+[0,0,.025],tool,self.contract,speed=.004)
+        # A quarter-turn needs more retention than straight fruit transport.
+        # Raise commanded grip force, preserving the original contact limits.
+        self.grip('left',.05,self.contract,minimum_force=8.)
+        view=self.view();frame=view.data.xmat[view.objects['wood_tray']].reshape(3,3).copy()
+        body_rotation=view.data.xmat[view.objects['banana']].reshape(3,3)
+        # Preserve a washed fruit's inverted face instead of demanding a
+        # needless wrist flip. Reuse the same bounded checked anchor planner.
+        for desired in banana_tray_rotations(body_rotation,frame):
+            if self._rotation_anchor('left','banana',desired) is not None:
+                self.orient_payload(desired)
+                axis=frame.T@self.view().data.xmat[view.objects['banana']].reshape(3,3)[:,0]
+                self.mark('banana_tray_alignment',long_axis_tray=axis.tolist())
+                if abs(axis[1])<.95:raise ExpertFailure('BANANA_TRAY_ALIGNMENT_NOT_REACHED')
+                return
+        raise ExpertFailure('BANANA_TRAY_TURN_NO_CLEAR_ANCHOR')
 
 
     def _turn_payload_to(self, side, name, desired_body, count=17):
@@ -945,7 +992,7 @@ class KitchenExpert(TaskExecution,ExpertMotion):
             hrot = scratch.data.geom_xmat[handle].reshape(3, 3)
             hpos = scratch.data.geom_xpos[handle]
             poses.append(((hpos + hrot @ offset).copy(),(hrot @ relative).copy()))
-        if not self.continuous_poses("right",poses,device,speed=.004):
+        if not self.continuous_poses("right",poses,device,speed=.008 if self.motion_profile=='faster' else .004):
             for position,rotation in poses:self.point("right",position,rotation,device)
         release = {**base, "phase": "release"}
         self.grip("right", 0., release)
@@ -1067,14 +1114,17 @@ class KitchenExpert(TaskExecution,ExpertMotion):
             raise ExpertFailure("EMPTY_JAW_MOTION_REQUIRES_RELEASED_HAND")
         self.wait(.6)
         current = self.platform.controller.reference.copy()
+        if abs(current[15]-value)<1e-8:return
         targets = []
-        for _ in range(115):
+        fast=self.motion_profile=='faster';step=.002 if fast else .0005
+        count=math.ceil(abs(value-current[15])/step)+3 if fast else 115
+        for _ in range(count):
             current = current.copy()
-            current[15] += np.clip(value-current[15],-.0005,.0005)
+            current[15] += np.clip(value-current[15],-step,step)
             targets.append(current.tolist())
         self.call("execute_trajectory",{"waypoints":targets,"source":"programmatic_validation",
                                         "guarded_gripper":True},mutating=True)
-        state = self.call("step",{"n_substeps":20*len(targets)},mutating=True)
+        state = self.call("step",{"n_substeps":20*len(targets),'detail':'execution'},mutating=True)
         if state["stopped"]:
             raise ExpertFailure("EMPTY_JAW_MOTION_STOPPED: "+str(state["stop_reason"]))
 

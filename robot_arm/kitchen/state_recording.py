@@ -124,6 +124,9 @@ class StateRecorder:
                 segments.append({**active,'end_tick':int(event['tick'])});active=None
         self.file.attrs['task_json']=json.dumps(task,ensure_ascii=False,separators=(',',':'))
         self.file.attrs['segments_json']=json.dumps(segments,separators=(',',':'))
+        self.file.attrs['language_stages_json']=json.dumps(
+            [{'skill':e['skill'],'start_tick':int(e['tick'])} for e in events
+             if e['stage']=='language_stage_started'],separators=(',',':'))
 
     def before_step(self,controller):
         changed=self.last_accepted is not None and (not np.array_equal(controller.accepted,self.last_accepted) or

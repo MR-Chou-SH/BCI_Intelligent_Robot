@@ -16,4 +16,6 @@
 
 任务组合、专家规划、成功判定、采集调度和离线重放归 `integration/kitchen/`。底层不会导入上层任务模块。状态查询 API 为 `get_object_states`；记录器调用同一实现，避免另造物体状态定义。
 
+`step`默认返回完整观测；采集可显式指定 `detail="execution"`，仅减少返回数据整理，物理步进、控制/接触检查、观察者和状态记录保持原时钟。完整状态仍通过原查询API获取。
+
 [数据格式与动作语义](../../docs/kitchen_platform_v3_20261020/DATASET_FORMAT_CN.md)
