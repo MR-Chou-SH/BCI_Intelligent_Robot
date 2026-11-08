@@ -75,6 +75,12 @@ def apply_contact_v4(spec, layout):
     _hull(spec, "pear", "pear_collision", [(-.045,.012,.012),(-.035,.025,.025),
         (-.018,.032,.032),(.005,.027,.027),(.028,.015,.015),(.045,.003,.003)],
         .18, [.75,.75,.13,1])
+    if layout.get('pear_support') == 'cylindrical_foot_v1':
+        # Same20mm-radius/8mm-height foot as the apple, flush with the pear's
+        # original45mm lower extent. Keep total pear mass at180g so the new
+        # support polygon is not confounded by adding10g to the payload.
+        spec.geom('pear_collision').mass = .17
+        _flat_foot(spec, 'pear', .020, .045, [.75,.75,.13,1])
     _hull(spec, "hotdog", "hotdog_food", [(-.022,.047,.014),(-.015,.057,.021),
         (0.,.060,.023),(.014,.054,.021),(.022,.040,.011)], .15, [.70,.32,.12,1])
     # User direction: give the round-bodied hotdog a rectangular foot flush with

@@ -30,3 +30,5 @@
 [采集步骤](../../docs/kitchen_platform_v3_20261020/DATASET_COLLECTION_CN.md) · [数据格式](../../docs/kitchen_platform_v3_20261020/DATASET_FORMAT_CN.md)
 
 H5到LeRobot的数值映射与导出入口为 `data/lerobot_export.py`，图像目前只规划；[π0.5接口与环境边界](../../docs/kitchen_platform_v3_20261020/LEROBOT_PI05_CN.md)。
+
+`data/optimized_collection.py` 已将首次备份、离线连续平滑、同初态试跑、最终独立重放及失败回退接入常规采集，默认 `--postprocess continuous`。`data/retiming_experiment.py` 仍用于显式小样实验。渲染通过 `scripts/render_kitchen_dataset.sh` 只读最终manifest，不扫描备份。[统一流程和两条运行命令](../../docs/kitchen_platform_v3_20261020/UNIFIED_COLLECTION_CN.md)。

@@ -154,3 +154,4 @@ experiments/
 MUJOCO_LOG.TXT
 
 .cache/
+tmp/

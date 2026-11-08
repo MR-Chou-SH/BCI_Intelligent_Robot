@@ -58,7 +58,8 @@ def policy_episode(path):
     if not segments or segments[0]['export_start']!=0 or segments[-1]['export_end']!=len(ticks):
         raise ValueError('Language does not cover export grid')
     return {'state':state,'action':action,'ticks':ticks,'segments':segments,'annotation':annotation,
-            'source':str(path),'source_sha256':annotation['trajectory_sha256']}
+            'source':str(path),'source_sha256':annotation['trajectory_sha256'],
+            'source_group':report.get('postprocessing',{}).get('source_group',annotation['trajectory_sha256'])}
 
 
 def episode_views(episode,level):
@@ -79,6 +80,7 @@ def plan(paths,level):
     for path in paths:
         episode=policy_episode(path)
         episodes.append({'source':episode['source'],'source_sha256':episode['source_sha256'],
+            'source_group':episode.get('source_group',episode['source_sha256']),
             'case_id':episode['annotation']['case_id'],'targets':episode['annotation']['targets'],
             'coarse_instruction':episode['annotation']['coarse_instruction'],
             'frames':len(episode['action']),'exported_episodes':sum(1 for _ in episode_views(episode,level)),
@@ -108,7 +110,7 @@ def export(paths,output,level,repo_id='local/kitchen_fr3_umi',*,writer_class=Non
                                    'action':episode['action'][i],'task':prompt})
             dataset.save_episode()
             exported.append({'episode_index':len(exported),'source':episode['source'],
-                'source_group':episode['source_sha256'],'export_start':first,'export_end':last,
+                'source_group':episode.get('source_group',episode['source_sha256']),'export_start':first,'export_end':last,
                 'source_start_tick':int(episode['ticks'][first]),'task':prompt})
     if hasattr(dataset,'finalize'):dataset.finalize()
     description['exported_episodes']=exported

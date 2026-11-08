@@ -177,7 +177,8 @@ class KitchenExpert(TaskExecution,ExpertMotion):
             if lift_distance < .035:
                 raise ExpertFailure("OVEN_EXTRACTION_HEADROOM_BELOW_35MM")
         self.line(side, point + [0, 0, lift_distance], rotation, carry, ramp=True)
-        if side!="left":self.wait(1.)
+        # Lift height and measured grasp are checked below; do not insert a
+        # fixed one-second hold between lift and transport.
         if self.obj(name)["position_world_m"][2] < center[2] + .03:
             raise ExpertFailure("NO_30MM_LIFT: " + name)
         self.held = (side, name)
@@ -265,13 +266,20 @@ class KitchenExpert(TaskExecution,ExpertMotion):
             # points on one clock. Only the supported placement is a stop.
             positions=[first,second,pre_root-offset,insertion_pre-offset,
                        desired_root-offset+[0,0,entry_raise],target]
+            from .route_flow import rounded_oven_carry
+            rounded=rounded_oven_carry(self.view(),positions,rotation,
+                (name,name.removesuffix('_container')))
             start=tcp_pose(self.view().data,arm)[0];poses=[]
             for end in positions:
                 count=max(1,math.ceil(np.linalg.norm(end-start)/.008))
                 poses.extend((start+(end-start)*t,rotation) for t in np.linspace(0,1,count+1)[1:])
                 start=np.asarray(end)
             self.mark('oven_entry_route_started',target=name)
-            if not self.continuous_poses(side,poses,self.contract,speed=.006):
+            if rounded is not None:
+                path,clearance=rounded
+                self.mark('oven_outer_corners_rounded',radius_m=.015,minimum_sampled_m=clearance)
+                self.stream_joints(side,path,self.contract,speed=.006)
+            elif not self.continuous_poses(side,poses,self.contract,speed=.006):
                 raise ExpertFailure('OVEN_ENTRY_ROUTE_IK_FAILED')
             self.mark('oven_entry_route_complete',target=name)
         else:
@@ -279,7 +287,9 @@ class KitchenExpert(TaskExecution,ExpertMotion):
             target[2] = support_hi[2] + (root[2] - lo[2]) + .001 - offset[2]
             curved_place=side=="left" and self.fruit_curve(target,rotation,mode="carry",target=name,
                                                          payload=(name,),support=support)
-            if curved_place:target=self.last_fruit_curve_endpoint.copy()
+            if side=='right' and name.endswith('_container'):
+                curved_place=self.meal_place_curve(target,rotation,name,support)
+            if curved_place and side=='left':target=self.last_fruit_curve_endpoint.copy()
             if not curved_place:
                 if side=="left":self.mark("fruit_legacy_place",target=name,reason="CHECKED_CURVE_CANDIDATES_EXHAUSTED")
                 top = target.copy()
@@ -301,10 +311,9 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         # the support. Transfer weight by gradually opening, rather than
         # repeatedly changing height to force full weight onto the support.
         # Native support above and final quiet/pad-separation gates remain.
-        self.wait(.4)
+        self.wait_payload_quiet((name,),max_seconds=.4)
         release = self.free_contract(side, name, "release")
         self.grip(side, 0., release)
-        self.wait(.4)
         if name=="banana":
             self.peel_release(side,name,rotation,release)
         here=tcp_pose(self.view().data,arm)[0]
@@ -326,7 +335,11 @@ class KitchenExpert(TaskExecution,ExpertMotion):
                     break
             else:
                 raise ExpertFailure("NO_REACHABLE_HANDLE_WITHDRAWAL")
-            self.wait(.12)
+            # Continuous withdrawal already supplies separation time; only
+            # wait for the measured condition if it is not yet established.
+            for _ in range(3):
+                if self.feedback()['contact_execution']['measured']['grasp'].get('pads_separated'):break
+                self.wait(.04)
             if not self.feedback()["contact_execution"]["measured"]["grasp"].get("pads_separated"):
                 raise ExpertFailure("MEAL_RELEASE_PADS_NOT_SEPARATED")
         else:
@@ -373,6 +386,18 @@ class KitchenExpert(TaskExecution,ExpertMotion):
             raise ExpertFailure("RELEASED_SUPPORT_NOT_RETAINED")
         self.mark("place_released", target=name, support=support)
         return exit_pose if defer_oven_exit else None
+
+
+    def wait_payload_quiet(self,names,*,max_seconds):
+        """Bounded measured settling replaces unconditional pre-release holds."""
+        for _ in range(math.ceil(max_seconds*25)):
+            moving=False
+            for name in names:
+                state=self.obj(name)
+                moving|=(np.linalg.norm(state['linear_velocity_world_m_s'])>.02 or
+                         np.linalg.norm(state['angular_velocity_world_rad_s'])>.05)
+            if not moving:return
+            self.wait(.04)
 
 
     def wait_released_payload(self,contract,*,max_seconds=1.5):
@@ -636,6 +661,7 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         acquired=False
         ever_acquired=False
         seen_open=False
+        wash_wait_done=False
         cursor=0
         while cursor<len(rows):
             row=rows[cursor]
@@ -664,6 +690,45 @@ class KitchenExpert(TaskExecution,ExpertMotion):
                 # an unguarded sweep is rejected. Hold the gripper at its current
                 # value for the withdrawal instead of replaying that channel.
                 q[7]=self.platform.controller.reference[7]
+            if (not wash_wait_done and contract and contract['phase']=='device'
+                    and self.platform.controller.devices.angle('faucet_switch')>=math.radians(40)):
+                # Replace only the reference's long ON plateau. Do not shorten
+                # approach/grasp confirmation or wait while the water is off.
+                end=cursor+1
+                while end<len(rows) and np.allclose(rows[end]['target16'][:8],q[:8],atol=1e-10,rtol=0.):
+                    end+=1
+                if end-cursor>=20:
+                    from robot_arm.kitchen.devices import WASH_DURATION_S
+                    self.mark('faucet_wash_wait_started',duration_s=WASH_DURATION_S,
+                              replaced_reference_seconds=(end-cursor)/25)
+                    self.wait(WASH_DURATION_S,contract)
+                    self.mark('faucet_wash_wait_complete')
+                    wash_wait_done=True;seen_open=True;cursor=end
+                    continue
+            if (contract and contract['phase']=='device'
+                    and abs(q[7]-self.platform.controller.reference[7])<1e-10):
+                # Stream the demonstrated rotation knots as one route. Short
+                # repeated targets were legacy per-angle settling, not useful
+                # faucet motion. Long ON plateau is handled above as wash time.
+                end=cursor+1
+                while end<len(rows) and np.allclose(rows[end]['target16'][:8],q[:8],atol=1e-10,rtol=0.):end+=1
+                if end-cursor>=20:
+                    if np.max(np.abs(q[:7]-self.platform.controller.reference[:7]))>1e-8:
+                        self.joints('left',q[:7],contract,speed=.008)
+                    cursor=end;continue
+                path=[];end=cursor
+                while end<len(rows) and abs(rows[end]['target16'][7]-q[7])<1e-10:
+                    row_target=np.asarray(rows[end]['target16'][:8]);last=end+1
+                    while last<len(rows) and np.allclose(rows[last]['target16'][:8],row_target,atol=1e-10,rtol=0.):last+=1
+                    path.append(row_target[:7].copy())
+                    if last-end>=20:break
+                    end=last
+                if path and end>cursor:
+                    self.mark('faucet_turn_stream_started',waypoints=len(path))
+                    self.stream_joints('left',path,contract,speed=.008)
+                    self.mark('faucet_turn_stream_complete')
+                    seen_open|=self.platform.controller.devices.angle('faucet_switch')>=math.radians(40)
+                    cursor=end;continue
             self.execute([q],contract)
             if self.platform.controller.devices.angle("faucet_switch")>=math.radians(40):
                 seen_open=True
@@ -794,6 +859,38 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         view = self.view()
         start = {s: tcp_pose(view.data,self.scene.arms[s])[0] for s in ("left","right")}
         count = max(1,int(math.ceil(max(np.linalg.norm(np.asarray(positions[s])-start[s]) for s in start)/.008)))
+        # Plan the entire dual-arm line first; no settling at each8mm knot.
+        rotations=rotation if isinstance(rotation,dict) else {s:rotation for s in start}
+        path=[];initial=self.platform.controller.reference.copy();good=True
+        for i in range(1,count+1):
+            command=initial.copy()
+            for offset,side in ((0,'left'),(8,'right')):
+                point=start[side]+(np.asarray(positions[side])-start[side])*i/count
+                result=solve_ik(view,side,point,rotations[side],max_iterations=500,
+                                position_tolerance=.0002,rotation_tolerance=.003)
+                if not result.success:good=False;break
+                view.data.qpos[list(view.arms[side].qpos)]=result.q;command[offset:offset+7]=result.q
+            if not good:break
+            path.append(command)
+        if good:
+            from .speed import polyline_clock
+            points=np.vstack([initial,path]);step=.004 if contract is not None else .010
+            costs=np.max(np.abs(np.diff(points,axis=0)),axis=1)/step
+            frames=None;targets=None
+            for _ in range(12):
+                values=polyline_clock(points,costs,frames);previous=initial;prepared=[]
+                for value in values:
+                    accepted=self.platform.controller.prepare_joint_targets(value,reference=previous)
+                    if not np.allclose(accepted,value,atol=1e-9,rtol=0.):break
+                    prepared.append(accepted);previous=accepted
+                else:targets=prepared;break
+                frames=math.ceil(len(values)*1.15)
+            if targets is not None:
+                self.mark('dual_line_stream',frames=len(targets),waypoints=len(path))
+                for first in range(0,len(targets),25):self.execute(targets[first:first+25],contract)
+                self.dual_points(positions,rotation,contract,transit)
+                return
+        self.mark('dual_line_stream_fallback',reason='IK_OR_RATE_LIMIT')
         for i in range(1,count+1):
             self.dual_points({s:start[s]+(np.asarray(positions[s])-start[s])*i/count for s in start},rotation,contract,transit)
 
@@ -803,7 +900,8 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         # the 4N empty-tray setting without changing the contact gates.
         minimum_force=8. if len(contract['payload_ids'])>1 else 4.
         current = self.platform.controller.reference.copy()
-        for _ in range(220 if (value>0 and force) else 65):
+        count=220 if (value>0 and force) else max(1,math.ceil(float(np.max(np.abs(current[[7,15]]-value)))/.001))
+        for _ in range(count):
             current = current.copy()
             measured=self.feedback()["contact_execution"]["measured"].get("grasp",{}).get("by_arm",{}) if (value>0 and force) else {}
             for offset,side in ((7,"left"),(15,"right")):
@@ -882,9 +980,12 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         # Pre-close the empty jaws above the bar (guarded stationary sweep, no
         # contact contract). The full 50mm closure against the tray pushed the
         # arm ~14mm and blew the 30mm acquire local-travel budget.
-        self.wait(.5)
+        for _ in range(25):
+            if self.platform._arms_settled():break
+            self.wait(.04)
+        else:raise ExpertFailure('DUAL_PRECLOSE_ARM_SETTLE_TIMEOUT')
         current=self.platform.controller.reference.copy()
-        for _ in range(50):
+        for _ in range(max(1,math.ceil(float(np.max(np.abs(current[[7,15]]-.020)))/.0004))):
             current=current.copy()
             for index in (7,15):current[index]+=float(np.clip(.020-current[index],-.0004,.0004))
             self.call("execute_trajectory",{"waypoints":[current.tolist()],
@@ -912,7 +1013,6 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         carry={**base,"phase":"carry","target_support_transition":True}
         self.mark("dual_tray_lift")
         self.dual_line({s:p+[0,0,.12] for s,p in grips.items()},contract=carry)
-        self.wait(1.)
         table=self.scene.model.geom("user_table").id
         target_tray=self.scene.data.geom_xpos[table].copy()
         target_tray[1]=-.77
@@ -942,7 +1042,7 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         self.mark("dual_tray_delivered")
 
 
-    def door_skill(self, target_angle):
+    def door_skill(self, target_angle, *, wait_for_heat=None):
         """Geometric door open/close: grasp the handle, then follow its hinge arc.
 
         The recorded device calls are joint-space and tied to the original
@@ -973,6 +1073,10 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         y = np.cross(z, x); R = np.column_stack([x, y, z])
         self.mark("door_handle_approach",angle_start_rad=start)
         self.free_pose("right",pos-z*.028,R,home_fallback=True)
+        if wait_for_heat is not None:
+            # Approach with the door still closed while the oven heats. Do
+            # not touch/pull the handle until the actual heat event occurs.
+            self.wait_heat_before_open(wait_for_heat)
         base = {"arm": "right", "target": "microwave_door_handle", "payload_ids": [], "supports": {}}
         acquire = {**base, "phase": "acquire"}
         self.point("right", pos, R, acquire)
@@ -1001,10 +1105,10 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         self.contract = None
 
 
-    def open_door(self):
+    def open_door(self, *, wait_for_heat=None):
         # Open to 100deg (the hinge limit) for extra clearance around the oven
         # mouth; 0-100deg was IK-feasible for relative/world/slerp tool modes.
-        self.door_skill(math.radians(100))
+        self.door_skill(math.radians(100),wait_for_heat=wait_for_heat)
         self.wait(.8)
         if self.platform.controller.devices.angle("microwave_hinge") < math.radians(90):
             raise ExpertFailure("DOOR_OPEN_ANGLE_NOT_REACHED")
@@ -1112,12 +1216,15 @@ class KitchenExpert(TaskExecution,ExpertMotion):
     def set_empty_jaws(self, value):
         if self.held or self.contract:
             raise ExpertFailure("EMPTY_JAW_MOTION_REQUIRES_RELEASED_HAND")
-        self.wait(.6)
         current = self.platform.controller.reference.copy()
         if abs(current[15]-value)<1e-8:return
+        for _ in range(25):
+            if self.platform._arms_settled():break
+            self.wait(.04)
+        else:raise ExpertFailure('EMPTY_JAW_ARM_SETTLE_TIMEOUT')
         targets = []
         fast=self.motion_profile=='faster';step=.002 if fast else .0005
-        count=math.ceil(abs(value-current[15])/step)+3 if fast else 115
+        count=max(1,math.ceil(abs(value-current[15])/step))
         for _ in range(count):
             current = current.copy()
             current[15] += np.clip(value-current[15],-step,step)
@@ -1151,25 +1258,69 @@ class KitchenExpert(TaskExecution,ExpertMotion):
                     for g in self.scene.arms["right"].pad_geoms)
         face = float(m.geom_size[button][0])
         self.mark("button_approach",position_world_m=origin.tolist())
-        self.free_pose("right",origin-inward*(front+face+.020),rotation,home_fallback=True)
         device = {"arm":"right","target":"microwave_start_geom","phase":"device",
                   "payload_ids":[],"supports":{}}
-        self.mark("button_press")
-        for depth in np.arange(-.003,.0061,.0005):
-            self.point("right",origin-inward*(front+face-depth),rotation,device,speed=.004)
-            self.wait(.08)
-            if dev.heating==container or container in dev.heated: break
-        else: raise ExpertFailure("BUTTON_PRESS_DID_NOT_START_HEATING")
+        self.press_button_continuously(container,origin,inward,rotation,front+face,device)
         release = {**device,"phase":"release"}
         here, tool = tcp_pose(self.view().data,self.scene.arms["right"])
-        self.line("right",here-inward*.030,tool,release,spacing=.005,speed=.004)
-        self.wait(.3); self.call("end_contact",mutating=True); self.contract=None
-        self.mark("heat_wait")
-        for _ in range(35):
-            if container in dev.heated: break
-            self.wait(.2)
-        else: raise ExpertFailure("HEAT_COMPLETE_EVENT_MISSING")
+        self.mark('button_withdraw')
+        poses=[(here-inward*distance,tool) for distance in np.linspace(.005,.030,6)]
+        if not self.continuous_poses('right',poses,release,speed=.008):
+            raise ExpertFailure('BUTTON_WITHDRAW_IK_FAILED')
+        self.call("end_contact",mutating=True); self.contract=None
+        self.mark("heat_prepare_door")
         self.set_empty_jaws(0.)
-        self.open_door()
+        self.open_door(wait_for_heat=container)
+
+
+    def wait_heat_before_open(self,container):
+        """Only the remaining heat time gates handle contact and door motion."""
+        started=self.platform.controller.tick;dev=self.platform.controller.devices
+        for _ in range(175):
+            if container in dev.heated:break
+            if dev.heating!=container:raise ExpertFailure('HEAT_ABORTED_BEFORE_DOOR_OPEN')
+            self.wait(.04)
+        else:raise ExpertFailure('HEAT_COMPLETE_EVENT_MISSING')
+        self.mark('heat_ready_at_door',residual_wait_seconds=(self.platform.controller.tick-started)/500.)
+
+
+    def press_button_continuously(self,container,origin,inward,rotation,offset,device):
+        """One clock from free approach into contact; no settling at depth knots."""
+        from .meal_geometry import MealGrasp,approach_path
+        approach=origin-inward*(offset+.020)
+        goal=MealGrasp('button_approach',approach,rotation,approach,np.empty(7),0.)
+        try:path=approach_path(self.view(),goal,'right')
+        except ValueError as error:
+            # Preserve the existing checked recovery only when the current
+            # pose genuinely has no checked approach; no routine home reset.
+            self.mark('route_home_fallback',side='right',reason=str(error))
+            self.return_home('right');path=approach_path(self.view(),goal,'right')
+        switch_after=len(path)-1
+        scratch=self.view();arm=scratch.arms['right']
+        scratch.data.qpos[list(arm.qpos)]=path[-1]
+        for depth in np.linspace(-.020,.006,27)[1:]:
+            result=solve_ik(scratch,'right',origin-inward*(offset-depth),rotation,
+                            max_iterations=500,position_tolerance=.0002,rotation_tolerance=.003)
+            if not result.success:raise ExpertFailure('BUTTON_PRESS_IK_FAILED')
+            path.append(result.q.copy());scratch.data.qpos[list(arm.qpos)]=result.q
+        targets,split=self.timed_right_targets(path,speed=.008,switch_after=switch_after)
+        self.execute_button_targets(targets,split,device,container)
+
+
+    def execute_button_targets(self,targets,split,device,container):
+        """Stop advancing on actual device activation, never on a pose guess."""
+        dev=self.platform.controller.devices
+        for first in range(0,split,25):self.execute(targets[first:min(first+25,split)])
+        self.mark('button_press')
+        started=self.platform.controller.tick
+        # A short endpoint budget covers the native50ms force/slide debounce,
+        # only if the moving press has not already triggered it.
+        for target in [*targets[split:],*([targets[-1]]*8)]:
+            self.execute([target],device)
+            if dev.heating==container or container in dev.heated:
+                self.mark('button_activated',press_sim_seconds=(self.platform.controller.tick-started)/500.,
+                          measured_slide_m=dev.angle('microwave_start_slide'))
+                return
+        raise ExpertFailure('BUTTON_PRESS_DID_NOT_START_HEATING')
 
 

@@ -23,6 +23,14 @@ class FakeWriter:
 
 
 class LeRobotExportTests(unittest.TestCase):
+    def test_optimized_and_backup_share_the_original_trajectory_group(self):
+        episode=self.episode();episode['source_sha256']='optimized-hash';episode['source_group']='backup-hash'
+        with tempfile.TemporaryDirectory() as temporary,patch.object(converter,'policy_episode',return_value=episode):
+            result=converter.export([Path('raw.h5')],Path(temporary)/'dataset','fine',writer_class=FakeWriter)
+        self.assertEqual([r['source_group'] for r in result['exported_episodes']],['backup-hash','backup-hash'])
+        self.assertEqual(result['source_episodes'][0]['source_sha256'],'optimized-hash')
+        self.assertEqual(result['source_episodes'][0]['source_group'],'backup-hash')
+
     def episode(self):
         return {'state':np.arange(64,dtype=np.float32).reshape(4,16),
             'action':np.arange(64,dtype=np.float32).reshape(4,16)/100,

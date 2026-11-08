@@ -93,7 +93,7 @@ class CollectionEfficiencyTests(unittest.TestCase):
         from unittest.mock import Mock
         expert=KitchenExpert.__new__(KitchenExpert);expert.motion_profile='faster'
         expert.held=expert.contract=None;expert.wait=Mock()
-        expert.platform=SimpleNamespace(controller=SimpleNamespace(reference=np.zeros(16)))
+        expert.platform=SimpleNamespace(controller=SimpleNamespace(reference=np.zeros(16)),_arms_settled=lambda:True)
         expert.call=Mock(side_effect=[{}, {'stopped':False}])
         expert.set_empty_jaws(.05)
         args=expert.call.call_args_list[0].args[1];targets=np.array(args['waypoints'])

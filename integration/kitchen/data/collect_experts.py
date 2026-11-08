@@ -27,7 +27,7 @@ def source_identity():
     names=sorted(str(p.relative_to(ROOT)) for package in ('planning','tasks','validation','data','runtime')
                  for p in (ROOT/'integration/kitchen'/package).glob('*.py'))
     from robot_arm.kitchen.registry import control_identity
-    models=['robot_arm/kitchen/'+n for n in ('model.py','layouts.py','layout_v3.py','layouts_v3.json')]
+    models=['robot_arm/kitchen/'+n for n in ('model.py','contact_v4.py','layouts.py','layout_v3.py','layouts_v3.json')]
     models.append('robot_arm/assets/fr3_umi_merged.xml')
     return {"control":control_identity(),"expert_sources":{n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in names},
             "model_sources":{n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in models}}
@@ -70,7 +70,7 @@ def identity_sha256(identity):
     return hashlib.sha256(json.dumps(identity,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 
 
-def one_case(job):
+def one_case(job, *, capture_context=False):
     """One episode: native execution -> seal -> independent replay/success."""
     from robot_arm.kitchen.platform import KitchenPlatform
     from integration.kitchen.planning.expert import KitchenExpert
@@ -93,7 +93,11 @@ def one_case(job):
         if source_identity()!=identity:raise RuntimeError('SOURCE_CHANGED_SINCE_BATCH_PLAN')
         platform=KitchenPlatform(layout='kitchen_v3_norice_candidate_013',seed=seed,
             initialization_profile=profile,data_root=directory/'data',evidence_compression='gzip',record_physics=diagnostics)
-        client=LocalPlannerClient(platform,directory/'rpc.jsonl.gz' if diagnostics else None)
+        if capture_context:
+            from .retiming_experiment import ContextClient
+            client=ContextClient(platform)
+        else:
+            client=LocalPlannerClient(platform,directory/'rpc.jsonl.gz' if diagnostics else None)
         expert=KitchenExpert(platform,client,wall_seconds=wall_seconds,write_checkpoints=False,motion_profile=motion_profile)
         quality=ExpertQuality(platform)
         phase('setup')
@@ -145,6 +149,15 @@ def one_case(job):
             # Only this newly-created failed attempt; never historical/user data.
             shutil.rmtree(directory/'data',ignore_errors=True)
         report['data_retained']=bool(report.get('trajectory') or diagnostics and (directory/'data').exists())
+        if capture_context and client is not None:
+            context_path=directory/'action_context.json'
+            save(context_path,{'schema':'kitchen_sparse_action_context_v1',
+                'changes':client.changes,'events':[
+                    e for e in expert.events if e['stage'] in
+                    ('skill_started','skill_qualified','language_stage_started')],
+                'trajectory_sha256':report.get('verification',{}).get('sha256')})
+            report['action_context']=str(context_path)
+            report['action_context_sha256']=hashlib.sha256(context_path.read_bytes()).hexdigest()
         report['wall_seconds']=time.monotonic()-started
         report['timing_seconds']=timing
         save(directory/'report.json',report)

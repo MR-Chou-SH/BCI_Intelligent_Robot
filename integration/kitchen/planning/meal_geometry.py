@@ -159,7 +159,10 @@ def approach_path(scene, grasp, side="right"):
         z = max(start[2], grasp.pre[2]) + lift
         routes.append((np.array([*start[:2], z]),
                        np.array([*grasp.pre[:2], z]), grasp.pre))
-    for route in routes:
+    for route_index,route in enumerate(routes):
+        if route_index==1 and side=='right':
+            curved=_curved_free_approach(scene,grasp,geometry,pairs,start,start_rotation)
+            if curved is not None:return curved
         data = mujoco.MjData(scene.model)
         data.qpos[:] = scene.data.qpos
         view = replace(scene, data=data)
@@ -193,3 +196,38 @@ def approach_path(scene, grasp, side="right"):
         if good:
             return path
     raise ValueError("NO_SIMPLE_MEAL_APPROACH: " + grasp.handle)
+
+
+def _curved_free_approach(scene,grasp,geometry,pairs,start,start_rotation):
+    """Small front-of-oven arcs before raising the arm or returning home.
+
+    Only empty-hand approaches use this route. Every joint edge is sampled
+    against the same full robot/scene geometry and1mm margin as the fallback.
+    """
+    arm=scene.arms['right'];m=scene.model
+    oven=m.body('microwave').id;away=-scene.data.xmat[oven].reshape(3,3)[:,0]
+    qa,qb=np.empty(4),np.empty(4)
+    mujoco.mju_mat2Quat(qa,start_rotation.ravel());mujoco.mju_mat2Quat(qb,grasp.rotation.ravel())
+    if qa@qb<0:qb=-qb
+    angle=2*math.acos(float(np.clip(qa@qb,-1.,1.)))
+    for distance in (.06,.12,.20):
+        for height in (0.,.08):
+            controls=np.array([start,start+away*distance+[0,0,height],
+                               grasp.pre+away*distance+[0,0,height],grasp.pre])
+            length=sum(np.linalg.norm(b-a) for a,b in zip(controls,controls[1:]))
+            count=max(8,math.ceil(length/.015),math.ceil(angle/math.radians(5)))
+            data=mujoco.MjData(m);data.qpos[:]=scene.data.qpos;view=replace(scene,data=data);path=[]
+            for t in np.linspace(0,1,count+1)[1:]:
+                position=(1-t)**3*controls[0]+3*(1-t)**2*t*controls[1]+3*(1-t)*t*t*controls[2]+t**3*controls[3]
+                u=t*t*(3-2*t);quat=(1-u)*qa+u*qb;quat/=np.linalg.norm(quat)
+                mat=np.empty(9);mujoco.mju_quat2Mat(mat,quat)
+                result=solve_ik(view,'right',position,mat.reshape(3,3),max_iterations=400,
+                                position_tolerance=.001,rotation_tolerance=.01)
+                if not result.success:break
+                previous=data.qpos.copy();candidate=previous.copy();candidate[list(arm.qpos)]=result.q
+                samples=max(1,math.ceil(np.max(np.abs(candidate-previous))/.025))
+                if any(np.min(geometry.distances(previous+(candidate-previous)*f,pairs))<.001
+                       for f in np.linspace(0,1,samples+1)):break
+                data.qpos[:]=candidate;path.append(result.q.copy())
+            else:return path
+    return None

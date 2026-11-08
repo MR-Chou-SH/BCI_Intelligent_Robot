@@ -1,5 +1,7 @@
 # 全任务自动采集（无图像）
 
+**2026-11-06当前入口已默认接入“首次备份→离线连续平滑→同初态试跑→最终录制/重放”的共同流程。请优先使用[统一采集与渲染说明](UNIFIED_COLLECTION_CN.md)，其中给出了全100实例各1条及最终视频的两条命令。** 下方为此前版本的采集说明，历史命令/批次不代表本轮源码身份，`--postprocess none`可显式选择仅首次采集。
+
 入口 `scripts/collect_kitchen_dataset.sh`。20 个原子实例 + 80 个组合实例，默认每个采集 **2 条合格轨迹，共 200 条**。C04–C08以装盘结束，D01–D09显式包含B1送餐；C01–C03已去重删除。完整表见[TASK_CATALOG_V3_CN.md](TASK_CATALOG_V3_CN.md)。默认不渲染图片或视频，不依赖 ffmpeg / EGL / VR。
 
 2026-10-28新增英文粗/细标注，并修改龙头把手几何和香蕉组合放盘。当前批次请使用新目录，例如 `--output experiments/kitchen_platform_v3/collections/all_tasks_vla_faucet32_20261028 --motion-profile faster`。计划身份现在也绑定模型生成代码、布局配置和主MJCF；修改这些内容后不能继续向原批次混入新模型数据。旧轨迹保留，动力学重放需要匹配原模型版本；旧文件语言标注导出不需要重建模型。

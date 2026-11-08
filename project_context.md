@@ -6,6 +6,8 @@
 
 后续Kitchen VLA训练以H5为原始真值，派生LeRobot25Hz、16维双臂关节/夹爪数据，参考本地DexJoCo/OpenPI流程；Unity图像与π0.5实际训练尚未接入。[数据接口与边界](docs/kitchen_platform_v3_20261020/LEROBOT_PI05_CN.md)。
 
+2026-11-06批量采集默认采用首次完整备份、离线连续平滑、同初态试跑、选中候选录制与独立重放；无合格优化则回退到合格备份。最终manifest只计每case/sample一条，渲染单独读取manifest。[统一采集与视频命令](docs/kitchen_platform_v3_20261020/UNIFIED_COLLECTION_CN.md)。
+
 ## 1. 项目概述
 
 本项目当前研究主线为 Context-aware BCI Shared Autonomy，近期使用完全可控的虚拟 sequential manipulation benchmark。系统结合：

@@ -78,9 +78,9 @@ class MotionSpeedTests(unittest.TestCase):
             return len(values)
         self.assertLess(targets('faster'),targets('standard'))
 
-    def test_only_faster_free_or_carry_right_routes_skip_intermediate_stops(self):
+    def test_right_release_and_device_lines_also_skip_intermediate_stops(self):
         for profile,phase,continuous in [('standard',None,False),('faster',None,True),
-                ('faster','carry',True),('faster','acquire',False),('faster','release',False),('faster','device',False)]:
+                ('faster','carry',True),('faster','acquire',False),('faster','release',True),('faster','device',True)]:
             with self.subTest(profile=profile,phase=phase):
                 expert=KitchenExpert.__new__(KitchenExpert);expert.motion_profile=profile
                 expert.contract={'phase':phase} if phase else None

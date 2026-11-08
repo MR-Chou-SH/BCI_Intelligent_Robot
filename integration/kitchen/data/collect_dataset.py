@@ -59,6 +59,8 @@ def recover_attempt(directory, case, seed, output, identity):
             trajectory = run_path(report['trajectory'])
             if not trajectory.is_relative_to(directory):
                 raise ValueError('Trajectory outside attempt')
+            from .optimized_collection import validate_backup_receipt
+            validate_backup_receipt(report,directory)
     elif row.get('status') != 'WORKER_ERROR':
         raise ValueError('Invalid worker result')
     return row
@@ -79,6 +81,10 @@ def scan(output, plan):
             if read(marker) != {'case_id': case['case_id'], 'sample': sample, 'seed': seed}:
                 raise ValueError('Attempt job identity mismatch')
             row = recover_attempt(directory, case, seed, output, plan['identity'])
+            if row['status']=='INTERRUPTED' and plan.get('postprocessing',{}).get('mode')=='continuous':
+                backup=directory/'backup/report.json'
+                if backup.exists() and read(backup).get('status')=='QUALIFIED_EXPERT':
+                    pending.append((case,sample,seed,directory));break
             history.append(row)
             if row['status'] == 'QUALIFIED_EXPERT':
                 qualified.append({**row, 'sample': sample + 1})
@@ -97,9 +103,15 @@ def collect(output, plan):
             futures = {}
             for case, sample, seed, directory in pending:
                 directory.parent.mkdir(parents=True, exist_ok=True)
-                save(directory.with_suffix('.job.json'), {'case_id': case['case_id'], 'sample': sample, 'seed': seed})
+                marker=directory.with_suffix('.job.json')
+                if not marker.exists():save(marker, {'case_id': case['case_id'], 'sample': sample, 'seed': seed})
                 job = (case, seed, str(directory), plan['profile'], plan['case_timeout'], plan['identity'], False,plan.get('motion_profile','standard'))
-                futures[pool.submit(one_case, job)] = (case, seed, directory)
+                settings=plan.get('postprocessing',{})
+                if settings.get('mode')=='continuous':
+                    from .optimized_collection import optimized_case
+                    future=pool.submit(optimized_case,job,settings)
+                else:future=pool.submit(one_case, job)
+                futures[future] = (case, seed, directory)
             for future in as_completed(futures):
                 case, seed, directory = futures[future]
                 try:
@@ -124,9 +136,15 @@ def main(argv=None):
     parser.add_argument('--case-timeout', type=float, default=1800.)
     parser.add_argument('--profile', choices=('research', 'fixed'), default='research')
     parser.add_argument('--motion-profile',choices=('standard','faster'),default='standard')
+    parser.add_argument('--postprocess',choices=('continuous','none'),default='continuous')
+    parser.add_argument('--optimization-factors',nargs='+',type=float,default=[3.,5.])
     parser.add_argument('--resume', action='store_true')
     parser.add_argument('--plan-only', action='store_true')
     args = parser.parse_args(argv)
+    from integration.kitchen.planning.action_retiming import MAX_FACTOR
+    if (not 1<=len(args.optimization_factors)<=4 or len(set(args.optimization_factors))!=len(args.optimization_factors)
+        or any(not 1<f<=MAX_FACTOR for f in args.optimization_factors)):
+        parser.error('Use 1..4 unique optimization factors >1 and <=5')
     if not (1 <= args.samples_per_case <= 20 and 1 <= args.max_attempts <= 10 and 1 <= args.jobs <= 4
             and 30 <= args.case_timeout <= 3600 and 0 <= args.base_seed
             and args.base_seed + args.samples_per_case * args.max_attempts <= 2**32):
@@ -139,7 +157,8 @@ def main(argv=None):
     plan = {'schema': 'kitchen_qualified_dataset_v1', 'cases': selected, 'identity': source_identity(),
             'runner_sha256': digest(__file__), 'samples_per_case': args.samples_per_case,
             'max_attempts': args.max_attempts, 'base_seed': args.base_seed, 'jobs': args.jobs,
-            'case_timeout': args.case_timeout, 'profile': args.profile, 'format':'kitchen_state_actions_v3','motion_profile':args.motion_profile}
+            'case_timeout': args.case_timeout, 'profile': args.profile, 'format':'kitchen_state_actions_v3','motion_profile':args.motion_profile,
+            'postprocessing':{'mode':args.postprocess,'factors':args.optimization_factors}}
     output = args.output
     output.mkdir(parents=True, exist_ok=True)
     with (output / '.runner.lock').open('a') as lock:
@@ -167,9 +186,14 @@ def main(argv=None):
         for r in qualified:
             report=read(r['report'])
             annotation={k:report[k] for k in ('annotations','annotations_sha256') if k in report}
-            rows.append({**r,'trajectory':report['trajectory'],**annotation})
+            post=report.get('postprocessing',{})
+            rows.append({**r,'trajectory':report['trajectory'],**annotation,
+                'postprocessing_status':post.get('status','NOT_REQUESTED'),
+                'source_group':post.get('source_group',report['verification']['sha256'])})
         summary={'target':target,'qualified':len(qualified),'missing':missing,'complete':len(qualified)==target,
                  'format':'kitchen_state_actions_v3','images_included':False}
+        summary['optimized']=sum(r['postprocessing_status']=='OPTIMIZED' for r in rows)
+        summary['original_fallback']=sum(r['postprocessing_status']=='ORIGINAL_FALLBACK' for r in rows)
         replace_json(output / 'manifest.json', rows)
         replace_json(output / 'summary.json', summary)
         print(json.dumps(summary, ensure_ascii=False), flush=True)

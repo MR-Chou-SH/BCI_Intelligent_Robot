@@ -7,6 +7,7 @@ from .contact import object_geom_ids
 SUPPORT_FORCE_THRESHOLD_N = .25
 SUPPORT_NORMAL_MIN_UPWARD_Z = .5
 SUPPORT_CENTER_CLEARANCE_M = .005
+WASH_DURATION_S = 2.  # User-requested simulated wash dwell, 2026-11-06.
 
 class DeviceState:
     def __init__(self,scene):
@@ -152,7 +153,7 @@ class DeviceState:
             for name in self.clean_seconds:
                 if self.in_basket(name) and not self.held(name):
                     self.clean_seconds[name]+=dt
-                    if self.clean_seconds[name]>=3 and name not in self.cleaned:
+                    if self.clean_seconds[name]>=WASH_DURATION_S and name not in self.cleaned:
                         self.cleaned.add(name);self.event("wash_complete",name)
         pressed=self.angle("microwave_start_slide")>=.003
         button=self.geom("microwave_start_geom");force=0.

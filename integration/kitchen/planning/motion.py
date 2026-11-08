@@ -449,6 +449,30 @@ class ExpertMotion:
         return False
 
 
+    def meal_place_curve(self,position,rotation,name,support):
+        """Geometry-checked carrier/food curve instead of orthogonal tray legs."""
+        from .curved_motion import curve_candidates
+        view=self.view();check=self.view();arm=view.arms['right'];base=view.data.qpos.copy()
+        payload=(name,name.removesuffix('_container'));failures=[]
+        for path,_,clearance,details in curve_candidates(view,'right',position,rotation,
+                mode='carry',payload=payload,support=support,diagnostics=failures):
+            targets=self.timed_right_targets(path[1:],self.contract,speed=.008)
+            good=True;minimum=1.
+            for target in targets:
+                q=base.copy();q[list(arm.qpos)]=target[8:15]
+                check.data.qpos[:]=q;mujoco.mj_kinematics(check.model,check.data)
+                near=np.linalg.norm(tcp_pose(check.data,arm)[0]-position)<.018
+                distance=clearance(q,near);minimum=min(minimum,distance)
+                if distance<.001:good=False;break
+            if not good:continue
+            self.mark('meal_place_curve_started',target=name,minimum_retimed_m=minimum,**details)
+            self.execute_smooth('right',targets,self.contract,speed=.008)
+            self.mark('meal_place_curve_complete',target=name)
+            return True
+        self.mark('meal_place_curve_unavailable',target=name,failures=failures)
+        return False
+
+
     def continuous_poses(self, side, poses, contract=None, *, speed=.008):
         """Warm-start the existing IK before executing any part of the route."""
         view=self.view();arm=view.arms[side];path=[]
@@ -470,8 +494,9 @@ class ExpertMotion:
         count = max(1, int(np.ceil(np.linalg.norm(end - start) / spacing)))
         phase=(contract or self.contract or {}).get("phase")
         continuous=(side=='left' and phase!='acquire') or (
+            side=='right' and phase in ('release','device')) or (
             getattr(self,'motion_profile','standard')=='faster' and phase in (None,'carry'))
-        if continuous and np.linalg.norm(end-start)>.035:
+        if continuous and np.linalg.norm(end-start)>(.005 if phase in ('release','device') else .035):
             poses=[(start+(end-start)*i/count,rotation) for i in range(1,count+1)]
             if self.continuous_poses(side,poses,contract,speed=speed):return
         for i in range(1, count + 1):
@@ -510,7 +535,7 @@ class ExpertMotion:
                     return
             raise ExpertFailure("CONTACT_FORCE_TARGET_NOT_REACHED")
         targets = []
-        for _ in range(max(35, int(math.ceil(abs(value-current[offset])/.001)) + 15)):
+        for _ in range(max(1,int(math.ceil(abs(value-current[offset])/.001)))):
             current = current.copy()
             current[offset] += float(np.clip(value - current[offset], -.001, .001))
             targets.append(current)

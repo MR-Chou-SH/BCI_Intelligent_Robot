@@ -4,13 +4,14 @@
     "kitchen_v3_norice_candidate_013": {
       "layout_id": "kitchen_v3_norice_candidate_013",
       "profile": "kitchen_platform_v3",
-      "scene_version": "3.3.5-candidate.13",
+      "scene_version": "3.3.6-candidate.13",
       "approval": "AWAITING_USER_REVIEW",
       "canonical_promoted": false,
       "source_candidate": "kitchen_v3_norice_candidate_012",
       "contact_model": "rigid_support_and_standoff_v4",
       "apple_primitive": "equal_shape_sphere_v1",
       "tomato_primitive": "equal_shape_sphere_v1",
+      "pear_support": "cylindrical_foot_v1",
       "button_mount": "recessed_sidewall_pocket_v1",
       "meal_carrier": "raised_burger_carry_bar_v3",
       "hotdog_carrier": "raised_hotdog_carry_bar_v1",
@@ -151,6 +152,7 @@
         "wheelchair_details_v1"
       ],
       "physical_approximations": [
+        "PEAR20mm radius8mm high rigid cylindrical foot, bottom flush at local z=-45mm; total pear mass180g retained",
         "012 retained;6mm deep36mm high notch in sidewall front lip provides a real button mounting pocket; all remaining wall pieces collide, original5mm spring stroke retained",
         "APPLE35mm sphere,150g and spherical inertia retained; burger rigid flat bun and thin-walled carrier retained",
         "Two named internal1:1 parallel-jaw couplings; exact imported CAD transmission NOT_CERTIFIED; no object attachment",

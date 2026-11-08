@@ -1,5 +1,7 @@
 # Kitchen 轨迹格式 V3
 
+2026-11-06统一批量采集默认保留首次完整备份并尝试离线连续平滑提速。最终attempt根目录的三个文件仍保持本格式；`report.json.postprocessing`标明OPTIMIZED或ORIGINAL_FALLBACK、备份/选中结果哈希、候选报告引用和原始/最终时长。manifest只引用根部最终样本，不把backup或optimized子目录再算一条。备份及其各优化版本使用相同source_group做数据划分。[共同流程与运行命令](UNIFIED_COLLECTION_CN.md)。
+
 后续训练采用派生LeRobot格式，H5仍为原始真值。16维FR3/UMI状态/动作、粗细指令、25Hz对齐和未来Unity图像的约定见[LeRobot与π0.5接口](LEROBOT_PI05_CN.md)。
 
 默认 `kitchen_state_actions_v3`，一个成功样本为 `trajectory.h5`、简短 `report.json`，以及英文粗/细任务标注 `annotations.json`。不包含图像、逐步检查解释、RPC、完整物理日志、源码副本或失败截图。成功检查仍然执行，但不把检查过程写入训练数据。
