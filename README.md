@@ -2,6 +2,8 @@
 
 ## Kitchen V3 科研交接入口
 
+SmolVLA 单任务试验入口：[独立 CUDA 环境、图像数据、训练、RTC 推理服务与 MuJoCo 执行](docs/kitchen_platform_v3_20261020/SMOLVLA_PILOT_CN.md)。训练使用 `thirdparty/smolvla/.venv`，仿真使用原 `.venv`；OpenPI π0.5代码单独置于 `thirdparty/openpi`。可选[DiscoDemo状态RL试验](docs/data_diversity/DISCODEMO_KITCHEN_RUNBOOK_CN.md)用项目`.venv`，显式安装，不向VLA提供物体真值；尚无合格的完整任务RL专家。
+
 去重且包含送餐的[任务总表](docs/kitchen_platform_v3_20261020/TASK_CATALOG_V3_CN.md)：20个原子实例＋80个组合实例，默认各两条，共200条。旧128条批次保留原位置，新批次使用新目录。
 
 全任务各两条无图像轨迹：使用 [批量采集脚本说明](docs/kitchen_platform_v3_20261020/DATASET_COLLECTION_CN.md)，目标为 100 用例 × 2 条，支持失败重试和断点续跑。
@@ -23,7 +25,7 @@
 - [Quest Research 中文用户手册（39 项界面字段）](docs/kitchen_platform_v3_20261020/RESEARCH_USER_GUIDE_CN.md)
 - [本次发布验收结果](docs/kitchen_platform_v3_20261020/HANDOFF_RELEASE_VERIFICATION_CN.md)
 
-本分支使用候选 013 / API 1.3.0；候选尚未擅自晋升为正式布局。苹果新版避水为历史内部动力学 PASS，汉堡有历史公开 API 完整流程证据且终点仅为炉外持物；均不代表本轮Linux新身份或随机场景泛化成功。原 Goal 保持 PAUSED。本轮推进无图像状态采集与重放，尚未启动 VLA 训练，下面保留原项目背景。
+本分支使用候选 013 / API 1.3.0；候选尚未擅自晋升为正式布局。苹果新版避水为历史内部动力学 PASS，汉堡有历史公开 API 完整流程证据且终点仅为炉外持物；均不代表本轮Linux新身份或随机场景泛化成功。原 Goal 保持 PAUSED。当前已有无图像原始轨迹采集/重放和独立SmolVLA训练/RTC交互管线；单条苹果示范1000步微调尚未通过闭环任务成功检验。下面保留原项目背景。
 
 研究 Context-aware BCI Shared Autonomy：EEG 提供用户的低带宽 intent evidence，任务 context 逐步支持更高的机器人自主性。
 

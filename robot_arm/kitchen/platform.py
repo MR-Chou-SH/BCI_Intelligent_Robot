@@ -95,6 +95,7 @@ class PhysicsEvidence:
 class KitchenPlatform:
     read_methods={"get_scene_manifest","observe","query_objects","get_object_states","get_replay_snapshot","check_configuration","check_motion",
                   "get_execution_status","get_task_feedback","get_world_state","check_contact_motion"}
+    read_methods=read_methods|{"get_privileged_state"}
     mutation_methods={"reset","submit_joint_targets","execute_trajectory","step","cancel","hold","end_contact",
                       "start_state_recording","stop_state_recording"}
     arm_target_indices=np.array([0,1,2,3,4,5,6,8,9,10,11,12,13,14])
@@ -207,6 +208,7 @@ class KitchenPlatform:
                 self._record_reset_failure(seed,error.code,"PREVIOUS_EVIDENCE_SEAL")
                 raise
         self.scene,self.controller,self.registry=scene,controller,registry
+        self._state_tensor = None
         self.geometry,self.contact,self.control=geometry,contact,control
         self.initialization,self.episode=initialization,episode
         self.last_reset_failure=None
@@ -561,6 +563,11 @@ class KitchenPlatform:
             selected=self._query_objects(args.get("ids"),args.get("object_type"))
             return {**object_states(self.scene,self.controller,ids=[item["id"] for item in selected]),
                     "identity":self.token(),"episode":copy.deepcopy(self.episode)}
+        if method=="get_privileged_state":
+            if args:raise PlatformError('UNKNOWN_PRIVILEGED_STATE_ARGUMENT')
+            from .state_tensor import StateTensor
+            if self._state_tensor is None:self._state_tensor=StateTensor(self.scene)
+            return {**self._state_tensor.json(self.scene,self.controller), 'identity':self.token()}
         if method=="get_replay_snapshot":
             from .state_recording import snapshot
             from .scene_identity import model_identity

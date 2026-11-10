@@ -80,10 +80,12 @@ class TaskExecution:
                 self.mark('language_stage_started',skill=skill)
                 if skill=="heat_meal_state_dependent":self.heat_meal(case,quality)
                 else:self.skill(skill,case,quality)
-                if skill in ("L1", "L2") and index + 1 < len(skills):
+                if skill in ("L1", "L2") and index + 1 < len(skills) and skills[index+1]!="B1":
                     # Releasing fruit leaves the long left gripper above the
                     # tray, inside the right forearm's placement corridor.
                     # Leave that corridor before planning the next skill.
+                    # Direct delivery has its own checked two-arm approach;
+                    # it does not need the right-only meal placement corridor.
                     self.mark("composite_left_clearance", fruit=case["fruit"])
                     self.clear_left_corridor()
                     self.settle_quality(quality,case["fruit"]+":tray")

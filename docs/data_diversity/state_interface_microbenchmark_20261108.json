@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-08",
+  "git_head": "395d8295e4669127f82722ae329e58ea261ae543",
+  "cpu": "Intel Core i7-13650HX",
+  "software": {
+    "python": "3.12.12",
+    "mujoco": "3.12.0"
+  },
+  "thread_env": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "scope": "isolated idle fixed candidate013; no actor, moving manipulation, action submission, recording, quality observer, reset timing or training; step holds current reference; warm25frames,3x100 per measurement; all API replies asserted successful",
+  "measurements": {
+    "platform_step": {
+      "median_ms": 3.1395,
+      "runs_ms": [
+        3.1322,
+        3.1395,
+        3.1473
+      ]
+    },
+    "api_step": {
+      "median_ms": 3.2322,
+      "runs_ms": [
+        3.2412,
+        3.2322,
+        3.2036
+      ]
+    },
+    "objects_full": {
+      "median_ms": 6.8097,
+      "runs_ms": [
+        6.9211,
+        6.8097,
+        6.8054
+      ]
+    },
+    "objects_key": {
+      "median_ms": 0.4327,
+      "runs_ms": [
+        0.4354,
+        0.4327,
+        0.4309
+      ]
+    },
+    "observe": {
+      "median_ms": 0.458,
+      "runs_ms": [
+        0.4803,
+        0.458,
+        0.4573
+      ]
+    },
+    "api_step_plus_objects_full": {
+      "median_ms": 10.3202,
+      "runs_ms": [
+        10.3202,
+        10.3911,
+        10.3089
+      ]
+    }
+  },
+  "model": {
+    "nq": 84,
+    "nv": 75,
+    "ngeom": 249,
+    "nbody": 41
+  },
+  "physics_hz": 500,
+  "control_hz": 25,
+  "source_sha256": {
+    "platform.py": "ea2658bf226887e37c311289f51077f6f30f29346def5e31ce27e6b012c732e1",
+    "control.py": "582c34225497b2af2a5fc5b0e5153776fd02a80979887442698fed59354782c0",
+    "devices.py": "1e6000091e7eeedb2c24e837fb9353ed4e2067af405cb44715c221bd055b2222",
+    "object_state.py": "1794b730e80a6909531a44f37d6aa6a2a186efeca771834918dbfb55d25fe2ea"
+  }
+}

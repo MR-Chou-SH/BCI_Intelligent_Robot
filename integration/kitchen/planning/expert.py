@@ -974,7 +974,12 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         # The pads' lower edge sits ~8mm below the TCP, so grasp 12mm above the
         # handle centre; at +5mm the pad edge was 3.1mm inside the handle.
         axis={s:self.dual_rotation[s][:,2] for s in ("left","right")}
-        self.dual_points({s:p-axis[s]*.35 for s,p in grips.items()},transit=True)
+        # Arriving from meal placement can put the elbows on different IK
+        # branches. A simultaneous joint-space swing may cross both forearms,
+        # even though both TCP targets are far above the tray. Withdraw the
+        # right arm first, then approach with the left along checked routes.
+        for side in ("right","left"):
+            self.free_pose(side,grips[side]-axis[side]*.35,self.dual_rotation[side],home_fallback=True)
         self.dual_points({s:p-axis[s]*.24 for s,p in grips.items()},transit=True)
         self.dual_line({s:p-axis[s]*.020 for s,p in grips.items()},transit=True)
         # Pre-close the empty jaws above the bar (guarded stationary sweep, no

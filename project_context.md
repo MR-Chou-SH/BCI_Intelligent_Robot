@@ -1,5 +1,7 @@
 # Project Context: VR + EEG + Intelligent Robotic Arm System
 
+2026-11-09 Kitchen VLA工程按用户要求拆分为独立训练/推理环境与原MuJoCo执行环境。SmolVLA视觉训练及原生RTC交互的源码/环境/训练入口在 `thirdparty/smolvla/`，项目适配在 `integration/kitchen/vla/`；`thirdparty/openpi/`保存后续OpenPI π0.5路线。仿真仍用原 `.venv`。用户现已启用可选DiscoDemo状态RL工程试验：状态/任务/环境与导出在 `integration/kitchen/rl`，GPU物理/控制在 `robot_arm/kitchen/warp_*`，算法入口在 `thirdparty/discodemo`；依赖仅显式`--with-rl`安装。当前只适配L1 apple GPU训练，未取得正常随机初态完整RL任务成功，原CPU模型与成功阈值不变。见[RL计划](docs/data_diversity/DISCODEMO_KITCHEN_IMPLEMENTATION_PLAN_CN.md)及[运行说明](docs/data_diversity/DISCODEMO_KITCHEN_RUNBOOK_CN.md)。这不改变BCI研究里程碑或授权真实硬件操作。
+
 ## Kitchen 工程补充（2026-10-27）
 
 当前 Kitchen 开发保持已有 FR3/UMI/MuJoCo 模型与控制器；`robot_arm/kitchen/` 负责仿真、状态查询和低层控制，`integration/kitchen/{tasks,planning,validation,runtime,data,tools}/` 分别负责任务、规划、成功判定、API 客户端、无图像采集/重放与可选查看工具。V3 数据使用关节位置和夹爪开度目标、一次初态与关键状态。此次整理不改变下述研究方向、硬件或里程碑边界。入口见 [Kitchen 模块说明](integration/kitchen/README.md)。

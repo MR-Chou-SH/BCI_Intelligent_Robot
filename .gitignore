@@ -50,6 +50,11 @@ Recordings/
 venv/
 env/
 
+# Locally snapshotted upstream sources and isolated VLA environments.
+thirdparty/*/upstream/
+thirdparty/*/.venv/
+thirdparty/*/source_receipt.json
+
 .pytest_cache/
 .mypy_cache/
 

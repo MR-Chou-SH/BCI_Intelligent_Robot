@@ -644,7 +644,7 @@ class ExpertMotion:
 
 
     def clear_left_corridor(self):
-        """Retract locally beyond the tray edge, keeping the current tool pose."""
+        """Clear both fingers and the elbow from the right placement corridor."""
         from .meal_geometry import MealGrasp,approach_path
         if self.held or self.contract:raise ExpertFailure("CLEARANCE_REQUIRES_FREE_HAND")
         view=self.view();arm=view.arms["left"]
@@ -654,7 +654,14 @@ class ExpertMotion:
         edge=geometry_bounds(view.model,view.data,view.model.geom("tray_bottom").id,origin,frame)[0][0]
         hand=[g for g in self.platform.geometry.robot
               if view.model.body(int(view.model.geom_bodyid[g])).name.startswith("left_umi")]
-        for distance in (.12,.18,.24,.30):
+        left=[g for g in self.platform.geometry.robot
+              if view.model.body(int(view.model.geom_bodyid[g])).name.startswith(("left_fr3","left_umi"))]
+        # A clear TCP alone can leave link3/5 across the tray centreline,
+        # especially after a washed pear selects a different elbow branch.
+        # Keep the complete parked arm 60mm left of that centreline.
+        def arm_edge(data):
+            return max(geometry_bounds(view.model,data,g,origin,frame)[1][0] for g in left)
+        for distance in (.12,.18,.24,.30,.36,.42,.48):
             position=here-frame[:,0]*distance
             result=solve_ik(view,"left",position,rotation,max_iterations=400,
                             position_tolerance=.001,rotation_tolerance=.01)
@@ -662,13 +669,16 @@ class ExpertMotion:
             scratch=self.view();scratch.data.qpos[list(arm.qpos)]=result.q
             mujoco.mj_forward(scratch.model,scratch.data)
             if max(geometry_bounds(scratch.model,scratch.data,g,origin,frame)[1][0] for g in hand)>edge-.06:continue
+            if arm_edge(scratch.data)>-.06:continue
             goal=MealGrasp("left_corridor",position,rotation,position,np.empty(7),0.)
             try:path=approach_path(self.view(),goal,"left")
             except ValueError:continue
             self.stream_joints("left",path)
-            self.mark("left_corridor_cleared",distance_m=distance,route="local")
+            if arm_edge(self.scene.data)>-.055:raise ExpertFailure("LEFT_ARM_CORRIDOR_NOT_CLEAR")
+            self.mark("left_corridor_cleared",distance_m=distance,route="local",arm_edge_m=float(arm_edge(self.scene.data)))
             return
         self.mark("route_home_fallback",side="left",reason="NO_LOCAL_TRAY_CLEARANCE_ROUTE")
         self.return_home("left")
+        if arm_edge(self.scene.data)>-.055:raise ExpertFailure("LEFT_ARM_CORRIDOR_NOT_CLEAR")
 
 

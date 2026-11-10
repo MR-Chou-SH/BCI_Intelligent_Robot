@@ -21,6 +21,7 @@ class CompositeHandoffTests(unittest.TestCase):
             heated={'burger_container', 'hotdog_container'})))
         quality = Mock()
         quality.failures = []
+        quality.tray_tilt_peak = 0.
         quality.platform = expert.platform
         quality.tray_object.side_effect = lambda name: calls.append(('quality', name))
         return expert, quality, calls
@@ -57,6 +58,14 @@ class CompositeHandoffTests(unittest.TestCase):
         with self.assertRaisesRegex(ExpertFailure, 'blocked retreat'):
             expert.run_case(case, quality)
         self.assertNotIn(('skill', 'R5'), calls)
+
+    def test_direct_delivery_uses_its_own_approach_without_meal_retreat(self):
+        for case in (c for c in cases() if c['task'] in ('D01','D02')):
+            with self.subTest(case=case['case_id']):
+                expert,quality,calls=self.expert()
+                expert.run_case(case,quality)
+                self.assertNotIn(('clear','left'),calls)
+                self.assertIn(('skill','B1'),calls)
 
 
 if __name__ == '__main__':

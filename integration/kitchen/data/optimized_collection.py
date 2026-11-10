@@ -111,7 +111,12 @@ def optimized_case(job,settings):
         if str(error)!='Pilot requires uniform boundary actions without mid-frame resets':raise
         generation_errors.append({'reason':str(error)})
         data=None
-    if data is not None:
+    if data is not None and settings.get('mode')=='adaptive':
+        from .adaptive_optimization import optimize
+        candidate,path,trials,generation_errors=optimize(backup,root/'adaptive',identity=identity,timeout=timeout)
+        if candidate is not None and candidate['simulated_seconds']<base['simulated_seconds']:
+            selected=candidate;selected_report=path
+    elif data is not None:
         candidates=[]
         for index,factor in enumerate(settings['factors']):
             error_path=root/f'candidate_{index:02d}.error.json'
@@ -144,6 +149,15 @@ def optimized_case(job,settings):
             if r['status']=='QUALIFIED_EXPERT':selected=r;selected_report=directory/'report.json';break
     if backup_files!={p.name:digest(p) for p in backup.iterdir() if p.is_file()}:raise ValueError('Backup mutated')
     if source_identity()!=identity:raise RuntimeError('Sources changed during optimization')
+    if selected_report==backup_report and settings.get('mode')=='adaptive' and any(
+            e.get('reason')=='SOURCE_PATH_COLLISION_AT_1X' for e in generation_errors):
+        # Keep the historical task-success backup, but do not silently admit it
+        # to a new adaptive dataset after its source path failed the new audit.
+        save(root/'report.json',{'case':case,'seed':seed,'status':'FAILED_ATTEMPT','task_success':False,
+            'source_identity_sha256':identity_sha256(identity),'error':'BACKUP_PATH_AUDIT_FAILED',
+            'wall_seconds':time.perf_counter()-started,'postprocessing':{'status':'BACKUP_AUDIT_FAILED',
+                'backup_report':str(backup_report),'trials':trials,'generation_errors':generation_errors}})
+        return receipt(root/'report.json')
     copy_immutable(selected['trajectory'],root/'trajectory.h5')
     copy_immutable(selected['annotations'],root/'annotations.json')
     result={**selected,'trajectory':str(root/'trajectory.h5'),'annotations':str(root/'annotations.json'),

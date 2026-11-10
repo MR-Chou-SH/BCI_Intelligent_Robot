@@ -81,7 +81,7 @@ def scan(output, plan):
             if read(marker) != {'case_id': case['case_id'], 'sample': sample, 'seed': seed}:
                 raise ValueError('Attempt job identity mismatch')
             row = recover_attempt(directory, case, seed, output, plan['identity'])
-            if row['status']=='INTERRUPTED' and plan.get('postprocessing',{}).get('mode')=='continuous':
+            if row['status']=='INTERRUPTED' and plan.get('postprocessing',{}).get('mode') in ('continuous','adaptive'):
                 backup=directory/'backup/report.json'
                 if backup.exists() and read(backup).get('status')=='QUALIFIED_EXPERT':
                     pending.append((case,sample,seed,directory));break
@@ -99,7 +99,7 @@ def collect(output, plan):
         qualified, pending, missing = scan(output, plan)
         if not pending:
             return qualified, missing
-        with ProcessPoolExecutor(max_workers=plan['jobs'], mp_context=multiprocessing.get_context('spawn')) as pool:
+        with ProcessPoolExecutor(max_workers=plan['jobs'], mp_context=multiprocessing.get_context('spawn'),max_tasks_per_child=1) as pool:
             futures = {}
             for case, sample, seed, directory in pending:
                 directory.parent.mkdir(parents=True, exist_ok=True)
@@ -107,7 +107,7 @@ def collect(output, plan):
                 if not marker.exists():save(marker, {'case_id': case['case_id'], 'sample': sample, 'seed': seed})
                 job = (case, seed, str(directory), plan['profile'], plan['case_timeout'], plan['identity'], False,plan.get('motion_profile','standard'))
                 settings=plan.get('postprocessing',{})
-                if settings.get('mode')=='continuous':
+                if settings.get('mode') in ('continuous','adaptive'):
                     from .optimized_collection import optimized_case
                     future=pool.submit(optimized_case,job,settings)
                 else:future=pool.submit(one_case, job)
@@ -136,16 +136,19 @@ def main(argv=None):
     parser.add_argument('--case-timeout', type=float, default=1800.)
     parser.add_argument('--profile', choices=('research', 'fixed'), default='research')
     parser.add_argument('--motion-profile',choices=('standard','faster'),default='standard')
-    parser.add_argument('--postprocess',choices=('continuous','none'),default='continuous')
-    parser.add_argument('--optimization-factors',nargs='+',type=float,default=[3.,5.])
+    parser.add_argument('--postprocess',choices=('continuous','adaptive','none'),default='continuous')
+    parser.add_argument('--optimization-factors',nargs='+',type=float)
     parser.add_argument('--resume', action='store_true')
     parser.add_argument('--plan-only', action='store_true')
     args = parser.parse_args(argv)
+    if args.optimization_factors is None:args.optimization_factors=[4.] if args.postprocess=='adaptive' else [3.,5.]
+    if args.postprocess=='adaptive' and args.optimization_factors!=[4.]:
+        parser.error('adaptive starts at4x and derives local repairs; use --optimization-factors 4')
     from integration.kitchen.planning.action_retiming import MAX_FACTOR
     if (not 1<=len(args.optimization_factors)<=4 or len(set(args.optimization_factors))!=len(args.optimization_factors)
         or any(not 1<f<=MAX_FACTOR for f in args.optimization_factors)):
         parser.error('Use 1..4 unique optimization factors >1 and <=5')
-    if not (1 <= args.samples_per_case <= 20 and 1 <= args.max_attempts <= 10 and 1 <= args.jobs <= 4
+    if not (1 <= args.samples_per_case <= 1000 and 1 <= args.max_attempts <= 10 and 1 <= args.jobs <= 4
             and 30 <= args.case_timeout <= 3600 and 0 <= args.base_seed
             and args.base_seed + args.samples_per_case * args.max_attempts <= 2**32):
         parser.error('Invalid collection bounds; see --help')

@@ -76,7 +76,12 @@ def compact_report(path,data):
             'episode_id':data['metadata']['episode']['episode_id'],'images_included':False}
 
 
-def verify(path,tolerance=1e-8):
+def verify(path,tolerance=1e-8,*,observer=None):
+    """Replay controls without corrections; observer reads each measured checkpoint.
+
+    Observer(scene, controller, index) must not modify simulation state. It is
+    used for offline policy observations, never for controlling the replay.
+    """
     import mujoco
     import numpy as np
     from types import SimpleNamespace
@@ -123,7 +128,9 @@ def verify(path,tolerance=1e-8):
         if controller:
             actual=np.array([[n in controller.devices.cleaned,n in controller.devices.heated] for n in data['metadata']['object_ids']],dtype='u1')
             flags_match=flags_match and np.array_equal(actual,data['states/task_flags'][index])
-        return float(np.max(np.abs(scene.data.qpos-data['states/qpos'][index]))),float(np.max(np.abs(scene.data.qvel-data['states/qvel'][index])))
+        error=(float(np.max(np.abs(scene.data.qpos-data['states/qpos'][index]))),float(np.max(np.abs(scene.data.qvel-data['states/qvel'][index]))))
+        if observer is not None:observer(scene,controller,index)
+        return error
     position,velocity=compare(0);checkpoint=0;action=0;transitions(data['start_tick'])
     indices=[i for side in ('left','right') for i in (*scene.arms[side].actuators,scene.arms[side].gripper_actuator)]
     event_ticks=sorted(set(ending)|set(starting)|{data['end_tick']});event_index=0
