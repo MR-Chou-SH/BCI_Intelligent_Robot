@@ -121,3 +121,20 @@ class AdaptiveTests(unittest.TestCase):
             names=[r['recipe'] for r in rows]
             self.assertEqual(names,['global4_contact_caps','fix_DOOR','global3_fallback','global2_fallback'])
             self.assertTrue(all(c.kwargs['wash_gate'] for c in worker.trial.call_args_list))
+
+    def test_first_level_repairs_run_before_composed_refinements(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)
+            # fix_A moves the failure later (would be refined); fix_B is a sibling first-level repair.
+            backup,_=self.run_chain(root,{frozenset():('START: x',10),frozenset({'A'}):('LATER: y',20),
+                                          frozenset({'B'}):('START: z',10),frozenset({'A','LATER'}):('LATER: w',20)})
+            def repairs(data,context,failed):
+                name=failed['error'].split(':')[0]
+                if name=='START':
+                    return [{'name':'fix_A','factor':4.,'caps':{'A':1.},'windows':[]},
+                            {'name':'fix_B','factor':4.,'caps':{'B':1.},'windows':[]}]
+                return [{'name':'fix_'+name,'factor':4.,'caps':{name:1.},'windows':[]}]
+            with patch.object(worker,'repair_recipes',side_effect=repairs):
+                _,_,rows,_=worker.optimize(backup,root/'opt')
+            names=[r['recipe'] for r in rows]
+            self.assertLess(names.index('fix_B'),names.index('fix_A+fix_LATER'))

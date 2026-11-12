@@ -13,7 +13,7 @@ from integration.kitchen.planning.local_timing import base_caps,repair_recipes,c
 
 # A repair that moves the first failure later is refined with the next failure.
 MAX_REPAIR_DEPTH=3
-MAX_REPAIR_TRIALS=10
+MAX_REPAIR_TRIALS=8
 
 
 def compose(parent,child):
@@ -82,8 +82,9 @@ def optimize(backup,directory,*,identity=None,timeout=900):
                  for r in ({**r,**wash} for r in repair_recipes(data,context,failed))]
         seen={r['name'] for _,_,r,_ in pending};tried=0;timings=[first]
         while pending and tried<MAX_REPAIR_TRIALS:
-            # Refine repairs that progressed first, otherwise shortest plan first.
-            pending.sort(key=lambda x:(-x[1],x[0]))
+            # Every first-level repair (shortest plan first) before refinements, so
+            # measured single fixes are never crowded out by composed variants.
+            pending.sort(key=lambda x:(x[1],x[0]))
             minimum,depth,recipe,parent_tick=pending.pop(0)
             if successes and min(x[0] for x in successes)<=minimum+1e-9:continue
             if any(same_timing(recipe,t) for t in timings):continue  # e.g. button_cap1 == start
