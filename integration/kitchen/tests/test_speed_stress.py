@@ -108,3 +108,26 @@ class SpeedStressTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class RecordedTrialCleanupTests(unittest.TestCase):
+    def test_unverified_recorded_failure_removes_only_its_partial_recording(self):
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        from integration.kitchen.data import speed_stress
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);backup=root/'backup';backup.mkdir();(backup/'trajectory.h5').write_bytes(b'source')
+            report={'case':{'case_id':'test'},'seed':0,'initialization_profile':'research','simulated_seconds':1.}
+            def restored(data,data_root,*args):
+                data_root.mkdir(parents=True);(data_root/'partial.h5').write_bytes(b'partial')
+                raise RuntimeError('stop')
+            with patch.object(speed_stress,'load_backup',return_value=({'start_tick':0},{},report)), \
+                 patch.object(speed_stress,'restored_platform',side_effect=restored):
+                kept=speed_stress.trial(backup,root/'kept',4.,4,record=True)
+                removed=speed_stress.trial(backup,root/'removed',4.,4,record=True,verify_recording=False)
+            self.assertFalse(kept['task_success']);self.assertFalse(removed['task_success'])
+            self.assertTrue((root/'kept/data/partial.h5').exists())
+            self.assertFalse((root/'removed/data').exists())
+            self.assertTrue((root/'removed/report.json').exists())
+            self.assertEqual((backup/'trajectory.h5').read_bytes(),b'source')

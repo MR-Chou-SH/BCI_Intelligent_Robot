@@ -10,6 +10,7 @@ from concurrent.futures import ProcessPoolExecutor
 import json
 import math
 from pathlib import Path
+import shutil
 import time
 from types import MethodType
 import numpy as np
@@ -130,7 +131,8 @@ class Audit:
         'peak_tcp_m_s':self.peak_tcp,'peak_joint_rad_s':self.peak_joint,'sampling_hz':25}
 
 
-def trial(backup,output,factor,scale,*,record=False,segment_factors=None,windows=None,timeout=900,wash_gate=False):
+def trial(backup,output,factor,scale,*,record=False,segment_factors=None,windows=None,timeout=900,wash_gate=False,
+          verify_recording=True):
     from integration.kitchen.validation.quality import ExpertQuality
     from integration.kitchen.validation.success import validate_initial,validate_skill,validate_final
     from robot_arm.kitchen.state_recording import StateRecorder
@@ -251,9 +253,12 @@ def trial(backup,output,factor,scale,*,record=False,segment_factors=None,windows
         if record:
             recording.annotate(report['case'],actual);recording.close(p,'EXPERIMENT_END')
             path=output/'trajectory.h5';recording.path.replace(path)
-            verification=verify(path);result['verification']=verification
-            if verification['status']!='CONTROL_RESIMULATION_PASS' or not verification['task_success']:raise RuntimeError('INDEPENDENT_REPLAY_FAILED')
-            result.update(status='QUALIFIED_EXPERIMENT',trajectory=str(path.resolve()))
+            if verify_recording:
+                verification=verify(path);result['verification']=verification
+                if verification['status']!='CONTROL_RESIMULATION_PASS' or not verification['task_success']:raise RuntimeError('INDEPENDENT_REPLAY_FAILED')
+                result.update(status='QUALIFIED_EXPERIMENT',trajectory=str(path.resolve()))
+            # A recorded candidate is replayed only if it is selected.
+            else:result['trajectory']=str(path.resolve())
         result['extra_stability_seconds']=extra/25;result['extra_heating_seconds']=heating_wait/25;result['rate_limited_frames']=limited
         result['extra_wash_seconds']=wash_wait/25
     except Exception as error:
@@ -272,6 +277,9 @@ def trial(backup,output,factor,scale,*,record=False,segment_factors=None,windows
             result['observed_speedup']=report['simulated_seconds']/max(result['actual_seconds'],.04) if result['task_success'] else None
             if audit:result['audit']=audit.report()
             p.close()
+        if record and not verify_recording and not result['task_success']:
+            # Only this trial's own partial recording; candidates keep no failed H5.
+            shutil.rmtree(output/'data',ignore_errors=True)
         result['wall_seconds']=time.perf_counter()-started;replace_json(output/'report.json',result)
     return result
 

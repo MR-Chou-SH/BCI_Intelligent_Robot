@@ -11,6 +11,25 @@ from .speed_stress import trial,schedule
 from .collect_experts import source_identity,identity_sha256
 from integration.kitchen.planning.local_timing import base_caps,repair_recipes,collision_pair
 
+# A repair that moves the first failure later is refined with the next failure.
+MAX_REPAIR_DEPTH=3
+MAX_REPAIR_TRIALS=10
+
+
+def compose(parent,child):
+    """Keep every earlier repair; a later failure can only add slower local timing."""
+    caps=dict(parent['caps'])
+    for target,cap in child['caps'].items():caps[target]=min(cap,caps.get(target,cap))
+    windows=list(parent['windows'])+[w for w in child['windows'] if w not in parent['windows']]
+    recipe={'name':parent['name']+'+'+child['name'],'factor':min(parent['factor'],child['factor']),
+            'caps':caps,'windows':windows}
+    if parent.get('wash_gate') or child.get('wash_gate'):recipe['wash_gate']=True
+    return recipe
+
+
+def same_timing(a,b):
+    return {k:v for k,v in a.items() if k!='name'}=={k:v for k,v in b.items() if k!='name'}
+
 
 def optimize(backup,directory,*,identity=None,timeout=900):
     """Return a qualified component, or None so the caller retains its backup."""
@@ -34,7 +53,9 @@ def optimize(backup,directory,*,identity=None,timeout=900):
         elif path.exists():
             generation_errors.append({'recipe':recipe['name'],'reason':'Interrupted attempt preserved'});return None
         else:
-            r=trial(backup,path,recipe['factor'],4,segment_factors=recipe['caps'],windows=recipe['windows'],timeout=timeout,wash_gate=recipe.get('wash_gate',False))
+            # Record while trying: a selected candidate is replayed, not executed twice.
+            r=trial(backup,path,recipe['factor'],4,record=selectable,verify_recording=False,segment_factors=recipe['caps'],
+                    windows=recipe['windows'],timeout=timeout,wash_gate=recipe.get('wash_gate',False))
             gc.collect() # Break private controller/observer cycles between trials.
         records.append({'recipe':recipe['name'],'factor':recipe['factor'],'report':str(report_path),
             'report_sha256':digest(report_path),'status':r['status'],'simulated_seconds':r.get('actual_seconds'),
@@ -50,14 +71,25 @@ def optimize(backup,directory,*,identity=None,timeout=900):
                                       'pair':collision_pair(reference)})
             failed=None # Timing changes cannot certify an already colliding source path.
     if failed is not None and not failed['task_success']:
-        recipes=repair_recipes(data,context,failed)
-        ranked=[]
-        for recipe in recipes:
+        def planned(recipe):
             commands,_,_=schedule(data,context,recipe['factor'],segment_factors=recipe['caps'],windows=recipe['windows'])
-            ranked.append((len(commands)/25,recipe))
-        for minimum,recipe in sorted(ranked,key=lambda x:x[0]):
-            if successes and min(x[0] for x in successes)<=minimum+1e-9:break
-            attempt(recipe)
+            return len(commands)/25
+        # (planned seconds, depth, recipe, failure tick the recipe must pass)
+        pending=[(planned(r),1,r,failed.get('failure_source_tick')) for r in repair_recipes(data,context,failed)]
+        seen={r['name'] for _,_,r,_ in pending};tried=0
+        while pending and tried<MAX_REPAIR_TRIALS:
+            # Refine repairs that progressed first, otherwise shortest plan first.
+            pending.sort(key=lambda x:(-x[1],x[0]))
+            minimum,depth,recipe,parent_tick=pending.pop(0)
+            if successes and min(x[0] for x in successes)<=minimum+1e-9:continue
+            r=attempt(recipe);tried+=1
+            if r is None or r['task_success'] or depth>=MAX_REPAIR_DEPTH:continue
+            tick=r.get('failure_source_tick')
+            if tick is None or parent_tick is None or tick<=parent_tick:continue
+            for child in repair_recipes(data,context,r):
+                composed=compose(recipe,child)
+                if composed['name'] in seen or same_timing(composed,recipe):continue
+                seen.add(composed['name']);pending.append((planned(composed),depth+1,composed,tick))
         if not successes:
             # Whole-trajectory fallback is last, after targeted repairs.
             for factor in (3.,2.):
@@ -65,11 +97,22 @@ def optimize(backup,directory,*,identity=None,timeout=900):
                 if successes:break
     selected=None;selected_path=None
     for _,recipe in sorted(successes,key=lambda x:x[0]):
-        path=directory/('recorded_'+recipe['name']);qualified=path/'qualified.json'
+        recorded=directory/recipe['name']
+        path=recorded if (recorded/'trajectory.h5').exists() else directory/('recorded_'+recipe['name'])
+        qualified=path/'qualified.json'
         if qualified.exists():
             from .optimized_collection import check_report
             selected=check_report(qualified,directory,base['case'],base['seed'],identity);selected_path=qualified;break
-        if (path/'report.json').exists():r=read(path/'report.json')
+        if path==recorded:
+            r=read(recorded/'report.json');verification_path=recorded/'verification.json'
+            if verification_path.exists():verification=read(verification_path)
+            else:
+                from .replay import verify
+                verification=verify(r['trajectory']);replace_json(verification_path,verification)
+            if verification['status']!='CONTROL_RESIMULATION_PASS' or not verification['task_success']:
+                generation_errors.append({'recipe':recipe['name'],'reason':'INDEPENDENT_REPLAY_FAILED'});continue
+            r={**r,'status':'QUALIFIED_EXPERIMENT','verification':verification}
+        elif (path/'report.json').exists():r=read(path/'report.json')
         elif path.exists():continue
         else:r=trial(backup,path,recipe['factor'],4,record=True,segment_factors=recipe['caps'],windows=recipe['windows'],timeout=timeout,wash_gate=recipe.get('wash_gate',False))
         if not r['task_success']:continue
