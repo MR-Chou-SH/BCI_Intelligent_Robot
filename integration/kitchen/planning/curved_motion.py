@@ -112,7 +112,7 @@ def curve_candidates(scene, side, end, rotation, *, mode, payload=(), target=Non
     if qa@qb<0:qb=-qb
     def clearance(q, near_end):
         selected=end_pairs if near_end else pairs
-        return float(np.min(geometry.distances(q,selected))) if len(selected) else 1.
+        return float(geometry.min_distance(q,selected)) if len(selected) else 1.
     heights=(0.,.055,.11,.18) if mode=='approach' else (.07,.12,.18,.25,.30,.36)
     options=[(height,bend) for bend in ((0.,.7) if mode=='carry' else (0.,)) for height in heights]
     for height,bend in options:

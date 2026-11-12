@@ -535,7 +535,7 @@ class KitchenExpert(TaskExecution,ExpertMotion):
                 if any(int(g) in geometry.geoms for g in p) and
                    not all(int(g) in geometry.geoms for g in p) and
                    not any(int(g) in hand for g in p)],dtype=int).reshape(-1,2)
-            minimum=float(np.min(geometry.distances(view.data.qpos,pairs))) if len(pairs) else 1.
+            minimum=float(geometry.min_distance(view.data.qpos,pairs)) if len(pairs) else 1.
             if minimum>=.001:break
             if attempt==3:raise ExpertFailure('BANANA_TURN_INITIAL_CLEARANCE_NOT_REACHED')
             here,tool=tcp_pose(view.data,view.arms['left'])

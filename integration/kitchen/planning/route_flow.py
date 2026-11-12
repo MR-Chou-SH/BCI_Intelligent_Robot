@@ -50,7 +50,7 @@ def rounded_oven_carry(scene,waypoints,rotation,payload):
             selected=np.asarray([p for p in pairs if not (bottom in p and any(int(g) in carried for g in p))],dtype=int).reshape(-1,2)
         samples=max(1,math.ceil(np.max(np.abs(candidate-previous))/.025))
         for f in np.linspace(0,1,samples+1):
-            distance=float(np.min(geometry.distances(previous+(candidate-previous)*f,selected)))
+            distance=float(geometry.min_distance(previous+(candidate-previous)*f,selected))
             minimum=min(minimum,distance)
             if distance<.001:return None
         data.qpos[:]=candidate;path.append(result.q.copy())

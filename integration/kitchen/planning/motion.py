@@ -350,7 +350,7 @@ class ExpertMotion:
             if not result.success:return False
             previous=view.data.qpos.copy();candidate=previous.copy();candidate[list(arm.qpos)]=result.q
             count=max(1,math.ceil(np.max(np.abs(candidate-previous))/.035))
-            if any(np.min(geometry.distances(previous+(candidate-previous)*t,pairs))<.001
+            if any(geometry.min_distance(previous+(candidate-previous)*t,pairs)<.001
                    for t in np.linspace(0,1,count+1)):return False
             view.data.qpos[:]=candidate;path.append(result.q.copy())
         targets,split=self.timed_right_targets(path,self.contract,speed=.012,switch_after=split_node)

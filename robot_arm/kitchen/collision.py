@@ -83,6 +83,29 @@ class CollisionGeometry:
             values[k] = mujoco.mj_geomDistance(self.m,self.d,int(a),int(b),cutoff,None)
         return values
 
+    def min_distance(self, q, pairs, cutoff=.3):
+        """Exactly np.min(self.distances(q, pairs, cutoff)), measuring fewer pairs.
+
+        A bounding-sphere gap never exceeds a pair's measured value, so pairs are
+        measured nearest-bound first and the scan stops once no remaining bound
+        can be below the running minimum. Planners that only need the minimum
+        clearance use this; the selected pair's value is computed identically.
+        """
+        if not len(pairs):
+            raise ValueError("min_distance of an empty pair set")
+        self.d.qpos[:] = q
+        mujoco.mj_kinematics(self.m, self.d)
+        bounds = np.linalg.norm(self.d.geom_xpos[pairs[:,0]]-self.d.geom_xpos[pairs[:,1]], axis=1)
+        bounds -= self.radius[pairs[:,0]]+self.radius[pairs[:,1]]
+        near = np.flatnonzero(bounds < cutoff)
+        best = float(np.min(bounds[bounds >= cutoff])) if len(near) < len(bounds) else np.inf
+        for k in near[np.argsort(bounds[near], kind="stable")]:
+            if bounds[k] >= best:
+                break
+            a, b = pairs[k]
+            best = min(best, mujoco.mj_geomDistance(self.m, self.d, int(a), int(b), cutoff, None))
+        return best
+
     def motion_bound(self, a, b):
         delta = np.abs(b-a)
         bound = self.hinge@delta+self.slide@delta

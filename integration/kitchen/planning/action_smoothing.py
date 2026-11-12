@@ -35,7 +35,7 @@ def carry_pause_clearance(data,platform):
             tick=data['start_tick']+20*frame
             i=int(np.searchsorted(data['states/tick'],tick))
             if i>=len(data['states/tick']) or data['states/tick'][i]!=tick:return False
-            if float(np.min(geometry.distances(data['states/qpos'][i],pairs)))<.020:return False
+            if float(geometry.min_distance(data['states/qpos'][i],pairs))<.020:return False
         return True
     return clear
 

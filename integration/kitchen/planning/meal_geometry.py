@@ -186,7 +186,7 @@ def approach_path(scene, grasp, side="right"):
                 previous = data.qpos.copy()
                 candidate = previous.copy(); candidate[list(arm.qpos)] = result.q
                 samples = max(1, math.ceil(np.max(np.abs(candidate-previous))/.035))
-                if any(np.min(geometry.distances(previous+(candidate-previous)*f, pairs)) < .001
+                if any(geometry.min_distance(previous+(candidate-previous)*f, pairs) < .001
                        for f in np.linspace(0., 1., samples+1)):
                     good = False; break
                 data.qpos[:] = candidate
@@ -226,7 +226,7 @@ def _curved_free_approach(scene,grasp,geometry,pairs,start,start_rotation):
                 if not result.success:break
                 previous=data.qpos.copy();candidate=previous.copy();candidate[list(arm.qpos)]=result.q
                 samples=max(1,math.ceil(np.max(np.abs(candidate-previous))/.025))
-                if any(np.min(geometry.distances(previous+(candidate-previous)*f,pairs))<.001
+                if any(geometry.min_distance(previous+(candidate-previous)*f,pairs)<.001
                        for f in np.linspace(0,1,samples+1)):break
                 data.qpos[:]=candidate;path.append(result.q.copy())
             else:return path
