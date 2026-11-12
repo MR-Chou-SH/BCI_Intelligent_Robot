@@ -90,6 +90,12 @@ class DualArmController:
     tcp_command_velocity=.12
     def __init__(self,scene):
         self.scene=scene
+        self._joint_actuators=np.array([i for side in ('left','right') for i in scene.arms[side].actuators])
+        self._joint_dofs=np.array([i for side in ('left','right') for i in scene.arms[side].dofs])
+        self._joint_commands=np.array([*range(7),*range(8,15)])
+        self._gripper_actuators=np.array([scene.arms[side].gripper_actuator for side in ('left','right')])
+        self._actuator_order=np.array([i for side in ('left','right') for i in
+            (*scene.arms[side].actuators,scene.arms[side].gripper_actuator)])
         self.ik_scratch=mujoco.MjData(scene.model)
         self.tcp_scratch=mujoco.MjData(scene.model)
         self.accepted=actuator16(scene)
@@ -128,19 +134,15 @@ class DualArmController:
         self.accepted=self.previous.copy()
 
     def _write_ctrl(self,values):
-        for offset,side in ((0,"left"),(8,"right")):
-            a=self.scene.arms[side]
-            ids=list(a.actuators)
-            kp=self.scene.model.actuator_gainprm[ids,0]
-            bias=self.scene.data.qfrc_bias[list(a.dofs)]
-            # Feedforward enters the SAME torque-limited position actuators.
-            # It never applies uncapped external robot forces.
-            compensated=values[offset:offset+7]+bias/kp
-            self.scene.data.ctrl[ids]=np.clip(compensated,
-                self.scene.model.actuator_ctrlrange[ids,0],self.scene.model.actuator_ctrlrange[ids,1])
-            self.scene.data.ctrl[a.gripper_actuator]=values[offset+7]
+        m,d=self.scene.model,self.scene.data;ids=self._joint_actuators
+        # Same elementwise feedforward/clipping, combined across the two arms.
+        # Gains and bounds are read live; only immutable indices are cached.
+        compensated=values[self._joint_commands]+d.qfrc_bias[self._joint_dofs]/m.actuator_gainprm[ids,0]
+        d.ctrl[ids]=np.clip(compensated,m.actuator_ctrlrange[ids,0],m.actuator_ctrlrange[ids,1])
+        d.ctrl[self._gripper_actuators]=values[[7,15]]
 
     def _cap_tcp_step(self,side,current_q,target_q):
+        if np.array_equal(current_q,target_q):return current_q.copy()
         arm=self.scene.arms[side];m=self.scene.model
         scratch=self.tcp_scratch;scratch.qpos[:]=self.scene.data.qpos
         scratch.qpos[list(arm.qpos)]=current_q;mujoco.mj_kinematics(m,scratch)
@@ -212,7 +214,7 @@ class DualArmController:
             alpha=(step+1)/self.substeps
             command=self.previous+(self.accepted-self.previous)*alpha
             self._write_ctrl(command)
-            self.last_u[step]=actuator16(self.scene)
+            self.last_u[step]=d.ctrl[self._actuator_order]
             mujoco.mj_step(m,d)
             self.tick+=1
             # Device timers and the contact guard run once per 25Hz control frame

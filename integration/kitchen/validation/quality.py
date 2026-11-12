@@ -28,10 +28,12 @@ class ExpertQuality:
         for name in controller.scene.objects:
             if name=="wood_tray":continue
             support=device.supports(name,["tray_bottom"])
-            velocity=np.empty(6)
-            import mujoco
-            mujoco.mj_objectVelocity(m,d,mujoco.mjtObj.mjOBJ_BODY,controller.scene.objects[name],velocity,0)
-            quiet=np.linalg.norm(velocity[3:])<=.02 and np.linalg.norm(velocity[:3])<=.05
+            quiet=False
+            if support:
+                velocity=np.empty(6)
+                import mujoco
+                mujoco.mj_objectVelocity(m,d,mujoco.mjtObj.mjOBJ_BODY,controller.scene.objects[name],velocity,0)
+                quiet=np.linalg.norm(velocity[3:])<=.02 and np.linalg.norm(velocity[:3])<=.05
             predicates[name+":tray"]=support and quiet and not device.touching_pads(name)
         angle=device.angle("microwave_hinge")
         j=device.joints["microwave_hinge"]

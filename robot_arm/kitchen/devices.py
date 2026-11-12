@@ -21,22 +21,44 @@ class DeviceState:
         self.button_seconds=0.;self.button_latched=False;self.events=[]
         self.geom_sets={n:object_geom_ids(scene,n) for n in scene.objects}
         self.pads={g for a in scene.arms.values() for g in a.pad_geoms}
+        self._pad_mask=np.zeros(m.ngeom,dtype=bool);self._pad_mask[list(self.pads)]=True
+        self._geom_names=tuple(m.geom(i).name for i in range(m.ngeom))
+        self._geom_ids={name:i for i,name in enumerate(self._geom_names) if name}
+        self._object_masks={}
+        for name,ids in self.geom_sets.items():
+            mask=np.zeros(m.ngeom,dtype=bool);mask[list(ids)]=True
+            self._object_masks[name]=mask
+        self._support_groups={}
         from .layouts import layout_manifest
         self.version3=layout_manifest(scene.layout_id).get("profile")=="kitchen_platform_v3"
     def angle(self,name):
         return float(self.scene.data.qpos[self.scene.model.jnt_qposadr[self.joints[name]]])
     def geom(self,name):
-        return mujoco.mj_name2id(self.scene.model,mujoco.mjtObj.mjOBJ_GEOM,name)
+        return self._geom_ids.get(name,-1)
     def support_evidence(self,name,support_names):
         """Return load-bearing upward-contact evidence for an object's support."""
+        return self._support(name,support_names,details=True)
+    def _support(self,name,support_names,*,details):
         m,d=self.scene.model,self.scene.data
         target=self.geom_sets[name]
-        support_names=list(map(str,support_names))
-        support_by_id={self.geom(n):str(n) for n in support_names}
-        support_by_id={g:n for g,n in support_by_id.items() if g>=0}
+        support_names=tuple(map(str,support_names))
+        group=self._support_groups.get(support_names)
+        if group is None:
+            support_by_id={self.geom(n):n for n in support_names if self.geom(n)>=0}
+            support_mask=np.zeros(m.ngeom,dtype=bool);support_mask[list(support_by_id)]=True
+            group=support_by_id,support_mask
+            if len(self._support_groups)>=64:self._support_groups.clear()
+            self._support_groups[support_names]=group
+        support_by_id,support_mask=group
         center=d.xpos[self.scene.objects[name]]
-        contacts=[];max_upward_force=0.;max_qualifying_upward_force=0.
-        for i in range(d.ncon):
+        contacts=[];max_upward_force=0.;max_qualifying_upward_force=0.;upward_forces=[]
+        # Filter freshly measured contact IDs in NumPy before constructing any
+        # Python evidence. Keep native order, forces and all support predicates.
+        geoms=d.contact.geom
+        target_mask=self._object_masks[name]
+        matches=(target_mask[geoms[:,0]] & support_mask[geoms[:,1]]) | (
+            target_mask[geoms[:,1]] & support_mask[geoms[:,0]])
+        for i in np.flatnonzero(matches):
             c=d.contact[i];g1,g2=int(c.geom1),int(c.geom2)
             if g1 in target and g2 in support_by_id:
                 target_geom,support_geom=g1,g2
@@ -59,11 +81,13 @@ class DeviceState:
             # carry it. Side/downward contacts never enter that resultant.
             qualifies=(normal_on_object[2]>SUPPORT_NORMAL_MIN_UPWARD_Z and
                 vertical_force>0. and below_center)
+            if qualifies:upward_forces.append(vertical_force)
+            if not details:continue
             max_upward_force=max(max_upward_force,max(0.,vertical_force))
             if qualifies:
                 max_qualifying_upward_force=max(max_qualifying_upward_force,vertical_force)
             contacts.append({
-                "object_geom":m.geom(target_geom).name,
+                "object_geom":self._geom_names[target_geom],
                 "support_geom":support_by_id[support_geom],
                 "normal_force_n":normal_force,
                 "normal_on_object_world":normal_on_object.tolist(),
@@ -72,9 +96,11 @@ class DeviceState:
                 "below_object_center":bool(below_center),
                 "qualifies_as_upward_support":bool(qualifies),
             })
+        # Preserve Python's float-sum semantics and native contact order in
+        # both paths, including forces close to the acceptance threshold.
+        total_upward_force=sum(upward_forces)
+        if not details:return bool(total_upward_force>SUPPORT_FORCE_THRESHOLD_N)
         qualifying=sum(int(item["qualifies_as_upward_support"]) for item in contacts)
-        total_upward_force=sum(item["normal_force_world_z_n"] for item in contacts
-                               if item["qualifies_as_upward_support"])
         return {
             "supported":bool(total_upward_force>SUPPORT_FORCE_THRESHOLD_N),
             "support_force_policy":"summed_upward_native_contacts_v2",
@@ -89,7 +115,7 @@ class DeviceState:
             "contacts":contacts,
         }
     def supports(self,name,support_names):
-        return bool(self.support_evidence(name,support_names)["supported"])
+        return self._support(name,support_names,details=False)
     def held(self,name):
         if self.version3:
             return self.grasp_evidence(name)["bilateral_contact"]
@@ -112,9 +138,9 @@ class DeviceState:
         return {"bilateral_contact":any(v["bilateral_contact"] for v in by_arm.values()),
                 "by_arm":by_arm,"not_a_lift_or_retention_proof":True}
     def touching_pads(self,name):
-        target=self.geom_sets[name]
-        return any((int(c.geom1) in target and int(c.geom2) in self.pads) or
-                   (int(c.geom2) in target and int(c.geom1) in self.pads) for c in self.scene.data.contact)
+        geoms=self.scene.data.contact.geom;target=self._object_masks[name];pads=self._pad_mask
+        return bool(np.any((target[geoms[:,0]] & pads[geoms[:,1]]) |
+                           (target[geoms[:,1]] & pads[geoms[:,0]])))
     def _inside_local(self,name,body,lower,upper):
         from .registry import object_bounds
         lo,hi=object_bounds(self.scene,name,frame_body=body)
@@ -157,10 +183,11 @@ class DeviceState:
                         self.cleaned.add(name);self.event("wash_complete",name)
         pressed=self.angle("microwave_start_slide")>=.003
         button=self.geom("microwave_start_geom");force=0.
-        for i,c in enumerate(self.scene.data.contact):
-            g1,g2=int(c.geom1),int(c.geom2)
-            if (g1==button and g2 in self.pads) or (g2==button and g1 in self.pads):
-                f=np.zeros(6);mujoco.mj_contactForce(self.scene.model,self.scene.data,i,f);force+=max(0.,f[0])
+        if pressed:
+            for i,c in enumerate(self.scene.data.contact):
+                g1,g2=int(c.geom1),int(c.geom2)
+                if (g1==button and g2 in self.pads) or (g2==button and g1 in self.pads):
+                    f=np.zeros(6);mujoco.mj_contactForce(self.scene.model,self.scene.data,i,f);force+=max(0.,f[0])
         valid=pressed and force>=1
         self.button_seconds=self.button_seconds+dt if valid else 0.
         closed=self.angle("microwave_hinge")<=math.radians(5)

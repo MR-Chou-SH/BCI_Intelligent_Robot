@@ -358,7 +358,7 @@ class KitchenPlatform:
         if not isinstance(waypoints,list) or not 1<=len(waypoints)<=4500:
             raise PlatformError("INVALID_WAYPOINT_COUNT")
         contact_mode=contact_contract is not None
-        active_contact=self.contact.feedback()["active"]
+        active_contact=self.contact.active
         if active_contact and not contact_mode:
             raise PlatformError("CONTACT_PHASE_ACTIVE_USE_RELEASE_OR_CANCEL")
         if contact_mode:
@@ -462,7 +462,7 @@ class KitchenPlatform:
         self.history[self.execution["id"]]=copy.deepcopy(self.execution)
 
     def _finish(self,status,reason):
-        contact_active=self.contact.feedback()["active"]
+        contact_active=self.contact.active
         if self.execution and (self.execution["status"]=="RUNNING" or contact_active):
             self.execution.update(status=status,end_tick=self.controller.tick,reason=reason)
             if contact_active:
@@ -627,7 +627,7 @@ class KitchenPlatform:
                 raise PlatformError("UNKNOWN_RESET_ARGUMENT",self._record_reset_failure(
                     args.get("seed"),"UNKNOWN_RESET_ARGUMENT","INPUT_VALIDATION"))
             if self.execution and self.execution["status"]=="RUNNING":raise PlatformError("EXECUTION_BUSY_CANCEL_FIRST")
-            if self.contact.feedback()["active"]:raise PlatformError("CONTACT_ACTIVE_CANCEL_FIRST")
+            if self.contact.active:raise PlatformError("CONTACT_ACTIVE_CANCEL_FIRST")
             seed=args.get("seed",None if self.initialization_profile=="research" else self.episode["seed"])
             if seed is None and self.initialization_profile=="fixed":seed=self.episode["seed"]
             if seed is not None and (type(seed) is not int or not 0<=seed<2**32):
@@ -708,7 +708,7 @@ class KitchenPlatform:
     def release_writer(self,writer_id,connection_id=None):
         with self.lock:
             if writer_id and self.writer_owner==(writer_id,connection_id):
-                if self.contact.feedback()["active"] or (self.execution and self.execution["status"]=="RUNNING"):
+                if self.contact.active or (self.execution and self.execution["status"]=="RUNNING"):
                     self.controller.hold("WRITER_DISCONNECTED")
                     self._finish("CANCELLED","WRITER_DISCONNECTED")
                 self.writer_owner=None

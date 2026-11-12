@@ -139,9 +139,7 @@ class StateRecorder:
             self.last_accepted=controller.accepted.copy();self.last_previous=controller.previous.copy()
 
     def _state(self,controller):
-        query=key_object_states(controller.scene,controller)
-        self.gripper_data.qpos[:]=controller.scene.data.qpos
-        mujoco.mj_kinematics(controller.scene.model,self.gripper_data)
+        query=key_object_states(controller.scene,controller,scratch=self.gripper_data)
         widths=[max(0.,fingertip_gap(controller.scene.model,self.gripper_data,controller.scene.arms[s])['inner_gap_m'])
                 for s in ('left','right')]
         self.writer.state(controller.tick,controller.scene.data.qpos,controller.scene.data.qvel,query['objects'],widths)

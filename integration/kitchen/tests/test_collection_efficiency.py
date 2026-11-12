@@ -1,5 +1,7 @@
 """Faster data transport must preserve physics and every control-frame guard."""
 import unittest
+from unittest.mock import patch
+import mujoco
 import numpy as np
 from robot_arm.kitchen.platform import KitchenPlatform
 from robot_arm.kitchen.contact import object_geom_ids
@@ -9,6 +11,66 @@ from integration.kitchen.planning.speed import polyline_clock
 
 
 class CollectionEfficiencyTests(unittest.TestCase):
+    def test_combined_feedforward_matches_per_arm_control_with_live_gains(self):
+        p=KitchenPlatform(layout='kitchen_v3_norice_candidate_013',seed=0)
+        try:
+            m,d=p.scene.model,p.scene.data;rng=np.random.default_rng(93)
+            for _ in range(5):
+                target=rng.uniform(-4.,4.,16);target[[7,15]]=[.01,.04]
+                d.qfrc_bias[:]=rng.uniform(-100.,100.,m.nv)
+                m.actuator_gainprm[:,0]*=1.01
+                expected=d.ctrl.copy()
+                for offset,side in ((0,'left'),(8,'right')):
+                    arm=p.scene.arms[side];ids=list(arm.actuators)
+                    expected[ids]=np.clip(target[offset:offset+7]+d.qfrc_bias[list(arm.dofs)]/
+                        m.actuator_gainprm[ids,0],m.actuator_ctrlrange[ids,0],m.actuator_ctrlrange[ids,1])
+                    expected[arm.gripper_actuator]=target[offset+7]
+                p.controller._write_ctrl(target)
+                np.testing.assert_array_equal(d.ctrl,expected)
+        finally:p.close()
+
+    def test_contact_cache_keeps_feedback_detached_and_reenabled_checks_live(self):
+        p=KitchenPlatform(layout='kitchen_v3_norice_candidate_013',seed=0)
+        try:
+            p.advance(500)
+            contract={'arm':'left','target':'banana','phase':'acquire','payload_ids':['banana'],
+                      'supports':{'banana':['v3_counter_front']}}
+            p.contact.activate(contract);pairs=p.contact._pairs.copy()
+            p.contact.clear();p.contact.activate(contract)
+            np.testing.assert_array_equal(p.contact._pairs,pairs)
+            self.assertEqual(p.contact.feedback()['measured_post_step_samples'],0)
+            with patch('robot_arm.kitchen.contact_execution.ENFORCE_CONTACT_POLICY',False), \
+                 patch.object(p.contact,'_contact_checks',side_effect=AssertionError('disabled rejection query')):
+                self.assertEqual(p.contact.sample(p.controller),[])
+            first=p.contact.feedback()
+            self.assertTrue(first['measured']['support']['banana']['supported'])
+            first['contract']['supports']['banana'].clear()
+            first['measured']['support']['banana']['contacts'].clear()
+            second=p.contact.feedback()
+            self.assertEqual(second['contract'],{'type':'grasp',**contract})
+            self.assertGreater(len(second['measured']['support']['banana']['contacts']),0)
+            with patch('robot_arm.kitchen.contact_execution.ENFORCE_CONTACT_POLICY',True), \
+                 patch.object(p.contact,'_contact_checks',return_value=[{'code':'TEST_CLEARANCE_FAILURE'}]):
+                self.assertIn({'code':'TEST_CLEARANCE_FAILURE'},p.contact.sample(p.controller))
+            with patch('robot_arm.kitchen.contact_execution.ENFORCE_CONTACT_POLICY',False):
+                p.scene.data.qvel[0]=np.nan
+                self.assertEqual(p.contact.sample(p.controller),[{'code':'NONFINITE_PHYSICS_STATE'}])
+        finally:p.close()
+
+    def test_support_filter_reads_changed_physics_without_a_clock_change(self):
+        p=KitchenPlatform(layout='kitchen_v3_norice_candidate_013',seed=0)
+        try:
+            p.advance(500);dev=p.controller.devices
+            self.assertTrue(dev.supports('banana',['v3_counter_front']))
+            self.assertFalse(dev.supports('banana',['missing_support','microwave_bottom']))
+            before=p.scene.data.time;m=p.scene.model
+            joint=int(m.body_jntadr[p.scene.objects['banana']]);adr=int(m.jnt_qposadr[joint])
+            p.scene.data.qpos[adr+2]+=.15
+            mujoco.mj_forward(m,p.scene.data)
+            self.assertEqual(p.scene.data.time,before)
+            self.assertFalse(dev.supports('banana',['v3_counter_front']))
+        finally:p.close()
+
     def test_compact_step_keeps_identical_physics_and_observer_clock(self):
         platforms=[KitchenPlatform(layout='kitchen_v3_norice_candidate_013',seed=0) for _ in range(2)]
         try:

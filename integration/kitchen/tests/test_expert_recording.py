@@ -68,6 +68,7 @@ class ExpertRecordingTests(unittest.TestCase):
             self.assertLess(evidence["maximum_upward_normal_force_n"],.25)
             self.assertGreater(evidence["total_qualifying_upward_support_force_n"],1.)
             self.assertTrue(evidence["supported"])
+            self.assertTrue(p.controller.devices.supports("banana",supports))
             contract={"arm":"left","target":"banana","phase":"acquire","payload_ids":["banana"],
                       "supports":{"banana":supports}}
             p.contact.activate(contract)
@@ -86,6 +87,7 @@ class ExpertRecordingTests(unittest.TestCase):
                 weak=p.controller.devices.support_evidence("banana",supports)
                 self.assertFalse(weak["supported"])
                 self.assertLess(weak["total_qualifying_upward_support_force_n"],.25)
+                self.assertFalse(p.controller.devices.supports("banana",supports))
             self.assertFalse(p.controller.devices.supports("banana",["microwave_bottom"]))
         finally:p.close()
 

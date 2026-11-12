@@ -162,6 +162,9 @@ class ContactExecution:
         self.geometry = CollisionGeometry(scene)
         self._active_geoms = set(self.geometry.active)
         self._objects = {n: object_geom_ids(scene, n) & self._active_geoms for n in scene.objects}
+        # Only topology is cached, never live contacts or measured grasp state.
+        # Repeated trajectory batches usually retain the same moving bodies.
+        self._moving_pairs_cache = {}
         self._owners = {g: n for n, geoms in self._objects.items() for g in geoms}
         self._device_bodies, self._device_geoms = {}, set()
         m = scene.model
@@ -291,9 +294,15 @@ class ContactExecution:
         self._moving = self.geometry.robot | self._device_geoms | set().union(
             *(self._objects[n] for n in contract["payload_ids"]))
         active = self.geometry.active
-        self._pairs = np.asarray([(a, b) for i, a in enumerate(active) for b in active[i+1:]
-                                  if (a in self._moving or b in self._moving)
-                                  and self.geometry.eligible(a, b)], dtype=int).reshape(-1, 2)
+        key = frozenset(self._moving)
+        if key not in self._moving_pairs_cache:
+            pairs = np.asarray([(a, b) for i, a in enumerate(active) for b in active[i+1:]
+                                if (a in self._moving or b in self._moving)
+                                and self.geometry.eligible(a, b)], dtype=int).reshape(-1, 2)
+            pairs.flags.writeable = False
+            if len(self._moving_pairs_cache) >= 32:self._moving_pairs_cache.clear()
+            self._moving_pairs_cache[key] = pairs
+        self._pairs = self._moving_pairs_cache[key]
         self._pad_pairs = {tuple(sorted((p, g))) for side in self._sides(contract["arm"])
                            for p in self.scene.arms[side].pad_geoms for g in geoms}
         self._support_ids = {n: {m.geom(g).id for g in names}
@@ -759,9 +768,14 @@ class ContactExecution:
                 violations.append({"code": "PAYLOAD_OR_DEVICE_SPEED", "object": name,
                                    **velocities[name], "linear_limit_m_s": linear_limit,
                                    "angular_limit_rad_s": angular_limit})
-        violations.extend({"code": "ORIGINAL_CONTACT_GUARD", "evidence": item}
-                          for item in controller.contact_guard.inspect())
-        violations.extend(self._contact_checks())
+        if ENFORCE_CONTACT_POLICY:
+            violations.extend({"code": "ORIGINAL_CONTACT_GUARD", "evidence": item}
+                              for item in controller.contact_guard.inspect())
+            violations.extend(self._contact_checks())
+        else:
+            # These rejection-only queries used to run and then be discarded.
+            # Measured grasp/support/velocity feedback above remains available.
+            self._query_counts = {"status": "DISABLED_BY_CONTACT_POLICY"}
         if controller.stopped:
             violations.append({"code": "CONTROLLER_STOPPED", "reason": controller.stop_reason})
         self._measured = {"grasp": grasp, "support": supports, "velocities": velocities,
@@ -769,14 +783,19 @@ class ContactExecution:
         self._check_budget()
         return violations if ENFORCE_CONTACT_POLICY else []
 
+    @property
+    def active(self):
+        return self._contract is not None
+
     def feedback(self):
-        return _json_safe({"active": self._contract is not None, "contract": copy.deepcopy(self._contract),
+        # _json_safe already builds detached dicts/lists recursively.
+        return _json_safe({"active": self.active, "contract": self._contract,
                            "evidence_tick": self._last_tick if self._samples else None,
                            "measured_post_step_samples": self._samples, "measured_grasp_age_s": self._age_s,
                            "grasp_loss_s": self._loss_s, "measured_pad_separation_s": self._separation_s,
                            "grasp_relative_gate": "enabled" if GRASP_RELATIVE_GATE_ENABLED else "disabled",
-                           "measured": copy.deepcopy(self._measured),
-                           "violations": copy.deepcopy(self._violations), "checks": dict(self._query_counts),
+                           "measured": self._measured,
+                           "violations": self._violations, "checks": self._query_counts,
                            "task_status": "NOT_INFERRED", "task_success": "NOT_INFERRED",
                            "release_support_success": "NOT_INFERRED", "trajectory_completion_is_task_success": False})
 

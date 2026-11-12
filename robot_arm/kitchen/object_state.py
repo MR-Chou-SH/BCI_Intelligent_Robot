@@ -12,9 +12,9 @@ from .contact import object_geom_ids
 SCHEMA = "kitchen_object_states_v1"
 
 
-def key_object_states(scene, controller):
+def key_object_states(scene, controller, *, scratch=None):
     """Small state interface used by recording: pose and task flags only."""
-    data=mujoco.MjData(scene.model)
+    data=mujoco.MjData(scene.model) if scratch is None else scratch
     data.qpos[:]=scene.data.qpos
     mujoco.mj_kinematics(scene.model,data)
     objects=[]

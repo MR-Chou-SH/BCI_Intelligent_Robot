@@ -63,7 +63,9 @@ class ExpertMotion:
 
 
     def feedback(self):
-        return self.call("get_task_feedback")
+        # Motion callers consume contact/device feedback only. Object queries
+        # remain explicit in obj(); avoid measuring all nine unrelated grasps.
+        return self.call("get_task_feedback", {"object_ids": []})
 
 
     def execute(self, targets, contract=None):
