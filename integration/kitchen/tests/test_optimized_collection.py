@@ -180,5 +180,62 @@ class OptimizedCollectionTests(unittest.TestCase):
                 qualified,pending,missing=dataset.scan(output,plan)
                 self.assertEqual(pending[0][3]==directory,resumed)
 
+    def direct_worker(self,root,direct_ok):
+        case=cases('atomic')[0];identity={'test':True}
+        settings={'mode':'adaptive','factors':[4.],'direct_fast':True}
+        calls=[]
+        def native(job,capture_context=False,replay=True,direct_fast=False):
+            directory=Path(job[2]);directory.mkdir(parents=True);calls.append((directory.name,direct_fast))
+            h5=directory/'trajectory.h5';h5.write_bytes(b'fast expert' if direct_fast else b'native expert')
+            ap=directory/'annotations.json';ap.write_text('{}')
+            ok=direct_ok or not direct_fast
+            worker.save(directory/'report.json',{'case':case,'seed':0,'status':'QUALIFIED_EXPERT' if ok else 'FAILED_ATTEMPT',
+                'task_success':ok,'trajectory':str(h5),'annotations':str(ap),'annotations_sha256':worker.digest(ap),
+                'verification':{'status':'CONTROL_RESIMULATION_PASS','sha256':worker.digest(h5),'task_success':ok},
+                'simulated_seconds':5. if direct_fast else 20.,'source_identity_sha256':worker.identity_sha256(identity),
+                **({} if ok else {'error':'ExpertFailure(test)'})})
+            if not ok:h5.unlink();ap.unlink()
+        def adaptive(backup_dir,directory,**kw):return None,None,[],[]
+        job=(case,0,str(root),'research',60,identity,False,'faster')
+        patches=[patch.object(worker,'validate_previous'),patch.object(worker,'source_identity',return_value=identity),
+                 patch.object(worker,'one_case',side_effect=native),patch.object(worker,'load_backup',return_value=({}, {},{})),
+                 patch('integration.kitchen.data.adaptive_optimization.optimize',side_effect=adaptive)]
+        for item in patches:item.start()
+        self.addCleanup(lambda:[item.stop() for item in patches])
+        return job,settings,calls
+
+    def test_direct_fast_success_skips_backup_and_resumes_read_only(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)/'attempt';job,settings,calls=self.direct_worker(root,True)
+            result=worker.optimized_case(job,settings);self.assertEqual(result,worker.optimized_case(job,settings))
+            self.assertEqual(calls,[('direct',True)]);self.assertFalse((root/'backup').exists())
+            report=worker.read(root/'report.json')
+            self.assertEqual(report['postprocessing']['status'],'DIRECT_FAST')
+            self.assertEqual((root/'trajectory.h5').read_bytes(),b'fast expert')
+            worker.validate_backup_receipt(report,root)
+            (root/'direct/trajectory.h5').write_bytes(b'tampered')
+            with self.assertRaisesRegex(ValueError,'Direct-fast source'):worker.validate_backup_receipt(report,root)
+
+    def test_failed_direct_fast_keeps_its_report_and_uses_the_ordinary_path(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)/'attempt';job,settings,calls=self.direct_worker(root,False)
+            worker.optimized_case(job,settings)
+            self.assertEqual(calls,[('direct',True),('backup',False)])
+            report=worker.read(root/'report.json')
+            self.assertEqual(report['postprocessing']['status'],'ORIGINAL_FALLBACK')
+            self.assertEqual(worker.read(root/'direct/report.json')['status'],'FAILED_ATTEMPT')
+            self.assertEqual((root/'trajectory.h5').read_bytes(),b'native expert')
+
+    def test_interrupted_direct_fast_resumes_same_seed(self):
+        case=cases('atomic')[0]
+        plan={'cases':[case],'samples_per_case':1,'base_seed':0,'max_attempts':2,'identity':{},
+              'postprocessing':{'mode':'adaptive','factors':[4.],'direct_fast':True}}
+        with tempfile.TemporaryDirectory() as d:
+            output=Path(d);directory=dataset.slot_path(output,case,0)/'attempt_01_seed0'
+            (directory/'direct').mkdir(parents=True)
+            worker.save(directory.with_suffix('.job.json'),{'case_id':case['case_id'],'sample':0,'seed':0})
+            qualified,pending,missing=dataset.scan(output,plan)
+            self.assertEqual(pending[0][3],directory)
+
 
 if __name__=='__main__':unittest.main()

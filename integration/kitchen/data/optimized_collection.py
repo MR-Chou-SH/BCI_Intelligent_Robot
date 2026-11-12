@@ -32,8 +32,17 @@ def check_report(path,root,case,seed,identity):
 
 
 def validate_backup_receipt(report,attempt):
-    """Also bind the retained backup on ordinary batch resume."""
-    item=report.get('postprocessing',{}).get('backup')
+    """Also bind the retained backup (or direct-fast source) on ordinary batch resume."""
+    post=report.get('postprocessing',{})
+    if post.get('status')=='DIRECT_FAST':
+        path=Path(post['direct']['report']).resolve()
+        if path!=Path(attempt).resolve()/'direct/report.json' or digest(path)!=post['direct']['report_sha256']:
+            raise ValueError('Direct-fast receipt path/hash mismatch')
+        direct=read(path)
+        if direct['status']!='QUALIFIED_EXPERT' or digest(path.with_name('trajectory.h5'))!=direct['verification']['sha256']:
+            raise ValueError('Direct-fast source not qualified')
+        return
+    item=post.get('backup')
     if not item:return
     path=Path(item['report']).resolve();attempt=Path(attempt).resolve()
     if path!=attempt/'backup/report.json' or digest(path)!=item['report_sha256']:
@@ -103,6 +112,26 @@ def optimized_case(job,settings):
         r=check_report(root/'report.json',root,case,seed,identity)
         validate_backup_receipt(r,root);return receipt(root/'report.json')
     started=time.perf_counter();backup=root/'backup';backup_report=backup/'report.json'
+    if settings.get('direct_fast'):
+        # Try the fast expert first; a failed or interrupted attempt is kept and
+        # the ordinary backup + adaptive path below runs unchanged.
+        direct=root/'direct';direct_report=direct/'report.json'
+        if not direct.exists() and not backup.exists():
+            one_case((case,seed,str(direct),profile,timeout,identity,False,*options),direct_fast=True)
+        if direct_report.exists():
+            fast=check_report(direct_report,root,case,seed,identity)
+            if fast['status']=='QUALIFIED_EXPERT':
+                copy_immutable(fast['trajectory'],root/'trajectory.h5')
+                copy_immutable(fast['annotations'],root/'annotations.json')
+                result={**fast,'trajectory':str(root/'trajectory.h5'),'annotations':str(root/'annotations.json'),
+                    'annotations_sha256':digest(root/'annotations.json'),'wall_seconds':time.perf_counter()-started,
+                    'postprocessing':{'schema':'kitchen_postprocessing_v1','settings':settings,'status':'DIRECT_FAST',
+                        'direct':{'report':str(direct_report),'report_sha256':digest(direct_report)},
+                        'final_simulated_seconds':fast['simulated_seconds'],'source_group':fast['verification']['sha256'],
+                        'wall_scope':'current invocation: direct-fast expert, recording and independent replay'}}
+                save(root/'report.json',result)
+                validate_backup_receipt(result,root)
+                return receipt(root/'report.json')
     if not backup_report.exists():
         if backup.exists():raise ValueError('Unsealed backup preserved; cannot overwrite it')
         one_case((case,seed,str(backup),profile,timeout,identity,False,*options),capture_context=True,

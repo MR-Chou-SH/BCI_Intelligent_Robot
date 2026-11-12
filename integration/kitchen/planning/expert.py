@@ -36,6 +36,11 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         self.held = None
         self.last_target_position = None
         self.dual_rotation = DOWN.copy()
+        # Direct-fast collection: planned frame batches are time-compressed on
+        # the way out (1 = off). Per-target caps keep e.g. the button at 1x.
+        self.time_compression = 1.
+        self.compression_caps = {}
+        self.direct_grip_force = None
         self.home = {side: self.scene.data.qpos[list(arm.qpos)].copy() for side, arm in self.scene.arms.items()}
 
 
@@ -301,7 +306,10 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         if label!="oven" and not curved_place:self.line(side,target,rotation,spacing=.008,ramp=True)
         # Settle the supported load before opening; no assumed release height.
         devices = self.platform.controller.devices
-        for _ in range(8):
+        self.settle_until_supported(name, support)
+        # A fast carry can leave the load a few mm higher in the pads; search
+        # further down for measured support, still 1mm at a time.
+        for _ in range(8 if getattr(self,'time_compression',1.)<=1 else 20):
             if devices.supports(name, [support]): break
             target[2] -= .001
             self.point(side, target, rotation)
@@ -701,7 +709,8 @@ class KitchenExpert(TaskExecution,ExpertMotion):
                     from robot_arm.kitchen.devices import WASH_DURATION_S
                     self.mark('faucet_wash_wait_started',duration_s=WASH_DURATION_S,
                               replaced_reference_seconds=(end-cursor)/25)
-                    self.wait(WASH_DURATION_S,contract)
+                    # The simulated wash timer needs its physical duration.
+                    with self.compression_limit(1.):self.wait(WASH_DURATION_S,contract)
                     self.mark('faucet_wash_wait_complete')
                     wash_wait_done=True;seen_open=True;cursor=end
                     continue
@@ -1041,7 +1050,8 @@ class KitchenExpert(TaskExecution,ExpertMotion):
         self.call("end_contact",mutating=True)
         self.contract=None
         self.dual_line({s:p+[0,0,.12] for s,p in landing.items()})
-        self.wait(2.)
+        # Physical 2s for the delivered-tray stability window checked at skill end.
+        with self.compression_limit(1.):self.wait(2.)
         if not self.platform.controller.devices.supports("wood_tray",["user_table"]):
             raise ExpertFailure("TRAY_DELIVERY_SUPPORT_NOT_RETAINED")
         self.mark("dual_tray_delivered")

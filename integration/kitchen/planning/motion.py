@@ -1,5 +1,6 @@
 """Motion execution, interpolation and checked local routes."""
 from __future__ import annotations
+from contextlib import contextmanager
 from dataclasses import replace
 import copy
 import json
@@ -68,7 +69,72 @@ class ExpertMotion:
         return self.call("get_task_feedback", {"object_ids": []})
 
 
+    def compress(self, targets, contract=None):
+        """Direct-fast mode: time-compress a planned batch like offline retiming.
+
+        The batch is resampled along [reference, targets...] with the same final
+        target. Holds are compressed too, like offline retiming; physical device
+        timers (wash) opt out with compression_limit(1.), and condition-based
+        waits (heating, settling) simply loop longer. Fewer frames are tried only
+        while every frame passes the live (relaxed) controller limits, because the
+        platform rejects rate-limited batches.
+        """
+        factor = getattr(self, 'time_compression', 1.)
+        target = (contract or {}).get('target')
+        factor = min(factor, getattr(self, 'compression_caps', {}).get(target, factor))
+        if factor <= 1 or len(targets) < 2:
+            return targets
+        controller = self.platform.controller
+        points = np.vstack([controller.reference, np.asarray(targets, dtype=float)])
+        n = len(targets)
+        count = math.ceil(n / factor)
+        while count < n:
+            times = np.linspace(0, n, count + 1)[1:]
+            index = np.floor(times).astype(int).clip(max=n - 1)
+            u = times - index
+            values = points[index] + (points[index + 1] - points[index]) * u[:, None]
+            values[-1] = points[-1]
+            current = controller.reference.copy()
+            for value in values:
+                accepted = controller.prepare_joint_targets(value, reference=current)
+                if not np.allclose(accepted, value, rtol=0., atol=1e-9):
+                    break
+                current = accepted
+            else:
+                return list(values)
+            count = min(n, math.ceil(count * 1.12))
+        return targets
+
+
+    @contextmanager
+    def compression_limit(self, factor):
+        """Temporarily cap direct-fast compression for a delicate manoeuvre."""
+        previous = getattr(self, 'time_compression', 1.)
+        self.time_compression = min(previous, factor)
+        try:
+            yield
+        finally:
+            self.time_compression = previous
+
+
+    def settle_until(self, condition, *, max_seconds=.4):
+        """Direct-fast only: hold while a fast arrival converges to a measured condition."""
+        if getattr(self, 'time_compression', 1.) <= 1:
+            return
+        for _ in range(math.ceil(max_seconds / .04)):
+            if condition():
+                return
+            self.wait(.04)
+
+
+    def settle_until_supported(self, name, support, *, max_seconds=.4):
+        """A fast arrival may still bounce; hold until measured support."""
+        devices = self.platform.controller.devices
+        self.settle_until(lambda: devices.supports(name, [support]), max_seconds=max_seconds)
+
+
     def execute(self, targets, contract=None):
+        targets = self.compress(targets, contract)
         args = {"waypoints": [np.asarray(q).tolist() for q in targets], "source": "programmatic_validation"}
         if contract is not None:
             args["contact_contract"] = contract
@@ -127,7 +193,9 @@ class ExpertMotion:
                     return
             unchanged = last_reference is not None and np.max(np.abs(current-last_reference)) < 1e-9
             stalled = stalled + 1 if unchanged else 0
-            if stalled >= 40:
+            # Direct-fast may accept a settled stall after 40/factor frames; a
+            # still-moving arm keeps waiting to the original 40-frame failure.
+            if stalled >= math.ceil(40 / max(1., getattr(self, 'time_compression', 1.))):
                 speed_now = float(np.max(np.abs(self.scene.data.qvel[list(arm.dofs)])))
                 if error < .025 and speed_now < .01:
                     position,rotation=tcp_pose(self.view().data,arm)
@@ -137,7 +205,8 @@ class ExpertMotion:
                                         "joint_error_rad":float(error),"position_error_m":pe,
                                         "rotation_error_rad":re,"frames_without_reference_change":stalled})
                     return
-                raise ExpertFailure(f"JOINT_TRACKING_STALLED: {self.stage}: joint_error={error:.6f} speed={speed_now:.6f}")
+                if stalled >= 40:
+                    raise ExpertFailure(f"JOINT_TRACKING_STALLED: {self.stage}: joint_error={error:.6f} speed={speed_now:.6f}")
             last_reference = current.copy()
             targets = []
             for _ in range(8):
@@ -528,6 +597,8 @@ class ExpertMotion:
                 if contract["target"]=="pear" and "pear" in self.platform.controller.devices.cleaned:
                     target_force=8.
                 if minimum_force is not None:target_force=max(target_force,minimum_force)
+                # Direct-fast transport accelerates loads ~16x; hold them firmer.
+                if getattr(self,'direct_grip_force',None):target_force=max(target_force,self.direct_grip_force)
                 enough=min(grasp.get("pad_normal_forces_n",[0.,0.])) >= target_force
                 # The raised burger bar needs the full bounded tendon command
                 # used by the reference, rather than stopping at first 6N contact.
@@ -675,8 +746,20 @@ class ExpertMotion:
             goal=MealGrasp("left_corridor",position,rotation,position,np.empty(7),0.)
             try:path=approach_path(self.view(),goal,"left")
             except ValueError:continue
+            if getattr(self,'time_compression',1.)>1:
+                # The route may end on another elbow branch than the IK checked
+                # above; certify the configuration that will actually be reached.
+                end=self.view();end.data.qpos[list(arm.qpos)]=path[-1]
+                mujoco.mj_forward(end.model,end.data)
+                if arm_edge(end.data)>-.07:continue
             self.stream_joints("left",path)
-            if arm_edge(self.scene.data)>-.055:raise ExpertFailure("LEFT_ARM_CORRIDOR_NOT_CLEAR")
+            if arm_edge(self.scene.data)>-.055:
+                live=self.scene.data
+                raise ExpertFailure("LEFT_ARM_CORRIDOR_NOT_CLEAR: "+json.dumps({"route":"local","distance_m":distance,
+                    "planned_edge_m":round(float(arm_edge(scratch.data)),4),"measured_edge_m":round(float(arm_edge(live)),4),
+                    "joint_tracking_error_rad":round(float(np.max(np.abs(live.qpos[list(arm.qpos)]-self.platform.controller.reference[:7]))),4),
+                    "path_end_error_rad":round(float(np.max(np.abs(self.platform.controller.reference[:7]-np.asarray(path[-1])[:7]))),4),
+                    "joint_speed_rad_s":round(float(np.max(np.abs(live.qvel[list(arm.dofs)]))),4)}))
             self.mark("left_corridor_cleared",distance_m=distance,route="local",arm_edge_m=float(arm_edge(self.scene.data)))
             return
         self.mark("route_home_fallback",side="left",reason="NO_LOCAL_TRAY_CLEARANCE_ROUTE")

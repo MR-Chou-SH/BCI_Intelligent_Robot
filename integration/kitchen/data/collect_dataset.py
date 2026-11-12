@@ -84,7 +84,9 @@ def scan(output, plan):
             if row['status']=='INTERRUPTED' and plan.get('postprocessing',{}).get('mode') in ('continuous','adaptive'):
                 backup=directory/'backup/report.json'
                 sealed={'QUALIFIED_EXPERT'}|({'EXECUTED_REPLAY_PENDING'} if plan['postprocessing'].get('defer_backup_replay') else set())
-                if backup.exists() and read(backup).get('status') in sealed:
+                # An interrupted direct-fast attempt resumes on the ordinary path, same seed.
+                direct_started=plan['postprocessing'].get('direct_fast') and (directory/'direct').exists()
+                if direct_started or backup.exists() and read(backup).get('status') in sealed:
                     pending.append((case,sample,seed,directory));break
             history.append(row)
             if row['status'] == 'QUALIFIED_EXPERT':
@@ -139,6 +141,8 @@ def main(argv=None):
     parser.add_argument('--motion-profile',choices=('standard','faster'),default='standard')
     parser.add_argument('--postprocess',choices=('continuous','adaptive','none'),default='continuous')
     parser.add_argument('--optimization-factors',nargs='+',type=float)
+    parser.add_argument('--direct-fast',action='store_true',
+        help='adaptive only: first record a 4x direct expert; fall back to the ordinary backup + retiming if it fails')
     parser.add_argument('--defer-backup-replay',action='store_true',
         help='adaptive only: replay the native backup only if it becomes the sample (fallback)')
     parser.add_argument('--resume', action='store_true')
@@ -149,6 +153,8 @@ def main(argv=None):
         parser.error('adaptive starts at4x and derives local repairs; use --optimization-factors 4')
     if args.defer_backup_replay and args.postprocess!='adaptive':
         parser.error('--defer-backup-replay requires --postprocess adaptive')
+    if args.direct_fast and args.postprocess!='adaptive':
+        parser.error('--direct-fast requires --postprocess adaptive')
     from integration.kitchen.planning.action_retiming import MAX_FACTOR
     if (not 1<=len(args.optimization_factors)<=4 or len(set(args.optimization_factors))!=len(args.optimization_factors)
         or any(not 1<f<=MAX_FACTOR for f in args.optimization_factors)):
@@ -167,7 +173,8 @@ def main(argv=None):
             'max_attempts': args.max_attempts, 'base_seed': args.base_seed, 'jobs': args.jobs,
             'case_timeout': args.case_timeout, 'profile': args.profile, 'format':'kitchen_state_actions_v3','motion_profile':args.motion_profile,
             'postprocessing':{'mode':args.postprocess,'factors':args.optimization_factors,
-                              **({'defer_backup_replay':True} if args.defer_backup_replay else {})}}
+                              **({'defer_backup_replay':True} if args.defer_backup_replay else {}),
+                              **({'direct_fast':True} if args.direct_fast else {})}}
     output = args.output
     output.mkdir(parents=True, exist_ok=True)
     with (output / '.runner.lock').open('a') as lock:
@@ -203,6 +210,7 @@ def main(argv=None):
                  'format':'kitchen_state_actions_v3','images_included':False}
         summary['optimized']=sum(r['postprocessing_status']=='OPTIMIZED' for r in rows)
         summary['original_fallback']=sum(r['postprocessing_status']=='ORIGINAL_FALLBACK' for r in rows)
+        summary['direct_fast']=sum(r['postprocessing_status']=='DIRECT_FAST' for r in rows)
         replace_json(output / 'manifest.json', rows)
         replace_json(output / 'summary.json', summary)
         print(json.dumps(summary, ensure_ascii=False), flush=True)

@@ -74,7 +74,18 @@ def identity_sha256(identity):
     return hashlib.sha256(json.dumps(identity,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 
 
-def one_case(job, *, capture_context=False, replay=True):
+# Direct-fast expert: the same 4x compression, relaxed private limits, 1x button
+# and relaxed 25Hz audit as adaptive offline trials, applied while recording.
+# Banana contact phases stay at 1x (like the faster profile's banana rule): at
+# 2-4x it slipped on turns, peel releases and unstable releases over seeds 0-2.
+DIRECT_FAST_FACTOR=4.
+DIRECT_FAST_CAPS={'microwave_start_geom':1.,'banana':1.}
+# Measured: 4x transport slipped a 2N apple ~7mm in the pads; 4N holds all
+# fruit and meals (6N exceeds what a pear grasp reaches).
+DIRECT_FAST_GRIP_N=4.
+
+
+def one_case(job, *, capture_context=False, replay=True, direct_fast=False):
     """One episode: native execution -> seal -> independent replay/success.
 
     replay=False is only for optimization backups: the native success is sealed
@@ -91,7 +102,7 @@ def one_case(job, *, capture_context=False, replay=True):
     report={'case':case,'seed':seed,'status':'FAILED_ATTEMPT','task_success':False,
             'images_included':False,'source_identity_sha256':identity_sha256(identity),
             'initialization_profile':profile,'motion_profile':motion_profile}
-    platform=client=expert=quality=None;recording=None;started=time.monotonic()
+    platform=client=expert=quality=None;recording=None;fast_audit=None;started=time.monotonic()
     timing={};phase_started=time.perf_counter()
     def phase(name):
         nonlocal phase_started
@@ -111,7 +122,24 @@ def one_case(job, *, capture_context=False, replay=True):
         phase('setup')
         expert.prepare(case)
         phase('preparation')
+        if direct_fast:
+            # Preparation above keeps the normal speed and limits, so initial
+            # states match ordinary collection; only the recorded task is fast.
+            from .speed_stress import relax,Audit
+            limits=relax(platform.controller,DIRECT_FAST_FACTOR)
+            for name in ('faucet_handle_geom','microwave_door_handle','microwave_start_geom'):
+                platform.controller.contact_guard.allow_device_contact(name)
+            fast_audit=Audit(platform,limits)
+            platform.post_step_observers.append(lambda controller:fast_audit.sample())
+            expert.time_compression,expert.compression_caps=DIRECT_FAST_FACTOR,dict(DIRECT_FAST_CAPS)
+            expert.direct_grip_force=DIRECT_FAST_GRIP_N
+            report['direct_fast']={'time_compression':DIRECT_FAST_FACTOR,'local_caps':dict(DIRECT_FAST_CAPS),
+                'minimum_grip_n':DIRECT_FAST_GRIP_N,'limits':limits}
         recording=expert.call('start_state_recording',mutating=True)
+        if direct_fast:
+            header=json.loads(platform.state_recorder.file.attrs['metadata_json'])
+            header['direct_fast_expert']=report['direct_fast']
+            platform.state_recorder.file.attrs['metadata_json']=json.dumps(header,separators=(',',':'))
         phase('recording_start')
         api_before=expert.api_wall_seconds.copy()
         expert.run_case(case,quality)
@@ -173,6 +201,7 @@ def one_case(job, *, capture_context=False, replay=True):
                 'trajectory_sha256':report.get('verification',{}).get('sha256')})
             report['action_context']=str(context_path)
             report['action_context_sha256']=hashlib.sha256(context_path.read_bytes()).hexdigest()
+        if fast_audit is not None:report['direct_fast']['audit']=fast_audit.report()
         report['wall_seconds']=time.monotonic()-started
         report['timing_seconds']=timing
         save(directory/'report.json',report)
