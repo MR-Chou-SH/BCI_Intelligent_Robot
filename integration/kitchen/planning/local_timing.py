@@ -22,9 +22,21 @@ def window(data,start,end,factor,reason):
     return {'start_tick':a,'end_tick':b,'factor':factor,'reason':reason}
 
 
+# Measured on the current planner (2026-11-12): all ten heating samples failed the
+# former 2x button cap (peak press force < 1 N) and selected the original press
+# timing, so candidates start there instead of spending a predictable failed trial.
+BUTTON_CAP=1.
+
+
 def base_caps(context):
     targets={e['args'].get('contact_contract',{}).get('target') for e in modes(context)}
-    return {'microwave_start_geom':2.} if 'microwave_start_geom' in targets else {}
+    return {'microwave_start_geom':BUTTON_CAP} if 'microwave_start_geom' in targets else {}
+
+
+def source_washes(data):
+    """True if the source trajectory measured a wash completion (cleaned flag rises)."""
+    flags=data['states/task_flags'].astype(bool)
+    return bool(np.any(flags[1:,:,0]&~flags[:-1,:,0]))
 
 
 def repair_recipes(data,context,failed):

@@ -80,7 +80,7 @@ class SpeedStressTests(unittest.TestCase):
             _,_,stats=schedule(data,context,4,windows=recipe['windows'])
             self.assertTrue(stats['local_windows'])
         context['changes'].append({'tick':3000,'method':'mode','args':{'contact_contract':{'target':'microwave_start_geom'}}})
-        self.assertEqual(base_caps(context),{'microwave_start_geom':2.})
+        self.assertEqual(base_caps(context),{'microwave_start_geom':1.})
 
     def test_collision_failure_after_wash_does_not_slow_unrelated_wash(self):
         from integration.kitchen.planning.local_timing import repair_recipes,collision_pair

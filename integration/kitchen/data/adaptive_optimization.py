@@ -9,7 +9,7 @@ from .files import digest,read,replace_json
 from .retiming_experiment import load_backup
 from .speed_stress import trial,schedule
 from .collect_experts import source_identity,identity_sha256,MAX_JOBS
-from integration.kitchen.planning.local_timing import base_caps,repair_recipes,collision_pair
+from integration.kitchen.planning.local_timing import base_caps,repair_recipes,collision_pair,source_washes
 
 # A repair that moves the first failure later is refined with the next failure.
 MAX_REPAIR_DEPTH=3
@@ -62,7 +62,10 @@ def optimize(backup,directory,*,identity=None,timeout=900):
             'error':r.get('error'),'local_factors':recipe['caps'],'local_windows':recipe['windows']})
         if r['task_success'] and selectable:successes.append((r['actual_seconds'],recipe))
         return r
-    first={'name':'global4_contact_caps','factor':4.,'caps':base_caps(context),'windows':[]}
+    # A 4x wash window is too short on the current planner; the wash gate only
+    # waits until the measured cleaned flag, so it is enabled from the start.
+    wash={'wash_gate':True} if source_washes(data) else {}
+    first={'name':'global4_contact_caps','factor':4.,'caps':base_caps(context),'windows':[],**wash}
     failed=attempt(first)
     if failed is not None and collision_pair(failed):
         reference=attempt({'name':'source1_collision_audit','factor':1.,'caps':base_caps(context),'windows':[]},selectable=False)
@@ -75,14 +78,16 @@ def optimize(backup,directory,*,identity=None,timeout=900):
             commands,_,_=schedule(data,context,recipe['factor'],segment_factors=recipe['caps'],windows=recipe['windows'])
             return len(commands)/25
         # (planned seconds, depth, recipe, failure tick the recipe must pass)
-        pending=[(planned(r),1,r,failed.get('failure_source_tick')) for r in repair_recipes(data,context,failed)]
-        seen={r['name'] for _,_,r,_ in pending};tried=0
+        pending=[(planned(r),1,r,failed.get('failure_source_tick'))
+                 for r in ({**r,**wash} for r in repair_recipes(data,context,failed))]
+        seen={r['name'] for _,_,r,_ in pending};tried=0;timings=[first]
         while pending and tried<MAX_REPAIR_TRIALS:
             # Refine repairs that progressed first, otherwise shortest plan first.
             pending.sort(key=lambda x:(-x[1],x[0]))
             minimum,depth,recipe,parent_tick=pending.pop(0)
             if successes and min(x[0] for x in successes)<=minimum+1e-9:continue
-            r=attempt(recipe);tried+=1
+            if any(same_timing(recipe,t) for t in timings):continue  # e.g. button_cap1 == start
+            timings.append(recipe);r=attempt(recipe);tried+=1
             if r is None or r['task_success'] or depth>=MAX_REPAIR_DEPTH:continue
             tick=r.get('failure_source_tick')
             if tick is None or parent_tick is None or tick<=parent_tick:continue
@@ -93,7 +98,7 @@ def optimize(backup,directory,*,identity=None,timeout=900):
         if not successes:
             # Whole-trajectory fallback is last, after targeted repairs.
             for factor in (3.,2.):
-                attempt({'name':f'global{factor:g}_fallback','factor':factor,'caps':base_caps(context),'windows':[]})
+                attempt({'name':f'global{factor:g}_fallback','factor':factor,'caps':base_caps(context),'windows':[],**wash})
                 if successes:break
     selected=None;selected_path=None
     for _,recipe in sorted(successes,key=lambda x:x[0]):

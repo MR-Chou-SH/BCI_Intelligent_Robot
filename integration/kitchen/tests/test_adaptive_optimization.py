@@ -18,6 +18,7 @@ class AdaptiveTests(unittest.TestCase):
                 replace_json(path/'report.json',result);return result
             with patch.object(worker,'load_backup',return_value=({}, {'changes':[]},base)), \
                  patch.object(worker,'source_identity',return_value={'test':True}), \
+                 patch.object(worker,'source_washes',return_value=False), \
                  patch.object(worker,'trial',side_effect=trial) as run:
                 selected,path,rows,errors=worker.optimize(backup,root/'opt')
                 self.assertIsNone(selected);self.assertIsNone(path);self.assertEqual(len(rows),2)
@@ -58,6 +59,7 @@ class AdaptiveTests(unittest.TestCase):
                  patch.object(worker,'source_identity',return_value={'test':True}),
                  patch.object(worker,'trial',side_effect=trial),
                  patch.object(worker,'base_caps',return_value={}),
+                 patch.object(worker,'source_washes',return_value=False),
                  patch.object(worker,'repair_recipes',side_effect=repairs),
                  patch.object(worker,'schedule',side_effect=lambda d,c,f,segment_factors=None,windows=None:([0]*(10+len(segment_factors)),[],{})),
                  patch('integration.kitchen.data.replay.verify',return_value={'status':'CONTROL_RESIMULATION_PASS','task_success':True,'sha256':'x'}),
@@ -100,3 +102,22 @@ class AdaptiveTests(unittest.TestCase):
             selected,_,rows,_=worker.optimize(backup,root/'deep')
             names=[r['recipe'] for r in rows if r['recipe'].startswith('fix_')]
             self.assertEqual(max(n.count('+') for n in names)+1,worker.MAX_REPAIR_DEPTH)
+
+    def test_wash_gate_starts_with_first_candidate_and_duplicate_repairs_are_skipped(self):
+        import numpy as np
+        from integration.kitchen.planning.local_timing import source_washes
+        flags=np.zeros((5,2,2),dtype=np.uint8);self.assertFalse(source_washes({'states/task_flags':flags}))
+        flags[3:,1,0]=1;self.assertTrue(source_washes({'states/task_flags':flags}))
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)
+            backup,_=self.run_chain(root,{frozenset():('HEAT: x',10),frozenset({'DOOR'}):('HEAT: y',5)})
+            def repairs(data,context,failed):
+                return [{'name':'same_as_start','factor':4.,'caps':{},'windows':[]},
+                        {'name':'fix_DOOR','factor':4.,'caps':{'DOOR':1.},'windows':[]}]
+            with patch.object(worker,'source_washes',return_value=True), \
+                 patch.object(worker,'repair_recipes',side_effect=repairs):
+                selected,_,rows,_=worker.optimize(backup,root/'opt')
+            self.assertIsNone(selected)
+            names=[r['recipe'] for r in rows]
+            self.assertEqual(names,['global4_contact_caps','fix_DOOR','global3_fallback','global2_fallback'])
+            self.assertTrue(all(c.kwargs['wash_gate'] for c in worker.trial.call_args_list))
