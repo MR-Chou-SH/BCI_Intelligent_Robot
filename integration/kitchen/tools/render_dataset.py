@@ -57,14 +57,22 @@ def main(argv=None):
     parser.add_argument('--output',type=run_path,required=True)
     parser.add_argument('--speed',type=float,default=1.)
     parser.add_argument('--fps',type=int,default=25)
-    parser.add_argument('--width',type=int,default=960)
-    parser.add_argument('--height',type=int,default=540)
-    parser.add_argument('--camera',default='v3_front')
-    parser.add_argument('--zoom',type=float,default=.9)
-    parser.add_argument('--lookat',type=float,nargs=3,default=[.7,.15,.95])
+    parser.add_argument('--width',type=int,default=1600)
+    parser.add_argument('--height',type=int,default=900)
+    parser.add_argument('--camera',default='v3_main55',help='review preset (default 55-degree main view) or named camera')
+    parser.add_argument('--zoom',type=float,help='named cameras only; v3_front keeps its former 0.9 default')
+    parser.add_argument('--lookat',type=float,nargs=3,help='named cameras only; v3_front keeps its former pivot')
     parser.add_argument('--lightweight',action='store_true',help='Review graphics without MSAA, shadows or reflections')
     parser.add_argument('--resume',action='store_true')
     args=parser.parse_args(argv)
+    from integration.kitchen.data.replay import REVIEW_VIEWS
+    if args.camera in REVIEW_VIEWS:
+        if args.zoom is not None or args.lookat is not None:parser.error('Preset review views take no --zoom/--lookat')
+        args.zoom=1.
+    elif args.camera=='v3_front':
+        args.zoom=.9 if args.zoom is None else args.zoom
+        args.lookat=[.7,.15,.95] if args.lookat is None else args.lookat
+    elif args.zoom is None:args.zoom=1.
     if not (.25<=args.speed<=8 and 1<=args.fps<=60 and 0<args.zoom<=1
             and args.width>0 and args.height>0 and not args.width%2 and not args.height%2):parser.error('Invalid video parameters')
     source=read(args.manifest)

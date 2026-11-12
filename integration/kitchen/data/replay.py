@@ -206,10 +206,34 @@ def playback_states(path):
     return scene,states
 
 
+# Review-only free views. They never change the compiled model or its identity;
+# only the playback copy's free-camera FOV is set while rendering.
+REVIEW_VIEWS = {
+    # Main view: 55 deg frontal overhead, 16:9 (1600x900). Fitted to every rendered
+    # fruit, meal, tray, sink, microwave, delivery-table and both-arm vertex over
+    # nine accelerated long tasks; spare height is kept in the foreground so the
+    # top black band and outer background stay small.
+    "v3_main55": {"lookat": (0.207, -0.7054, 1.7274), "distance": 2.5, "azimuth": 90., "elevation": -55.,
+                  "fovy": 30.},
+}
+MAIN_VIEW = "v3_main55"
+MAIN_VIEW_SIZE = (1600, 900)
+
+
 def _review_camera(model, camera, zoom=1., lookat=None):
-    """Return a named camera, or a free camera zoomed along its optical axis."""
+    """Return a named camera, a review preset, or a free camera zoomed along its optical axis."""
     import mujoco
     import numpy as np
+    if camera in REVIEW_VIEWS:
+        if zoom != 1. or lookat is not None:
+            raise ValueError("Review preset views are fixed; zoom/lookat apply to named cameras only")
+        view = REVIEW_VIEWS[camera]
+        model.vis.global_.fovy = view["fovy"]
+        free = mujoco.MjvCamera()
+        mujoco.mjv_defaultCamera(free)
+        free.lookat[:] = view["lookat"]
+        free.distance, free.azimuth, free.elevation = view["distance"], view["azimuth"], view["elevation"]
+        return free, np.asarray(view["lookat"], dtype=float)
     camera_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_CAMERA, camera)
     if camera_id < 0:
         raise ValueError("Unknown named MuJoCo camera")
@@ -283,6 +307,7 @@ def video(path, output, *, camera="v3_front", width=960, height=540, fps=25, max
     partial.rename(output)
     result = {"status": "MUJOCO_REVIEW_VIDEO_WRITTEN", "output": str(output), "frames": frames,
             "fps": fps, "duration_s": frames / fps, "camera": camera, "zoom": zoom,
+            "review_view": REVIEW_VIEWS.get(camera), "width": width, "height": height,
             "lookat": None if pivot is None else [float(v) for v in pivot],
             "source_duration_s": source_duration, "playback_speed": speed,
             "trajectory_sha256": inspect_trajectory(path)["sha256"],
@@ -373,9 +398,9 @@ def main():
     parser.add_argument("action", choices=("inspect", "verify", "video", "image", "viewer"))
     parser.add_argument("trajectory", type=Path)
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--camera", default="v3_front")
-    parser.add_argument("--width", type=int, default=960)
-    parser.add_argument("--height", type=int, default=540)
+    parser.add_argument("--camera", default=MAIN_VIEW, help="review preset or named MuJoCo camera (e.g. v3_front)")
+    parser.add_argument("--width", type=int, default=MAIN_VIEW_SIZE[0])
+    parser.add_argument("--height", type=int, default=MAIN_VIEW_SIZE[1])
     parser.add_argument("--fps", type=int, default=25)
     parser.add_argument("--max-seconds", type=float, default=30.)
     parser.add_argument("--speed", type=float, default=1., help="Viewing speed only (0.25..8); recording timestamps stay unchanged")
