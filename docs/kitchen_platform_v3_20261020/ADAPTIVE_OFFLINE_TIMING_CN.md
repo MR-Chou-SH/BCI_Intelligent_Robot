@@ -9,6 +9,7 @@
 3. 实测失败记录回原source tick，同时只保存少量关键证据：首次携带接触丢失、按钮位移/力/连续有效时长、设备事件、送盘倾角峰值时刻，以及失败时物体状态。
 4. 首先试局部候选：清洗标记不足时，只在实际完成前补有界等待；洗后重抓失败时调整重抓和初始抬起（含短接近段），必要时向上游扩展到清洗技能前缀。其他故障按已测接触丢失/倾角/门接触区间定位。
 5. 保留原路径、全部事件端点和非故障区间的高速。按候选计划时长排序；已有成功候选比后续候选的理论最短时间还短时，不再浪费试跑。
+   2026-11-12起，若某个局部修复让失败点后移（实测failure source tick更晚），就根据新的失败再生成修复，并与当前修复叠加：局部限速取更慢者、窗口合并、清洗门控保留。已取得进展的修复先细化；最多叠加3层、修复阶段最多10次试跑。失败点没有后移时不叠加。
 6. 局部候选都不通过，才试整条3倍/2倍。普通优化失败保留原合格backup并明确标记`ORIGINAL_FALLBACK`，不把失败高速轨迹混入最终manifest。例外是碰撞：若4倍和原速审计均在相同几何对上失败，标记`SOURCE_PATH_COLLISION_AT_1X`，该attempt不进入新manifest，采集器按既有上限换seed重试；原始backup仍保留。
 
 这不会使不同任务总时长相同。动作链更长、包含固定物理计时的任务仍更长；目标是避免单个接触段失败导致整条无谓降速。
@@ -33,11 +34,15 @@ bash scripts/collect_kitchen_dataset.sh \
   --profile research --motion-profile faster --postprocess adaptive
 ```
 
+需要更快时加`--defer-backup-replay`，含义见下文。
+
 adaptive初始倍率固定4，局部倍率由候选生成器选择；不用手动列`--optimization-factors`。若明确填写，只接受`--optimization-factors 4`，避免把旧`continuous`的3/5请求误用于这里。
 
 批处理使用spawn，每个worker子进程只处理一个case，结束后释放本地仿真资源；建议先用`--jobs 2`。
 
 `--resume`继续使用原批次source identity、备份和已封存组件；部分试跑目录不覆盖。代码改动后使用新批次目录，不能强行更改旧计划身份。
+
+可选`--defer-backup-replay`（仅adaptive，默认关闭）：首次专家按原流程执行并做原生最终成功判定，但备份先不做独立重放，标记为`EXECUTED_REPLAY_PENDING`。选中高速轨迹时，备份只作为动作来源和`source_group`（报告记`backup_replay: NOT_REQUIRED`）；需要回退到备份时，先对备份补做独立重放（`backup_replay.json`），通过才作为`ORIGINAL_FALLBACK`数据，未通过则该attempt失败。进入manifest的每条数据仍有独立重放。该开关写入批次计划，续跑沿用。
 
 ## 优化已有backup
 
@@ -58,4 +63,4 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 .venv/bin/python -B \
 - `data/adaptive_optimization.py`：候选排序、局部重试、最后全局回退、独立重放与正式资格封存。
 - `data/optimized_collection.py`：与现有backup/最终选择/恢复校验共用。
 
-中间候选仍只有动作与小报告，H5只用于选中轨迹的最终录制。图像不写入H5。实验控制参数与候选局部窗口会写入H5 metadata和报告，500Hz物理、25Hz控制、原模型和执行器力矩限保持。
+2026-11-12起，可被选中的候选在试跑时直接录制H5，但不做独立重放；只有最终被选中的那一条做独立重放（`verification.json`），不再为录制重新执行一遍。失败候选只删除它自己的残缺录制，目录中只留小报告。原速碰撞审计试跑不录制。图像不写入H5。实验控制参数与候选局部窗口会写入H5 metadata和报告，500Hz物理、25Hz控制、原模型和执行器力矩限保持。

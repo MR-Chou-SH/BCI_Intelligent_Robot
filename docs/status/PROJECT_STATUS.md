@@ -1,8 +1,10 @@
 # Project Status
 
-Last updated: 2026-11-10
+Last updated: 2026-11-12
 
 ## Kitchen Linux / Task Collection Development
+
+2026-11-12 adaptive collection speed: ported the bit-identical runtime optimizations from `feature/kitchen-linux-task-collection` (backup/final H5 and every trial outcome unchanged). Adaptive repairs now compose when a repair moves the measured failure later (slower caps win, windows merge, wash gate kept; depth<=3, <=10 repair trials), so D09 banana/hotdog seed0 no longer falls back: wash shortfall then microwave button 0.895N<1N are fixed by `wash_completion_gate+button_cap1`, 356.52->101.32s with exact replay. Selectable trials are recorded while running and only the selected one is replayed (no second execution); optional `--defer-backup-replay` (adaptive only, default off) replays the native backup only if it becomes the fallback sample. Same seed, single process: D09 119.87->91.11s default, 66.02s deferred; L1 apple 11.03->7.22/5.25s. Long-chain check: 7/8 fixed initial states qualify and optimize 3.46-3.52x (4 need composed repairs); D09 banana/hotdog seed1 fails native IK identically on unmodified `0fbf80c`. 172 tests pass; continuous mode unchanged; full catalogue not rerun. [Evidence and boundaries](../development_log/2026-11-12-kitchen-adaptive-collection-speed.md).
 
 2026-11-10 pear/composite path repair: left clearance now checks the complete FR3/UMI arm, not only fingers; delivery first withdraws right then approaches left along checked scene routes, avoiding crossed forearm IK branches. Three previous pear failures now collect/optimize/replay at33.92/46.88/49.80s. Full100-case collection exposed D02's unnecessary meal-corridor retreat; repaired only the direct-to-B1 branch and recollected all8 affected D01/D02 instances successfully. Combined coverage is100/100 at seed0 (92 unaffected first-round cases+8 final-branch cases),84 optimized/16 qualified original fallbacks; every selected trajectory has exact independent replay, matching initial/backup hashes and valid16D policy export.161 tests pass. Evidence spans two recorded source identities, not a rewritten single-source completed batch; arbitrary-seed success is not established. [Repair and exact evidence boundaries](../development_log/2026-11-10-kitchen-pear-corridor-repair.md).
 

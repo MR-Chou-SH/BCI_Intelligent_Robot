@@ -4,7 +4,7 @@
 
 `data/speed_stress.py`提供已规划轨迹的独立1～4倍时序压缩实验，显式放宽私有控制器限制、保留物理任务计时，重新执行并独立重放；不修改正式采集默认值。[结果与复现命令](../../docs/development_log/2026-11-10-kitchen-relaxed-speed4.md)。
 
-正式采集可显式选择`--postprocess adaptive`：优先4倍，仅对按钮、清洗完成及实测失败区间修复时序；原速也碰撞的备份不回退为新数据。100个既有任务实例中97条通过高速重录及独立重放，3条原路径碰撞被明确排除。[规则、结果与采集命令](../../docs/kitchen_platform_v3_20261020/ADAPTIVE_OFFLINE_TIMING_CN.md)。
+正式采集可显式选择`--postprocess adaptive`：优先4倍，仅对按钮、清洗完成及实测失败区间修复时序；原速也碰撞的备份不回退为新数据。100个既有任务实例中97条通过高速重录及独立重放，3条原路径碰撞被明确排除。失败点后移时局部修复会叠加（如补足清洗+按钮原速）；可选`--defer-backup-replay`只在回退时重放备份。[规则、结果与采集命令](../../docs/kitchen_platform_v3_20261020/ADAPTIVE_OFFLINE_TIMING_CN.md)。
 
 上述梨组合的原规划交接已修复：整条左臂退让、B1先右后左的几何接近、直接送盘跳过主食通道退让。完整一轮加受影响8例复测覆盖100/100任务，84优化/16合格原始回退，独立重放误差均为0。[两轮验证记录](../../docs/development_log/2026-11-10-kitchen-pear-corridor-repair.md)。
 
