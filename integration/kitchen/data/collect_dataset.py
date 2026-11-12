@@ -12,7 +12,7 @@ import json
 import multiprocessing
 from pathlib import Path
 
-from .collect_experts import one_case, save, source_identity, validate_previous,identity_sha256
+from .collect_experts import one_case, save, source_identity, validate_previous,identity_sha256,MAX_JOBS
 from integration.kitchen.tasks.catalog import cases
 from integration.kitchen.launch import run_path
 
@@ -153,7 +153,7 @@ def main(argv=None):
     if (not 1<=len(args.optimization_factors)<=4 or len(set(args.optimization_factors))!=len(args.optimization_factors)
         or any(not 1<f<=MAX_FACTOR for f in args.optimization_factors)):
         parser.error('Use 1..4 unique optimization factors >1 and <=5')
-    if not (1 <= args.samples_per_case <= 1000 and 1 <= args.max_attempts <= 10 and 1 <= args.jobs <= 4
+    if not (1 <= args.samples_per_case <= 1000 and 1 <= args.max_attempts <= 10 and 1 <= args.jobs <= MAX_JOBS
             and 30 <= args.case_timeout <= 3600 and 0 <= args.base_seed
             and args.base_seed + args.samples_per_case * args.max_attempts <= 2**32):
         parser.error('Invalid collection bounds; see --help')

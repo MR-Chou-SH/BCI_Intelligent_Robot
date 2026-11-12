@@ -3,9 +3,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
-import tempfile
-from pathlib import Path
 
 from .layouts import layout_code_sha256, layout_manifest_sha256
 
@@ -21,20 +18,19 @@ _SEED_INITIALIZATION_FIELDS = (
 
 
 def compiled_model_sha256(model) -> str:
-    """Hash the exact compiled MJB serialization, cleaning up one private temp file."""
-    import mujoco
+    """Hash the exact compiled MJB serialization.
 
-    descriptor, filename = tempfile.mkstemp(prefix="kitchen-model-", suffix=".mjb")
-    os.close(descriptor)
-    path = Path(filename)
-    try:
-        mujoco.mj_saveModel(model, str(path))
-        payload = path.read_bytes()
-        if len(payload) != int(mujoco.mj_sizeModel(model)) or not payload:
-            raise RuntimeError('COMPILED_MODEL_SERIALIZATION_INCOMPLETE')
-        return hashlib.sha256(payload).hexdigest()
-    finally:
-        path.unlink(missing_ok=True)
+    The same bytes as mj_saveModel(model, file), serialized into memory: the
+    ~120MB kitchen model no longer makes a temp-file round trip per build.
+    """
+    import mujoco
+    import numpy as np
+
+    payload = np.zeros(int(mujoco.mj_sizeModel(model)), dtype=np.uint8)
+    if not payload.size:
+        raise RuntimeError('COMPILED_MODEL_SERIALIZATION_INCOMPLETE')
+    mujoco.mj_saveModel(model, None, payload)
+    return hashlib.sha256(payload).hexdigest()
 
 
 def scene_identity_sha256(*, source_sha256: str, layout_id: str,

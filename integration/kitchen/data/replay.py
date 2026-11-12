@@ -172,9 +172,9 @@ def inspect_trajectory(path):return compact_report(path,read_compact(path))
 
 
 def scene_for(header):
-    from robot_arm.kitchen.model import build_scene
+    from robot_arm.kitchen.scene_cache import cached_build_scene
     from robot_arm.kitchen.scene_identity import model_identity
-    scene = build_scene(layout_id=header["layout"], seed=header["base_seed"])
+    scene = cached_build_scene(layout_id=header["layout"], seed=header["base_seed"])
     if model_identity(scene, builder_sha256=scene.builder_sha256) != header["model_identity"]:
         raise ValueError("Recorded and current compiled model identity differ; use matching environment")
     return scene

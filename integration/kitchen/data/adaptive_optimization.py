@@ -8,7 +8,7 @@ import multiprocessing
 from .files import digest,read,replace_json
 from .retiming_experiment import load_backup
 from .speed_stress import trial,schedule
-from .collect_experts import source_identity,identity_sha256
+from .collect_experts import source_identity,identity_sha256,MAX_JOBS
 from integration.kitchen.planning.local_timing import base_caps,repair_recipes,collision_pair
 
 # A repair that moves the first failure later is refined with the next failure.
@@ -154,7 +154,7 @@ def main():
     parser.add_argument('--backup-root',type=Path,required=True);parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--case-ids',nargs='+');parser.add_argument('--jobs',type=int,default=2)
     args=parser.parse_args()
-    if not 1<=args.jobs<=4:parser.error('jobs must be 1..4')
+    if not 1<=args.jobs<=MAX_JOBS:parser.error(f'jobs must be 1..{MAX_JOBS}')
     sources={}
     for path in sorted(args.backup_root.glob('attempts/**/backup/report.json')):
         r=read(path);key=r['case']['case_id']

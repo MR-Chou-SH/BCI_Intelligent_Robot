@@ -11,12 +11,16 @@ from datetime import datetime,timezone
 import hashlib
 import json
 import multiprocessing
+import os
 from pathlib import Path
 import shutil
 import time
 
 from integration.kitchen.tasks.catalog import catalogue,cases
 from integration.kitchen.launch import ROOT,run_path
+
+# Each worker is one single-threaded simulation process (BLAS/OpenMP pinned to 1).
+MAX_JOBS=os.cpu_count() or 4
 
 
 def save(path,value):
@@ -193,8 +197,8 @@ def main(argv=None):
     parser.add_argument("--resume",action="store_true")
     parser.add_argument("--diagnostics",action="store_true",help="Opt in to large physics and RPC debug logs")
     args=parser.parse_args(argv)
-    if not 1<=args.jobs<=4 or not 30<=args.case_timeout<=3600 or not 1<=len(args.seeds)<=20 or any(not 0<=s<2**32 for s in args.seeds):
-        parser.error("jobs 1..4, timeout 30..3600, 1..20 uint32 seeds required")
+    if not 1<=args.jobs<=MAX_JOBS or not 30<=args.case_timeout<=3600 or not 1<=len(args.seeds)<=20 or any(not 0<=s<2**32 for s in args.seeds):
+        parser.error(f"jobs 1..{MAX_JOBS}, timeout 30..3600, 1..20 uint32 seeds required")
     if len(args.seeds)!=len(set(args.seeds)):
         parser.error("Duplicate seeds would overwrite the same case; use unique seeds")
     selected=cases(args.suite)

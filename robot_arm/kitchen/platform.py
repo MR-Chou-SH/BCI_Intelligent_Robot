@@ -23,7 +23,7 @@ from .contact_execution import ENFORCE_CONTACT_POLICY, ContactExecution, DEVICE_
 # are not enforced during motion; outcomes are checked at segment ends.
 ENFORCE_COLLISION_CERTIFICATE = False
 from .layouts import DEFAULT_PLATFORM_LAYOUT,layout_manifest
-from .model import build_scene
+from .scene_cache import cached_build_scene
 from .registry import REMOVED_V3, SceneRegistry, control_identity, digest
 
 
@@ -164,7 +164,7 @@ class KitchenPlatform:
         # Prepare the entire episode privately. Publication occurs only after
         # geometry, components, metadata storage and old-record sealing succeed.
         try:
-            scene=build_scene(layout_id=layout,seed=0 if research else seed)
+            scene=cached_build_scene(layout_id=layout,seed=0 if research else seed)
             door_angle=float(layout_manifest(layout).get("initial_door_angle_rad",0.))
             if door_angle:
                 import mujoco
