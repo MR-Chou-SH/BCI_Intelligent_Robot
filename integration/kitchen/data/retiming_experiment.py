@@ -45,7 +45,8 @@ class ContextClient(LocalPlannerClient):
 
 def load_backup(directory):
     directory=Path(directory);report=read(directory/'report.json')
-    if report.get('status')!='QUALIFIED_EXPERT' or not report.get('task_success'):
+    # A deferred-replay backup is only an action source; selected data is replayed.
+    if report.get('status') not in ('QUALIFIED_EXPERT','EXECUTED_REPLAY_PENDING') or not report.get('task_success'):
         raise ValueError('Backup is not qualified')
     path=directory/'trajectory.h5'
     if digest(path)!=report['verification']['sha256']:raise ValueError('Backup trajectory hash mismatch')

@@ -97,5 +97,88 @@ class OptimizedCollectionTests(unittest.TestCase):
             self.assertFalse(qualified or missing);self.assertEqual(pending[0][2],0)
             self.assertEqual(pending[0][3],directory)
 
+    def deferred_worker(self,root,optimized,replay_status='CONTROL_RESIMULATION_PASS',defer=True):
+        case=cases('atomic')[0];identity={'test':True};backup=root/'backup'
+        settings={'mode':'adaptive','factors':[4.],**({'defer_backup_replay':True} if defer else {})}
+        def native(job,capture_context=False,replay=True):
+            self.assertTrue(capture_context);self.assertEqual(replay,not defer)
+            backup.mkdir(parents=True);h5=backup/'trajectory.h5';h5.write_bytes(b'native expert')
+            ap=backup/'annotations.json';ap.write_text('{}')
+            worker.save(backup/'report.json',{'case':case,'seed':0,'status':'EXECUTED_REPLAY_PENDING','task_success':True,
+                'trajectory':str(h5),'annotations':str(ap),'annotations_sha256':worker.digest(ap),
+                'verification':{'status':'DEFERRED','sha256':worker.digest(h5),'task_success':None},
+                'simulated_seconds':10.,'source_identity_sha256':worker.identity_sha256(identity)})
+        def adaptive(backup_dir,directory,**kw):
+            if not optimized:return None,None,[],[]
+            directory.mkdir();path=directory/'trajectory.h5';path.write_bytes(b'optimized expert')
+            annotation=directory/'annotations.json';annotation.write_text('{}')
+            result={'case':case,'seed':0,'status':'QUALIFIED_EXPERT','task_success':True,'simulated_seconds':3.,
+                'trajectory':str(path),'annotations':str(annotation),'annotations_sha256':worker.digest(annotation),
+                'verification':{'sha256':worker.digest(path)},'source_identity_sha256':worker.identity_sha256(identity)}
+            worker.save(directory/'qualified.json',result);return result,directory/'qualified.json',[],[]
+        def replay(path):
+            return {'status':replay_status,'sha256':worker.digest(path),'task_success':True,
+                    'maximum_qpos_error':0.,'maximum_qvel_error':0.,'duration_s':10.,'task_errors':[]}
+        job=(case,0,str(root),'research',60,identity,False,'faster')
+        patches=[patch.object(worker,'validate_previous'),patch.object(worker,'source_identity',return_value=identity),
+                 patch.object(worker,'one_case',side_effect=native),
+                 patch.object(worker,'load_backup',return_value=({}, {},{})),
+                 patch('integration.kitchen.data.adaptive_optimization.optimize',side_effect=adaptive),
+                 patch('integration.kitchen.data.replay.verify',side_effect=replay)]
+        for item in patches:item.start()
+        self.addCleanup(lambda:[item.stop() for item in patches])
+        from integration.kitchen.data import replay as replay_module
+        return job,settings,replay_module.verify
+
+    def test_deferred_backup_replay_is_skipped_when_optimized(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)/'attempt';job,settings,verify=self.deferred_worker(root,True)
+            result=worker.optimized_case(job,settings);self.assertEqual(result,worker.optimized_case(job,settings))
+            report=worker.read(root/'report.json');verify.assert_not_called()
+            self.assertEqual(report['postprocessing']['backup_replay'],'NOT_REQUIRED')
+            self.assertEqual((root/'trajectory.h5').read_bytes(),b'optimized expert')
+            self.assertEqual(worker.read(root/'backup/report.json')['status'],'EXECUTED_REPLAY_PENDING')
+            worker.validate_backup_receipt(report,root)
+            del report['postprocessing']['settings']['defer_backup_replay']
+            with self.assertRaisesRegex(ValueError,'Unqualified backup'):worker.validate_backup_receipt(report,root)
+
+    def test_deferred_backup_is_replayed_before_fallback_admission(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)/'attempt';job,settings,verify=self.deferred_worker(root,False)
+            result=worker.optimized_case(job,settings);self.assertEqual(result,worker.optimized_case(job,settings))
+            report=worker.read(root/'report.json');self.assertEqual(verify.call_count,1)
+            self.assertEqual(report['status'],'QUALIFIED_EXPERT')
+            self.assertEqual(report['verification']['status'],'CONTROL_RESIMULATION_PASS')
+            self.assertEqual(report['postprocessing']['backup_replay'],'PASS')
+            self.assertEqual((root/'trajectory.h5').read_bytes(),b'native expert')
+            (root/'backup_replay.json').unlink()
+            with self.assertRaisesRegex(ValueError,'Deferred backup replay'):worker.validate_backup_receipt(report,root)
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)/'attempt';job,settings,_=self.deferred_worker(root,False,replay_status='CONTROL_RESIMULATION_DIVERGED')
+            r=worker.optimized_case(job,settings)
+            self.assertEqual(r['status'],'FAILED_ATTEMPT');self.assertEqual(r['error'],'BACKUP_REPLAY_FAILED')
+            self.assertFalse((root/'trajectory.h5').exists())
+
+    def test_pending_backup_requires_explicit_deferral(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)/'attempt';job,_,verify=self.deferred_worker(root,True,defer=True)
+            worker.one_case(job,capture_context=True,replay=False)  # Seal a pending backup, then run without the batch setting.
+            r=worker.optimized_case(job,{'mode':'adaptive','factors':[4.]})
+            self.assertEqual(worker.read(root/'report.json')['postprocessing']['status'],'BACKUP_FAILED')
+            self.assertNotEqual(r['status'],'QUALIFIED_EXPERT');verify.assert_not_called()
+
+    def test_interrupted_deferred_backup_reuses_seed_only_when_deferral_enabled(self):
+        case=cases('atomic')[0]
+        for defer,resumed in ((True,True),(False,False)):
+            plan={'cases':[case],'samples_per_case':1,'base_seed':0,'max_attempts':2,'identity':{},
+                  'postprocessing':{'mode':'adaptive','factors':[4.],**({'defer_backup_replay':True} if defer else {})}}
+            with tempfile.TemporaryDirectory() as d:
+                output=Path(d);directory=dataset.slot_path(output,case,0)/'attempt_01_seed0'
+                (directory/'backup').mkdir(parents=True)
+                worker.save(directory/'backup/report.json',{'status':'EXECUTED_REPLAY_PENDING'})
+                worker.save(directory.with_suffix('.job.json'),{'case_id':case['case_id'],'sample':0,'seed':0})
+                qualified,pending,missing=dataset.scan(output,plan)
+                self.assertEqual(pending[0][3]==directory,resumed)
+
 
 if __name__=='__main__':unittest.main()

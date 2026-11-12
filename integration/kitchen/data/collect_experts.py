@@ -70,8 +70,12 @@ def identity_sha256(identity):
     return hashlib.sha256(json.dumps(identity,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 
 
-def one_case(job, *, capture_context=False):
-    """One episode: native execution -> seal -> independent replay/success."""
+def one_case(job, *, capture_context=False, replay=True):
+    """One episode: native execution -> seal -> independent replay/success.
+
+    replay=False is only for optimization backups: the native success is sealed
+    as EXECUTED_REPLAY_PENDING and replayed later if the backup becomes data.
+    """
     from robot_arm.kitchen.platform import KitchenPlatform
     from integration.kitchen.planning.expert import KitchenExpert
     from integration.kitchen.runtime.client import LocalPlannerClient
@@ -116,16 +120,23 @@ def one_case(job, *, capture_context=False):
         expert.call('hold',mutating=True)
         expert.call('stop_state_recording',mutating=True)
         phase('seal')
-        verification=verify(recording['path'])
-        phase('replay')
-        report['simulated_seconds']=verification['duration_s']
-        report['verification']={k:verification[k] for k in ('status','sha256','task_success','maximum_qpos_error','maximum_qvel_error')}
-        if verification['status']!='CONTROL_RESIMULATION_PASS':raise RuntimeError('EXPERT_REPLAY_DIVERGED')
-        if verification['task_success'] is not True:raise RuntimeError('REPLAY_TASK_FAILED: '+repr(verification['task_errors']))
+        if replay:
+            verification=verify(recording['path'])
+            phase('replay')
+            report['simulated_seconds']=verification['duration_s']
+            report['verification']={k:verification[k] for k in ('status','sha256','task_success','maximum_qpos_error','maximum_qvel_error')}
+            if verification['status']!='CONTROL_RESIMULATION_PASS':raise RuntimeError('EXPERT_REPLAY_DIVERGED')
+            if verification['task_success'] is not True:raise RuntimeError('REPLAY_TASK_FAILED: '+repr(verification['task_errors']))
+        else:
+            from .replay import inspect_trajectory
+            audit=inspect_trajectory(recording['path'])
+            report['simulated_seconds']=audit['duration_s']
+            report['verification']={'status':'DEFERRED','sha256':audit['sha256'],'task_success':None,
+                                    'maximum_qpos_error':None,'maximum_qvel_error':None}
         from .annotations import build_annotations
         annotations=build_annotations(recording['path'])
         phase('annotation')
-        report.update(status='QUALIFIED_EXPERT',task_success=True)
+        report.update(status='QUALIFIED_EXPERT' if replay else 'EXECUTED_REPLAY_PENDING',task_success=True)
     except Exception as error:report['error']=repr(error)
     finally:
         if platform:
@@ -136,7 +147,7 @@ def one_case(job, *, capture_context=False):
             except Exception as error:report.update(status='FAILED_ATTEMPT',task_success=False,error=repr(error))
         if diagnostics and quality:
             report['diagnostics']={'quality':quality.report(),'events':expert.events if expert else []}
-        if report['status']=='QUALIFIED_EXPERT':
+        if report['status'] in ('QUALIFIED_EXPERT','EXECUTED_REPLAY_PENDING'):
             destination=directory/'trajectory.h5'
             Path(recording['path']).replace(destination)
             report['trajectory']=str(destination)

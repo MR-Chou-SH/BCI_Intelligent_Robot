@@ -38,17 +38,27 @@ def validate_backup_receipt(report,attempt):
     path=Path(item['report']).resolve();attempt=Path(attempt).resolve()
     if path!=attempt/'backup/report.json' or digest(path)!=item['report_sha256']:
         raise ValueError('Backup receipt path/hash mismatch')
-    backup=read(path)
-    if backup['status']!='QUALIFIED_EXPERT' or not backup['task_success']:raise ValueError('Unqualified backup')
+    backup=read(path);post=report['postprocessing']
+    allowed={'QUALIFIED_EXPERT'}|({'EXECUTED_REPLAY_PENDING'} if post.get('settings',{}).get('defer_backup_replay') else set())
+    if backup['status'] not in allowed or not backup['task_success']:raise ValueError('Unqualified backup')
+    if backup['status']=='EXECUTED_REPLAY_PENDING' and post['status']=='ORIGINAL_FALLBACK':
+        replay=attempt/'backup_replay.json'
+        if not replay.exists() or not deferred_replay_passed(read(replay),backup):
+            raise ValueError('Deferred backup replay missing or failed')
     data=path.with_name('trajectory.h5')
     if digest(data)!=backup['verification']['sha256']:raise ValueError('Backup data hash mismatch')
     if backup.get('annotations_sha256') and digest(path.with_name('annotations.json'))!=backup['annotations_sha256']:
         raise ValueError('Backup annotation hash mismatch')
     if backup.get('action_context_sha256') and digest(path.with_name('action_context.json'))!=backup['action_context_sha256']:
         raise ValueError('Backup sparse context hash mismatch')
-    post=report['postprocessing'];selected=Path(post['selected_report']).resolve()
+    selected=Path(post['selected_report']).resolve()
     if not selected.is_relative_to(attempt) or digest(selected)!=post['selected_report_sha256']:
         raise ValueError('Selected component report path/hash mismatch')
+
+
+def deferred_replay_passed(verification,backup):
+    return (verification['status']=='CONTROL_RESIMULATION_PASS' and verification['task_success'] is True
+            and verification['sha256']==backup['verification']['sha256'])
 
 
 def copy_immutable(source,destination):
@@ -95,9 +105,11 @@ def optimized_case(job,settings):
     started=time.perf_counter();backup=root/'backup';backup_report=backup/'report.json'
     if not backup_report.exists():
         if backup.exists():raise ValueError('Unsealed backup preserved; cannot overwrite it')
-        one_case((case,seed,str(backup),profile,timeout,identity,False,*options),capture_context=True)
+        one_case((case,seed,str(backup),profile,timeout,identity,False,*options),capture_context=True,
+                 replay=not settings.get('defer_backup_replay',False))
     base=check_report(backup_report,root,case,seed,identity)
-    if base['status']!='QUALIFIED_EXPERT':
+    pending=base['status']=='EXECUTED_REPLAY_PENDING' and settings.get('defer_backup_replay',False)
+    if base['status']!='QUALIFIED_EXPERT' and not pending:
         save(root/'report.json',{**base,'postprocessing':{'status':'BACKUP_FAILED','backup_report':str(backup_report)},
             'wall_seconds':time.perf_counter()-started})
         return receipt(root/'report.json')
@@ -158,6 +170,28 @@ def optimized_case(job,settings):
             'wall_seconds':time.perf_counter()-started,'postprocessing':{'status':'BACKUP_AUDIT_FAILED',
                 'backup_report':str(backup_report),'trials':trials,'generation_errors':generation_errors}})
         return receipt(root/'report.json')
+    deferred=None
+    if pending:
+        deferred='NOT_REQUIRED'
+        if selected_report==backup_report:
+            # The native backup becomes the sample: replay it now, exactly as an
+            # eagerly verified backup would have been.
+            replay_path=root/'backup_replay.json'
+            if replay_path.exists():verification=read(replay_path)
+            else:
+                from .replay import verify
+                verification=verify(base['trajectory'])
+                verification={k:verification[k] for k in ('status','sha256','task_success','maximum_qpos_error',
+                                                           'maximum_qvel_error','duration_s')}
+                save(replay_path,verification)
+            if not deferred_replay_passed(verification,base):
+                save(root/'report.json',{'case':case,'seed':seed,'status':'FAILED_ATTEMPT','task_success':False,
+                    'source_identity_sha256':identity_sha256(identity),'error':'BACKUP_REPLAY_FAILED',
+                    'wall_seconds':time.perf_counter()-started,'postprocessing':{'status':'BACKUP_REPLAY_FAILED',
+                        'backup_report':str(backup_report),'trials':trials,'generation_errors':generation_errors}})
+                return receipt(root/'report.json')
+            selected={**base,'status':'QUALIFIED_EXPERT','verification':{k:v for k,v in verification.items() if k!='duration_s'}}
+            deferred='PASS'
     copy_immutable(selected['trajectory'],root/'trajectory.h5')
     copy_immutable(selected['annotations'],root/'annotations.json')
     result={**selected,'trajectory':str(root/'trajectory.h5'),'annotations':str(root/'annotations.json'),
@@ -169,7 +203,7 @@ def optimized_case(job,settings):
             'original_simulated_seconds':base['simulated_seconds'],'final_simulated_seconds':selected['simulated_seconds'],
             'trials':trials,'generation_errors':generation_errors,
             'wall_scope':'current invocation including new backup/trials/recording/replay; reused stages excluded',
-            'source_group':base['verification']['sha256']}}
+            'source_group':base['verification']['sha256'],**({'backup_replay':deferred} if deferred else {})}}
     # The sparse context belongs to the immutable original, not the final file.
     for key in ('action_context','action_context_sha256'):result.pop(key,None)
     save(root/'report.json',result)

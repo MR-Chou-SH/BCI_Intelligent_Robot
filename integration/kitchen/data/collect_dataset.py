@@ -83,7 +83,8 @@ def scan(output, plan):
             row = recover_attempt(directory, case, seed, output, plan['identity'])
             if row['status']=='INTERRUPTED' and plan.get('postprocessing',{}).get('mode') in ('continuous','adaptive'):
                 backup=directory/'backup/report.json'
-                if backup.exists() and read(backup).get('status')=='QUALIFIED_EXPERT':
+                sealed={'QUALIFIED_EXPERT'}|({'EXECUTED_REPLAY_PENDING'} if plan['postprocessing'].get('defer_backup_replay') else set())
+                if backup.exists() and read(backup).get('status') in sealed:
                     pending.append((case,sample,seed,directory));break
             history.append(row)
             if row['status'] == 'QUALIFIED_EXPERT':
@@ -138,12 +139,16 @@ def main(argv=None):
     parser.add_argument('--motion-profile',choices=('standard','faster'),default='standard')
     parser.add_argument('--postprocess',choices=('continuous','adaptive','none'),default='continuous')
     parser.add_argument('--optimization-factors',nargs='+',type=float)
+    parser.add_argument('--defer-backup-replay',action='store_true',
+        help='adaptive only: replay the native backup only if it becomes the sample (fallback)')
     parser.add_argument('--resume', action='store_true')
     parser.add_argument('--plan-only', action='store_true')
     args = parser.parse_args(argv)
     if args.optimization_factors is None:args.optimization_factors=[4.] if args.postprocess=='adaptive' else [3.,5.]
     if args.postprocess=='adaptive' and args.optimization_factors!=[4.]:
         parser.error('adaptive starts at4x and derives local repairs; use --optimization-factors 4')
+    if args.defer_backup_replay and args.postprocess!='adaptive':
+        parser.error('--defer-backup-replay requires --postprocess adaptive')
     from integration.kitchen.planning.action_retiming import MAX_FACTOR
     if (not 1<=len(args.optimization_factors)<=4 or len(set(args.optimization_factors))!=len(args.optimization_factors)
         or any(not 1<f<=MAX_FACTOR for f in args.optimization_factors)):
@@ -161,7 +166,8 @@ def main(argv=None):
             'runner_sha256': digest(__file__), 'samples_per_case': args.samples_per_case,
             'max_attempts': args.max_attempts, 'base_seed': args.base_seed, 'jobs': args.jobs,
             'case_timeout': args.case_timeout, 'profile': args.profile, 'format':'kitchen_state_actions_v3','motion_profile':args.motion_profile,
-            'postprocessing':{'mode':args.postprocess,'factors':args.optimization_factors}}
+            'postprocessing':{'mode':args.postprocess,'factors':args.optimization_factors,
+                              **({'defer_backup_replay':True} if args.defer_backup_replay else {})}}
     output = args.output
     output.mkdir(parents=True, exist_ok=True)
     with (output / '.runner.lock').open('a') as lock:
