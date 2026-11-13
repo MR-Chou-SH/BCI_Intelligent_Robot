@@ -6,9 +6,13 @@ import math
 
 from integration.kitchen.planning.common import ExpertFailure
 
+# Fruit always uses the left half of the tray (tray local -X, the left arm's
+# side) and meals the right half, so one fine instruction means one placement.
+FRUIT_TRAY_SLOT = -.11
+
 class TaskExecution:
     def prepare(self, case):
-        task,meal=case["task"],case["meal"]
+        task,fruit,meal=case["task"],case["fruit"],case["meal"]
         if task=="D03":task="R2"
         self.mark("initial_settle")
         self.wait(1.)
@@ -20,6 +24,17 @@ class TaskExecution:
         # layout's current default is 100deg open, so prepare it explicitly.
         if task in ("R3", "R4"):
             self.close_door()
+        if task=="B1" and (fruit or meal):
+            # Loaded delivery: place the tray load with the same placements as
+            # the composites (unrecorded, like the oven preparation), then
+            # start the recorded delivery from home as the empty-tray B1 does.
+            if fruit:
+                self.fruit(fruit,slot=FRUIT_TRAY_SLOT)
+                if meal:self.clear_left_corridor()
+            if meal:
+                self.meal(meal)
+                self.return_home("right")
+            self.return_home("left")
         self.mark("preparation_complete")
 
 
@@ -29,7 +44,7 @@ class TaskExecution:
         quality.start(name)
         self.mark("skill_started",skill=name)
         if name in ("L1","L2"):
-            self.fruit(fruit,wash=name=="L2",slot=-.11 if meal else 0.)
+            self.fruit(fruit,wash=name=="L2",slot=FRUIT_TRAY_SLOT)
             self.settle_quality(quality,fruit+":tray")
         elif name=="R1":
             exit_pose=self.meal(meal,"oven",defer_oven_exit=True)
@@ -78,18 +93,22 @@ class TaskExecution:
             skills = chain(case)
             for index, skill in enumerate(skills):
                 self.mark('language_stage_started',skill=skill)
-                if skill=="heat_meal_state_dependent":self.heat_meal(case,quality)
-                else:self.skill(skill,case,quality)
-                if skill in ("L1", "L2") and index + 1 < len(skills) and skills[index+1]!="B1":
+                if index and skills[index-1] in ("L1", "L2") and skill!="B1":
                     # Releasing fruit leaves the long left gripper above the
                     # tray, inside the right forearm's placement corridor.
                     # Leave that corridor before planning the next skill.
                     # Direct delivery has its own checked two-arm approach;
                     # it does not need the right-only meal placement corridor.
+                    # The retreat opens the next language stage: the fruit
+                    # stage then ends at the settled placement exactly like
+                    # atomic L1/L2, and the visible left arm above the tray
+                    # tells the meal stage to clear it first.
                     self.mark("composite_left_clearance", fruit=case["fruit"])
                     self.clear_left_corridor()
                     self.settle_quality(quality,case["fruit"]+":tray")
                     quality.tray_object(case["fruit"])
+                if skill=="heat_meal_state_dependent":self.heat_meal(case,quality)
+                else:self.skill(skill,case,quality)
         # Later skills must not undo earlier subgoals in a composite.
         from integration.kitchen.validation.success import validate_final
         if case["fruit"]:self.settle_quality(quality,case["fruit"]+":tray")

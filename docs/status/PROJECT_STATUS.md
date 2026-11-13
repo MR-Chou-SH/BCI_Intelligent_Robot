@@ -1,8 +1,10 @@
 # Project Status
 
-Last updated: 2026-11-12
+Last updated: 2026-11-13
 
 ## Kitchen Linux / Task Collection Development
+
+2026-11-13 one fine instruction, one behaviour: fruit always goes to the left half of the tray (local x -0.11 m, meals +0.11 m) and every banana is turned 90 degrees before placing, in atomic and composite tasks alike; the left-arm corridor retreat after fruit now opens the next language stage (R5/H) instead of ending the fruit stage (composite actions unchanged, element-wise identical). Atomic B1 now covers 15 tray loads (empty, 4 fruits, 2 meals, 8 fruit+meal pairs) under the same delivery prompt; loads are placed unrecorded with the composite placements, then both arms return home. Catalogue 100 -> 114 instances (34 atomic), 2 per case = 228. Full catalogue direct-fast: seed 0 114/114, seed 1 114/114 (113 direct; 19 banana cases needed seed 2, incl. newly L2/D02 banana and B1 banana+meal inheriting the composites' washed-banana turn/meal placement limits). 199 tests pass. Old L1/L2/D01/D02 data and old stage boundaries must not be mixed with new data. [Details](../development_log/2026-11-13-kitchen-instruction-consistency.md).
 
 2026-11-13 default VLA rig is 224x224: camera1 is the 55-degree frontal overhead `v3_vla224` view fitted to a square frame with black top/bottom bands (every fruit, meal, tray, sink, microwave, delivery table and both arms inside the frame and outside the bands on 89,033 checked frames of 300 trajectories); left wrist camera2 is 224x224 too. Training resizes to the rig size, so no extra preprocessing. The former 512x512 view-C rig is `integration/kitchen/vla/cameras_c512.json` for existing checkpoints. L1 apple sidecars: PNG 14.5 vs 43.6 MiB, H.264 213 vs 625 KiB. 192 tests pass. [Details](../development_log/2026-11-12-kitchen-adaptive-collection-speed.md).
 

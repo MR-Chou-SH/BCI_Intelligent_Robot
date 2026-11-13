@@ -52,16 +52,16 @@ class ExpertContracts(unittest.TestCase):
 
     def test_exact_user_table_instances_and_namespace(self):
         rows=cases()
-        self.assertEqual(len(rows),100)
-        self.assertEqual(len({r["case_id"] for r in rows}),100)
+        self.assertEqual(len(rows),114)
+        self.assertEqual(len({r["case_id"] for r in rows}),114)
         counts=Counter(row["task"] for row in rows)
         self.assertEqual({k:counts[k] for k in ("L1","L2","R1","R2","R3","R4","R5","B1")},
-                         {"L1":4,"L2":4,"R1":2,"R2":2,"R3":3,"R4":2,"R5":2,"B1":1})
+                         {"L1":4,"L2":4,"R1":2,"R2":2,"R3":3,"R4":2,"R5":2,"B1":15})
         self.assertEqual([counts["C%02d"%i] for i in range(4,9)],[2,8,8,8,8])
         self.assertEqual([counts["D%02d"%i] for i in range(1,10)],[4,4,2,2,2,8,8,8,8])
         self.assertFalse(set(counts)&{"C01","C02","C03"})
         self.assertTrue(all(r["namespace"]==NAMESPACE for r in rows))
-        self.assertEqual(catalogue()["atomic_count"],20)
+        self.assertEqual(catalogue()["atomic_count"],34)
         self.assertEqual(catalogue()["composite_count"],80)
 
     def test_four_pad_gate_is_and_not_or_and_restricts_payload(self):

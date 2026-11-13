@@ -8,13 +8,13 @@
 
 上述梨组合的原规划交接已修复：整条左臂退让、B1先右后左的几何接近、直接送盘跳过主食通道退让。完整一轮加受影响8例复测覆盖100/100任务，84优化/16合格原始回退，独立重放误差均为0。[两轮验证记录](../../docs/development_log/2026-11-10-kitchen-pear-corridor-repair.md)。
 
-`rl/` 是显式可选的状态真值数据增强层：可复用100实例任务监视器，当前CPU/Warp训练环境只支持L1 apple；算法复用`thirdparty/discodemo`，GPU后端在`robot_arm/kitchen/warp_*`。RL依赖在项目`.venv`通过`--with-rl`安装，基础仿真不强制依赖Torch。生成的动作必须在原CPU模型实测验收并独立重放后才写入合格manifest。[RL运行说明及物理兼容边界](../../docs/data_diversity/DISCODEMO_KITCHEN_RUNBOOK_CN.md)。
+`rl/` 是显式可选的状态真值数据增强层：可复用全部实例的任务监视器，当前CPU/Warp训练环境只支持L1 apple；算法复用`thirdparty/discodemo`，GPU后端在`robot_arm/kitchen/warp_*`。RL依赖在项目`.venv`通过`--with-rl`安装，基础仿真不强制依赖Torch。生成的动作必须在原CPU模型实测验收并独立重放后才写入合格manifest。[RL运行说明及物理兼容边界](../../docs/data_diversity/DISCODEMO_KITCHEN_RUNBOOK_CN.md)。
 
 [50条随机苹果采集→真实replay观测→LeRobot v3→训练→独立评估命令](../../docs/kitchen_platform_v3_20261020/APPLE50_SMOLVLA_CN.md)。采集上限支持每case1000条；replay按manifest读取最终合格轨迹，支持逐episode恢复，不把备份或优化候选重复当作训练样本。
 
 `scripts/kitchen_smolvla.sh evaluate --run <训练目录> --episodes 10 --video`连接单独启动的GPU服务，串行测试多个未见seed，统一保存视频、报告和summary；支持显式输出目录和`--resume`。
 
-当前任务：20 个原子实例、80 个组合实例。批量入口：`bash scripts/collect_kitchen_dataset.sh --output experiments/kitchen_platform_v3/collections/<新批次>`。默认各两条，仅记录轨迹，不启动渲染。
+当前任务：34 个原子实例（B1按托盘负载15种）、80 个组合实例。批量入口：`bash scripts/collect_kitchen_dataset.sh --output experiments/kitchen_platform_v3/collections/<新批次>`。默认各两条，仅记录轨迹，不启动渲染。
 
 默认使用 `--motion-profile standard`；选择 `faster` 可尝试缩短实际运动时长，香蕉左臂技能保留原时序。具体命令和验收范围见下方采集步骤。
 

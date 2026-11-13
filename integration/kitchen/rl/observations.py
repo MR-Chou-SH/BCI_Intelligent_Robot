@@ -9,7 +9,9 @@ class ObservationLayout:
     def __init__(self, reader, scene, case):
         self.reader, self.case = reader, case
         self.ids = reader.ids
-        self.target_id = case.get('fruit') or (case['meal']+'_container' if case.get('meal') else 'wood_tray')
+        # A loaded B1 tray's fruit/meal is its load; delivery targets the tray.
+        self.target_id = 'wood_tray' if case['task']=='B1' else (
+            case.get('fruit') or (case['meal']+'_container' if case.get('meal') else 'wood_tray'))
         self.target_index = self.ids.index(self.target_id)
         self.tray_index = self.ids.index('wood_tray')
         lows, highs = [], []

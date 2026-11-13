@@ -27,7 +27,7 @@ def validate_skill(quality,skill,case):
 def validate_final(quality,case):
     task=case['task'];dev=quality.platform.controller.devices
     if case.get('fruit'):quality.tray_object(case['fruit'])
-    if case.get('meal') and (task in ('R2','R5') or task.startswith(('C','D'))):
+    if case.get('meal') and (task in ('R2','R5','B1') or task.startswith(('C','D'))):
         quality.tray_object(case['meal']+'_container')
     if task in ('C04','C07','C08','D05','D08','D09') and case['meal']+'_container' not in dev.heated:
         raise ValueError('COMPOSITE_HEATED_MEAL_MARKER_LOST')
@@ -66,6 +66,12 @@ def validate_initial(controller,case):
                 raise ValueError('INITIAL_OVEN_NOT_EMPTY')
         elif not ready:raise ValueError('INITIAL_OVEN_OCCUPANCY_MISMATCH')
     if task=='R4' and not ready:raise ValueError('INITIAL_MEAL_NOT_IN_OVEN')
+    if task=='B1':
+        # The tray carries exactly the case's load (none for the empty tray).
+        from integration.kitchen.tasks.legacy_catalog import FRUITS,MEALS
+        load={n for n in (*FRUITS,*(m+'_container' for m in MEALS)) if dev.supports(n,['tray_bottom'])}
+        if load!={n for n in (case.get('fruit'),meal and meal+'_container') if n}:
+            raise ValueError('INITIAL_TRAY_LOAD_MISMATCH')
 
 
 def validate_timeline(case,segments,start,end):

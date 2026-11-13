@@ -1,4 +1,4 @@
-"""Deduplicated Expert V3: 20 atomic + 80 composite instances, including delivery."""
+"""Deduplicated Expert V3: 34 atomic + 80 composite instances, including delivery."""
 from itertools import product
 import hashlib
 import json
@@ -39,10 +39,10 @@ def chain(case):return definition(case)[case['task']][1] if case['task'] not in 
 def cases(suite='all'):
     if suite not in ('atomic','composite','all'):raise ValueError('Unknown suite')
     result=[]
-    def add(task,fruit=None,meal=None,occupancy=None):
-        description,skills=(ATOMIC if task in ATOMIC else COMPOSITE)[task]
+    def add(task,fruit=None,meal=None,occupancy=None,description=None):
+        default,skills=(ATOMIC if task in ATOMIC else COMPOSITE)[task]
         row={'namespace':NAMESPACE,'task':task,'fruit':fruit,'meal':meal,'initial_occupancy':occupancy,
-             'instruction':description,'skills':list(skills),'execution_order':'sequential','task_success':'NOT_VERIFIED'}
+             'instruction':description or default,'skills':list(skills),'execution_order':'sequential','task_success':'NOT_VERIFIED'}
         parts=[NAMESPACE,task]
         if fruit:parts.append(fruit)
         if meal:parts.append(meal)
@@ -54,7 +54,14 @@ def cases(suite='all'):
                 for fruit in FRUITS:add(task,fruit=fruit)
             elif task=='R3':
                 for occupancy in ('empty',*MEALS):add(task,meal=None if occupancy=='empty' else occupancy,occupancy=occupancy)
-            elif task=='B1':add(task)
+            elif task=='B1':
+                # One delivery command for every tray load. The load is an
+                # observable initial state (like R3's oven occupancy), covered
+                # evenly: empty, each fruit, each meal, each fruit+meal pair.
+                # The empty case keeps its historical definition.
+                add(task)
+                loads=[(f,None) for f in FRUITS]+[(None,m) for m in MEALS]+list(product(FRUITS,MEALS))
+                for fruit,meal in loads:add(task,fruit=fruit,meal=meal,description='双臂协作递送已装盘餐盘')
             else:
                 for meal in MEALS:add(task,meal=meal)
     if suite in ('composite','all'):
@@ -78,7 +85,8 @@ def known_cases(namespace):
 
 def catalogue():
     data={'namespace':NAMESPACE,'atomic_count':len(cases('atomic')),'composite_count':len(cases('composite')),
-          'cases':cases(),'definition':'deduplicated 2026-10-27; C01-C03 removed; D01-D09 explicitly append B1',
+          'cases':cases(),'definition':'deduplicated 2026-10-27; C01-C03 removed; D01-D09 explicitly append B1; '
+                       '2026-11-13 B1 tray-load variants',
           'legacy_catalogue_modified':False,'images_included':False}
     data['sha256']=hashlib.sha256(json.dumps(data,sort_keys=True,ensure_ascii=False,separators=(',',':')).encode()).hexdigest()
     return data

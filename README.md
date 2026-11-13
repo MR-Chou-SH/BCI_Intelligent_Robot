@@ -4,7 +4,7 @@
 
 SmolVLA 单任务试验入口：[独立 CUDA 环境、图像数据、训练、RTC 推理服务与 MuJoCo 执行](docs/kitchen_platform_v3_20261020/SMOLVLA_PILOT_CN.md)。训练使用 `thirdparty/smolvla/.venv`，仿真使用原 `.venv`；OpenPI π0.5代码单独置于 `thirdparty/openpi`。可选[DiscoDemo状态RL试验](docs/data_diversity/DISCODEMO_KITCHEN_RUNBOOK_CN.md)用项目`.venv`，显式安装，不向VLA提供物体真值；尚无合格的完整任务RL专家。
 
-去重且包含送餐的[任务总表](docs/kitchen_platform_v3_20261020/TASK_CATALOG_V3_CN.md)：20个原子实例＋80个组合实例，默认各两条，共200条。旧128条批次保留原位置，新批次使用新目录。
+去重且包含送餐的[任务总表](docs/kitchen_platform_v3_20261020/TASK_CATALOG_V3_CN.md)：34个原子实例＋80个组合实例，默认各两条，共228条。旧128条批次保留原位置，新批次使用新目录。
 
 全任务各两条无图像轨迹：使用 [批量采集脚本说明](docs/kitchen_platform_v3_20261020/DATASET_COLLECTION_CN.md)，目标为 100 用例 × 2 条，支持失败重试和断点续跑。
 

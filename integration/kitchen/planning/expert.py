@@ -197,9 +197,10 @@ class KitchenExpert(TaskExecution,ExpertMotion):
     def place(self, label, *, slot=0., defer_oven_exit=False):
         side, name = self.held
         self.mark("place_approach", target=name, support=label)
-        if label=='tray' and name=='banana' and slot:
-            # Composite meals occupy the other half of the tray. Turn the
-            # banana's long local X axis along tray Y before planning placement.
+        if label=='tray' and name=='banana':
+            # Meals occupy the other half of the tray. Turn the banana's long
+            # local X axis along tray Y before planning placement, also when
+            # no meal follows, so the banana instruction has one behaviour.
             self.align_banana_for_tray()
         view = self.view()
         arm = self.scene.arms[side]
@@ -384,7 +385,7 @@ class KitchenExpert(TaskExecution,ExpertMotion):
             self.mark('oven_hand_withdrawal',distance_m=distance)
             exit_pose=(here-desired_body[:,0]*distance,rotation.copy())
             if not defer_oven_exit:self.line(side,*exit_pose)
-        elif name.endswith("_container") or (name=='banana' and slot):
+        elif name.endswith("_container") or (name=='banana' and label=='tray'):
             # Already clear along the measured approach axis. No arbitrary
             # upward detour into a joint limit after a successful release.
             pass
