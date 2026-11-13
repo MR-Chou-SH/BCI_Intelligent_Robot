@@ -8,16 +8,17 @@ from integration.kitchen.vla.server import serve
 
 
 class PolicyBoundaryTests(unittest.TestCase):
-    def test_selected_c_rig_only_allocates_enabled_views(self):
+    def test_default_rig_only_allocates_enabled_views(self):
         from unittest.mock import patch
         from integration.kitchen.vla.images import CameraRig, camera_rig
         rig = camera_rig()
         self.assertEqual([v['enabled'] for v in rig['views']], [True, True, False])
-        self.assertEqual(rig['views'][0]['camera']['position_world_m'], [0., -2.1, 2.2])
+        self.assertEqual(rig['views'][0]['camera']['position_world_m'], [0.2159, -2.9995, 5.0053])
+        self.assertEqual({(v['camera']['width'], v['camera']['height']) for v in rig['views']}, {(224, 224)})
         with patch('integration.kitchen.vla.images.Camera') as camera:
             renderer = CameraRig(object())
             self.assertEqual(camera.call_count, 2)
-            self.assertEqual([call.args[1]['camera'] for call in camera.call_args_list], ['v3_front', 'left_wrist'])
+            self.assertEqual([call.args[1]['camera'] for call in camera.call_args_list], ['v3_vla224', 'left_wrist'])
             self.assertEqual(set(renderer.render_all()), {'observation.images.camera1', 'observation.images.camera2'})
             renderer.close()
 

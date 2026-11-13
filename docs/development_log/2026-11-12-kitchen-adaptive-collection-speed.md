@@ -87,7 +87,7 @@ D09 香蕉＋热狗 seed 1 在首次专家阶段失败：`fruit_legacy_place: IK
 
 主视角直接缩到224×126时水果仅14–18像素；相机不变改成224×224会裁掉苹果、香蕉、左夹爪和部分水槽/微波炉。为此另拟合`v3_vla224`：同为55°正面俯视、视场30°，按方形画面拟合31条轨迹（含22条高速直采长任务），宽度撑满、纵向居中，内容带之外的上下行涂黑（第0–36行、188–223行）。在300条轨迹（高速直采seed 0/1、adaptive seed 0）共89,033帧上分割检查：任何元素都未进入黑边、未触及左右边缘，内容始终在第39–185行。与224×126相比各元素像素多1.34–1.66倍（水果22–28像素）。
 
-VLA侧`Camera`支持`letterbox`，新配置`integration/kitchen/vla/cameras_main55_224.json`（camera1为该视角、左腕不变）；数据导出与推理用`--camera-rig`同一文件，默认配置不变。审阅视频可用`--camera v3_vla224 --width 224 --height 224`。拟合与检查脚本在`experiments/kitchen_platform_v3/videos_main55_20261112/view_fit_vla224/`。
+VLA侧`Camera`支持`letterbox`。2026-11-13按用户要求设为默认：`integration/kitchen/vla/cameras_left.json`的camera1为该视角，左腕camera2与关闭的右腕槽位均为224×224；原512×512视角C配置保存为`cameras_c512.json`供旧checkpoint使用。L1苹果277帧两路实测：逐帧PNG 14.5MiB对43.6MiB，H.264 213KiB对625KiB，渲染1.8s对4.2s。审阅视频可用`--camera v3_vla224 --width 224 --height 224`。拟合与检查脚本在`experiments/kitchen_platform_v3/videos_main55_20261112/view_fit_vla224/`。
 
 ## 证据与复现
 

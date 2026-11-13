@@ -156,7 +156,7 @@ def main(argv=None):
     parser.add_argument('--images', type=Path)
     parser.add_argument('--repo-id', default='local/kitchen_l1_apple')
     parser.add_argument('--instruction-level', choices=['coarse', 'fine'], default='coarse')
-    parser.add_argument('--camera-rig', type=Path, help='Render rig JSON; default C global+left wrist, right disabled')
+    parser.add_argument('--camera-rig', type=Path, help='Render rig JSON; default 224x224 v3_vla224 global + left wrist (cameras_c512.json: previous view C)')
     parser.add_argument('--resume', action='store_true', help='Resume replay from sealed episode receipts')
     parser.add_argument('--expected-episodes', type=int, help='Require exactly this many input trajectories')
     args = parser.parse_args(argv)

@@ -162,7 +162,7 @@ def main():
     parser.add_argument('--timeout', type=float, default=120)
     parser.add_argument('--video', action='store_true', help='Record actual25fps simulation frames, playback1x')
     parser.add_argument('--audit', action='store_true', help='Summarize inference latency, scheduling and motion continuity')
-    parser.add_argument('--camera-rig', type=Path, help='Rig JSON, must match checkpoint; default C global+left wrist')
+    parser.add_argument('--camera-rig', type=Path, help='Rig JSON, must match checkpoint; default 224x224 v3_vla224 global + left wrist; cameras_c512.json for view-C checkpoints')
     parser.add_argument('--initial-seed', type=int, help='L1 only: evaluate a fresh research reset, not the recorded training initial state')
     args = parser.parse_args()
     if (args.seconds <= 0 or args.timeout <= 0 or not 1 <= args.replan_remaining < 50

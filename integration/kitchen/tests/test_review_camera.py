@@ -130,14 +130,17 @@ class ReviewCameraTests(unittest.TestCase):
         self.assertTrue((out[56:168] == 200).all())
         np.testing.assert_array_equal(letterbox(pixels.copy(), None), pixels)
 
-    def test_vla_rig_renders_the_letterboxed_square_view(self):
+    def test_default_vla_rig_renders_the_letterboxed_square_view(self):
         from pathlib import Path
         from integration.kitchen.vla import images
-        rig_path = Path(images.__file__).with_name('cameras_main55_224.json')
+        rig_path = images.DEFAULT_RIG
         rig = images.camera_rig(rig_path)
         camera = rig['views'][0]['camera']
         self.assertEqual((camera['width'], camera['height']), VLA_VIEW_SIZE)
         self.assertEqual(tuple(camera['letterbox']), REVIEW_VIEWS[VLA_VIEW]['letterbox'])
+        self.assertEqual((rig['views'][1]['camera']['width'], rig['views'][1]['camera']['height']), VLA_VIEW_SIZE)
+        legacy = images.camera_rig(rig_path.with_name('cameras_c512.json'))
+        self.assertEqual(legacy['views'][0]['camera']['position_world_m'], [0., -2.1, 2.2])
         bad = images.camera_rig(rig_path); bad['views'][0]['camera']['letterbox'] = [.8, .2]
         with self.assertRaisesRegex(ValueError, 'letterbox'):
             images.camera_rig(bad)

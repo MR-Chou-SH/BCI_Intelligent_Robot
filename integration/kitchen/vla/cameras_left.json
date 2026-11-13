@@ -6,25 +6,49 @@
       "role": "global",
       "enabled": true,
       "camera": {
-        "camera": "v3_front",
-        "width": 512,
-        "height": 512,
-        "position_world_m": [0.0, -2.1, 2.2],
-        "lookat": [0.0, -0.18, 0.9],
-        "fovy_deg": 50.0
+        "camera": "v3_vla224",
+        "width": 224,
+        "height": 224,
+        "position_world_m": [
+          0.2159,
+          -2.9995,
+          5.0053
+        ],
+        "lookat": [
+          0.2159,
+          -1.5656,
+          2.9574
+        ],
+        "fovy_deg": 30.0,
+        "letterbox": [
+          0.1652,
+          0.8393
+        ]
       }
     },
     {
       "key": "observation.images.camera2",
       "role": "left_wrist",
       "enabled": true,
-      "camera": {"camera": "left_wrist", "width": 512, "height": 512, "zoom": 1.0, "lookat": null}
+      "camera": {
+        "camera": "left_wrist",
+        "width": 224,
+        "height": 224,
+        "zoom": 1.0,
+        "lookat": null
+      }
     },
     {
       "key": "observation.images.camera3",
       "role": "right_wrist",
       "enabled": false,
-      "camera": {"camera": "right_wrist", "width": 512, "height": 512, "zoom": 1.0, "lookat": null}
+      "camera": {
+        "camera": "right_wrist",
+        "width": 224,
+        "height": 224,
+        "zoom": 1.0,
+        "lookat": null
+      }
     }
   ]
 }
