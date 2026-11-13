@@ -2,6 +2,7 @@
 import numpy as np
 from robot_arm.kitchen.limits import joint_control_limits
 from robot_arm.kitchen.action_codec import encode
+from robot_arm.kitchen.devices import WASH_DURATION_S, HEAT_DURATION_S
 from integration.kitchen.data.lerobot_export import pack16
 
 
@@ -41,7 +42,8 @@ class ObservationLayout:
         progress=monitor.quality.current.get(monitor.quality.phase+':'+self.target_id+':tray',0.)/2
         return np.concatenate([state['robot'].ravel(),state['objects'].ravel(),pack16(q,g),
             state['object_joint'][self.device_indices].ravel(),state['object_flags'].ravel().astype(float),
-            np.minimum(state['clean_seconds']/2,1),[min(state['heat_seconds']/5,1),float(state['button_latched'])],
+            np.minimum(state['clean_seconds']/WASH_DURATION_S,1),
+            [min(state['heat_seconds']/HEAT_DURATION_S,1),float(state['button_latched'])],
             goal,[min(progress,1)],self.diversity(state)]).astype(np.float32)
 
     def normalize(self, values):

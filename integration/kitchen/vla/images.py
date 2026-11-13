@@ -48,11 +48,20 @@ def active_views(rig):
     return [view for view in rig['views'] if view['enabled']]
 
 
+def device_visual_contract():
+    """Identify derived RGB appearance separately from the unchanged physics."""
+    import hashlib
+    source = Path(__file__).parents[3]/'robot_arm/kitchen/device_visuals.py'
+    return {'schema': 'kitchen_device_visuals_v1',
+            'implementation_sha256': hashlib.sha256(source.read_bytes()).hexdigest()}
+
+
 class Camera:
-    def __init__(self, scene, config=None):
+    def __init__(self, scene, config=None, *, devices=None):
         import mujoco
         from integration.kitchen.data.replay import _review_camera
         self.scene, self.config = scene, dict(config or DEFAULT_CAMERA)
+        self.devices = devices
         c = self.config
         if 'position_world_m' in c:
             self.view = mujoco.MjvCamera()
@@ -69,8 +78,9 @@ class Camera:
         self.option = mujoco.MjvOption()
         self.scratch = mujoco.MjData(scene.model)
 
-    def render(self, qpos=None):
+    def render(self, qpos=None, *, device_state=None):
         import mujoco
+        from robot_arm.kitchen.device_visuals import add_device_visuals
         # Same-qpos kinematics without altering the live physics/warmstart.
         self.scratch.qpos[:] = self.scene.data.qpos if qpos is None else qpos
         mujoco.mj_kinematics(self.scene.model, self.scratch)
@@ -82,6 +92,9 @@ class Camera:
             self.renderer.update_scene(self.scratch, camera=self.view, scene_option=self.option)
         finally:
             self.scene.model.vis.global_.fovy = original_fovy
+        if device_state is None and self.devices is not None:
+            device_state = self.devices.snapshot()
+        add_device_visuals(self.renderer.scene, self.scene.model, self.scratch, device_state)
         for flag in (mujoco.mjtRndFlag.mjRND_SHADOW, mujoco.mjtRndFlag.mjRND_REFLECTION):
             self.renderer.scene.flags[flag] = False
         return np.asarray(self.renderer.render(), dtype=np.uint8).copy()
@@ -92,23 +105,27 @@ class Camera:
 
 class CameraRig:
     """Render only enabled views at the same qpos; disabled views allocate nothing."""
-    def __init__(self, scene, config=None):
+    def __init__(self, scene, config=None, *, devices=None):
         self.contract = camera_rig(config)
+        self.devices = devices
         self.cameras = {}
         try:
             for view in active_views(self.contract):
-                self.cameras[view['key']] = Camera(scene, view['camera'])
+                self.cameras[view['key']] = Camera(scene, view['camera'], devices=devices)
         except BaseException:
             self.close()
             raise
         self.global_camera = self.cameras['observation.images.camera1']
         self.config = self.global_camera.config
 
-    def render_all(self, qpos=None):
-        return {key: camera.render(qpos) for key, camera in self.cameras.items()}
+    def render_all(self, qpos=None, *, device_state=None):
+        if device_state is None and self.devices is not None:
+            device_state = self.devices.snapshot()
+        return {key: camera.render(qpos, device_state=device_state)
+                for key, camera in self.cameras.items()}
 
-    def render(self, qpos=None):
-        return self.global_camera.render(qpos)
+    def render(self, qpos=None, *, device_state=None):
+        return self.global_camera.render(qpos, device_state=device_state)
 
     def close(self):
         for camera in self.cameras.values():

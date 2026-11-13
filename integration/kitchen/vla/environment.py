@@ -51,7 +51,8 @@ class PolicyEnvironment:
             self.quality = ExpertQuality(self.platform)
             self.quality.start(self.case['task'])
             self.prompt = ep['annotation']['coarse_instruction']
-            self.camera = CameraRig(self.platform.scene, camera_rig) if render else None
+            self.camera = CameraRig(self.platform.scene, camera_rig,
+                                    devices=self.platform.controller.devices) if render else None
             self.frame, self.rate_limited_frames = 0, 0
             self.start_tick = self.platform.controller.tick
             self.guard, self.guard_violations = guard, []

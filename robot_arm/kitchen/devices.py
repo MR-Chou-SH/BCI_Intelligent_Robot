@@ -8,6 +8,7 @@ SUPPORT_FORCE_THRESHOLD_N = .25
 SUPPORT_NORMAL_MIN_UPWARD_Z = .5
 SUPPORT_CENTER_CLEARANCE_M = .005
 WASH_DURATION_S = 2.  # User-requested simulated wash dwell, 2026-11-06.
+HEAT_DURATION_S = 2.  # Device-owned cycle; lamp goes out without a robot action.
 
 class DeviceState:
     def __init__(self,scene):
@@ -169,7 +170,7 @@ class DeviceState:
                 self.event("heat_aborted",self.heating);self.heating=None;self.heat_seconds=0.
             else:
                 self.heat_seconds+=dt
-                if self.heat_seconds>=5:
+                if self.heat_seconds>=HEAT_DURATION_S:
                     self.heated.add(self.heating);self.event("heat_complete",self.heating);self.heating=None
         if self.button_seconds>=.05 and not self.button_latched:
             self.button_latched=True
