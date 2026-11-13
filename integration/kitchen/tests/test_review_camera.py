@@ -5,7 +5,7 @@ import unittest
 import mujoco
 import numpy as np
 
-from integration.kitchen.data.replay import MAIN_VIEW, MAIN_VIEW_SIZE, REVIEW_VIEWS, _review_camera
+from integration.kitchen.data.replay import MAIN_VIEW, MAIN_VIEW_SIZE, REVIEW_VIEWS, VLA_VIEW, VLA_VIEW_SIZE, _review_camera, letterbox
 from robot_arm.kitchen.model import build_scene
 
 ELEMENTS = ('sink', 'basket', 'faucet', 'faucet_handle', 'microwave', 'microwave_door', 'microwave_button',
@@ -88,6 +88,68 @@ class ReviewCameraTests(unittest.TestCase):
              self.assertRaises(SystemExit):
             render_dataset.main(['--manifest', 'm.json', '--output', 'videos', '--zoom', '.9'])
         self.assertIn('Preset review views take no --zoom/--lookat', errors.getvalue())
+
+    def project(self, view_name, size):
+        scene = build_scene(layout_id='kitchen_v3_norice_candidate_013')
+        m, d = scene.model, scene.data
+        mujoco.mj_forward(m, d)
+        camera, pivot = _review_camera(m, view_name)
+        el, az = math.radians(camera.elevation), math.radians(camera.azimuth)
+        forward = np.array([math.cos(el) * math.cos(az), math.cos(el) * math.sin(az), math.sin(el)])
+        right = np.cross(forward, [0., 0., 1.]); right /= np.linalg.norm(right)
+        up = np.cross(right, forward)
+        position = np.asarray(pivot) - forward * camera.distance
+        half = math.tan(math.radians(m.vis.global_.fovy) / 2)
+        visible = mujoco.MjvOption().geomgroup
+        xs, ys = [], []
+        for g in range(m.ngeom):
+            body = m.body(int(m.geom_bodyid[g])).name
+            if not visible[int(m.geom_group[g])] or not (body in ELEMENTS or m.geom(g).name == 'user_table'
+                                                          or body.startswith(('left_', 'right_'))):
+                continue
+            c, h = m.geom_aabb[g, :3], m.geom_aabb[g, 3:]
+            local = np.array([[x, y, z] for x in (-1, 1) for y in (-1, 1) for z in (-1, 1)]) * h + c
+            world = d.geom_xpos[g] + local @ d.geom_xmat[g].reshape(3, 3).T - position
+            depth = world @ forward
+            xs.append(world @ right / (depth * half * size[0] / size[1])); ys.append(world @ up / (depth * half))
+        return np.concatenate(xs), np.concatenate(ys)
+
+    def test_vla_view_keeps_all_elements_in_the_square_and_out_of_the_black_bands(self):
+        self.assertEqual(VLA_VIEW_SIZE, (224, 224))
+        x, y = self.project(VLA_VIEW, VLA_VIEW_SIZE)
+        top, bottom = REVIEW_VIEWS[VLA_VIEW]['letterbox']
+        rows = (1 - y) / 2  # 0 at the top edge, 1 at the bottom edge
+        self.assertLessEqual(np.abs(x).max(), 1.)
+        self.assertGreaterEqual(rows.min(), top)
+        self.assertLessEqual(rows.max(), bottom)
+
+    def test_letterbox_blackens_only_rows_outside_the_band(self):
+        pixels = np.full((224, 224, 3), 200, np.uint8)
+        out = letterbox(pixels.copy(), (.25, .75))
+        self.assertFalse(out[:56].any()); self.assertFalse(out[168:].any())
+        self.assertTrue((out[56:168] == 200).all())
+        np.testing.assert_array_equal(letterbox(pixels.copy(), None), pixels)
+
+    def test_vla_rig_renders_the_letterboxed_square_view(self):
+        from pathlib import Path
+        from integration.kitchen.vla import images
+        rig_path = Path(images.__file__).with_name('cameras_main55_224.json')
+        rig = images.camera_rig(rig_path)
+        camera = rig['views'][0]['camera']
+        self.assertEqual((camera['width'], camera['height']), VLA_VIEW_SIZE)
+        self.assertEqual(tuple(camera['letterbox']), REVIEW_VIEWS[VLA_VIEW]['letterbox'])
+        bad = images.camera_rig(rig_path); bad['views'][0]['camera']['letterbox'] = [.8, .2]
+        with self.assertRaisesRegex(ValueError, 'letterbox'):
+            images.camera_rig(bad)
+        scene = build_scene(layout_id='kitchen_v3_norice_candidate_013')
+        view = images.Camera(scene, camera)
+        try:
+            pixels = view.render()
+        finally:
+            view.close()
+        top, bottom = (round(f * 224) for f in camera['letterbox'])
+        self.assertFalse(pixels[:top].any()); self.assertFalse(pixels[bottom:].any())
+        self.assertTrue(pixels[top:bottom].any())
 
 
 if __name__ == '__main__':

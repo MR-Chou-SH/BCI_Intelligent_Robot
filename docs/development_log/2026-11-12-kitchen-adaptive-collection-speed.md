@@ -83,6 +83,12 @@ D09 香蕉＋热狗 seed 1 在首次专家阶段失败：`fruit_legacy_place: IK
 
 同一D09轨迹四个时刻对比：原`v3_front`（960×540，缩放0.9）黑色背景61.1%、任务元素像素11.7%；新主视角黑色背景17.5%、任务元素像素19.0%。剩余黑色是地板以外的区域，位于上方窄带和两角。加速后D09（101.32秒）的视频为`experiments/kitchen_platform_v3/videos_main55_20261112/videos/kitchen_expert_v3_D09_banana_hotdog/sample_01/render_001/trajectory.mp4`，1600×900、25fps、2533帧，完整解码通过，源轨迹哈希与采集报告一致；它是已记录状态的回放，不是训练图像。
 
+## VLA 224×224 视角
+
+主视角直接缩到224×126时水果仅14–18像素；相机不变改成224×224会裁掉苹果、香蕉、左夹爪和部分水槽/微波炉。为此另拟合`v3_vla224`：同为55°正面俯视、视场30°，按方形画面拟合31条轨迹（含22条高速直采长任务），宽度撑满、纵向居中，内容带之外的上下行涂黑（第0–36行、188–223行）。在300条轨迹（高速直采seed 0/1、adaptive seed 0）共89,033帧上分割检查：任何元素都未进入黑边、未触及左右边缘，内容始终在第39–185行。与224×126相比各元素像素多1.34–1.66倍（水果22–28像素）。
+
+VLA侧`Camera`支持`letterbox`，新配置`integration/kitchen/vla/cameras_main55_224.json`（camera1为该视角、左腕不变）；数据导出与推理用`--camera-rig`同一文件，默认配置不变。审阅视频可用`--camera v3_vla224 --width 224 --height 224`。拟合与检查脚本在`experiments/kitchen_platform_v3/videos_main55_20261112/view_fit_vla224/`。
+
 ## 证据与复现
 
 生成物由 Git 忽略，位于本机该分支工作区`experiments/kitchen_platform_v3/collections/`：`sync_benchmark_20261112/`（基线）、`runtime_port_20261112/`、`repair_review_20261112_v1/`与`_v2_*`（复核入口）、`final_default_20261112/`、`final_defer_20261112/`、`forced_fallback_defer_20261112/`、`long_validation_20261112/`（含`orig_code_seed1_check/`）。

@@ -38,6 +38,8 @@ def camera_rig(value=None):
                     or np.linalg.norm(np.asarray(c['position_world_m'])-c['lookat']) < .001
                     or not 1 <= c['fovy_deg'] < 179):
                 raise ValueError('Invalid explicit camera pose')
+        if 'letterbox' in c and not (len(c['letterbox']) == 2 and 0 <= c['letterbox'][0] < c['letterbox'][1] <= 1):
+            raise ValueError('Invalid letterbox band')
     value['views'].sort(key=lambda v: v['key'])
     if not value['views'] or value['views'][0]['role'] != 'global' or not value['views'][0]['enabled']:
         raise ValueError('Global camera must be enabled')
@@ -84,7 +86,9 @@ class Camera:
             self.scene.model.vis.global_.fovy = original_fovy
         for flag in (mujoco.mjtRndFlag.mjRND_SHADOW, mujoco.mjtRndFlag.mjRND_REFLECTION):
             self.renderer.scene.flags[flag] = False
-        return np.asarray(self.renderer.render(), dtype=np.uint8).copy()
+        from integration.kitchen.data.replay import letterbox
+        pixels = np.asarray(self.renderer.render(), dtype=np.uint8).copy()
+        return letterbox(pixels, self.config.get('letterbox'))
 
     def close(self):
         self.renderer.close()

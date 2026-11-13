@@ -215,9 +215,27 @@ REVIEW_VIEWS = {
     # top black band and outer background stay small.
     "v3_main55": {"lookat": (0.207, -0.7054, 1.7274), "distance": 2.5, "azimuth": 90., "elevation": -55.,
                   "fovy": 30.},
+    # VLA view: the same 55 deg frontal overhead fitted to a square 224x224 frame
+    # (31 trajectories incl. direct-fast long tasks); content is width-limited and
+    # vertically centred, so rows outside the measured content band are black.
+    "v3_vla224": {"lookat": (0.2159, -1.5656, 2.9574), "distance": 2.5, "azimuth": 90., "elevation": -55.,
+                  "fovy": 30., "letterbox": (0.1652, 0.8393)},
 }
 MAIN_VIEW = "v3_main55"
 MAIN_VIEW_SIZE = (1600, 900)
+VLA_VIEW = "v3_vla224"
+VLA_VIEW_SIZE = (224, 224)
+
+
+def letterbox(pixels, band):
+    """Black rows outside a [top, bottom) fraction band; None leaves pixels unchanged."""
+    if band is None:
+        return pixels
+    height = pixels.shape[0]
+    top, bottom = round(band[0] * height), round(band[1] * height)
+    pixels[:top] = 0
+    pixels[bottom:] = 0
+    return pixels
 
 
 def _review_camera(model, camera, zoom=1., lookat=None):
@@ -276,6 +294,7 @@ def video(path, output, *, camera="v3_front", width=960, height=540, fps=25, max
     if not 0 < zoom <= 1:
         raise ValueError("zoom must be 0..1")
     view, pivot = _review_camera(scene.model, camera, zoom=zoom, lookat=lookat)
+    band = REVIEW_VIEWS.get(camera, {}).get("letterbox")
     output.parent.mkdir(parents=True, exist_ok=True)
     source_duration = min(max_seconds, max(1 / fps, states[-1]["sim_time_s"] - states[0]["sim_time_s"]))
     frames = max(1, math.ceil(source_duration * fps / speed))
@@ -294,7 +313,7 @@ def video(path, output, *, camera="v3_front", width=960, height=540, fps=25, max
                         index += 1
                     restore(scene, states[index])
                     renderer.update_scene(scene.data, camera=view)
-                    process.stdin.write(renderer.render().tobytes())
+                    process.stdin.write(letterbox(renderer.render(), band).tobytes())
                 process.stdin.close()
                 if process.wait(timeout=30):
                     raise RuntimeError("ffmpeg export failed; inspect " + str(log))
@@ -359,7 +378,7 @@ def image(path, output, *, tick=None, camera="v3_front", width=1280, height=800,
     renderer = mujoco.Renderer(scene.model, height=height, width=width)
     try:
         renderer.update_scene(scene.data, camera=view)
-        pixels = renderer.render()
+        pixels = letterbox(renderer.render(), REVIEW_VIEWS.get(camera, {}).get("letterbox"))
     finally:
         renderer.close()
     output.parent.mkdir(parents=True, exist_ok=True)

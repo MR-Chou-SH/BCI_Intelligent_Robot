@@ -46,7 +46,7 @@ bash scripts/kitchen_smolvla.sh export \
 
 导出读取replay产生的state/action及图像，校验来源、tick、数组与文件哈希，使用本地真实LeRobot writer，强制检查`meta/info.json`的`codebase_version=v3.0`。图像使用LeRobot image feature，不使用审核MP4，也不把本项目H5 v3误称为LeRobot v3。
 
-一个原始成功episode导出一个完整训练episode；25Hz、`observation.state`16维、`action`16维、`observation.images.camera1/camera2`两路512×512，英文task。输入只有机器人实测本体状态、图像和指令，不把物体真值状态作为模型输入。保留source_group和来源哈希供后续拆分审计。
+一个原始成功episode导出一个完整训练episode；25Hz、`observation.state`16维、`action`16维、`observation.images.camera1/camera2`两路512×512，英文task。2026-11-12新增可选相机配置`integration/kitchen/vla/cameras_main55_224.json`：camera1为224×224的55°正面俯视全局视角，全部水果、主食、托盘、水槽、微波炉、送餐桌与双臂均在画面内，上下为黑边；导出与推理都加`--camera-rig`指定该文件，默认配置不变。输入只有机器人实测本体状态、图像和指令，不把物体真值状态作为模型输入。保留source_group和来源哈希供后续拆分审计。
 
 `export`输出必须全新，目前不支持中途续写。若导出中断，保留轨迹/replay，换一个新dataset目录重试；训练命令对应改为新目录。
 
