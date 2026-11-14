@@ -4,6 +4,8 @@ Last updated: 2026-11-14
 
 ## Kitchen Linux / Task Collection Development
 
+2026-11-14 16:51 formal collection started: 3927 episodes (40 per coarse instruction, direct-fast, 6 workers) into `/home/user/data-staging/jiayu/BCI_DATA/kitchen_v3_40pi_20261114/` on the shared NFS store, enabled by the new opt-in `KITCHEN_DATA_ROOTS`; source `f12fd38`. NFS locking, HDF5 writes, hard links and resume verified on a 2-case smoke batch (removed). Do not change identity-checked kitchen sources until it finishes.
+
 2026-11-14 collection plan executable: `--samples-per-instruction N` gives every distinct coarse instruction N episodes (cases sharing one instruction, B1 loads and R3 occupancy, split them, rounded up); counts are written to the plan and seeds stay unique and contiguous across all slots and retries. The approved plan (`docs/kitchen_platform_v3_20261020/COLLECTION_PLAN_V3_CN.md`, 40 per instruction) is 3927 episodes / 73.8 h; `--plan-only` reproduces the table exactly. Final H5/annotations are now hard links of the selected direct/backup/trial files (D09 sample 8.3 -> 4.2 MB on disk). Smoke batch 7 cases: 9/9 qualified, seeds 0-8 (+13 for one banana retry), all finals hard-linked. 207 tests pass.
 
 2026-11-14 per-sample initial scenes: `collect_dataset` now gives every case/sample slot and every retry its own seed (`base_seed + slot + attempt x slots`, plan field `seed_scheme: per_sample`), so N samples cover N randomized layouts; before, all cases shared seed 0 for sample 1 and seed 1 for sample 2 (only ~2 layouts per batch). Older plans keep their formula. Smoke batch (3 cases x 2, direct-fast): 6/6, seeds 0-5, all initial layouts differ. 201 tests pass.
