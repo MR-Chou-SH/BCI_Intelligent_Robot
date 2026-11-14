@@ -51,7 +51,7 @@ def main():
     for view in views:
         image = view['camera']
         config.input_features[view['key']] = PolicyFeature(FeatureType.VISUAL, (3, image['height'], image['width']))
-    config.empty_cameras = 0  # Disabled right wrist is absent, not a black placeholder.
+    config.empty_cameras = 0  # A disabled view is absent, not a black placeholder.
     config.output_features = {'action': PolicyFeature(FeatureType.ACTION, (16,))}
     config.device, config.push_to_hub = args.device, False
     config.freeze_vision_encoder, config.train_expert_only, config.train_state_proj = True, True, True

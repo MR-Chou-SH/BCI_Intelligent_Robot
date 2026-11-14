@@ -98,6 +98,7 @@ class ReplayDatasetTests(unittest.TestCase):
 
     def test_actual_replay_callback_exports_preaction_frames_and_resumes(self):
         rig = camera_rig()
+        rig['views'][2]['enabled'] = False  # A disabled view writes no directory.
         for view in rig['views']:
             view['camera'].update(width=7, height=6)
         episode = {'source': '/tmp/source.h5', 'source_sha256': 'example-source',

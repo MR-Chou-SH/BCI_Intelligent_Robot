@@ -8,16 +8,28 @@ from integration.kitchen.vla.server import serve
 
 
 class PolicyBoundaryTests(unittest.TestCase):
-    def test_default_rig_only_allocates_enabled_views(self):
+    def test_default_rig_enables_global_and_both_wrists(self):
         from unittest.mock import patch
         from integration.kitchen.vla.images import CameraRig, camera_rig
         rig = camera_rig()
-        self.assertEqual([v['enabled'] for v in rig['views']], [True, True, False])
+        self.assertEqual([(v['role'], v['enabled']) for v in rig['views']],
+                         [('global', True), ('left_wrist', True), ('right_wrist', True)])
         self.assertEqual(rig['views'][0]['camera']['position_world_m'], [0.2159, -2.9995, 5.0053])
         self.assertEqual({(v['camera']['width'], v['camera']['height']) for v in rig['views']}, {(224, 224)})
         with patch('integration.kitchen.vla.images.Camera') as camera:
             renderer = CameraRig(object())
-            self.assertEqual(camera.call_count, 2)
+            self.assertEqual([call.args[1]['camera'] for call in camera.call_args_list],
+                             ['v3_vla224', 'left_wrist', 'right_wrist'])
+            self.assertEqual(set(renderer.render_all()), {'observation.images.camera1', 'observation.images.camera2',
+                                                          'observation.images.camera3'})
+            renderer.close()
+
+    def test_disabled_view_allocates_nothing(self):
+        from unittest.mock import patch
+        from integration.kitchen.vla.images import CameraRig, camera_rig
+        rig = camera_rig(); rig['views'][2]['enabled'] = False
+        with patch('integration.kitchen.vla.images.Camera') as camera:
+            renderer = CameraRig(object(), rig)
             self.assertEqual([call.args[1]['camera'] for call in camera.call_args_list], ['v3_vla224', 'left_wrist'])
             self.assertEqual(set(renderer.render_all()), {'observation.images.camera1', 'observation.images.camera2'})
             renderer.close()
@@ -27,6 +39,7 @@ class PolicyBoundaryTests(unittest.TestCase):
         from integration.kitchen.vla.images import camera_rig
         from integration.kitchen.vla.protocol import observation_images
         rig = camera_rig()
+        rig['views'][2]['enabled'] = False  # Check that a disabled view is rejected.
         for view in rig['views']:
             view['camera'].update(width=7, height=6)
         rgb = np.arange(126, dtype=np.uint8).reshape(6, 7, 3)

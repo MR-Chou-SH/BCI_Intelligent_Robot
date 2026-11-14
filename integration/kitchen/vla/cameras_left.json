@@ -41,7 +41,7 @@
     {
       "key": "observation.images.camera3",
       "role": "right_wrist",
-      "enabled": false,
+      "enabled": true,
       "camera": {
         "camera": "right_wrist",
         "width": 224,

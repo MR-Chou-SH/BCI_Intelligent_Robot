@@ -27,13 +27,13 @@ GPU 检查须区分沙箱和主机：本机沙箱内 `nvidia-smi`/CUDA 不可用
 
 保持原始 H5 不变。从匹配模型的 H5 每个动作前关键状态离线渲染25Hz真实图像，记录图像 tick、每文件 SHA256、源 H5 SHA256 和相机配置，再在学习环境转换为真正 LeRobot 数据。当前使用 image feature，避免额外视频编码/解码依赖；不是黑图、占位帧或4倍速审核视频。Unity 以后可实现同样的图像 sidecar 契约。
 
-第一轮历史模型使用固定 `v3_oblique` 单视角。用户确认 C 后，默认曾改为正对工作台的高位近景 C＋左腕，均为512×512（现保存为 `integration/kitchen/vla/cameras_c512.json`）。2026-11-13 起默认改为 `v3_vla224`：224×224 的55°正面俯视全局视角（全部任务元素在画面内，上下黑边）＋左腕224×224，右腕槽位保留但关闭；训练按相机尺寸设置 `resize_imgs_with_padding`，224 数据无需再缩放。训练、推理必须使用同一配置；checkpoint 保存 `kitchen_policy.json`，服务端拒绝不匹配相机。旧数据和旧模型保留，使用新相机需要重新导出并训练。
+第一轮历史模型使用固定 `v3_oblique` 单视角。用户确认 C 后，默认曾改为正对工作台的高位近景 C＋左腕，均为512×512（现保存为 `integration/kitchen/vla/cameras_c512.json`）。2026-11-13 起默认改为 `v3_vla224`：224×224 的55°正面俯视全局视角（全部任务元素在画面内，上下黑边）＋左腕224×224；2026-11-14起右腕224×224也默认启用（右臂负责微波炉/主食、B1双臂送餐，右臂操作时左腕画面静止），共三路；训练按相机尺寸设置 `resize_imgs_with_padding`，224 数据无需再缩放。训练、推理必须使用同一配置；checkpoint 保存 `kitchen_policy.json`，服务端拒绝不匹配相机。旧数据和旧模型保留，使用新相机需要重新导出并训练。
 
 ### 多视角选取核查（2026-11-09）
 
 本机缓存的官方`smolvla_base`配置有`camera1/camera2/camera3`三路；本地`prepare_images`和`embed_prefix`根据配置遍历视角，没有把3写成模型固定上限。1/2/3路都属于可配置的输入；超过3路需另行调整配置并验证资源和训练效果，不能据此认为任意路数都已验证。[官方相机键说明](https://huggingface.co/docs/lerobot/main/smolvla)
 
-配置文件为`integration/kitchen/vla/cameras_left.json`，三路固定键依次为`observation.images.camera1`全景、`camera2`左腕、`camera3`右腕。C位置为世界坐标`[0,-2.10,2.20]m`，看向`[0,-0.18,0.90]m`，垂直视场50°。关闭的右腕不分配渲染器、不生成图像、不输入黑图、不占用视觉token。以后启用右腕需重新生成数据并训练匹配配置的模型。
+配置文件为`integration/kitchen/vla/cameras_left.json`，三路固定键依次为`observation.images.camera1`全景、`camera2`左腕、`camera3`右腕。C位置为世界坐标`[0,-2.10,2.20]m`，看向`[0,-0.18,0.90]m`，垂直视场50°。文件名沿用历史，当前三路均启用。任一被关闭的视角不分配渲染器、不生成图像、不输入黑图、不占用视觉token。相机配置改变后须重新渲染图像、导出并训练匹配配置的模型；H5不含图像，无需重采。
 
 四组正对候选及左腕在0/8/20s的预览位于`experiments/kitchen_platform_v3/vla/frontal_camera_review_20261109/`。用户选择 C；全景与左腕按同一qpos/tick渲染，sidecar v2分别保存每路PNG路径/SHA及完整相机配置，再导出真正的LeRobot多图像feature。训练及HTTP推理按启用键遍历，缺图、多出关闭视角或姿态不一致均拒绝。仍兼容显式传入的旧单视角sidecar和checkpoint，但不能把此前单视角1.94GiB/约187ms结果套到双/三视角。
 
