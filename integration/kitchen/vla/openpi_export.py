@@ -175,7 +175,9 @@ def main(argv=None):
         replace_json(output / 'plan.json', plan)
     print(json.dumps({'episodes': len(rows), 'output': str(output)}), flush=True)
     failures = []
-    with ProcessPoolExecutor(args.jobs, mp_context=multiprocessing.get_context('spawn'), max_tasks_per_child=20) as pool:
+    # No max_tasks_per_child: on this Python the pool stops scheduling once
+    # recycled workers exit (a 6-worker run hung after exactly 120 episodes).
+    with ProcessPoolExecutor(args.jobs, mp_context=multiprocessing.get_context('spawn')) as pool:
         futures = {pool.submit(stage_episode, i, r['trajectory'], str(output), rig, args.gop, args.crf): i
                    for i, r in enumerate(rows)}
         done = 0
