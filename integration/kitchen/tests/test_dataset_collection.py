@@ -17,12 +17,24 @@ class DatasetTests(unittest.TestCase):
                 'max_attempts': 3, 'jobs': 2, 'profile': 'research', 'case_timeout': 60,
                 'identity': {'test': True}, 'video': {}}
 
-    def test_full_matrix_and_disjoint_retry_seeds(self):
+    def test_full_matrix_gives_every_sample_and_retry_its_own_seed(self):
         plan = self.plan()
         plan['cases'] = cases()
+        plan['seed_scheme'] = 'per_sample'
         self.assertEqual(len(list(dataset.slots(plan))), 228)
-        seeds = [dataset.attempt_seed(plan, s, a) for s in range(2) for a in range(3)]
-        self.assertEqual(len(set(seeds)), 6)
+        seeds = [dataset.attempt_seed(plan, c, s, a) for c, s in dataset.slots(plan) for a in range(3)]
+        self.assertEqual(len(set(seeds)), 228 * 3)
+        self.assertEqual(min(seeds), 10)
+        self.assertEqual(max(seeds), 10 + 228 * 3 - 1)
+        first = [dataset.attempt_seed(plan, c, s, 0) for c, s in dataset.slots(plan)]
+        self.assertEqual(first, list(range(10, 10 + 228)))
+
+    def test_plans_without_seed_scheme_keep_their_shared_seeds(self):
+        plan = self.plan()
+        plan['cases'] = cases()
+        for case in plan['cases'][:3]:
+            self.assertEqual([dataset.attempt_seed(plan, case, s, a) for s in range(2) for a in range(3)],
+                             [10, 12, 14, 11, 13, 15])
 
     def test_failed_attempt_does_not_fill_slot_and_retry_is_bounded(self):
         plan = self.plan()

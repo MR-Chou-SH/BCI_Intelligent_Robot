@@ -30,8 +30,15 @@ def slot_path(output, case, sample):
     return output / 'attempts' / case['case_id'].replace(':', '_') / f'sample_{sample + 1:02d}'
 
 
-def attempt_seed(plan, sample, attempt):
-    return plan['base_seed'] + sample + attempt * plan['samples_per_case']
+def attempt_seed(plan, case, sample, attempt):
+    """Initial-scene seed. Every case/sample slot and every retry gets its own
+    seed, so N samples cover N randomized layouts. Plans written before
+    2026-11-14 (no seed_scheme) shared seeds across cases."""
+    if plan.get('seed_scheme') != 'per_sample':
+        return plan['base_seed'] + sample + attempt * plan['samples_per_case']
+    total = len(plan['cases']) * plan['samples_per_case']
+    slot = [c['case_id'] for c in plan['cases']].index(case['case_id']) * plan['samples_per_case'] + sample
+    return plan['base_seed'] + slot + attempt * total
 
 
 def recover_attempt(directory, case, seed, output, identity):
@@ -72,7 +79,7 @@ def scan(output, plan):
         parent = slot_path(output, case, sample)
         history = []
         for attempt in range(plan['max_attempts']):
-            seed = attempt_seed(plan, sample, attempt)
+            seed = attempt_seed(plan, case, sample, attempt)
             directory = parent / f'attempt_{attempt + 1:02d}_seed{seed}'
             marker = directory.with_suffix('.job.json')
             if not marker.exists():
@@ -160,17 +167,18 @@ def main(argv=None):
         or any(not 1<f<=MAX_FACTOR for f in args.optimization_factors)):
         parser.error('Use 1..4 unique optimization factors >1 and <=5')
     if not (1 <= args.samples_per_case <= 1000 and 1 <= args.max_attempts <= 10 and 1 <= args.jobs <= MAX_JOBS
-            and 30 <= args.case_timeout <= 3600 and 0 <= args.base_seed
-            and args.base_seed + args.samples_per_case * args.max_attempts <= 2**32):
+            and 30 <= args.case_timeout <= 3600 and 0 <= args.base_seed):
         parser.error('Invalid collection bounds; see --help')
     selected = cases(args.suite)
     if args.case_ids:
         if set(args.case_ids) - {c['case_id'] for c in selected}:
             parser.error('Unknown case ID in selected suite')
         selected = [c for c in selected if c['case_id'] in args.case_ids]
+    if args.base_seed + len(selected) * args.samples_per_case * args.max_attempts > 2**32:
+        parser.error('Invalid collection bounds; see --help')
     plan = {'schema': 'kitchen_qualified_dataset_v1', 'cases': selected, 'identity': source_identity(),
             'runner_sha256': digest(__file__), 'samples_per_case': args.samples_per_case,
-            'max_attempts': args.max_attempts, 'base_seed': args.base_seed, 'jobs': args.jobs,
+            'max_attempts': args.max_attempts, 'base_seed': args.base_seed, 'seed_scheme': 'per_sample', 'jobs': args.jobs,
             'case_timeout': args.case_timeout, 'profile': args.profile, 'format':'kitchen_state_actions_v3','motion_profile':args.motion_profile,
             'postprocessing':{'mode':args.postprocess,'factors':args.optimization_factors,
                               **({'defer_backup_replay':True} if args.defer_backup_replay else {}),

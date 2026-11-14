@@ -59,7 +59,8 @@ class ReplayDatasetTests(unittest.TestCase):
                 '--case-ids', 'kitchen_expert_v3:L1:apple', '--samples-per-case', '50', '--plan-only']), 0)
             plan = json.loads((output/'plan.json').read_text())
             self.assertEqual(len(list(collect_dataset.slots(plan))), 50)
-            seeds = [collect_dataset.attempt_seed(plan, s, a) for s in range(50) for a in range(3)]
+            self.assertEqual(plan['seed_scheme'], 'per_sample')
+            seeds = [collect_dataset.attempt_seed(plan, plan['cases'][0], s, a) for s in range(50) for a in range(3)]
             self.assertEqual(len(set(seeds)), 150)
             self.assertEqual(plan['profile'], 'research')
             self.assertEqual(plan['postprocessing']['mode'], 'continuous')
