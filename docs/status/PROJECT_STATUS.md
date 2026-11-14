@@ -1,8 +1,10 @@
 # Project Status
 
-Last updated: 2026-11-13
+Last updated: 2026-11-14
 
 ## Kitchen Linux / Task Collection Development
+
+2026-11-14 merged teammate commit 34ea7e6 (faucet water column and microwave lamp drawn into VLA images from device state, 2 s heating, offline RGB via control replay). Its extended faucet spout is a collision body over the wash basket and blocked every wash case (40/40 fail on seed 0, also on pure 34ea7e6), so this branch keeps the original 20 cm spout; water falls from the original outlet into the sink. Full catalogue direct-fast seed 0: 114/114, and all 114 trajectories are element-wise identical to the 2026-11-13 batch (heating already finishes before the arm reaches the door, so 2 s vs 5 s changes only the lamp time). In the 224x224 VLA view the lamp is ~5 px and the water column ~1 px wide; the left wrist camera sees neither. 199 tests pass.
 
 2026-11-13 one fine instruction, one behaviour: fruit always goes to the left half of the tray (local x -0.11 m, meals +0.11 m) and every banana is turned 90 degrees before placing, in atomic and composite tasks alike; the left-arm corridor retreat after fruit now opens the next language stage (R5/H) instead of ending the fruit stage (composite actions unchanged, element-wise identical). Atomic B1 now covers 15 tray loads (empty, 4 fruits, 2 meals, 8 fruit+meal pairs) under the same delivery prompt; loads are placed unrecorded with the composite placements, then both arms return home. Catalogue 100 -> 114 instances (34 atomic), 2 per case = 228. Full catalogue direct-fast: seed 0 114/114, seed 1 114/114 (113 direct; 19 banana cases needed seed 2, incl. newly L2/D02 banana and B1 banana+meal inheriting the composites' washed-banana turn/meal placement limits). 199 tests pass. Old L1/L2/D01/D02 data and old stage boundaries must not be mixed with new data. [Details](../development_log/2026-11-13-kitchen-instruction-consistency.md).
 
