@@ -1,43 +1,43 @@
-# Expert V3 正式采集大纲（草案）
+# Expert V3 正式采集大纲
 
-2026-11-14，分支`feature/data-collection-improve`（`0978010`）。用于训练听指令的VLA：同一批数据既可按**粗指令**（整条任务一句话）导出，也可按**细指令**（每个阶段一句话）导出，不需要分开采。条数待用户确认后执行。
+2026-11-14，分支`feature/data-collection-improve`。用于训练听指令的VLA：同一批数据既可按**粗指令**（整条任务一句话）导出，也可按**细指令**（每个阶段一句话）导出，不需要分开采。
 
-## 分配原则
+## 分配原则（用户确认：每句粗指令40条）
 
-- **按任务类型平衡**：每类原子任务60条，每类长程任务至少50条；同一类内每个实例条数相同（向上取整），例如R1有2个实例、每实例30条，C05有8个实例、每实例7条共56条，D01有4个实例、每实例13条共52条。这样每句指令模板的样本量接近，不会因为某类实例多就占大头。
-- **原子多于长程（按类）**：原子任务短、是长程任务的组成技能；长程任务的每个阶段也会贡献细指令样本，见第二张表。
-- **每条样本一个独立随机初态**（`seed_scheme: per_sample`），1232条即1232种初始摆放；失败自动换种子重试。
-- 平均时长、采集耗时取自同一代码下全目录seed 0与seed 1两批的实测（research初态、高速直采）。
+- **每一句不同的粗指令采40条。** 长程任务的每个“水果×主食”组合是一句不同的指令，各采40条（如C05有8个组合，共320条）；原子任务每种水果/主食各40条（如L1共160条）。
+- **同一句指令的不同初态平分40条。** B1无论托盘上放什么都是同一句指令，15种负载各3条（共45）；R3的炉内空/汉堡/热狗各14条（共42）。
+- **组合是均匀枚举的，不随机抽样**：同一句指令的每个实例条数相同。随机的只有每条样本的初始摆放（6组物体±80 mm、±5°），且每条样本使用不同种子（`seed_scheme: per_sample`）；失败自动换种子重试。
+- 平均时长与采集耗时取自同一代码下全目录seed 0与seed 1两批实测（research初态、高速直采）。
 
 ## 采集大表
 
-| 类型 | 编号 | 任务 | 实例（变量） | 每实例 | 条数 | 平均时长 | 数据时长 | 粗指令（整条，一句） | 细指令（按阶段） |
-| --- | --- | --- | --- | ---: | ---: | ---: | ---: | --- | --- |
-| 原子 | L1 | 抓水果直接放餐盘 | 4：4 种水果 | 15 | 60 | 16 s | 0.27 h | Place the {fruit} directly on the serving tray. | 同粗指令（单阶段 L1） |
-| 原子 | L2 | 抓水果→清洗→放餐盘 | 4：4 种水果 | 15 | 60 | 41 s | 0.69 h | Wash the {fruit} and place it on the serving tray. | 同粗指令（单阶段 L2） |
-| 原子 | R1 | 抓主食→放微波炉→关门 | 2：2 种主食 | 30 | 60 | 19 s | 0.32 h | Put the {food} in the microwave and close the door. | 同粗指令（单阶段 R1） |
-| 原子 | R2 | 从微波炉取主食→放餐盘→关门 | 2：2 种主食 | 30 | 60 | 22 s | 0.37 h | Take the {food} out of the microwave, place it on the serving tray, and close the door. | 同粗指令（单阶段 R2） |
-| 原子 | R3 | 微波炉关闭→直接开门 | 3：炉内 空/汉堡/热狗 | 20 | 60 | 12 s | 0.20 h | Open the microwave door. | 同粗指令（单阶段 R3） |
-| 原子 | R4 | 启动加热→等待→开门 | 2：2 种主食 | 30 | 60 | 23 s | 0.38 h | Heat the {food} in the microwave, wait until it is ready, and open the door. | 同粗指令（单阶段 R4） |
-| 原子 | R5 | 抓主食直接放餐盘 | 2：2 种主食 | 30 | 60 | 11 s | 0.18 h | Place the {food} directly on the serving tray. | 同粗指令（单阶段 R5） |
-| 原子 | B1 | 双臂送餐盘（空盘/带负载） | 15：15 种托盘负载 | 4 | 60 | 23 s | 0.38 h | Deliver the serving tray to the user with both arms. | 同粗指令（单阶段 B1） |
-| 装盘组合 | C04 | 主食加热装盘 | 2：2 种主食 | 25 | 50 | 69 s | 0.96 h | Heat the {food} and place it on the serving tray. | 同粗指令（单阶段 H） |
-| 装盘组合 | C05 | 水果与主食直接装盘 | 8：4 水果 × 2 主食 | 7 | 56 | 30 s | 0.46 h | Place the {fruit} directly on the serving tray. Then, place the {food} directly on the serving tray. | L1 → R5 |
-| 装盘组合 | C06 | 清洗水果与主食直接装盘 | 8：4 水果 × 2 主食 | 7 | 56 | 54 s | 0.84 h | Wash the {fruit} and place it on the serving tray. Then, place the {food} directly on the serving tray. | L2 → R5 |
-| 装盘组合 | C07 | 水果直接装盘与加热主食 | 8：4 水果 × 2 主食 | 7 | 56 | 86 s | 1.33 h | Place the {fruit} directly on the serving tray. Then, heat the {food} and place it on the serving tray. | L1 → H |
-| 装盘组合 | C08 | 清洗水果与加热主食 | 8：4 水果 × 2 主食 | 7 | 56 | 112 s | 1.74 h | Wash the {fruit} and place it on the serving tray. Then, heat the {food} and place it on the serving tray. | L2 → H |
-| 送餐组合 | D01 | 水果直接装盘并送餐 | 4：4 种水果 | 13 | 52 | 41 s | 0.59 h | Place the {fruit} directly on the serving tray. Then, deliver the serving tray to the user with both arms. | L1 → B1 |
-| 送餐组合 | D02 | 清洗水果装盘并送餐 | 4：4 种水果 | 13 | 52 | 66 s | 0.95 h | Wash the {fruit} and place it on the serving tray. Then, deliver the serving tray to the user with both arms. | L2 → B1 |
-| 送餐组合 | D03 | 从炉内取餐装盘并送餐 | 2：2 种主食 | 25 | 50 | 47 s | 0.66 h | Take the {food} out of the microwave, place it on the serving tray, and close the door. Then, deliver the serving tray to the user with both arms. | R2 → B1 |
-| 送餐组合 | D04 | 主食直接装盘并送餐 | 2：2 种主食 | 25 | 50 | 35 s | 0.49 h | Place the {food} directly on the serving tray. Then, deliver the serving tray to the user with both arms. | R5 → B1 |
-| 送餐组合 | D05 | 主食加热装盘并送餐 | 2：2 种主食 | 25 | 50 | 94 s | 1.31 h | Heat the {food} and place it on the serving tray. Then, deliver the serving tray to the user with both arms. | H → B1 |
-| 送餐组合 | D06 | 水果与主食直接装盘并送餐 | 8：4 水果 × 2 主食 | 7 | 56 | 53 s | 0.83 h | Place the {fruit} directly on the serving tray. Then, place the {food} directly on the serving tray. Finally, deliver the serving tray to the user with both arms. | L1 → R5 → B1 |
-| 送餐组合 | D07 | 清洗水果与主食直接装盘并送餐 | 8：4 水果 × 2 主食 | 7 | 56 | 80 s | 1.24 h | Wash the {fruit} and place it on the serving tray. Then, place the {food} directly on the serving tray. Finally, deliver the serving tray to the user with both arms. | L2 → R5 → B1 |
-| 送餐组合 | D08 | 水果与加热主食装盘并送餐 | 8：4 水果 × 2 主食 | 7 | 56 | 112 s | 1.74 h | Place the {fruit} directly on the serving tray. Then, heat the {food} and place it on the serving tray. Finally, deliver the serving tray to the user with both arms. | L1 → H → B1 |
-| 送餐组合 | D09 | 清洗水果与加热主食装盘并送餐 | 8：4 水果 × 2 主食 | 7 | 56 | 138 s | 2.15 h | Wash the {fruit} and place it on the serving tray. Then, heat the {food} and place it on the serving tray. Finally, deliver the serving tray to the user with both arms. | L2 → H → B1 |
-| **原子合计** | 8 类 | | 34 | | **480** | | **2.78 h** | | |
-| **长程合计** | 14 类 | | 80 | | **752** | | **15.27 h** | | |
-| **总计** | 22 类 | | 114 | | **1232** | | **18.06 h** | | |
+| 类型 | 编号 | 任务 | 实例（变量） | 不同粗指令 | 每实例 | 条数 | 平均时长 | 数据时长 | 粗指令（整条，一句） | 细指令（按阶段） |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| 原子 | L1 | 抓水果直接放餐盘 | 4：4 种水果 | 4 | 40 | 160 | 16 s | 0.71 h | Place the {fruit} directly on the serving tray. | 同粗指令（单阶段 L1） |
+| 原子 | L2 | 抓水果→清洗→放餐盘 | 4：4 种水果 | 4 | 40 | 160 | 41 s | 1.83 h | Wash the {fruit} and place it on the serving tray. | 同粗指令（单阶段 L2） |
+| 原子 | R1 | 抓主食→放微波炉→关门 | 2：2 种主食 | 2 | 40 | 80 | 19 s | 0.43 h | Put the {food} in the microwave and close the door. | 同粗指令（单阶段 R1） |
+| 原子 | R2 | 从微波炉取主食→放餐盘→关门 | 2：2 种主食 | 2 | 40 | 80 | 22 s | 0.49 h | Take the {food} out of the microwave, place it on the serving tray, and close the door. | 同粗指令（单阶段 R2） |
+| 原子 | R3 | 微波炉关闭→直接开门 | 3：炉内 空/汉堡/热狗 | 1 | 14 | 42 | 12 s | 0.14 h | Open the microwave door. | 同粗指令（单阶段 R3） |
+| 原子 | R4 | 启动加热→等待→开门 | 2：2 种主食 | 2 | 40 | 80 | 23 s | 0.50 h | Heat the {food} in the microwave, wait until it is ready, and open the door. | 同粗指令（单阶段 R4） |
+| 原子 | R5 | 抓主食直接放餐盘 | 2：2 种主食 | 2 | 40 | 80 | 11 s | 0.25 h | Place the {food} directly on the serving tray. | 同粗指令（单阶段 R5） |
+| 原子 | B1 | 双臂送餐盘（空盘/带负载） | 15：15 种托盘负载 | 1 | 3 | 45 | 23 s | 0.28 h | Deliver the serving tray to the user with both arms. | 同粗指令（单阶段 B1） |
+| 装盘组合 | C04 | 主食加热装盘 | 2：2 种主食 | 2 | 40 | 80 | 69 s | 1.53 h | Heat the {food} and place it on the serving tray. | 同粗指令（单阶段 H） |
+| 装盘组合 | C05 | 水果与主食直接装盘 | 8：4 水果 × 2 主食 | 8 | 40 | 320 | 30 s | 2.63 h | Place the {fruit} directly on the serving tray. Then, place the {food} directly on the serving tray. | L1 → R5 |
+| 装盘组合 | C06 | 清洗水果与主食直接装盘 | 8：4 水果 × 2 主食 | 8 | 40 | 320 | 54 s | 4.78 h | Wash the {fruit} and place it on the serving tray. Then, place the {food} directly on the serving tray. | L2 → R5 |
+| 装盘组合 | C07 | 水果直接装盘与加热主食 | 8：4 水果 × 2 主食 | 8 | 40 | 320 | 86 s | 7.62 h | Place the {fruit} directly on the serving tray. Then, heat the {food} and place it on the serving tray. | L1 → H |
+| 装盘组合 | C08 | 清洗水果与加热主食 | 8：4 水果 × 2 主食 | 8 | 40 | 320 | 112 s | 9.93 h | Wash the {fruit} and place it on the serving tray. Then, heat the {food} and place it on the serving tray. | L2 → H |
+| 送餐组合 | D01 | 水果直接装盘并送餐 | 4：4 种水果 | 4 | 40 | 160 | 41 s | 1.81 h | Place the {fruit} directly on the serving tray. Then, deliver the serving tray to the user with both arms. | L1 → B1 |
+| 送餐组合 | D02 | 清洗水果装盘并送餐 | 4：4 种水果 | 4 | 40 | 160 | 66 s | 2.93 h | Wash the {fruit} and place it on the serving tray. Then, deliver the serving tray to the user with both arms. | L2 → B1 |
+| 送餐组合 | D03 | 从炉内取餐装盘并送餐 | 2：2 种主食 | 2 | 40 | 80 | 47 s | 1.05 h | Take the {food} out of the microwave, place it on the serving tray, and close the door. Then, deliver the serving tray to the user with both arms. | R2 → B1 |
+| 送餐组合 | D04 | 主食直接装盘并送餐 | 2：2 种主食 | 2 | 40 | 80 | 35 s | 0.78 h | Place the {food} directly on the serving tray. Then, deliver the serving tray to the user with both arms. | R5 → B1 |
+| 送餐组合 | D05 | 主食加热装盘并送餐 | 2：2 种主食 | 2 | 40 | 80 | 94 s | 2.10 h | Heat the {food} and place it on the serving tray. Then, deliver the serving tray to the user with both arms. | H → B1 |
+| 送餐组合 | D06 | 水果与主食直接装盘并送餐 | 8：4 水果 × 2 主食 | 8 | 40 | 320 | 53 s | 4.72 h | Place the {fruit} directly on the serving tray. Then, place the {food} directly on the serving tray. Finally, deliver the serving tray to the user with both arms. | L1 → R5 → B1 |
+| 送餐组合 | D07 | 清洗水果与主食直接装盘并送餐 | 8：4 水果 × 2 主食 | 8 | 40 | 320 | 80 s | 7.09 h | Wash the {fruit} and place it on the serving tray. Then, place the {food} directly on the serving tray. Finally, deliver the serving tray to the user with both arms. | L2 → R5 → B1 |
+| 送餐组合 | D08 | 水果与加热主食装盘并送餐 | 8：4 水果 × 2 主食 | 8 | 40 | 320 | 112 s | 9.95 h | Place the {fruit} directly on the serving tray. Then, heat the {food} and place it on the serving tray. Finally, deliver the serving tray to the user with both arms. | L1 → H → B1 |
+| 送餐组合 | D09 | 清洗水果与加热主食装盘并送餐 | 8：4 水果 × 2 主食 | 8 | 40 | 320 | 138 s | 12.26 h | Wash the {fruit} and place it on the serving tray. Then, heat the {food} and place it on the serving tray. Finally, deliver the serving tray to the user with both arms. | L2 → H → B1 |
+| **原子合计** | 8 类 | | 34 | 18 | | **727** | | **4.64 h** | | |
+| **长程合计** | 14 类 | | 80 | 80 | | **3200** | | **69.18 h** | | |
+| **总计** | 22 类 | | 114 | 98 | | **3927** | | **73.82 h** | | |
 
 注：
 - {fruit}为apple/pear/banana/tomato，{food}为hamburger/hot dog（对象ID分别为burger/hotdog）。B1的托盘负载、R3的炉内状态是可见的初始状态，不写进指令。
@@ -49,37 +49,41 @@
 
 | 阶段代号 | 细指令模板 | 出现在 | 阶段条数 | 阶段时长 |
 | --- | --- | --- | ---: | ---: |
-| L1 | Place the {fruit} directly on the serving tray. | L1、C05、C07、D01、D06、D08 | 336 | 1.48 h |
-| L2 | Wash the {fruit} and place it on the serving tray. | L2、C06、C08、D02、D07、D09 | 336 | 3.84 h |
-| R5 | Place the {food} directly on the serving tray. | R5、C05、C06、D04、D06、D07 | 334 | 1.13 h |
-| H | Heat the {food} and place it on the serving tray. | C04、C07、C08、D05、D08、D09 | 324 | 6.29 h |
-| R1 | Put the {food} in the microwave and close the door. | R1 | 60 | 0.32 h |
-| R2 | Take the {food} out of the microwave, place it on the serving tray, and close the door. | R2、D03 | 110 | 0.68 h |
-| R3 | Open the microwave door. | R3 | 60 | 0.20 h |
-| R4 | Heat the {food} in the microwave, wait until it is ready, and open the door. | R4 | 60 | 0.38 h |
-| B1 | Deliver the serving tray to the user with both arms. | B1、D01–D09 | 538 | 3.74 h |
+| L1 | Place the {fruit} directly on the serving tray. | L1、C05、C07、D01、D06、D08 | 1600 | 7.03 h |
+| L2 | Wash the {fruit} and place it on the serving tray. | L2、C06、C08、D02、D07、D09 | 1600 | 18.30 h |
+| R5 | Place the {food} directly on the serving tray. | R5、C05、C06、D04、D06、D07 | 1440 | 5.00 h |
+| H | Heat the {food} and place it on the serving tray. | C04、C07、C08、D05、D08、D09 | 1440 | 28.07 h |
+| R1 | Put the {food} in the microwave and close the door. | R1 | 80 | 0.43 h |
+| R2 | Take the {food} out of the microwave, place it on the serving tray, and close the door. | R2、D03 | 160 | 0.99 h |
+| R3 | Open the microwave door. | R3 | 42 | 0.14 h |
+| R4 | Heat the {food} in the microwave, wait until it is ready, and open the door. | R4 | 80 | 0.50 h |
+| B1 | Deliver the serving tray to the user with both arms. | B1、D01–D09 | 1885 | 13.36 h |
 
-物体均衡：每种水果出现在180条样本中，每种主食出现在484条样本中（含B1负载与R3炉内状态）。
+R1、R3、R4单独作为指令时样本较少（42–80条），它们大多包含在H阶段内。物体均衡：每种水果出现在809条样本中，每种主食出现在1629条样本中（含B1负载与R3炉内状态）。
 
 ## 总量与资源
 
 | 项目 | 数值 |
 | --- | --- |
-| 样本条数 | 1232（原子480＋长程752） |
-| 演示时长 | 18.06 h（原子2.78 h＋长程15.27 h） |
-| 训练帧数（25 Hz） | 约163万帧；三路相机共约488万张图 |
-| 采集耗时 | 约70分钟（6进程；Isaac Sim同时运行时约1.5小时），含重试 |
-| H5存储 | 约4.1 GB（直采每条保存直采与最终两份H5） |
-| 图像（三路PNG） | 约146 GB——本机剩余43 GB，**不可行** |
-| 图像（H.264视频） | 约2.2 GB（实测PNG/视频约68:1） |
+| 样本条数 | 3927（原子727＋长程3200） |
+| 演示时长 | 73.8 h（原子4.6 h＋长程69.2 h；原子帧占6%） |
+| 训练帧数（25 Hz） | 约664万帧；三路相机共约1993万张图 |
+| 采集耗时 | 约4.6小时（6进程，含重试；Isaac Sim同时运行时更长），可一晚完成 |
+| H5存储 | 约17 GB（直采每条存两份H5；改为硬链接可减半） |
+| 图像（三路PNG） | 约598 GB——**不可行** |
+| 图像（H.264视频） | 约9 GB（实测PNG/视频约68:1） |
+
+本机剩余约43 GB。
 
 ## 执行前要准备
 
-1. **按任务设置条数**：当前采集命令对所有实例用同一个`--samples-per-case`。确认本大纲后，增加按任务指定条数的选项（如`--samples-by-task L1=15,R1=30,...`），整批共用一个计划和一套不重复的种子（首次尝试0–1231）。
+1. **按指令设置条数**：当前采集命令对所有实例用同一个`--samples-per-case`。需增加按实例指定条数的选项，整批共用一个计划和一套不重复的种子（首次尝试0–3926）。
 2. **评测种子另留**：VLA评测使用100000以上的种子，与训练初态不重叠。
-3. **图像导出改为视频**：渲染与LeRobot导出须改用视频格式，或在笔记本上完成。采集本身不生成图像，H5可随时重新渲染。
-4. **推理限速同步**：高速直采数据需要在放宽后的限速下复现，评估VLA前必须同步`vla/environment.py`。
-5. **香蕉**：约1/12的初态规划失败，自动换种子重试，已计入时间估计；这些初态在数据中缺失。
+3. **H5去重**：直采目录与最终目录的两份H5改为硬链接，省约一半空间。
+4. **图像直接编码为视频**：现有离线渲染逐帧写PNG，此规模需改为直接编码视频后再导出LeRobot（视频特征），或在其他机器完成。采集本身不生成图像，H5可随时重新渲染。
+5. **训练时按任务类型加权**：原子任务只占约6%的帧，按帧均匀采样时原子技能曝光偏少。
+6. **推理限速同步**：高速直采数据需要在放宽后的限速下复现，评估VLA前必须同步`vla/environment.py`。
+7. **香蕉**：约1/12的初态规划失败，自动换种子重试，已计入时间估计；这些初态在数据中缺失。
 
 ## 模型侧：OpenPI能否处理长程任务（2026-11-14分析）
 
@@ -88,5 +92,5 @@
 - **任务长度不进入模型上下文**。π0/π0.5每次只看当前一帧（三路图像＋16维状态＋一句指令），输出50步动作块（25 Hz下2秒）；D09约138秒就是连续推理约70个动作块（按0.4秒重规划约350次）。每次推理的序列长度固定：π0约867个token（3×256图像＋48文本＋1状态＋50动作），π0.5约1018个（3×256＋200文本＋50动作）。
 - **指令长度够用**：最长粗指令（D09＋热狗）在π0格式下40/48个token，在π0.5格式（指令＋16维离散状态）下111/200；全部182条指令均未截断。π0只剩8个token余量，以后若在指令里加入进度/记忆文本，应使用π0.5或调大`max_token_len`。
 - **真正的长程风险是没有记忆**：模型只能从当前画面和本体状态判断进行到哪一步。本任务各阶段大多留下可见变化（水果/餐盒是否在盘上、门的状态），清洗前后、加热前后等少数时刻主要靠手臂姿态区分。本机OpenPI源码没有子任务生成（高层推理）接口，长程执行可由外部按细指令逐段下发，粗指令则依赖模型自己判断阶段。
-- **帧采样偏向长程**：长程任务占全部帧的85%，原子任务15%；按帧均匀采样时原子技能曝光偏少，训练时可按任务类型重加权。
+- **帧采样偏向长程**：长程任务占全部帧的94%，原子任务6%；按帧均匀采样时原子技能曝光偏少，训练时可按任务类型重加权。
 - **显存是硬约束**：OpenPI README给出推理需>8 GB、LoRA微调需>22.5 GB、全量微调需>70 GB。本机RTX 5060 Ti 16 GB可做推理，不能做LoRA微调；训练需要24 GB以上显卡或云端。
