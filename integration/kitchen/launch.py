@@ -2,10 +2,24 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RUN_ROOT = ROOT / "experiments/kitchen_platform_v3"
+
+
+def run_roots():
+    """experiments/kitchen_platform_v3, plus absolute data directories listed in
+    KITCHEN_DATA_ROOTS (os.pathsep-separated), e.g. a shared data store."""
+    roots = [RUN_ROOT.resolve()]
+    for value in os.environ.get("KITCHEN_DATA_ROOTS", "").split(os.pathsep):
+        if value:
+            root = Path(value)
+            if not root.is_absolute() or not root.is_dir():
+                raise ValueError("KITCHEN_DATA_ROOTS entries must be existing absolute directories")
+            roots.append(root.resolve())
+    return roots
 
 
 def run_path(value):
@@ -16,8 +30,9 @@ def run_path(value):
         if part.is_symlink():
             raise ValueError("Run paths must not contain symbolic links")
     path = path.resolve()
-    if not path.is_relative_to(RUN_ROOT.resolve()) or path == RUN_ROOT.resolve():
-        raise ValueError("Run paths must be inside this checkout's experiments/kitchen_platform_v3")
+    if not any(path.is_relative_to(root) and path != root for root in run_roots()):
+        raise ValueError("Run paths must be inside this checkout's experiments/kitchen_platform_v3"
+                         " or a KITCHEN_DATA_ROOTS directory")
     return path
 
 

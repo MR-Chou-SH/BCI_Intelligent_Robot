@@ -18,6 +18,25 @@ class NativeLauncherTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 run_path(link / "data")
 
+    def test_explicit_data_roots_allow_outputs_outside_the_checkout(self):
+        import os
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve() / "store"; root.mkdir()
+            with self.assertRaises(ValueError):
+                run_path(root / "batch")
+            with patch.dict(os.environ, {"KITCHEN_DATA_ROOTS": str(root)}):
+                self.assertEqual(run_path(root / "batch"), root / "batch")
+                self.assertEqual(run_path("experiments/kitchen_platform_v3/x"), ROOT / "experiments/kitchen_platform_v3/x")
+                for value in (root, root / ".." / "elsewhere", "/tmp/outside"):
+                    with self.assertRaises(ValueError):
+                        run_path(value)
+                (Path(temp) / "linked").symlink_to(root, target_is_directory=True)
+                with self.assertRaises(ValueError):
+                    run_path(Path(temp) / "linked" / "batch")
+            with patch.dict(os.environ, {"KITCHEN_DATA_ROOTS": "relative/store"}), self.assertRaises(ValueError):
+                run_path(root / "batch")
+
     def test_invalid_arguments_never_launch_physics(self):
         from unittest.mock import patch
         base = ["--data-root", "experiments/kitchen_platform_v3/launcher_validation/data",
