@@ -157,7 +157,7 @@ def main(argv=None):
     rig = camera_rig(None)
     implementation = {p.name: digest(p) for p in (Path(__file__), Path(__file__).with_name('images.py'),
                       Path(__file__).with_name('observation.py'),
-                      Path(__file__).parents[2] / 'robot_arm/kitchen/device_visuals.py')}
+                      Path(__file__).parents[3] / 'robot_arm/kitchen/device_visuals.py')}
     plan = {'schema': SCHEMA + '_plan', 'batch': str(args.batch), 'manifest_sha256': digest(args.batch / 'manifest.json'),
             'per_case': args.per_case, 'episodes': [r['trajectory'] for r in rows], 'camera_rig': rig,
             'device_visuals': device_visual_contract(), 'video': {'codec': 'h264', 'pix_fmt': 'yuv420p',
