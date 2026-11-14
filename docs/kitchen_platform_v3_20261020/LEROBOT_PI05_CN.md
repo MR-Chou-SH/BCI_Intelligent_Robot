@@ -1,5 +1,7 @@
 # H5原始数据、LeRobot派生数据与π0.5接口
 
+> **2026-11-15 已实现的OpenPI π0.5管线见文末“OpenPI π0.5训练管线（A800）”。** 下文“图像：本轮仅规划”“命令与当前环境边界”是此前的规划记录；其中π0.5相机映射、16→32维padding、绝对关节动作等约定已按此实现。
+
 ## 数据分层
 
 原始真值继续是 `trajectory.h5`、`report.json`、`annotations.json`。H5保存精确初态、float64动作、原生夹爪目标及关键状态，用来重放和复核成功。LeRobot是派生训练数据，使用float32机器人状态和动作；不替代精确重放文件，不修改或裁剪原H5。
@@ -77,3 +79,27 @@ python -B -m integration.kitchen.data.lerobot_export export \
 也可用 `--trajectories <一个或多个trajectory.h5>` 替代manifest。输出必须是新目录；不覆盖已有数据。
 
 当前仿真venv没有LeRobot、PyArrow、Torch。本轮已实现真实writer的调用接口、数值映射与协议测试、真实H5导出计划；没有安装新依赖，也没有伪造Parquet/LeRobot目录。实际LeRobot writer及后续OpenPI训练仍需在转换/训练环境验证并固定其依赖版本。
+
+## OpenPI π0.5训练管线（A800，2026-11-15）
+
+**两段式**：本仓库在仿真环境中渲染；OpenPI分支在A800上组装LeRobot并训练。
+
+1. **渲染暂存（本机，`integration/kitchen/vla/openpi_export.py`）**：对采集批次每条合格轨迹做一次独立控制重放（加热灯、水柱需要重放出的设备状态），三路224×224相机直接编码H.264（GOP 10、CRF 20、无B帧），保存25 Hz实测状态、绝对动作与粗/细指令区间；不写PNG。单条目录原子发布，可`--resume`。需设置`KITCHEN_DATA_ROOTS`。
+
+   ```bash
+   KITCHEN_DATA_ROOTS=/home/user/data-staging/jiayu/BCI_DATA \
+   ../BCI_Intelligent_Robot/.venv/bin/python -B -m integration.kitchen.vla.openpi_export \
+     --batch /home/user/data-staging/jiayu/BCI_DATA/kitchen_v3_40pi_20261114 \
+     --output /home/user/data-staging/jiayu/BCI_DATA/openpi_staging_kitchen_v3_40pi_20261114 --jobs 6
+   ```
+
+   实测：每进程约200帧/秒（三路），本机6进程约600帧/秒；全批约19 GB（每帧每路约0.9 KB）。A800未挂载本机NFS，且没有rsync；用tar经SSH传输，本机→A800约5.9 MB/s。
+
+2. **OpenPI分支**：A800上`~/openpi`的新分支`feature/kitchen-bci-pi05`（基于`origin/main` 5631db9），独立worktree在`~/openpi-kitchen-bci`，不改动原`RECAP`工作区；复用`~/openpi/.venv`，运行时设`PYTHONPATH=~/openpi-kitchen-bci/src`。说明见该分支`examples/kitchen_bci/README.md`。
+   - `examples/kitchen_bci/build_lerobot.py`：暂存→LeRobot v2.1（视频硬链接、不重编码；每帧附`fine_task_index`、`frames_to_stage_end`、`task_type_index`；`meta/kitchen_bci.json`含逐条case/seed/来源哈希与采样重复数）。
+   - `kitchen_bci_policy`：camera1/2/3→`base_0_rgb`/`left_wrist_0_rgb`/`right_wrist_0_rgb`；16维状态与绝对动作（夹爪始终绝对）；`InstructionGranularity`在多阶段样本上以0.5概率改用细指令，并把越过该阶段末尾的动作块保持为阶段最后一帧（等价于按阶段切分的episode）。
+   - `data_loader`：可选逐episode整数重复（采样权重）；默认`sqrt`规则：各任务类型采样帧数∝其帧数平方根。
+   - 配置：`pi05_kitchen_bci`（全量，`pi05_base`初始化，batch 128，60k步，余弦学习率5e-5→5e-6）与`pi05_kitchen_bci_smoke`（每实例1条、300步）。
+   - `examples/kitchen_bci/fetch_gcs_parallel.py`：A800单连接访问GCS仅约0.3 MB/s，`pi05_base`（12.4 GB）用64路分段并行下载（约3 MB/s）并逐文件校验MD5后放入openpi缓存。
+
+**已验证（每实例1条的测试集，114条/17.3万帧）**：LeRobot加载、torchcodec解码三路视频、分位数归一化统计、OpenPI训练数据管线（三路uint8图像、状态补齐到32维、动作块50×32、含离散状态的提示词约79 token）；200个样本中72个为多阶段粗指令、128个为单句（细指令或原子任务），与设计一致；`sqrt`重复使原子任务采样占比约22%（原约6%）。
