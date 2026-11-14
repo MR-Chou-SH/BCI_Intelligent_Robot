@@ -93,6 +93,8 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONUNBUFFERED=1 \
 
 **正式批次（2026-11-14 16:51开始）**：数据写在共享存储 `/home/user/data-staging/jiayu/BCI_DATA/kitchen_v3_40pi_20261114/`（NFS），日志 `kitchen_v3_40pi_20261114.collect.log`、协调进程号 `.pid` 在同级目录。仓库外输出需显式设置 `KITCHEN_DATA_ROOTS=/home/user/data-staging/jiayu/BCI_DATA`（采集、续跑以及之后读取这批数据的渲染/导出工具都要设置）。源码提交 `f12fd38`；采集进行中不要修改 `integration/kitchen/{planning,tasks,validation,data,runtime}` 和模型/控制源码，否则未完成的样本会因源码身份不符而拒绝运行。NFS上的文件锁、HDF5写入、硬链接与续跑已用小批次验证。
 
+**结果（2026-11-14 20:17完成，用时3小时26分）**：3927/3927合格，无缺失；3927个种子各不相同；全部独立重放误差为0（CONTROL_RESIMULATION_PASS）；最终H5均为硬链接，批次共9.0 GB。3880条高速直采（DIRECT_FAST），46条直采失败后经adaptive重定时（OPTIMIZED），1条回退原速轨迹（ORIGINAL_FALLBACK，D02香蕉）。演示时长74.7 h。共140次尝试失败后换种子成功，主要为汉堡餐盒无可行抓取（65）、入炉路线IK无解（25）、香蕉松手前无支撑（14）；因此数据略偏向专家能完成的初态。各类条数与上表一致（例如C05–C08、D06–D09各320条）。
+
 ## 采集后、训练前
 
 1. **评测种子另留**：VLA评测使用100000以上的种子，与训练初态不重叠。
