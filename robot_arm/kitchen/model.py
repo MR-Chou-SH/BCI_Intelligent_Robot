@@ -280,6 +280,13 @@ def build_scene(*, seed=0, include_kitchen=True, layout_id="canonical"):
         if "wheelchair_details_v1" in layout.get("visual_features", []):
             _wheelchair_visual_details(spec)
         apply_layout(spec, layout_id)
+        # Extend only the upper pipe over the existing fruit placement region.
+        # The faucet base, switch, sink and all robot/fruit targets stay fixed.
+        outlet = np.asarray(spec.body("basket").pos) - np.asarray(spec.body("faucet").pos)
+        # Banana is placed 40mm forward of basket center; this shared overlap
+        # also hits the round fruits at center without moving any payload goal.
+        outlet[1] -= .025
+        spec.geom("faucet_spout").fromto = [0., 0., .25, outlet[0], outlet[1], .25]
         from .contact_v4 import apply_contact_v4
         apply_contact_v4(spec, layout)
     model=spec.compile(); data=mujoco.MjData(model)

@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 from integration.kitchen.data.files import digest, read, replace_json
 from integration.kitchen.data.lerobot_export import policy_episode
-from .images import CameraRig, camera_rig, active_views
+from .images import CameraRig, camera_rig, active_views, device_visual_contract
 from .observation import robot_state
 
 
@@ -68,7 +68,7 @@ def replay_episode(episode, output, rig):
         if controller is None or controller.tick != episode['ticks'][index]:
             raise ValueError('Replay callback/action clock mismatch')
         if camera is None:
-            camera = CameraRig(scene, rig)
+            camera = CameraRig(scene, rig, devices=controller.devices)
         states.append(robot_state(scene))
         for key, rgb in camera.render_all().items():
             path = directory/key.rsplit('.', 1)[-1]/f'{controller.tick:09d}.png'
@@ -89,6 +89,7 @@ def replay_episode(episode, output, rig):
     item = {'source': episode['source'], 'source_sha256': episode['source_sha256'],
             'ticks': episode['ticks'].tolist(), 'views': views,
             'state_source': 'independent_control_replay',
+            'device_visuals': device_visual_contract(),
             'policy_data': {'file': str(data_path.relative_to(output)), 'sha256': digest(data_path)},
             'verification': {k: verification[k] for k in ('status', 'task_success',
                 'maximum_qpos_error', 'maximum_qvel_error', 'compared_checkpoints')}}
@@ -103,6 +104,7 @@ def replay(paths, output, rig=None, *, resume=False):
     if len({e['source_sha256'] for e in episodes}) != len(episodes):
         raise ValueError('Duplicate source trajectory')
     contract = {'schema': 'kitchen_replay_dataset_plan_v1', 'camera_rig': rig,
+                'device_visuals': device_visual_contract(),
                 'sources': [{'source': e['source'], 'sha256': e['source_sha256']} for e in episodes],
                 'implementation': {p.name: digest(p) for p in (
                     Path(__file__), Path(__file__).with_name('images.py'),
@@ -135,6 +137,7 @@ def replay(paths, output, rig=None, *, resume=False):
             print(json.dumps({'episode': index+1, 'total': len(episodes), 'frames': len(episode['ticks']),
                               'reused': reused, 'source': episode['source']}), flush=True)
         result = {'schema': 'kitchen_rgb_sidecars_v2', 'fps': 25, 'camera_rig': rig,
-                  'state_source': 'independent_control_replay', 'episodes': rows}
+                  'state_source': 'independent_control_replay',
+                  'device_visuals': device_visual_contract(), 'episodes': rows}
         replace_json(output/'images.json', result)
     return result

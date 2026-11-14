@@ -43,37 +43,13 @@ def trajectory_paths(trajectories=None, manifest=None):
 
 
 def render(paths, output, rig=None):
-    from integration.kitchen.data.replay import read_compact, scene_for, _write_png
-    from .images import CameraRig, camera_rig, active_views
-    rig = camera_rig(rig)
-    output = Path(output)
-    output.mkdir(parents=True, exist_ok=False)
-    episodes = []
-    for path in paths:
-        episode = policy_episode(path)
-        data = read_compact(path)
-        scene = scene_for(data['metadata'])
-        directory = output / episode['source_sha256']
-        directory.mkdir()
-        camera = CameraRig(scene, rig)
-        views = {view['key']: {'files': [], 'sha256': []} for view in active_views(rig)}
-        for key in views:
-            (directory/key.rsplit('.', 1)[-1]).mkdir()
-        try:
-            for tick in episode['ticks']:
-                index = np.searchsorted(data['states/tick'], tick)
-                for key, rgb in camera.render_all(data['states/qpos'][index]).items():
-                    path = directory/key.rsplit('.', 1)[-1]/f'{int(tick):09d}.png'
-                    _write_png(path, rgb)
-                    views[key]['files'].append(str(path.relative_to(output)))
-                    views[key]['sha256'].append(digest(path))
-        finally:
-            camera.close()
-        episodes.append({'source': episode['source'], 'source_sha256': episode['source_sha256'],
-                         'ticks': episode['ticks'].tolist(), 'views': views})
-    result = {'schema': 'kitchen_rgb_sidecars_v2', 'fps': 25, 'camera_rig': rig, 'episodes': episodes}
-    (output / 'images.json').write_text(json.dumps(result, indent=2) + '\n')
-    return result
+    """Render authoritative device state by replaying the recorded controls.
+
+    qpos-only checkpoints cannot recover the microwave's heating latch. Reuse
+    the existing independent replay rather than inventing a second timer.
+    """
+    from .replay_dataset import replay
+    return replay(paths, output, rig)
 
 
 def export(paths, sidecar, output, repo_id, level='coarse'):
@@ -142,6 +118,8 @@ def export(paths, sidecar, output, repo_id, level='coarse'):
                        features=spec, images_sha256=digest(sidecar), image_keys=list(active),
                        lerobot_version=info['codebase_version'],
                        state_source=images.get('state_source', 'recorded_h5_checkpoints'))
+    if 'device_visuals' in images:
+        description['device_visuals'] = images['device_visuals']
     (output / 'kitchen_export.json').write_text(json.dumps(description, indent=2) + '\n')
     return description
 

@@ -104,7 +104,8 @@ class ReplayDatasetTests(unittest.TestCase):
                    'ticks': np.array([100, 120]), 'state': np.zeros((2, 16), dtype=np.float32),
                    'action': np.ones((2, 16), dtype=np.float32)}
         episode['state'][1] = .25
-        scene, controller = object(), SimpleNamespace(tick=100)
+        scene, controller = object(), SimpleNamespace(tick=100,
+            devices=SimpleNamespace(snapshot=lambda: {'heating': None}))
         def verify(path, *, observer):
             for index, tick in enumerate((100, 120, 140)):
                 controller.tick = tick
