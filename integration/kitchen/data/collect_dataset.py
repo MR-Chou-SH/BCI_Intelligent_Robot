@@ -20,9 +20,24 @@ from integration.kitchen.launch import run_path
 from .files import digest,read,replace_json
 
 
+def case_samples(plan, case):
+    """Samples for one case: explicit per-case counts, else the uniform count."""
+    return plan['samples'][case['case_id']] if 'samples' in plan else plan['samples_per_case']
+
+
+def instruction_samples(selected, per_instruction):
+    """N samples per distinct coarse instruction; cases sharing an instruction
+    (B1 tray loads, R3 oven occupancy) split them, rounded up per case."""
+    from integration.kitchen.tasks.language import coarse_instruction
+    groups = {}
+    for case in selected:
+        groups.setdefault(coarse_instruction(case), []).append(case['case_id'])
+    return {case_id: -(-per_instruction // len(ids)) for ids in groups.values() for case_id in ids}
+
+
 def slots(plan):
     for case in plan['cases']:
-        for sample in range(plan['samples_per_case']):
+        for sample in range(case_samples(plan, case)):
             yield case, sample
 
 
@@ -36,9 +51,9 @@ def attempt_seed(plan, case, sample, attempt):
     2026-11-14 (no seed_scheme) shared seeds across cases."""
     if plan.get('seed_scheme') != 'per_sample':
         return plan['base_seed'] + sample + attempt * plan['samples_per_case']
-    total = len(plan['cases']) * plan['samples_per_case']
-    slot = [c['case_id'] for c in plan['cases']].index(case['case_id']) * plan['samples_per_case'] + sample
-    return plan['base_seed'] + slot + attempt * total
+    counts = [case_samples(plan, c) for c in plan['cases']]
+    index = [c['case_id'] for c in plan['cases']].index(case['case_id'])
+    return plan['base_seed'] + sum(counts[:index]) + sample + attempt * sum(counts)
 
 
 def recover_attempt(directory, case, seed, output, identity):
@@ -139,7 +154,10 @@ def main(argv=None):
     parser.add_argument('--output', type=run_path, required=True)
     parser.add_argument('--suite', choices=('all', 'atomic', 'composite'), default='all')
     parser.add_argument('--case-ids', nargs='+')
-    parser.add_argument('--samples-per-case', type=int, default=2)
+    parser.add_argument('--samples-per-case', type=int,
+        help='samples for every selected case (default 2)')
+    parser.add_argument('--samples-per-instruction', type=int,
+        help='samples per distinct coarse instruction; cases sharing one split them')
     parser.add_argument('--max-attempts', type=int, default=3)
     parser.add_argument('--base-seed', type=int, default=0)
     parser.add_argument('--jobs', type=int, default=2)
@@ -166,7 +184,12 @@ def main(argv=None):
     if (not 1<=len(args.optimization_factors)<=4 or len(set(args.optimization_factors))!=len(args.optimization_factors)
         or any(not 1<f<=MAX_FACTOR for f in args.optimization_factors)):
         parser.error('Use 1..4 unique optimization factors >1 and <=5')
-    if not (1 <= args.samples_per_case <= 1000 and 1 <= args.max_attempts <= 10 and 1 <= args.jobs <= MAX_JOBS
+    if args.samples_per_case is not None and args.samples_per_instruction is not None:
+        parser.error('Use either --samples-per-case or --samples-per-instruction')
+    if args.samples_per_case is None and args.samples_per_instruction is None:
+        args.samples_per_case = 2
+    count = args.samples_per_case if args.samples_per_instruction is None else args.samples_per_instruction
+    if not (1 <= count <= 1000 and 1 <= args.max_attempts <= 10 and 1 <= args.jobs <= MAX_JOBS
             and 30 <= args.case_timeout <= 3600 and 0 <= args.base_seed):
         parser.error('Invalid collection bounds; see --help')
     selected = cases(args.suite)
@@ -174,10 +197,16 @@ def main(argv=None):
         if set(args.case_ids) - {c['case_id'] for c in selected}:
             parser.error('Unknown case ID in selected suite')
         selected = [c for c in selected if c['case_id'] in args.case_ids]
-    if args.base_seed + len(selected) * args.samples_per_case * args.max_attempts > 2**32:
+    if args.samples_per_instruction is None:
+        sampling = {'samples_per_case': args.samples_per_case}
+    else:
+        sampling = {'samples_per_instruction': args.samples_per_instruction,
+                    'samples': instruction_samples(selected, args.samples_per_instruction)}
+    target = sum(case_samples(sampling, case) for case in selected)
+    if args.base_seed + target * args.max_attempts > 2**32:
         parser.error('Invalid collection bounds; see --help')
     plan = {'schema': 'kitchen_qualified_dataset_v1', 'cases': selected, 'identity': source_identity(),
-            'runner_sha256': digest(__file__), 'samples_per_case': args.samples_per_case,
+            'runner_sha256': digest(__file__), **sampling,
             'max_attempts': args.max_attempts, 'base_seed': args.base_seed, 'seed_scheme': 'per_sample', 'jobs': args.jobs,
             'case_timeout': args.case_timeout, 'profile': args.profile, 'format':'kitchen_state_actions_v3','motion_profile':args.motion_profile,
             'postprocessing':{'mode':args.postprocess,'factors':args.optimization_factors,
@@ -201,7 +230,6 @@ def main(argv=None):
             if any(p.name != '.runner.lock' for p in output.iterdir()):
                 parser.error('Output must be empty for a new plan')
             save(output / 'plan.json', plan)
-        target = len(selected) * args.samples_per_case
         print(json.dumps({'cases': len(selected), 'target': target, 'output': str(output)}), flush=True)
         if args.plan_only:
             return 0

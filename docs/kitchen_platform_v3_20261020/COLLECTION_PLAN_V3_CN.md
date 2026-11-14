@@ -69,21 +69,35 @@ R1、R3、R4单独作为指令时样本较少（42–80条），它们大多包�
 | 演示时长 | 73.8 h（原子4.6 h＋长程69.2 h；原子帧占6%） |
 | 训练帧数（25 Hz） | 约664万帧；三路相机共约1993万张图 |
 | 采集耗时 | 约4.6小时（6进程，含重试；Isaac Sim同时运行时更长），可一晚完成 |
-| H5存储 | 约17 GB（直采每条存两份H5；改为硬链接可减半） |
+| H5存储 | 约8 GB（最终H5是直采/备份H5的硬链接，只存一份） |
 | 图像（三路PNG） | 约598 GB——**不可行** |
 | 图像（H.264视频） | 约9 GB（实测PNG/视频约68:1） |
 
 本机剩余约43 GB。
 
-## 执行前要准备
+## 执行
 
-1. **按指令设置条数**：当前采集命令对所有实例用同一个`--samples-per-case`。需增加按实例指定条数的选项，整批共用一个计划和一套不重复的种子（首次尝试0–3926）。
-2. **评测种子另留**：VLA评测使用100000以上的种子，与训练初态不重叠。
-3. **H5去重**：直采目录与最终目录的两份H5改为硬链接，省约一半空间。
-4. **图像直接编码为视频**：现有离线渲染逐帧写PNG，此规模需改为直接编码视频后再导出LeRobot（视频特征），或在其他机器完成。采集本身不生成图像，H5可随时重新渲染。
-5. **训练时按任务类型加权**：原子任务只占约6%的帧，按帧均匀采样时原子技能曝光偏少。
-6. **推理限速同步**：高速直采数据需要在放宽后的限速下复现，评估VLA前必须同步`vla/environment.py`。
-7. **香蕉**：约1/12的初态规划失败，自动换种子重试，已计入时间估计；这些初态在数据中缺失。
+采集器已支持本大纲（2026-11-14）：`--samples-per-instruction 40` 按粗指令分组生成每个实例的条数（写入plan的`samples`），整批共用一套不重复的种子（首次尝试0–3926，第a次重试再加a×3927）；最终H5与直采/备份H5为硬链接。在工作区根目录执行（本工作区没有自己的`.venv`，使用主仓库的Python）：
+
+```bash
+cd /home/user/Projects/BCI_Intelligent_Robot-dci
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONUNBUFFERED=1 \
+../BCI_Intelligent_Robot/.venv/bin/python -B -m integration.kitchen.data.collect_dataset \
+  --output experiments/kitchen_platform_v3/collections/kitchen_v3_40pi_$(date +%Y%m%d) \
+  --suite all --samples-per-instruction 40 --jobs 6 \
+  --profile research --motion-profile faster \
+  --postprocess adaptive --defer-backup-replay --direct-fast
+```
+
+先加`--plan-only`可只生成计划（应显示target 3927）；中断后原命令加`--resume`续跑。
+
+## 采集后、训练前
+
+1. **评测种子另留**：VLA评测使用100000以上的种子，与训练初态不重叠。
+2. **图像直接编码为视频**：现有离线渲染逐帧写PNG，此规模需改为直接编码视频后再导出LeRobot（视频特征），或在其他机器完成。H5可随时重新渲染。
+3. **训练时按任务类型加权**：原子任务只占约6%的帧，按帧均匀采样时原子技能曝光偏少。
+4. **推理限速同步**：高速直采数据需要在放宽后的限速下复现，评估VLA前必须同步`vla/environment.py`。
+5. **香蕉**：约1/12的初态规划失败，自动换种子重试，已计入时间估计；这些初态在数据中缺失。
 
 ## 模型侧：OpenPI能否处理长程任务（2026-11-14分析）
 

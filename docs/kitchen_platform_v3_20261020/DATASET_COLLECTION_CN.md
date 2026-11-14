@@ -22,6 +22,7 @@ bash scripts/collect_kitchen_dataset.sh \
 
 - `--suite all --samples-per-case 2 --jobs 2`：两个采集进程。
 - `--profile research`：保持左水果、右主食，小范围位姿随机化，沿用初始不重叠检查。
+- `--samples-per-instruction N`（2026-11-14）：每句不同的粗指令采N条，共用同一句指令的实例（B1托盘负载、R3炉内状态）平分并向上取整，每个实例的条数写入plan的`samples`；与`--samples-per-case`二选一。正式大纲见[COLLECTION_PLAN_V3_CN.md](COLLECTION_PLAN_V3_CN.md)。
 - `--base-seed 0 --max-attempts 3`：2026-11-14起每个实例的每条样本使用不同 seed（N条样本即N种随机初态）：第k个样本槽位（按实例顺序、每实例`samples_per_case`个）首次用 `base_seed+k`，第a次重试用 `base_seed+k+a×槽位总数`，全部不重复；重试有上限。此前的plan（无`seed_scheme`）所有实例共用同一组seed。
 - `--case-timeout 1800`：每次专家执行的协作式预算，沿用现有 API 时间检查。
 - `--motion-profile standard`：默认轨迹时序。可选 `faster` 提高空载/携带段速度，并减少右臂中间路点的停顿；香蕉左臂技能保留原时序。接触操作和清洗/加热等待不加速，控制器限速与成功门槛不变。此参数与场景随机化的 `--profile` 相互独立。

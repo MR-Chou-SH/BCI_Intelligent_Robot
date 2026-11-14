@@ -5,6 +5,7 @@ candidate actions and trials stay below it and are never counted as samples.
 """
 import json
 from pathlib import Path
+import os
 import shutil
 import time
 
@@ -71,10 +72,14 @@ def deferred_replay_passed(verification,backup):
 
 
 def copy_immutable(source,destination):
+    """Publish a sealed file at its final path. A hard link stores the bytes
+    once (sealed H5/annotations are never rewritten); copy if links fail."""
     source,destination=Path(source),Path(destination)
     if destination.exists():
         if digest(source)!=digest(destination):raise ValueError('Partial final file differs from selected source')
-    else:shutil.copy2(source,destination)
+        return
+    try:os.link(source,destination)
+    except OSError:shutil.copy2(source,destination)
 
 
 def candidate_plan(root,index,backup,data,context,base,factor,identity,timeout):

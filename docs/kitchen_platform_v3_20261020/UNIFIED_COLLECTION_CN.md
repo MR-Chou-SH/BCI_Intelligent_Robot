@@ -50,7 +50,7 @@ bash scripts/collect_kitchen_dataset.sh \
 
 中断后原命令加 `--resume`。先查看计划可加 `--plan-only`，之后同参数加 `--resume`执行。源码、模型、设备语义或计划参数变化后必须新建批次，不手改plan绕过校验。
 
-默认每样本最多3次首次专家尝试，失败换seed。seed自2026-11-14起按样本槽位分配（plan记`seed_scheme: per_sample`）：`base_seed+槽位序号+attempt_index*槽位总数`，每个实例的每条样本都是不同随机初态；此前plan按 `base_seed+sample_index+attempt_index*samples_per_case`，所有实例共用同一组seed。执行预算默认1800秒为每阶段协作式预算，含优化的整条worker实际耗时会更长，不是1800秒硬进程超时。
+默认每样本最多3次首次专家尝试，失败换seed。最终目录的`trajectory.h5`/`annotations.json`自2026-11-14起是选中的直采/备份/试跑文件的硬链接（同一份数据只存一次；文件系统不支持时复制）。seed自2026-11-14起按样本槽位分配（plan记`seed_scheme: per_sample`）：`base_seed+槽位序号+attempt_index*槽位总数`，每个实例的每条样本都是不同随机初态；此前plan按 `base_seed+sample_index+attempt_index*samples_per_case`，所有实例共用同一组seed。执行预算默认1800秒为每阶段协作式预算，含优化的整条worker实际耗时会更长，不是1800秒硬进程超时。
 
 ## 数据结构与恢复
 
