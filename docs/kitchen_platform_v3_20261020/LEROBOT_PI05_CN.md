@@ -103,3 +103,22 @@ python -B -m integration.kitchen.data.lerobot_export export \
    - `examples/kitchen_bci/fetch_gcs_parallel.py`：A800单连接访问GCS仅约0.3 MB/s，`pi05_base`（12.4 GB）用64路分段并行下载（约3 MB/s）并逐文件校验MD5后放入openpi缓存。
 
 **已验证（每实例1条的测试集，114条/17.3万帧）**：LeRobot加载、torchcodec解码三路视频、分位数归一化统计、OpenPI训练数据管线（三路uint8图像、状态补齐到32维、动作块50×32、含离散状态的提示词约79 token）；200个样本中72个为多阶段粗指令、128个为单句（细指令或原子任务），与设计一致；`sqrt`重复使原子任务采样占比约22%（原约6%）。
+
+**全量数据与训练准备（2026-11-15）**：
+- 暂存3927/3927条、无失败，18 GB；已传到A800 `~/datasets/jiayu/bci_staging/openpi_staging_kitchen_v3_40pi_20261114`（本机NFS保留一份）。
+- LeRobot数据集 `~/datasets/jiayu/kitchen_bci_v3_40pi_20261114`：3927条、6,725,816帧、98句指令；视频为硬链接，不额外占盘。`sqrt`采样重复后每轮约1075万个样本，原子任务占约17.5%。
+- 归一化统计（分位数，200万帧抽样）写在数据集目录 `norm_stats.json`。
+- `pi05_base`（12.4 GB，逐文件MD5/CRC32C校验）在 `~/.cache/openpi/openpi-assets/checkpoints/pi05_base/params`。
+- 冒烟训练（`pi05_kitchen_bci_smoke`，114条，8×A800，batch 32，300步）：1.5步/秒，loss 0.078→0.008；检查点42 GB（参数12 GB＋优化器状态31 GB），norm stats随检查点保存；用该检查点在真实帧上推理得到50×16动作块，单卡约0.11秒/次（首次编译29秒）。冒烟检查点已删除。
+- 全量配置计时：batch 128时约1.9秒/步、GPU利用率91%；60k步约32小时，约为加权数据0.7轮。检查点保留20k/40k/60k及最新一个（约170 GB）；共享盘剩余约490 GB。
+
+全量训练命令（A800，尚未启动）：
+
+```bash
+cd ~/openpi-kitchen-bci
+PYTHONPATH=$HOME/openpi-kitchen-bci/src XLA_PYTHON_CLIENT_MEM_FRACTION=0.9 \
+nohup ~/openpi/.venv/bin/python scripts/train.py pi05_kitchen_bci --exp-name=<run> --fsdp-devices=8 \
+  > ~/logs/<run>.log 2>&1 &
+```
+
+数据加载进程较多，启动约10分钟后才开始出步数。
