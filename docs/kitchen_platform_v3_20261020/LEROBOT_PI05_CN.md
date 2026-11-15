@@ -122,3 +122,5 @@ nohup ~/openpi/.venv/bin/python scripts/train.py pi05_kitchen_bci --exp-name=<ru
 ```
 
 数据加载进程较多，启动约10分钟后才开始出步数。
+
+**全量训练已启动（2026-11-15 21:48，服务器时间）**：分支提交 `e290730`，`pi05_kitchen_bci`，8×A800 FSDP，batch 256（每卡32），84k步＝加权数据2轮（每轮10,749,084个样本、41,989步；按不重复帧计每轮26,273步），峰值学习率1e-4（按sqrt(256/64)从5e-5放大），warmup 3k，余弦衰减到1e-5，EMA 0.999。实测约3.6秒/步、GPU利用率100%、无显存不足；预计约84小时。每5k步保存，保留20k/40k/60k/80k与最新一个（每个42 GB）。日志 `~/logs/kitchen_bci_b256_2ep_20261115.log`（loss行因输出缓冲成批出现），W&B离线记录在 `~/openpi-kitchen-bci/wandb/`，主进程号记录在 `~/logs/kitchen_bci_b256_2ep_20261115.pid`，检查点在 `~/openpi-kitchen-bci/checkpoints/pi05_kitchen_bci/b256_2ep_20261115/`。
