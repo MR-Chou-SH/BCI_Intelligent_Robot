@@ -130,3 +130,9 @@ nohup ~/openpi/.venv/bin/python scripts/train.py pi05_kitchen_bci --exp-name=<ru
 A800用户区（`/mnt/dex/a800/home/qujiayu`）共约1.6 TB，其中本项目新增约73 GB：上述检查点42 GB、暂存（含视频）18 GB、`pi05_base` 12 GB、LeRobot数据集parquet/meta 0.9 GB（视频与暂存为硬链接，不重复占用）。共享CPFS剩余约445 GB。
 
 **数据集上传到OSS（2026-11-16）**：完整LeRobot数据集与冒烟测试集已从A800经阿里云内网（约1.4 GB/s）上传到 `oss://cri-ddk33nxnhdntfn4q-registry/jiayu/kitchen_bci_v3_40pi_20261114/`（15,714个文件、19,078,833,076字节，与A800逐字节总量一致，含 `norm_stats.json`）与 `.../jiayu/kitchen_bci_test_percase1/`。该桶在B300上以ossfs2挂载为 `/mnt/data`，因此B300可直接访问 `/mnt/data/jiayu/kitchen_bci_v3_40pi_20261114`；训练前建议复制到B300的CPFS以加快随机读取。OpenPI训练代码见 `github.com/bitqjy/openpi` 分支 `feature/kitchen-bci-pi05`（移植到上游main，尚未在新机器上运行测试），训练配置里的数据集路径需改为新位置。
+
+**B300准备与测速（2026-11-16）**：
+- 代码：`~/openpi-kitchen-bci`（`github.com/bitqjy/openpi` 分支 `feature/kitchen-bci-pi05`，`35aba59` 起配置指向 `/mnt/data` 上的数据集与 `pi05_base`）；数据集已复制到CPFS `~/datasets/jiayu/kitchen_bci_v3_40pi_20261114`（文件数与字节数一致），训练时用 `--data.repo-id` 指向它（直接读OSS挂载约0.35秒/样本，CPFS快约9倍）。`/mnt/data/base_model/pi05_base/params` 与官方GCS版本20个文件校验一致。
+- 必须按团队 `~/b300_cuda129_upgrade/README.md`：用 `~/openpi/.venv_b300_cublas`（cuBLAS 12.9）、把其 `nvidia/cuda_nvcc/bin` 放到PATH最前、`XLA_FLAGS=--xla_gpu_enable_triton_gemm=false`、数据并行 `fsdp=1`。默认环境会因JAX 0.5.3按sm_101生成Triton GEMM而在编译时退出。
+- 采样检查（全量数据，CPU）：逐episode重复次数与设定一致；任务类型占比与设计最大差0.005%，原子任务6.4%→17.5%；8327个阶段的细指令索引与距阶段结束帧数自洽；粗/细混合实测0.496/0.504，细指令与阶段一致、越过阶段末尾的动作保持、粗指令样本未改动；与LeRobot加载器实际动作块一致。阶段开始1秒内“细指令+该阶段动作”的样本由每百万样本约2250个增至约19700个（约8.8倍）；能否提升指令遵循仍需训练后用换指令测试验证。
+- 4卡（GPU 0–3）batch 1024实测：5.95秒/步、172样本/秒、GPU利用率100%（32个数据进程足够），前80步loss 0.071→0.019。按此：加权数据1轮10,498步约17.4小时、2轮约34.7小时；按不重复帧1轮约10.9小时、2轮约21.7小时（另加约12分钟启动与每次约1–2分钟保存检查点）。团队完整升级环境报告5.43秒/步。

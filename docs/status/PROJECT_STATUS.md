@@ -4,6 +4,8 @@ Last updated: 2026-11-15
 
 ## Kitchen Linux / Task Collection Development
 
+2026-11-16 B300 ready for pi0.5 training: fork branch cloned, dataset on CPFS (verified), pi05_base matches GCS; must use the team B300 settings (cuBLAS 12.9 venv, Triton GEMM off, fsdp=1). Sampling verified on the full data (repeats, shares, labels, coarse/fine 0.496/0.504, end-of-stage hold); stage-start fine-instruction supervision ~8.8x per sample. 4 GPUs batch 1024: 5.95 s/step (172 samples/s) -> 1 weighted epoch ~17.4 h, 2 epochs ~34.7 h. [Details](../kitchen_platform_v3_20261020/LEROBOT_PI05_CN.md).
+
 2026-11-16 03:00 (server time) pi0.5 run stopped at the user request right after its 5k checkpoint (42 GB; 1.28M samples, ~0.12 weighted epoch, lr still ~1e-4 under the 84k plan, loss 0.070 -> 0.0018). Not yet evaluated for instruction following. Project footprint on the A800 home: ~73 GB of 1.6 TB. B300 estimate for later: batch 1024 at 5.5 s/step -> 1 weighted epoch 10,498 steps ~16 h, 2 epochs ~32 h (unique-frame epochs ~10 h / ~20 h).
 
 2026-11-15 21:48 (server time) full pi0.5 fine-tuning started on 8x A800: `pi05_kitchen_bci`, batch 256, 84k steps = 2 epochs of the sqrt-weighted dataset, peak lr 1e-4 cosine to 1e-5; ~3.6 s/step, GPUs at 100%, ETA ~84 h; checkpoints every 5k steps (kept: 20k/40k/60k/80k + latest, 42 GB each). [Run details](../kitchen_platform_v3_20261020/LEROBOT_PI05_CN.md).
