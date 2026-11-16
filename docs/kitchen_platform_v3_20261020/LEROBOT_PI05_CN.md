@@ -128,3 +128,5 @@ nohup ~/openpi/.venv/bin/python scripts/train.py pi05_kitchen_bci --exp-name=<ru
 **训练提前停止（2026-11-16 03:00，服务器时间）**：按用户要求，在第5000步检查点保存后停止，不再续训。检查点 `~/openpi-kitchen-bci/checkpoints/pi05_kitchen_bci/b256_2ep_20261115/5000`（42 GB：参数12 GB＋优化器状态31 GB）。共训练5000步×256＝128万样本（加权数据约0.12轮）；学习率仍按84k步计划处在约1e-4，未退火。loss：0.070（第0步）→0.0045（500）→0.0025（2000）→0.0018（4400）。此检查点尚未做指令遵循评估。分支配置已恢复为该次训练实际使用的84k计划。
 
 A800用户区（`/mnt/dex/a800/home/qujiayu`）共约1.6 TB，其中本项目新增约73 GB：上述检查点42 GB、暂存（含视频）18 GB、`pi05_base` 12 GB、LeRobot数据集parquet/meta 0.9 GB（视频与暂存为硬链接，不重复占用）。共享CPFS剩余约445 GB。
+
+**数据集上传到OSS（2026-11-16）**：完整LeRobot数据集与冒烟测试集已从A800经阿里云内网（约1.4 GB/s）上传到 `oss://cri-ddk33nxnhdntfn4q-registry/jiayu/kitchen_bci_v3_40pi_20261114/`（15,714个文件、19,078,833,076字节，与A800逐字节总量一致，含 `norm_stats.json`）与 `.../jiayu/kitchen_bci_test_percase1/`。该桶在B300上以ossfs2挂载为 `/mnt/data`，因此B300可直接访问 `/mnt/data/jiayu/kitchen_bci_v3_40pi_20261114`；训练前建议复制到B300的CPFS以加快随机读取。OpenPI训练代码见 `github.com/bitqjy/openpi` 分支 `feature/kitchen-bci-pi05`（移植到上游main，尚未在新机器上运行测试），训练配置里的数据集路径需改为新位置。
